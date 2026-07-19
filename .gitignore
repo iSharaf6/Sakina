@@ -1,0 +1,19 @@
+# macOS
+.DS_Store
+
+# Local assistant/editor settings
+.claude/
+
+# Xcode build output and per-user state
+build/
+DerivedData/
+*.xcuserstate
+xcuserdata/
+
+# Swift Package Manager
+.build/
+.swiftpm/
+
+# Xcode generated metadata
+*.xccheckout
+*.xcscmblueprint

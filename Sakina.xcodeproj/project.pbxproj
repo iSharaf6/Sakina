@@ -1,0 +1,574 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0AD058C17BC3CA58BFF0DF87 /* SakinaApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B3F5118924C458398FD37BD /* SakinaApp.swift */; };
+		0CBD9F38F6BEFD9E82290F7A /* verses.json in Resources */ = {isa = PBXBuildFile; fileRef = 73BDB5597C502DF9620D4EB9 /* verses.json */; };
+		11CC438772F912B44768F2F4 /* SakinaWidgets.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0305A74178E3392B59CE373 /* SakinaWidgets.swift */; };
+		1209500D8182761B7E34CCF4 /* verses.json in Resources */ = {isa = PBXBuildFile; fileRef = 73BDB5597C502DF9620D4EB9 /* verses.json */; };
+		16303560416EC40292C59EB7 /* AppIcon76x76@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 8778E3432F3F2902279E9FC3 /* AppIcon76x76@2x.png */; };
+		16D963BDEF9A32A7B3F33C6A /* UthmanicHafs.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C176745055C5CEE71C134488 /* UthmanicHafs.ttf */; };
+		1E9208D4490881F96B16D13D /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBF88022D366BA9A9E55A231 /* AppSettings.swift */; };
+		2905A9C05FE88ACD92AB75D9 /* QuranCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC07A9B481218431697FE1FB /* QuranCatalog.swift */; };
+		29EEFD99CD5E085538793E95 /* PersistenceModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = AB2DE4D23275B34EC57D3143 /* PersistenceModels.swift */; };
+		313752037AA3D4F16064F2C0 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 812F742F72217F0819013056 /* Theme.swift */; };
+		40B7AFEE220FCE3C7A84CCDB /* RecitationPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1EFDB8F8C78374354ED876F /* RecitationPlayer.swift */; };
+		4E8C30F6F671A365AFCA22A9 /* SharedStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D724EF115C34278B04465229 /* SharedStore.swift */; };
+		4EB66C91A5D3E7238FE723D6 /* SharedStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D724EF115C34278B04465229 /* SharedStore.swift */; };
+		5406EED7179563DE79A5EC33 /* UthmanicHafs.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5841023F992C3CE227A0FED5 /* UthmanicHafs.ttf */; };
+		70DC51EA2A8BCFC5ECB8AD92 /* AppIcon60x60@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = DFCBD69B0913648D27A8A02D /* AppIcon60x60@3x.png */; };
+		79273DED802F044CF9428D97 /* LibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDD2FB965151F6ABFB349296 /* LibraryView.swift */; };
+		7EEAB40223E3A47A14EF86F3 /* SakinaWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = B413F95EBD77CF107DB7E169 /* SakinaWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		8B027AC65EB41B1F2D2B4DC9 /* SituationDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35A7453DBF8D8E09E7E9D456 /* SituationDetailView.swift */; };
+		A44FE29C785FF1A9E28099B8 /* QuranCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC07A9B481218431697FE1FB /* QuranCatalog.swift */; };
+		CA714A7FBE9A2C7C722B70C5 /* AppIcon60x60@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FAA11D5F405A2BF91BEDF0F0 /* AppIcon60x60@2x.png */; };
+		DD280C7AC1C63868430E5874 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F91CDE5E2E74882DCDCBEB /* HomeView.swift */; };
+		E4DACF7F33F1A2DEB05EC6D9 /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C94B8B0D7FA881C025CBEEAA /* AboutView.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		374471ED96F6BD4F208F4033 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 88899939C2BB8C3FE39552E4 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = CD6C6F3D7C0E02CBAA99F657;
+			remoteInfo = SakinaWidget;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		480B0EC1388777D732A6BA51 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				7EEAB40223E3A47A14EF86F3 /* SakinaWidget.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		01CC3D827731B1C14D47EF40 /* SakinaWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SakinaWidget.entitlements; sourceTree = "<group>"; };
+		255BBB08ACC101A1DC06AEAF /* Sakina.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Sakina.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		35A7453DBF8D8E09E7E9D456 /* SituationDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SituationDetailView.swift; sourceTree = "<group>"; };
+		4B3F5118924C458398FD37BD /* SakinaApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SakinaApp.swift; sourceTree = "<group>"; };
+		4E8F6FBD6690F33853748BD8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		55F91CDE5E2E74882DCDCBEB /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		5841023F992C3CE227A0FED5 /* UthmanicHafs.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = UthmanicHafs.ttf; sourceTree = "<group>"; };
+		73BDB5597C502DF9620D4EB9 /* verses.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = verses.json; sourceTree = "<group>"; };
+		812F742F72217F0819013056 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
+		8778E3432F3F2902279E9FC3 /* AppIcon76x76@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "AppIcon76x76@2x.png"; sourceTree = "<group>"; };
+		9162A56A57E5DC9D205C411C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		AB2DE4D23275B34EC57D3143 /* PersistenceModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceModels.swift; sourceTree = "<group>"; };
+		B413F95EBD77CF107DB7E169 /* SakinaWidget.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = SakinaWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		BBF88022D366BA9A9E55A231 /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
+		C176745055C5CEE71C134488 /* UthmanicHafs.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = UthmanicHafs.ttf; sourceTree = "<group>"; };
+		C94B8B0D7FA881C025CBEEAA /* AboutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutView.swift; sourceTree = "<group>"; };
+		CC07A9B481218431697FE1FB /* QuranCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuranCatalog.swift; sourceTree = "<group>"; };
+		D1EFDB8F8C78374354ED876F /* RecitationPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecitationPlayer.swift; sourceTree = "<group>"; };
+		D724EF115C34278B04465229 /* SharedStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedStore.swift; sourceTree = "<group>"; };
+		DFCBD69B0913648D27A8A02D /* AppIcon60x60@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "AppIcon60x60@3x.png"; sourceTree = "<group>"; };
+		EE11737D69D6C70B0031887F /* Sakina.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Sakina.entitlements; sourceTree = "<group>"; };
+		F0305A74178E3392B59CE373 /* SakinaWidgets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SakinaWidgets.swift; sourceTree = "<group>"; };
+		FAA11D5F405A2BF91BEDF0F0 /* AppIcon60x60@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "AppIcon60x60@2x.png"; sourceTree = "<group>"; };
+		FDD2FB965151F6ABFB349296 /* LibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryView.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		19812B5D9562EE1E59EDEA0C /* Theme */ = {
+			isa = PBXGroup;
+			children = (
+				812F742F72217F0819013056 /* Theme.swift */,
+			);
+			path = Theme;
+			sourceTree = "<group>";
+		};
+		2247109231C9D1F1488ECC7A /* SakinaWidget */ = {
+			isa = PBXGroup;
+			children = (
+				9162A56A57E5DC9D205C411C /* Info.plist */,
+				01CC3D827731B1C14D47EF40 /* SakinaWidget.entitlements */,
+				F0305A74178E3392B59CE373 /* SakinaWidgets.swift */,
+				C176745055C5CEE71C134488 /* UthmanicHafs.ttf */,
+			);
+			path = SakinaWidget;
+			sourceTree = "<group>";
+		};
+		38A2A38FC8AA0501536C7A44 /* Audio */ = {
+			isa = PBXGroup;
+			children = (
+				D1EFDB8F8C78374354ED876F /* RecitationPlayer.swift */,
+			);
+			path = Audio;
+			sourceTree = "<group>";
+		};
+		4437C01E203EBF9D07991845 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				73BDB5597C502DF9620D4EB9 /* verses.json */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		484A453D2163B21B88B23BAE /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				CC07A9B481218431697FE1FB /* QuranCatalog.swift */,
+				D724EF115C34278B04465229 /* SharedStore.swift */,
+				4437C01E203EBF9D07991845 /* Resources */,
+			);
+			path = Shared;
+			sourceTree = "<group>";
+		};
+		70DD59E3CD4DD2A34F3BCD38 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				BBF88022D366BA9A9E55A231 /* AppSettings.swift */,
+				4B3F5118924C458398FD37BD /* SakinaApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		7138DB978D217575B65C56EE /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				255BBB08ACC101A1DC06AEAF /* Sakina.app */,
+				B413F95EBD77CF107DB7E169 /* SakinaWidget.appex */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		B89397B5429CF38946FA3E34 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				AB2DE4D23275B34EC57D3143 /* PersistenceModels.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		B93F6325AA3519B8C0B38F26 = {
+			isa = PBXGroup;
+			children = (
+				E7765FE3C400A4D239818254 /* Sakina */,
+				2247109231C9D1F1488ECC7A /* SakinaWidget */,
+				484A453D2163B21B88B23BAE /* Shared */,
+				7138DB978D217575B65C56EE /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		C05A71F312F6DAB97685A9B7 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				FAA11D5F405A2BF91BEDF0F0 /* AppIcon60x60@2x.png */,
+				DFCBD69B0913648D27A8A02D /* AppIcon60x60@3x.png */,
+				8778E3432F3F2902279E9FC3 /* AppIcon76x76@2x.png */,
+				5841023F992C3CE227A0FED5 /* UthmanicHafs.ttf */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		E7765FE3C400A4D239818254 /* Sakina */ = {
+			isa = PBXGroup;
+			children = (
+				4E8F6FBD6690F33853748BD8 /* Info.plist */,
+				EE11737D69D6C70B0031887F /* Sakina.entitlements */,
+				70DD59E3CD4DD2A34F3BCD38 /* App */,
+				38A2A38FC8AA0501536C7A44 /* Audio */,
+				B89397B5429CF38946FA3E34 /* Models */,
+				C05A71F312F6DAB97685A9B7 /* Resources */,
+				19812B5D9562EE1E59EDEA0C /* Theme */,
+				F45288AA0AD4613F94CA2847 /* Views */,
+			);
+			path = Sakina;
+			sourceTree = "<group>";
+		};
+		F45288AA0AD4613F94CA2847 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				C94B8B0D7FA881C025CBEEAA /* AboutView.swift */,
+				55F91CDE5E2E74882DCDCBEB /* HomeView.swift */,
+				FDD2FB965151F6ABFB349296 /* LibraryView.swift */,
+				35A7453DBF8D8E09E7E9D456 /* SituationDetailView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		7D955DD9E5580C5B48EA8329 /* Sakina */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6D6405990C6D7BBD03B1D58E /* Build configuration list for PBXNativeTarget "Sakina" */;
+			buildPhases = (
+				FAA20BA8A79231457ADE6F50 /* Sources */,
+				DD6231B5458C8E9918794B0A /* Resources */,
+				480B0EC1388777D732A6BA51 /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				B218D1102945DE83129CBF8B /* PBXTargetDependency */,
+			);
+			name = Sakina;
+			packageProductDependencies = (
+			);
+			productName = Sakina;
+			productReference = 255BBB08ACC101A1DC06AEAF /* Sakina.app */;
+			productType = "com.apple.product-type.application";
+		};
+		CD6C6F3D7C0E02CBAA99F657 /* SakinaWidget */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 79E1ABFC5FB647538B94EEB2 /* Build configuration list for PBXNativeTarget "SakinaWidget" */;
+			buildPhases = (
+				EC3586B0712A9D228880EE96 /* Sources */,
+				C99E8D33CF744C216753ADC1 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SakinaWidget;
+			packageProductDependencies = (
+			);
+			productName = SakinaWidget;
+			productReference = B413F95EBD77CF107DB7E169 /* SakinaWidget.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		88899939C2BB8C3FE39552E4 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					7D955DD9E5580C5B48EA8329 = {
+						ProvisioningStyle = Automatic;
+					};
+					CD6C6F3D7C0E02CBAA99F657 = {
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 0FAEC3C2AC2C0F5079326AEB /* Build configuration list for PBXProject "Sakina" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = B93F6325AA3519B8C0B38F26;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 7138DB978D217575B65C56EE /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				7D955DD9E5580C5B48EA8329 /* Sakina */,
+				CD6C6F3D7C0E02CBAA99F657 /* SakinaWidget */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		C99E8D33CF744C216753ADC1 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				16D963BDEF9A32A7B3F33C6A /* UthmanicHafs.ttf in Resources */,
+				0CBD9F38F6BEFD9E82290F7A /* verses.json in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DD6231B5458C8E9918794B0A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CA714A7FBE9A2C7C722B70C5 /* AppIcon60x60@2x.png in Resources */,
+				70DC51EA2A8BCFC5ECB8AD92 /* AppIcon60x60@3x.png in Resources */,
+				16303560416EC40292C59EB7 /* AppIcon76x76@2x.png in Resources */,
+				5406EED7179563DE79A5EC33 /* UthmanicHafs.ttf in Resources */,
+				1209500D8182761B7E34CCF4 /* verses.json in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		EC3586B0712A9D228880EE96 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A44FE29C785FF1A9E28099B8 /* QuranCatalog.swift in Sources */,
+				11CC438772F912B44768F2F4 /* SakinaWidgets.swift in Sources */,
+				4EB66C91A5D3E7238FE723D6 /* SharedStore.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FAA20BA8A79231457ADE6F50 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E4DACF7F33F1A2DEB05EC6D9 /* AboutView.swift in Sources */,
+				1E9208D4490881F96B16D13D /* AppSettings.swift in Sources */,
+				DD280C7AC1C63868430E5874 /* HomeView.swift in Sources */,
+				79273DED802F044CF9428D97 /* LibraryView.swift in Sources */,
+				29EEFD99CD5E085538793E95 /* PersistenceModels.swift in Sources */,
+				2905A9C05FE88ACD92AB75D9 /* QuranCatalog.swift in Sources */,
+				40B7AFEE220FCE3C7A84CCDB /* RecitationPlayer.swift in Sources */,
+				0AD058C17BC3CA58BFF0DF87 /* SakinaApp.swift in Sources */,
+				4E8C30F6F671A365AFCA22A9 /* SharedStore.swift in Sources */,
+				8B027AC65EB41B1F2D2B4DC9 /* SituationDetailView.swift in Sources */,
+				313752037AA3D4F16064F2C0 /* Theme.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		B218D1102945DE83129CBF8B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = CD6C6F3D7C0E02CBAA99F657 /* SakinaWidget */;
+			targetProxy = 374471ED96F6BD4F208F4033 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		480FA61F6743D1620164522F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+		560B33401A93AB077940E117 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = SakinaWidget/SakinaWidget.entitlements;
+				INFOPLIST_FILE = SakinaWidget/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.islamsharaf.sakina.widget;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		83E71738113BB1B9BE47143C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		B06C9A99152E194E3D87F3AB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = SakinaWidget/SakinaWidget.entitlements;
+				INFOPLIST_FILE = SakinaWidget/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.islamsharaf.sakina.widget;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		BDDE2C3A371C622CC26C0E89 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Sakina/Sakina.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = Sakina/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.islamsharaf.sakina;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		D95567E6B16D55E6781E6062 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Sakina/Sakina.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = Sakina/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = com.islamsharaf.sakina;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		0FAEC3C2AC2C0F5079326AEB /* Build configuration list for PBXProject "Sakina" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				83E71738113BB1B9BE47143C /* Debug */,
+				480FA61F6743D1620164522F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		6D6405990C6D7BBD03B1D58E /* Build configuration list for PBXNativeTarget "Sakina" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BDDE2C3A371C622CC26C0E89 /* Debug */,
+				D95567E6B16D55E6781E6062 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		79E1ABFC5FB647538B94EEB2 /* Build configuration list for PBXNativeTarget "SakinaWidget" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				560B33401A93AB077940E117 /* Debug */,
+				B06C9A99152E194E3D87F3AB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 88899939C2BB8C3FE39552E4 /* Project object */;
+}
