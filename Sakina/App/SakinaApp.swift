@@ -14,30 +14,55 @@ struct SakinaApp: App {
 // MARK: Root
 
 struct RootView: View {
-    enum Tab: Hashable { case verses, library }
+    enum Tab: Hashable { case home, explore, saved, settings }
 
-    @State private var selection: Tab = .verses
-    @State private var path = NavigationPath()
+    @AppStorage(SettingsKeys.appLanguage) private var languageRaw = AppLanguage.english.rawValue
+    @State private var selection: Tab = .home
+    @State private var homePath = NavigationPath()
+    @State private var explorePath = NavigationPath()
     @StateObject private var router = NotificationRouter.shared
+    @ObservedObject private var account = GoogleAccountManager.shared
+
+    private var language: AppLanguage { AppLanguage(rawValue: languageRaw) ?? .english }
+    private var copy: AppCopy { AppCopy(language: language) }
 
     var body: some View {
         TabView(selection: $selection) {
-            HomeView(path: $path)
-                .tabItem { Label("Verses", systemImage: "book.closed.fill") }
-                .tag(Tab.verses)
+            HomeView(path: $homePath)
+                .tabItem { Label(copy("Home", "الرئيسية"), systemImage: "house.fill") }
+                .tag(Tab.home)
+
+            ExploreView(path: $explorePath)
+                .tabItem { Label(copy("Explore", "استكشف"), systemImage: "square.grid.2x2.fill") }
+                .tag(Tab.explore)
 
             LibraryView()
-                .tabItem { Label("Library", systemImage: "bookmark.fill") }
-                .tag(Tab.library)
+                .tabItem { Label(copy("Saved", "المحفوظات"), systemImage: "bookmark.fill") }
+                .tag(Tab.saved)
+
+            SettingsView()
+                .tabItem { Label(copy("Settings", "الإعدادات"), systemImage: "gearshape.fill") }
+                .tag(Tab.settings)
         }
-        .tint(.sakinaGold)
+        .tint(.sakinaInk)
+        .yaqeenLanguage(language)
         .onAppear {
             router.activate()
             ReminderScheduler.refresh()
+            account.restorePreviousSignIn()
         }
         .onOpenURL { url in
-            // Widget deep link: sakina://situation/<id>
-            guard url.scheme == "sakina", url.host == "situation",
+            if account.handle(url) { return }
+            guard let scheme = url.scheme, ["sakina", "yaqeen"].contains(scheme) else { return }
+
+            if url.host == "prayer-times" {
+                selection = .home
+                homePath = NavigationPath()
+                return
+            }
+
+            // Guidance widget deep link: sakina://situation/<id>
+            guard url.host == "situation",
                   let id = url.pathComponents.dropFirst().first,
                   let situation = SituationCatalog.by(id: id) else { return }
             open(situation)
@@ -51,8 +76,8 @@ struct RootView: View {
     }
 
     private func open(_ situation: Situation) {
-        selection = .verses
-        path = NavigationPath()
-        path.append(situation)
+        selection = .explore
+        explorePath = NavigationPath()
+        explorePath.append(situation)
     }
 }

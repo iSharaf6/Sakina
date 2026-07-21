@@ -5,6 +5,7 @@ enum SharedStore {
 
     static let appGroupID = "group.com.islamsharaf.sakina"
     private static let pinnedKey = "pinnedSituationID"
+    private static let prayerScheduleKey = "prayerSchedule.v1"
 
     static var defaults: UserDefaults {
         UserDefaults(suiteName: appGroupID) ?? .standard
@@ -22,6 +23,32 @@ enum SharedStore {
 
     static var pinnedSituation: Situation? {
         pinnedSituationID.flatMap { SituationCatalog.by(id: $0) }
+    }
+
+    // MARK: Prayer schedule (widget)
+
+    /// A city-level, coordinate-free schedule prepared by the containing app.
+    static var prayerSchedule: PrayerSchedule? {
+        get {
+            guard let data = defaults.data(forKey: prayerScheduleKey) else { return nil }
+            let decoder = JSONDecoder()
+            decoder.dateDecodingStrategy = .millisecondsSince1970
+            return try? decoder.decode(PrayerSchedule.self, from: data)
+        }
+        set {
+            guard let newValue else {
+                defaults.removeObject(forKey: prayerScheduleKey)
+                return
+            }
+            let encoder = JSONEncoder()
+            encoder.dateEncodingStrategy = .millisecondsSince1970
+            guard let data = try? encoder.encode(newValue) else { return }
+            defaults.set(data, forKey: prayerScheduleKey)
+        }
+    }
+
+    static func clearPrayerSchedule() {
+        prayerSchedule = nil
     }
 
     // MARK: Verse of the day

@@ -4,11 +4,11 @@ import SwiftUI
 // MARK: - Widget palette (self-contained; the widget target does not compile the app theme)
 
 private extension Color {
-    static let widgetInk = Color(red: 0.95, green: 0.92, blue: 0.87)
-    static let widgetMuted = Color(red: 0.58, green: 0.61, blue: 0.68)
-    static let widgetGold = Color(red: 0.85, green: 0.70, blue: 0.42)
-    static let widgetCanvasTop = Color(red: 0.06, green: 0.08, blue: 0.13)
-    static let widgetCanvasBottom = Color(red: 0.03, green: 0.045, blue: 0.08)
+    static let widgetInk = Color(red: 0.97, green: 0.94, blue: 0.88)
+    static let widgetMuted = Color(red: 0.72, green: 0.79, blue: 0.75)
+    static let widgetGold = Color(red: 0.84, green: 0.72, blue: 0.48)
+    static let widgetCanvasTop = Color(red: 0.08, green: 0.25, blue: 0.21)
+    static let widgetCanvasBottom = Color(red: 0.035, green: 0.14, blue: 0.12)
 }
 
 // MARK: - Timeline
@@ -58,6 +58,45 @@ struct PinnedProvider: TimelineProvider {
     func getTimeline(in context: Context, completion: @escaping (Timeline<VerseEntry>) -> Void) {
         let entry = VerseEntry(date: .now, situation: current())
         completion(Timeline(entries: [entry], policy: .after(nextMidnight(after: .now))))
+    }
+}
+
+// MARK: - Prayer timeline
+
+struct PrayerWidgetEntry: TimelineEntry {
+    let date: Date
+    let schedule: PrayerSchedule?
+}
+
+struct PrayerProvider: TimelineProvider {
+    func placeholder(in context: Context) -> PrayerWidgetEntry {
+        PrayerWidgetEntry(date: .now, schedule: .placeholder())
+    }
+
+    func getSnapshot(in context: Context, completion: @escaping (PrayerWidgetEntry) -> Void) {
+        let schedule = SharedStore.prayerSchedule ?? (context.isPreview ? .placeholder() : nil)
+        completion(PrayerWidgetEntry(date: .now, schedule: schedule))
+    }
+
+    func getTimeline(in context: Context, completion: @escaping (Timeline<PrayerWidgetEntry>) -> Void) {
+        let now = Date.now
+        guard let schedule = SharedStore.prayerSchedule else {
+            completion(Timeline(
+                entries: [PrayerWidgetEntry(date: now, schedule: nil)],
+                policy: .never
+            ))
+            return
+        }
+
+        let transitionDates = schedule.allEvents
+            .map(\.time)
+            .filter { $0 > now && $0 < schedule.expiresAt }
+        let dates = [now] + transitionDates
+        let entries = dates.map { PrayerWidgetEntry(date: $0, schedule: schedule) }
+        let policy: TimelineReloadPolicy = schedule.expiresAt > now
+            ? .after(schedule.expiresAt)
+            : .never
+        completion(Timeline(entries: entries, policy: policy))
     }
 }
 
@@ -153,6 +192,246 @@ struct VerseWidgetView: View {
     }
 }
 
+// MARK: - Prayer widget view
+
+struct PrayerWidgetView: View {
+    let entry: PrayerWidgetEntry
+
+    @Environment(\.widgetFamily) private var family
+    @Environment(\.locale) private var locale
+
+    private var nextEvent: PrayerEvent? {
+        entry.schedule?.nextEvent(after: entry.date)
+    }
+
+    private var followingEvent: PrayerEvent? {
+        entry.schedule?.followingEvent(after: entry.date)
+    }
+
+    var body: some View {
+        Group {
+            if let schedule = entry.schedule, !schedule.isStale(at: entry.date) {
+                switch family {
+                case .accessoryInline:
+                    inline(schedule)
+                case .accessoryCircular:
+                    circular(schedule)
+                case .accessoryRectangular:
+                    rectangular(schedule)
+                default:
+                    medium(schedule)
+                }
+            } else {
+                unavailable
+            }
+        }
+        .containerBackground(for: .widget) {
+            if family == .systemMedium {
+                LinearGradient(
+                    colors: [.widgetCanvasTop, .widgetCanvasBottom],
+                    startPoint: .topLeading,
+                    endPoint: .bottomTrailing
+                )
+                .overlay(
+                    RadialGradient(
+                        colors: [Color.widgetGold.opacity(0.18), .clear],
+                        center: UnitPoint(x: 0.92, y: 0.02),
+                        startRadius: 2,
+                        endRadius: 190
+                    )
+                )
+            } else {
+                Color.clear
+            }
+        }
+        .widgetURL(URL(string: "sakina://prayer-times"))
+    }
+
+    private func inline(_ schedule: PrayerSchedule) -> some View {
+        Group {
+            if let nextEvent {
+                Label(
+                    "\(nextEvent.kind.displayName(locale: locale)) \(timeLabel(nextEvent.time, schedule: schedule))",
+                    systemImage: nextEvent.kind.symbolName
+                )
+            } else {
+                Label("Open Yaqeen for prayer times", systemImage: "location")
+            }
+        }
+    }
+
+    private func circular(_ schedule: PrayerSchedule) -> some View {
+        ZStack {
+            AccessoryWidgetBackground()
+            if let nextEvent {
+                VStack(spacing: 1) {
+                    Image(systemName: nextEvent.kind.symbolName)
+                        .font(.system(size: 12, weight: .semibold))
+                    Text(nextEvent.kind.displayName(locale: locale))
+                        .font(.system(size: 9, weight: .semibold))
+                        .lineLimit(1)
+                    Text(timeLabel(nextEvent.time, schedule: schedule))
+                        .font(.system(size: 10, weight: .bold, design: .rounded))
+                        .minimumScaleFactor(0.72)
+                        .monospacedDigit()
+                }
+                .padding(3)
+            } else {
+                Image(systemName: "location")
+            }
+        }
+    }
+
+    private func rectangular(_ schedule: PrayerSchedule) -> some View {
+        VStack(alignment: .leading, spacing: 3) {
+            HStack(spacing: 5) {
+                Text(schedule.locationLabel)
+                    .font(.system(size: 10, weight: .medium))
+                    .foregroundStyle(.secondary)
+                    .lineLimit(1)
+                Spacer(minLength: 2)
+                Image(systemName: "location.fill")
+                    .font(.system(size: 8, weight: .semibold))
+                    .foregroundStyle(.secondary)
+            }
+            if let nextEvent {
+                HStack(alignment: .firstTextBaseline) {
+                    Text(nextEvent.kind.displayName(locale: locale))
+                        .font(.system(size: 16, weight: .bold, design: .rounded))
+                    Spacer(minLength: 6)
+                    Text(timeLabel(nextEvent.time, schedule: schedule))
+                        .font(.system(size: 15, weight: .bold, design: .rounded))
+                        .monospacedDigit()
+                }
+                if let followingEvent {
+                    Text("Then \(followingEvent.kind.displayName(locale: locale)) · \(timeLabel(followingEvent.time, schedule: schedule))")
+                        .font(.system(size: 10, weight: .medium))
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
+                }
+            }
+        }
+    }
+
+    private func medium(_ schedule: PrayerSchedule) -> some View {
+        let events = schedule.events(on: nextEvent?.time ?? entry.date)
+        return VStack(alignment: .leading, spacing: 11) {
+            HStack(alignment: .firstTextBaseline) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("YAQEEN")
+                        .font(.system(size: 9, weight: .bold))
+                        .tracking(2.2)
+                        .foregroundStyle(Color.widgetGold)
+                    Text(schedule.locationLabel)
+                        .font(.system(size: 11, weight: .medium))
+                        .foregroundStyle(Color.widgetMuted)
+                        .lineLimit(1)
+                }
+                Spacer()
+                if let nextEvent {
+                    HStack(spacing: 6) {
+                        Image(systemName: nextEvent.kind.symbolName)
+                            .font(.system(size: 11, weight: .semibold))
+                        Text(nextEvent.kind.displayName(locale: locale))
+                            .font(.system(size: 12, weight: .semibold))
+                        Text(timeLabel(nextEvent.time, schedule: schedule))
+                            .font(.system(size: 13, weight: .bold, design: .rounded))
+                            .monospacedDigit()
+                    }
+                    .foregroundStyle(Color.widgetInk)
+                }
+            }
+
+            Grid(horizontalSpacing: 8, verticalSpacing: 7) {
+                ForEach(0..<2, id: \.self) { row in
+                    GridRow {
+                        ForEach(0..<3, id: \.self) { column in
+                            let index = row * 3 + column
+                            if events.indices.contains(index) {
+                                prayerCell(events[index], schedule: schedule)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        .foregroundStyle(Color.widgetInk)
+    }
+
+    private func prayerCell(_ event: PrayerEvent, schedule: PrayerSchedule) -> some View {
+        let isNext = event.id == nextEvent?.id
+        return HStack(spacing: 5) {
+            Image(systemName: event.kind.symbolName)
+                .font(.system(size: 9, weight: .semibold))
+                .foregroundStyle(isNext ? Color.widgetGold : Color.widgetMuted)
+            VStack(alignment: .leading, spacing: 1) {
+                Text(event.kind.displayName(locale: locale))
+                    .font(.system(size: 9, weight: .semibold))
+                    .foregroundStyle(isNext ? Color.widgetInk : Color.widgetMuted)
+                    .lineLimit(1)
+                Text(timeLabel(event.time, schedule: schedule))
+                    .font(.system(size: 10, weight: .bold, design: .rounded))
+                    .foregroundStyle(Color.widgetInk)
+                    .monospacedDigit()
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.8)
+            }
+            Spacer(minLength: 0)
+        }
+        .padding(.horizontal, 7)
+        .padding(.vertical, 5)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(
+            RoundedRectangle(cornerRadius: 9, style: .continuous)
+                .fill(isNext ? Color.widgetGold.opacity(0.13) : Color.white.opacity(0.035))
+        )
+    }
+
+    private var unavailable: some View {
+        Group {
+            switch family {
+            case .accessoryInline:
+                Label("Open Yaqeen to set prayer times", systemImage: "location")
+            case .accessoryCircular:
+                ZStack {
+                    AccessoryWidgetBackground()
+                    Image(systemName: "location")
+                }
+            case .accessoryRectangular:
+                VStack(alignment: .leading, spacing: 3) {
+                    Text("Prayer times")
+                        .font(.headline)
+                    Text("Open Yaqeen to choose your location")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            default:
+                HStack(spacing: 14) {
+                    Image(systemName: "location.circle.fill")
+                        .font(.system(size: 30))
+                        .foregroundStyle(Color.widgetGold)
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Prayer times")
+                            .font(.system(size: 16, weight: .bold, design: .rounded))
+                            .foregroundStyle(Color.widgetInk)
+                        Text("Open Yaqeen to choose your location")
+                            .font(.system(size: 12, weight: .medium))
+                            .foregroundStyle(Color.widgetMuted)
+                    }
+                }
+            }
+        }
+    }
+
+    private func timeLabel(_ date: Date, schedule: PrayerSchedule) -> String {
+        let formatter = DateFormatter()
+        formatter.locale = locale
+        formatter.timeZone = schedule.timeZone
+        formatter.setLocalizedDateFormatFromTemplate("jm")
+        return formatter.string(from: date)
+    }
+}
+
 /// Khatam star, duplicated locally so the widget stays independent of the app theme.
 struct SmallStar: Shape {
     func path(in rect: CGRect) -> Path {
@@ -183,7 +462,7 @@ struct VerseOfDayWidget: Widget {
             VerseWidgetView(entry: entry, caption: "Ayah of the day")
         }
         .configurationDisplayName("Ayah of the Day")
-        .description("A daily verse for the heart, refreshed each morning.")
+        .description("A daily ayah from Yaqeen, refreshed each morning.")
         .supportedFamilies([.systemSmall, .systemMedium])
     }
 }
@@ -191,11 +470,27 @@ struct VerseOfDayWidget: Widget {
 struct PinnedVerseWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: "SakinaPinned", provider: PinnedProvider()) { entry in
-            VerseWidgetView(entry: entry, caption: "Working through")
+            VerseWidgetView(entry: entry, caption: "Reflecting on")
         }
         .configurationDisplayName("Pinned Situation")
-        .description("Keep the verse you are working through on your home screen. Pin one from any verse page in Sakina.")
+        .description("Keep a saved ayah on your Home Screen. Pin one from any guidance page in Yaqeen.")
         .supportedFamilies([.systemSmall, .systemMedium])
+    }
+}
+
+struct PrayerTimesWidget: Widget {
+    var body: some WidgetConfiguration {
+        StaticConfiguration(kind: PrayerSchedule.widgetKind, provider: PrayerProvider()) { entry in
+            PrayerWidgetView(entry: entry)
+        }
+        .configurationDisplayName("Prayer Times")
+        .description("See the next prayer on your Lock Screen or today's full schedule on your Home Screen.")
+        .supportedFamilies([
+            .accessoryInline,
+            .accessoryCircular,
+            .accessoryRectangular,
+            .systemMedium,
+        ])
     }
 }
 
@@ -204,5 +499,6 @@ struct SakinaWidgetBundle: WidgetBundle {
     var body: some Widget {
         VerseOfDayWidget()
         PinnedVerseWidget()
+        PrayerTimesWidget()
     }
 }

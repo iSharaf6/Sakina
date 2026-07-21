@@ -1,373 +1,457 @@
 import SwiftUI
 
-// MARK: Home
-
 struct HomeView: View {
     @Binding var path: NavigationPath
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @State private var appeared = false
-    @State private var showAbout = false
-    @State private var searchText = ""
+
+    @AppStorage(SettingsKeys.appLanguage) private var languageRaw = AppLanguage.english.rawValue
+    @AppStorage(SettingsKeys.prayerCalculationMethod) private var prayerMethodRaw = PrayerCalculationMethod.muslimWorldLeague.rawValue
+    @AppStorage(SettingsKeys.prayerAsrMethod) private var prayerAsrRaw = PrayerAsrMethod.standard.rawValue
+    @AppStorage(SettingsKeys.prayerHighLatitude) private var highLatitudeRaw = PrayerHighLatitudePreference.automatic.rawValue
+    @ObservedObject private var prayerService = PrayerTimesService.shared
 
     private let today = SharedStore.situationOfTheDay()
 
-    private var isSearching: Bool {
-        !searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    private var language: AppLanguage { AppLanguage(rawValue: languageRaw) ?? .english }
+    private var copy: AppCopy { AppCopy(language: language) }
+    private var prayerSettings: PrayerCalculationSettings {
+        var settings = PrayerCalculationSettings.default
+        settings.method = PrayerCalculationMethod(rawValue: prayerMethodRaw) ?? .muslimWorldLeague
+        settings.asrMethod = PrayerAsrMethod(rawValue: prayerAsrRaw) ?? .standard
+        settings.highLatitudePreference = PrayerHighLatitudePreference(rawValue: highLatitudeRaw) ?? .automatic
+        return settings
     }
-    private var results: [Situation] { SituationCatalog.search(searchText) }
 
     var body: some View {
         NavigationStack(path: $path) {
             ZStack {
                 AtmosphereBackground()
+
                 ScrollView(showsIndicators: false) {
-                    VStack(alignment: .leading, spacing: 32) {
+                    LazyVStack(alignment: .leading, spacing: 30) {
                         header
-                            .revealed(0, appeared: appeared, reduceMotion: reduceMotion)
-                        searchField
-                            .revealed(1, appeared: appeared, reduceMotion: reduceMotion)
-                        if isSearching {
-                            searchResults
-                        } else {
-                            todayCard
-                                .revealed(2, appeared: appeared, reduceMotion: reduceMotion)
-                            chapterList
-                                .revealed(3, appeared: appeared, reduceMotion: reduceMotion)
-                            credits
-                        }
+                        prayerCard
+                        groups
+                        dailyGuidance
+                        sourceNote
                     }
-                    .padding(.horizontal, 22)
-                    .padding(.top, 16)
+                    .padding(.horizontal, 20)
+                    .padding(.top, 8)
                     .padding(.bottom, 48)
                 }
+            }
+            .navigationDestination(for: LifeGroup.self) { group in
+                LifeGroupView(group: group)
             }
             .navigationDestination(for: Situation.self) { situation in
                 SituationDetailView(situation: situation)
             }
-            .navigationDestination(for: Chapter.self) { chapter in
-                ChapterView(chapter: chapter)
-            }
             .toolbar(.hidden, for: .navigationBar)
-            .sheet(isPresented: $showAbout) { AboutView() }
-            .onAppear { appeared = true }
         }
     }
 
     // MARK: Header
 
     private var header: some View {
-        HStack(alignment: .top) {
-            VStack(alignment: .leading, spacing: 10) {
-                CapsLabel(text: "Quranic first aid", color: .sakinaGold)
-                Text("Sakina")
-                    .font(.display(44))
-                    .foregroundStyle(Color.sakinaInk)
-                Text(dateLine)
-                    .font(.system(size: 13))
+        HStack(alignment: .center, spacing: 14) {
+            YaqeenMark()
+                .fill(Color.sakinaInk)
+                .frame(width: 34, height: 46)
+                .accessibilityHidden(true)
+
+            VStack(alignment: .leading, spacing: 2) {
+                HStack(alignment: .firstTextBaseline, spacing: 8) {
+                    Text("Yaqeen")
+                        .font(.title2.weight(.semibold))
+                        .foregroundStyle(Color.sakinaInk)
+                    Text("يقين")
+                        .font(.system(.title3, design: .rounded, weight: .medium))
+                        .foregroundStyle(Color.sakinaInk.opacity(0.72))
+                }
+                Text(copy("Certainty in every step", "يقين في كل خطوة"))
+                    .font(.caption)
                     .foregroundStyle(Color.sakinaMuted)
             }
+
             Spacer()
-            VStack(alignment: .trailing, spacing: 12) {
-                Button {
-                    showAbout = true
-                } label: {
-                    Image(systemName: "gearshape")
-                        .font(.system(size: 18))
-                        .foregroundStyle(Color.sakinaMuted)
-                }
-                .accessibilityLabel("Settings and about")
-                Text("سَكِينَة")
-                    .font(.arabic(22))
-                    .foregroundStyle(Color.sakinaGold.opacity(0.9))
+
+            VStack(alignment: .trailing, spacing: 3) {
+                Text(Date.now.formatted(.dateTime.weekday(.wide)))
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(Color.sakinaInk)
+                Text(hijriDate)
+                    .font(.caption2)
+                    .foregroundStyle(Color.sakinaMuted)
             }
         }
     }
 
-    private var dateLine: String {
-        let gregorian = Date.now.formatted(date: .abbreviated, time: .omitted)
+    private var hijriDate: String {
         let formatter = DateFormatter()
         formatter.calendar = Calendar(identifier: .islamicUmmAlQura)
-        formatter.locale = Locale(identifier: "en")
+        formatter.locale = language.locale
         formatter.dateFormat = "d MMMM yyyy"
-        return "\(gregorian), \(formatter.string(from: .now)) AH"
+        return formatter.string(from: .now)
     }
 
-    // MARK: Search
+    // MARK: Prayer times
 
-    private var searchField: some View {
-        HStack(spacing: 10) {
-            Image(systemName: "magnifyingglass")
-                .font(.system(size: 14, weight: .medium))
-                .foregroundStyle(Color.sakinaMuted)
-            TextField("How is your heart today?", text: $searchText)
-                .font(.reading(15))
-                .foregroundStyle(Color.sakinaInk)
-                .autocorrectionDisabled()
-                .submitLabel(.search)
-            if isSearching {
-                Button {
-                    searchText = ""
-                } label: {
-                    Image(systemName: "xmark.circle.fill")
-                        .font(.system(size: 15))
-                        .foregroundStyle(Color.sakinaMuted.opacity(0.8))
-                }
-                .accessibilityLabel("Clear search")
-            }
-        }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 13)
-        .background(Capsule().fill(Color.sakinaElevated))
-        .overlay(Capsule().strokeBorder(Color.sakinaHairline, lineWidth: 1))
-    }
-
-    private var searchResults: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            CapsLabel(
-                text: results.isEmpty
-                    ? "Nothing found"
-                    : (results.count == 1 ? "1 verse" : "\(results.count) verses"),
-                color: .sakinaGold
+    @ViewBuilder
+    private var prayerCard: some View {
+        if let schedule = prayerService.schedule, !schedule.isStale() {
+            PrayerHeroCard(
+                schedule: schedule,
+                language: language,
+                isRefreshing: prayerService.isRefreshing,
+                refresh: refreshPrayerTimes
             )
-            if results.isEmpty {
-                VStack(spacing: 12) {
-                    EightPointStar()
-                        .stroke(Color.sakinaGold.opacity(0.6), lineWidth: 1)
-                        .frame(width: 26, height: 26)
-                    Text("Try a feeling, a word like debt or alone,\nor a surah name.")
-                        .font(.reading(15))
-                        .italic()
-                        .foregroundStyle(Color.sakinaMuted)
-                        .multilineTextAlignment(.center)
-                }
-                .frame(maxWidth: .infinity)
-                .padding(.vertical, 40)
-            } else {
-                VStack(spacing: 12) {
-                    ForEach(results) { situation in
-                        NavigationLink(value: situation) {
-                            SituationRow(
-                                situation: situation,
-                                hue: .chapterHue(situation.chapter)
-                            )
+        } else {
+            PrayerPermissionCard(
+                language: language,
+                isRefreshing: prayerService.isRefreshing,
+                errorMessage: prayerService.errorMessage,
+                action: refreshPrayerTimes
+            )
+        }
+    }
+
+    private func refreshPrayerTimes() {
+        Task { await prayerService.refreshUsingCurrentLocation(settings: prayerSettings) }
+    }
+
+    // MARK: Groups
+
+    private var groups: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            SectionEyebrow(
+                title: copy("What do you need today?", "ماذا تحتاج اليوم؟"),
+                detail: copy("Choose a life group", "اختر مجموعة")
+            )
+
+            ScrollView(.horizontal, showsIndicators: false) {
+                LazyHStack(spacing: 11) {
+                    ForEach(GuidanceCatalog.groups) { group in
+                        NavigationLink(value: group) {
+                            CompactLifeGroupCard(group: group, language: language)
                         }
-                        .buttonStyle(PressableCard())
+                        .buttonStyle(YaqeenPressStyle())
                     }
                 }
             }
+            .contentMargins(.horizontal, 1, for: .scrollContent)
         }
     }
 
-    // MARK: Ayah of the day
+    // MARK: Daily guidance
 
-    private var todayCard: some View {
-        NavigationLink(value: today) {
-            VStack(alignment: .leading, spacing: 16) {
+    private var dailyGuidance: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            SectionEyebrow(
+                title: copy("A quiet reminder", "تذكير هادئ"),
+                detail: copy("Daily guidance", "هداية اليوم")
+            )
+
+            NavigationLink(value: today) {
+                VStack(alignment: .leading, spacing: 17) {
+                    HStack(spacing: 8) {
+                        Image(systemName: "sun.max")
+                        Text(copy("AYAH OF THE DAY", "آية اليوم"))
+                    }
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(Color.sakinaInk.opacity(0.72))
+
+                    if let verse = today.primaryVerse {
+                        Text(verse.arabic)
+                            .font(.arabic(23))
+                            .lineSpacing(9)
+                            .lineLimit(3)
+                            .foregroundStyle(Color.sakinaInk)
+                            .multilineTextAlignment(.trailing)
+                            .frame(maxWidth: .infinity, alignment: .trailing)
+                            .environment(\.layoutDirection, .rightToLeft)
+                    }
+
+                    HStack(alignment: .bottom) {
+                        VStack(alignment: .leading, spacing: 5) {
+                            Text(today.localizedTitle(language))
+                                .font(.headline)
+                                .foregroundStyle(Color.sakinaInk)
+                                .multilineTextAlignment(.leading)
+                            Text(today.referenceLabel)
+                                .font(.caption)
+                                .foregroundStyle(Color.sakinaMuted)
+                        }
+                        Spacer(minLength: 12)
+                        Image(systemName: language == .arabic ? "arrow.left" : "arrow.right")
+                            .font(.body.weight(.semibold))
+                            .foregroundStyle(Color.sakinaInk)
+                    }
+                }
+                .padding(20)
+                .sakinaCard(cornerRadius: 24)
+            }
+            .buttonStyle(YaqeenPressStyle())
+        }
+    }
+
+    private var sourceNote: some View {
+        Text(copy(
+            "Qur’an text verified against Quran.com API v4 · Uthmani script",
+            "تمت مطابقة النص القرآني مع Quran.com API v4 · بالرسم العثماني"
+        ))
+        .font(.caption2)
+        .foregroundStyle(Color.sakinaMuted)
+        .frame(maxWidth: .infinity, alignment: .center)
+        .multilineTextAlignment(.center)
+        .padding(.top, 2)
+    }
+}
+
+// MARK: - Prayer hero
+
+private struct PrayerHeroCard: View {
+    let schedule: PrayerSchedule
+    let language: AppLanguage
+    let isRefreshing: Bool
+    let refresh: () -> Void
+
+    private let forest = Color(red: 0.075, green: 0.235, blue: 0.205)
+    private let ivory = Color(red: 0.976, green: 0.961, blue: 0.925)
+    private let mutedIvory = Color(red: 0.79, green: 0.84, blue: 0.80)
+
+    private var copy: AppCopy { AppCopy(language: language) }
+
+    var body: some View {
+        TimelineView(.periodic(from: .now, by: 60)) { context in
+            let events = schedule.events(on: context.date)
+            let next = schedule.nextEvent(after: context.date)
+
+            VStack(alignment: .leading, spacing: 21) {
                 HStack {
-                    CapsLabel(text: "Ayah of the day", color: .sakinaGold)
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(copy("NEXT PRAYER", "الصلاة القادمة"))
+                            .font(.caption2.weight(.bold))
+                            .tracking(language == .arabic ? 0 : 1.4)
+                            .foregroundStyle(mutedIvory)
+
+                        if let next {
+                            HStack(alignment: .firstTextBaseline, spacing: 9) {
+                                Text(next.kind.displayName(locale: language.locale))
+                                    .font(.title.weight(.semibold))
+                                Text(time(next.time))
+                                    .font(.title3.weight(.medium))
+                                    .foregroundStyle(ivory.opacity(0.82))
+                            }
+                            .foregroundStyle(ivory)
+
+                            Text(countdown(to: next.time, now: context.date))
+                                .font(.subheadline.weight(.medium))
+                                .foregroundStyle(mutedIvory)
+                        }
+                    }
+
                     Spacer()
-                    EightPointStar()
-                        .fill(Color.sakinaGold.opacity(0.85))
-                        .frame(width: 12, height: 12)
+
+                    Image(systemName: next?.kind.symbolName ?? "moon.stars.fill")
+                        .font(.system(size: 27, weight: .light))
+                        .foregroundStyle(ivory)
+                        .symbolRenderingMode(.hierarchical)
                 }
-                if let verse = today.primaryVerse {
-                    Text(verse.arabic)
-                        .font(.arabic(22))
-                        .lineSpacing(10)
-                        .lineLimit(2)
-                        .truncationMode(.tail)
-                        .foregroundStyle(Color.sakinaInk)
-                        .multilineTextAlignment(.trailing)
-                        .frame(maxWidth: .infinity, alignment: .trailing)
-                        .environment(\.layoutDirection, .rightToLeft)
+
+                Divider().overlay(ivory.opacity(0.18))
+
+                LazyVGrid(
+                    columns: Array(repeating: GridItem(.flexible(), spacing: 8), count: 3),
+                    spacing: 15
+                ) {
+                    ForEach(events) { event in
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(event.kind.displayName(locale: language.locale))
+                                .font(.caption2.weight(.medium))
+                                .foregroundStyle(event.kind == next?.kind ? ivory : mutedIvory)
+                            Text(time(event.time))
+                                .font(.subheadline.weight(event.kind == next?.kind ? .bold : .medium))
+                                .foregroundStyle(ivory)
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .accessibilityElement(children: .combine)
+                        .accessibilityLabel("\(event.kind.displayName(locale: language.locale)), \(time(event.time))")
+                    }
                 }
-                VStack(alignment: .leading, spacing: 5) {
-                    Text(today.title)
-                        .font(.display(17, weight: .medium))
-                        .foregroundStyle(Color.sakinaInk)
-                        .multilineTextAlignment(.leading)
-                    CapsLabel(text: today.referenceLabel, size: 10)
+
+                Button(action: refresh) {
+                    HStack(spacing: 7) {
+                        if isRefreshing {
+                            ProgressView()
+                                .controlSize(.mini)
+                                .tint(mutedIvory)
+                        } else {
+                            Image(systemName: "location.fill")
+                        }
+                        Text(schedule.locationLabel)
+                            .lineLimit(1)
+                        Spacer()
+                        Text(copy("Update", "تحديث"))
+                    }
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(mutedIvory)
                 }
+                .buttonStyle(.plain)
+                .disabled(isRefreshing)
             }
             .padding(22)
-            .sakinaCard(tint: .sakinaGold, cornerRadius: 26)
-        }
-        .buttonStyle(PressableCard())
-    }
-
-    // MARK: Chapters
-
-    private var chapterList: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            CapsLabel(text: "Browse by chapter", color: .sakinaGold)
-            VStack(spacing: 12) {
-                ForEach(Chapter.all) { chapter in
-                    NavigationLink(value: chapter) {
-                        ChapterCard(chapter: chapter)
+            .background(
+                RoundedRectangle(cornerRadius: 28, style: .continuous)
+                    .fill(forest)
+                    .overlay(alignment: .topTrailing) {
+                        Circle()
+                            .fill(ivory.opacity(0.055))
+                            .frame(width: 180, height: 180)
+                            .blur(radius: 2)
+                            .offset(x: 54, y: -82)
                     }
-                    .buttonStyle(PressableCard())
-                }
-            }
+            )
+            .shadow(color: forest.opacity(0.2), radius: 24, y: 13)
+            .accessibilityElement(children: .contain)
         }
     }
 
-    private var credits: some View {
-        VStack(spacing: 12) {
-            StarDivider()
-            Text("Arabic: Uthmani script. Translation: Saheeh International.\nVia the Quran.com API")
-                .font(.system(size: 11))
-                .foregroundStyle(Color.sakinaMuted)
-                .multilineTextAlignment(.center)
+    private func time(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.locale = language.locale
+        formatter.timeZone = schedule.timeZone
+        formatter.timeStyle = .short
+        return formatter.string(from: date)
+    }
+
+    private func countdown(to date: Date, now: Date) -> String {
+        let minutes = max(0, Int(date.timeIntervalSince(now) / 60))
+        let hours = minutes / 60
+        let remainder = minutes % 60
+        if hours > 0 {
+            return copy("in \(hours) hr \(remainder) min", "بعد \(hours) س و\(remainder) د")
         }
-        .frame(maxWidth: .infinity)
-        .padding(.top, 8)
+        return copy("in \(remainder) min", "بعد \(remainder) دقيقة")
     }
 }
 
-// MARK: Chapter card
+private struct PrayerPermissionCard: View {
+    let language: AppLanguage
+    let isRefreshing: Bool
+    let errorMessage: String?
+    let action: () -> Void
 
-struct ChapterCard: View {
-    let chapter: Chapter
+    private var copy: AppCopy { AppCopy(language: language) }
 
     var body: some View {
-        let hue = Color.chapterHue(chapter.id)
-        let count = SituationCatalog.situations(in: chapter.id).count
-        HStack(spacing: 16) {
-            VStack(alignment: .leading, spacing: 6) {
-                CapsLabel(text: "Chapter \(chapter.numeral)", color: hue, size: 10)
-                Text(chapter.title)
-                    .font(.display(21))
+        VStack(alignment: .leading, spacing: 18) {
+            HStack(alignment: .top) {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(copy("Prayer times, where you are", "مواقيت الصلاة حيث أنت"))
+                        .font(.title2.weight(.semibold))
+                        .foregroundStyle(Color.sakinaInk)
+                    Text(copy(
+                        "Calculated privately on your iPhone. Your coordinates are never shared with the widget.",
+                        "تُحسب على جهازك بخصوصية، ولا تُشارك إحداثياتك مع الأداة."
+                    ))
+                    .font(.subheadline)
+                    .foregroundStyle(Color.sakinaMuted)
+                    .fixedSize(horizontal: false, vertical: true)
+                }
+                Spacer(minLength: 12)
+                Image(systemName: "location.viewfinder")
+                    .font(.system(size: 25, weight: .light))
                     .foregroundStyle(Color.sakinaInk)
-                Text(count == 1 ? "1 situation" : "\(count) situations")
-                    .font(.system(size: 12))
+            }
+
+            if let errorMessage {
+                Label(errorMessage, systemImage: "exclamationmark.circle")
+                    .font(.caption)
+                    .foregroundStyle(.red)
+                    .fixedSize(horizontal: false, vertical: true)
+            }
+
+            Button(action: action) {
+                HStack {
+                    if isRefreshing { ProgressView().tint(Color.sakinaCanvas) }
+                    Text(isRefreshing
+                         ? copy("Finding your city…", "جارٍ تحديد مدينتك…")
+                         : copy("Use my location", "استخدم موقعي"))
+                    Spacer()
+                    Image(systemName: language == .arabic ? "arrow.left" : "arrow.right")
+                }
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(Color.sakinaCanvas)
+                .padding(.horizontal, 16)
+                .frame(minHeight: 48)
+                .background(Color.sakinaInk, in: RoundedRectangle(cornerRadius: 15, style: .continuous))
+            }
+            .buttonStyle(YaqeenPressStyle())
+            .disabled(isRefreshing)
+        }
+        .padding(20)
+        .sakinaCard(cornerRadius: 26)
+    }
+}
+
+private struct CompactLifeGroupCard: View {
+    let group: LifeGroup
+    let language: AppLanguage
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            Image(systemName: group.symbol)
+                .font(.system(size: 19, weight: .medium))
+                .foregroundStyle(Color.sakinaInk)
+                .frame(width: 40, height: 40)
+                .background(Color.sakinaInk.opacity(0.07), in: RoundedRectangle(cornerRadius: 12))
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(group.title(language))
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(Color.sakinaInk)
+                    .lineLimit(2)
+                    .multilineTextAlignment(.leading)
+                Text(language.pick("\(group.stages.count) stages", "\(group.stages.count) مراحل"))
+                    .font(.caption2)
                     .foregroundStyle(Color.sakinaMuted)
             }
-            Spacer(minLength: 12)
-            Text(chapter.arabicWord)
-                .font(.arabic(28))
-                .foregroundStyle(hue.opacity(0.7))
         }
-        .padding(.horizontal, 20)
-        .padding(.vertical, 18)
-        .sakinaCard(tint: hue, cornerRadius: 24)
+        .padding(15)
+        .frame(width: 152, height: 145, alignment: .leading)
+        .background(Color.sakinaElevated, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                .strokeBorder(Color.sakinaHairline, lineWidth: 1)
+        )
     }
 }
 
-// MARK: Chapter page
-
-struct ChapterView: View {
-    let chapter: Chapter
-    @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @State private var appeared = false
-
-    var body: some View {
-        let hue = Color.chapterHue(chapter.id)
-        let situations = SituationCatalog.situations(in: chapter.id)
-        ZStack {
-            AtmosphereBackground(hue: hue)
-            ScrollView(showsIndicators: false) {
-                VStack(alignment: .leading, spacing: 24) {
-                    VStack(alignment: .leading, spacing: 10) {
-                        HStack(spacing: 12) {
-                            CapsLabel(text: "Chapter \(chapter.numeral)", color: hue)
-                            Rectangle()
-                                .fill(Color.sakinaHairline)
-                                .frame(height: 1)
-                            Text(chapter.arabicWord)
-                                .font(.arabic(18))
-                                .foregroundStyle(hue)
-                        }
-                        Text(chapter.title)
-                            .font(.display(32))
-                            .foregroundStyle(Color.sakinaInk)
-                        Text(chapter.subtitle)
-                            .font(.system(size: 13))
-                            .foregroundStyle(Color.sakinaMuted)
-                    }
-                    .revealed(0, appeared: appeared, reduceMotion: reduceMotion)
-
-                    VStack(spacing: 12) {
-                        ForEach(situations) { situation in
-                            NavigationLink(value: situation) {
-                                SituationRow(situation: situation, hue: hue)
-                            }
-                            .buttonStyle(PressableCard())
-                        }
-                    }
-                    .revealed(1, appeared: appeared, reduceMotion: reduceMotion)
-                }
-                .padding(.horizontal, 22)
-                .padding(.top, 8)
-                .padding(.bottom, 48)
-            }
-        }
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbarBackground(.hidden, for: .navigationBar)
-        .onAppear { appeared = true }
-    }
-}
-
-// MARK: Situation row
-
-struct SituationRow: View {
-    let situation: Situation
-    let hue: Color
-
-    var body: some View {
-        HStack(spacing: 16) {
-            RoundedRectangle(cornerRadius: 2)
-                .fill(hue.opacity(0.85))
-                .frame(width: 3, height: 36)
-            VStack(alignment: .leading, spacing: 5) {
-                Text(situation.title)
-                    .font(.display(16, weight: .medium))
-                    .foregroundStyle(Color.sakinaInk)
-                    .multilineTextAlignment(.leading)
-                    .fixedSize(horizontal: false, vertical: true)
-                CapsLabel(text: situation.referenceLabel, size: 10)
-            }
-            Spacer(minLength: 12)
-            EightPointStar()
-                .stroke(hue.opacity(0.55), lineWidth: 1)
-                .frame(width: 11, height: 11)
-        }
-        .padding(.vertical, 16)
-        .padding(.horizontal, 18)
-        .sakinaCard(tint: hue, cornerRadius: 20)
-    }
-}
-
-// MARK: Motion
+// MARK: - Compatibility motion helpers
 
 struct PressableCard: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
-            .scaleEffect(configuration.isPressed ? 0.98 : 1)
-            .opacity(configuration.isPressed ? 0.92 : 1)
-            .animation(.spring(response: 0.3, dampingFraction: 0.8), value: configuration.isPressed)
+            .scaleEffect(configuration.isPressed ? 0.985 : 1)
+            .opacity(configuration.isPressed ? 0.9 : 1)
+            .animation(.easeOut(duration: 0.1), value: configuration.isPressed)
     }
 }
 
-struct Revealed: ViewModifier {
-    let index: Int
+private struct Revealed: ViewModifier {
+    let order: Int
     let appeared: Bool
     let reduceMotion: Bool
 
     func body(content: Content) -> some View {
         content
             .opacity(appeared ? 1 : 0)
-            .offset(y: appeared || reduceMotion ? 0 : 18)
-            .animation(
-                reduceMotion
-                    ? .easeOut(duration: 0.25)
-                    : .spring(response: 0.6, dampingFraction: 0.85).delay(Double(index) * 0.07),
-                value: appeared
-            )
+            .offset(y: appeared || reduceMotion ? 0 : 8)
+            .animation(reduceMotion ? .easeOut(duration: 0.16) : .easeOut(duration: 0.28), value: appeared)
     }
 }
 
 extension View {
-    func revealed(_ index: Int, appeared: Bool, reduceMotion: Bool) -> some View {
-        modifier(Revealed(index: index, appeared: appeared, reduceMotion: reduceMotion))
+    func revealed(_ order: Int, appeared: Bool, reduceMotion: Bool) -> some View {
+        modifier(Revealed(order: order, appeared: appeared, reduceMotion: reduceMotion))
     }
 }

@@ -3,8 +3,9 @@ import Foundation
 // MARK: Verse
 
 /// One ayah, loaded from the bundled `verses.json`.
-/// Arabic text is the Uthmani script and the translation is Saheeh International,
-/// both fetched verbatim from the Quran.com API (v4). Do not edit by hand.
+/// Arabic text is Quran.com API v4 Uthmani script. The visible Saheeh
+/// International text has API HTML footnote markers removed for display.
+/// Do not edit either field by hand.
 struct Verse: Codable, Identifiable, Hashable {
     let key: String            // e.g. "4:35"
     let surah: Int
@@ -157,13 +158,13 @@ enum SituationCatalog {
             id: "waitingForTiming", chapter: .search,
             title: "When you're waiting for Allah's timing",
             verseKeys: ["2:216"], referenceLabel: "2:216, Surah Al Baqarah",
-            whyNote: "“perhaps you hate a thing and it is good for you; and perhaps you love a thing and it is bad for you. And Allah knows, while you know not.” The delay you grieve over may itself be protection, and a gift arriving on a wiser schedule than yours."
+            whyNote: "This ayah is revealed in the context of fighting, not marriage or delay. Its wider principle is the limit of human knowledge: we do not always see the full good or harm in what we want. It invites humility and trust, without promising that a particular delay will end in a particular outcome."
         ),
         Situation(
             id: "worriedNeverMarry", chapter: .search,
             title: "When you're worried you'll never get married",
             verseKeys: ["65:2", "65:3"], referenceLabel: "65:2 and 3, Surah At Talaq",
-            whyNote: "Whoever fears Allah, the verse promises, “He will make for him a way out” and “will provide for him from where he does not expect.” The promise is tied to taqwa, not to circumstances: the way out arrives from directions you could not have planned."
+            whyNote: "These words appear within Allah's instructions about divorce and waiting periods. They establish a broad promise of Allah's care for the person who has taqwa and relies on Him; they do not guarantee marriage on a particular timeline. Hold to the promise without turning it into a prediction."
         ),
         Situation(
             id: "strugglingPatience", chapter: .search,
@@ -226,7 +227,7 @@ enum SituationCatalog {
             id: "feelingDistant", chapter: .bond,
             title: "When you feel distant from your spouse",
             verseKeys: ["30:21"], referenceLabel: "30:21, Surah Ar Rum",
-            whyNote: "The affection and mercy between spouses are described as Allah's own placing: “He placed between you affection and mercy.” What He placed once, He can revive. The verse ends by calling this a sign “for a people who give thought.”"
+            whyNote: "The ayah names tranquility, affection, and mercy as signs within marriage. When distance appears, these words offer a standard to return to through honest conversation, care, and qualified support; they are not a guarantee that every relationship can or should continue unchanged."
         ),
 
         // III. THE STORM
@@ -235,7 +236,7 @@ enum SituationCatalog {
             id: "marriageProblems", chapter: .storm,
             title: "When you're having marriage problems",
             verseKeys: ["4:35"], referenceLabel: "4:35, Surah An Nisa",
-            whyNote: "The Qur'an's own protocol for marital rift: an arbitrator from his family and an arbitrator from her family. Then the promise: “If they both desire reconciliation, Allah will cause it between them.” A sincere intention to mend is itself the key Allah responds to."
+            whyNote: "The ayah gives a process for serious marital rift: a trustworthy arbitrator from each family and a sincere effort toward repair. Mediation is not appropriate where there is danger or coercion; safety and qualified support come first. Reconciliation cannot be forced on one person."
         ),
         Situation(
             id: "constantlyArguing", chapter: .storm,
@@ -247,7 +248,7 @@ enum SituationCatalog {
             id: "spouseWrongedYou", chapter: .storm,
             title: "When your spouse has wronged you",
             verseKeys: ["42:40"], referenceLabel: "42:40, Surah Ash Shura",
-            whyNote: "The verse permits a proportionate response, then immediately raises the ceiling: whoever pardons and makes reconciliation, “his reward is [due] from Allah.” Forgiving a spouse is not weakness. The Qur'an records its reward with Allah Himself."
+            whyNote: "The ayah first preserves the right to proportionate redress, then commends pardon joined with genuine reform. Forgiveness does not require renewed access, erased boundaries, or unsafe reconciliation. Seek protection and professional support where harm is ongoing."
         ),
         Situation(
             id: "loweringAnger", chapter: .storm,
@@ -265,7 +266,7 @@ enum SituationCatalog {
             id: "temptedToDivorce", chapter: .storm,
             title: "When you're tempted to divorce over disagreement",
             verseKeys: ["4:128"], referenceLabel: "4:128, Surah An Nisa",
-            whyNote: "Aisha (may Allah be pleased with her) explained that this verse concerns a wife who, fearing separation, offers terms to keep the marriage (Sahih al Bukhari), and Allah rules on it: “and settlement is best.” An imperfect peace both choose is better, in Allah's words, than a separation neither truly wants."
+            whyNote: "Aisha (may Allah be pleased with her) explained that this ayah concerns spouses who freely agree on terms when one fears withdrawal or separation (Sahih al Bukhari 5206). “Settlement is best” does not justify pressure, deprivation, or an unsafe compromise; any agreement must be genuinely chosen."
         ),
         Situation(
             id: "marriageTested", chapter: .storm,
@@ -283,25 +284,25 @@ enum SituationCatalog {
             id: "questioningChoice", chapter: .storm,
             title: "When you're questioning your choice",
             verseKeys: ["2:216"], referenceLabel: "2:216, Surah Al Baqarah",
-            whyNote: "“perhaps you hate a thing and it is good for you,” the verse says. Regret reads only the present. Allah's knowledge encompasses the end of every path: “And Allah knows, while you know not.”"
+            whyNote: "This ayah is about fighting, so it should not be read as proof that a specific marriage is secretly good. Its general lesson is more careful: our knowledge is limited while Allah's is complete. Pair that humility with facts, counsel, istikharah, and attention to safety."
         ),
         Situation(
             id: "trustingPlan", chapter: .storm,
             title: "When you're struggling to trust Allah's plan",
             verseKeys: ["2:216"], referenceLabel: "2:216, Surah Al Baqarah",
-            whyNote: "The verse does not deny that some decreed things feel heavy. It openly describes what is “hateful to you.” It anchors trust not in how things feel, but in the One who decreed them."
+            whyNote: "In its original context this ayah addresses fighting. As a general principle, it reminds us that our preferences and knowledge are limited. Trust in Allah belongs alongside responsible action and counsel; the ayah does not label every painful circumstance as good or require remaining in harm."
         ),
         Situation(
             id: "trustingTiming", chapter: .storm,
             title: "When you're trusting Allah's timing",
             verseKeys: ["2:216"], referenceLabel: "2:216, Surah Al Baqarah",
-            whyNote: "What is written for you arrives by decree, not by schedule. “Allah knows, while you know not” is the verse's final word, and the heart's resting place."
+            whyNote: "The ayah's direct context is fighting. Its final words, “Allah knows, while you know not,” can steady the heart when outcomes are unclear, but they do not promise a date or a specific result. Patience here means worship, wise action, and accepting what is beyond your knowledge."
         ),
         Situation(
             id: "stayOrLeave", chapter: .storm,
             title: "When you're deciding whether to stay or leave",
             verseKeys: ["4:35"], referenceLabel: "4:35, Surah An Nisa",
-            whyNote: "Before any final decision, the Qur'an prescribes a step: bring in a just arbitrator from each side. This verse is a reason to pause, involve wise family, and seek counsel. A weight this heavy is not meant to be carried alone. For practical rulings, consult a qualified scholar."
+            whyNote: "For serious marital rift, the Qur'an recommends trustworthy arbitration from both sides. This is one possible step, not an order to remain in danger. If there is abuse, coercion, or fear for safety, contact appropriate local support first. For rulings and a decision this weighty, seek qualified, independent counsel."
         ),
 
         // IV. THE FAMILY AND THE DECREE
@@ -407,9 +408,9 @@ enum SituationCatalog {
         ),
         Situation(
             id: "forgiveYourself", chapter: .heart,
-            title: "When you're struggling to forgive yourself",
+            title: "When shame makes you despair of Allah's mercy",
             verseKeys: ["39:53"], referenceLabel: "39:53, Surah Az Zumar",
-            whyNote: "Allah addresses those who wronged themselves and forbids them despair. If He has not closed the door on you, you are not permitted to close it on yourself."
+            whyNote: "The ayah is about Allah's mercy and the invitation to repent, not a separate doctrine of “self-forgiveness.” It forbids despair after sin: acknowledge the wrong, return to Allah, repair what you can, and do not treat your shame as greater than His mercy."
         ),
         Situation(
             id: "sameSin", chapter: .heart,
@@ -535,7 +536,7 @@ enum SituationCatalog {
             id: "financialBurdens", chapter: .provision,
             title: "When financial burdens feel too heavy",
             verseKeys: ["2:286"], referenceLabel: "2:286, Surah Al Baqarah",
-            whyNote: "“Allah does not charge a soul except [with that within] its capacity.” This burden was measured to your strength, and the verse closes with the du'a to say under it: our Lord, burden us not beyond what we can bear."
+            whyNote: "The ayah affirms Allah's justice and ends with a du'a asking not to be burdened beyond capacity. It should not be used to minimize distress or tell someone they must endure harm alone. Seek practical assistance, debt advice, and community support alongside this prayer."
         ),
         Situation(
             id: "moneyStress", chapter: .provision,
@@ -571,13 +572,13 @@ enum SituationCatalog {
             id: "barakahInWealth", chapter: .provision,
             title: "When you need barakah in your wealth",
             verseKeys: ["14:7"], referenceLabel: "14:7, Surah Ibrahim",
-            whyNote: "“If you are grateful, I will surely increase you.” Barakah enters through shukr. Gratitude over what is small is the Qur'an's stated path to its increase."
+            whyNote: "The promise of increase follows gratitude, but the ayah does not define that increase as money. It may appear in faith, contentment, usefulness, or other forms Allah chooses. Practice shukr without turning worship into a guarantee of financial growth."
         ),
         Situation(
             id: "provisionDelayed", chapter: .provision,
             title: "When you think your provision is delayed",
             verseKeys: ["51:58"], referenceLabel: "51:58, Surah Adh Dhariyat",
-            whyNote: "“Indeed, it is Allah who is the [continual] Provider, the firm possessor of strength.” What is written for you sits with Ar Razzaq Himself, whose strength never lapses and whose treasury never thins."
+            whyNote: "The ayah names Allah as the continual Provider and Possessor of strength. It steadies reliance on Him when provision feels slow, without telling us when or in what form relief will come. Tawakkul includes lawful effort, planning, and asking for help."
         ),
         Situation(
             id: "salaryNotEnough", chapter: .provision,
@@ -595,7 +596,7 @@ enum SituationCatalog {
             id: "stuckFinancially", chapter: .provision,
             title: "When you feel stuck in the same financial situation",
             verseKeys: ["13:11"], referenceLabel: "13:11, Surah Ar Ra'd",
-            whyNote: "“Indeed, Allah will not change the condition of a people until they change what is in themselves.” Change begins inside, and Allah ties the changing of circumstances to it."
+            whyNote: "This ayah speaks about the moral condition of a people and Allah's dealings with communities; it is not a formula promising personal financial change. It can still prompt honest self-review, while practical financial barriers may also require outside advice and structural support."
         ),
         Situation(
             id: "jealousOfSuccess", chapter: .provision,
@@ -607,19 +608,19 @@ enum SituationCatalog {
             id: "providingForFamily", chapter: .provision,
             title: "When you're worried about providing for your family",
             verseKeys: ["17:31"], referenceLabel: "17:31, Surah Al Isra",
-            whyNote: "Revealed about those whose fear of poverty reached their own children, the verse answers the fear at its root: “We provide for them and for you.” Your dependents' provision does not come out of yours. Both come from Him."
+            whyNote: "The ayah forbids killing children out of fear of poverty and declares Allah's provision for parent and child. Its direct subject is the sanctity of life, not a promise that household costs disappear. Let it oppose despair while you also budget, seek lawful support, and fulfil family responsibilities."
         ),
         Situation(
             id: "afraidToRisk", chapter: .provision,
             title: "When you're afraid to take a risk",
             verseKeys: ["5:23"], referenceLabel: "5:23, Surah Al Ma'idah",
-            whyNote: "Two men who feared Allah said: enter upon them through the gate, “And upon Allah rely, if you should be believers.” They spoke while the odds looked impossible. Tawakkul is trust that walks forward."
+            whyNote: "These words were spoken to the Children of Israel about entering the Holy Land, not taking a financial risk. Their broader lesson is courageous reliance after a rightful course is clear. A business or investment still requires due diligence, consultation, and an honest assessment of harm."
         ),
         Situation(
             id: "majorFinancialDecision", chapter: .provision,
             title: "When you're making a major financial decision",
             verseKeys: ["2:216"], referenceLabel: "2:216, Surah Al Baqarah",
-            whyNote: "“perhaps you hate a thing and it is good for you; and perhaps you love a thing and it is bad for you.” Weigh it, seek counsel, pray istikharah, then trust that the outcome rests with the One who knows while you know not."
+            whyNote: "The ayah's direct context is fighting. Its general reminder is that preference is not perfect knowledge; it does not choose an investment for you. Investigate the facts, avoid prohibited transactions, consult qualified people, pray istikharah, and make a responsible decision."
         ),
         Situation(
             id: "impatientForResults", chapter: .provision,
@@ -631,13 +632,13 @@ enum SituationCatalog {
             id: "everyoneAheadDuha", chapter: .provision,
             title: "When you feel like everyone is ahead of you",
             verseKeys: ["93:4"], referenceLabel: "93:4, Surah Ad Duha",
-            whyNote: "“And the Hereafter is better for you than the first [life].” Revealed to console the Prophet ﷺ himself. The timeline that actually matters ends better than it began."
+            whyNote: "This ayah consoles the Prophet ﷺ and directs attention to the Hereafter; it is not a prediction of career or financial advancement. When comparison narrows your view to worldly milestones, it restores the scale on which lasting success is measured."
         ),
         Situation(
             id: "payingBills", chapter: .provision,
             title: "When you're worried about paying bills",
             verseKeys: ["65:3"], referenceLabel: "65:3, Surah At Talaq",
-            whyNote: "“And will provide for him from where he does not expect.” And whoever relies upon Allah, He is sufficient for him. The bill has a date. So does the provision, with the One who has set for everything an extent."
+            whyNote: "These words appear in the middle of divorce instructions and promise Allah's care to the person of taqwa who relies on Him. They do not promise that a particular bill will be paid by a particular date. Pair tawakkul with early contact with creditors, budgeting, and community help."
         ),
         Situation(
             id: "stressedAboutDebt", chapter: .provision,

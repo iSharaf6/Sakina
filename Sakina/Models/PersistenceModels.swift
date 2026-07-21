@@ -22,14 +22,24 @@ final class Bookmark {
 /// A private reflection or du'a written beneath a specific ayah.
 @Model
 final class JournalEntry {
+    @Attribute(.unique) var syncID: UUID = UUID()
     var situationID: String
     var text: String
     var createdAt: Date
+    var updatedAt: Date = Date.now
 
-    init(situationID: String, text: String, createdAt: Date = .now) {
+    init(
+        syncID: UUID = UUID(),
+        situationID: String,
+        text: String,
+        createdAt: Date = .now,
+        updatedAt: Date = .now
+    ) {
+        self.syncID = syncID
         self.situationID = situationID
         self.text = text
         self.createdAt = createdAt
+        self.updatedAt = updatedAt
     }
 
     var situation: Situation? { SituationCatalog.by(id: situationID) }

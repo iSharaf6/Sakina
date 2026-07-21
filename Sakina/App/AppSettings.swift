@@ -24,6 +24,12 @@ enum Reciter: String, CaseIterable, Identifiable {
 enum SettingsKeys {
     static let reciter = "reciterFolder"
     static let arabicScale = "arabicScale"
+    static let appLanguage = "appLanguage"
+    static let translationVisible = "translationVisible"
+    static let transliterationVisible = "transliterationVisible"
+    static let prayerCalculationMethod = "prayerCalculationMethod"
+    static let prayerAsrMethod = "prayerAsrMethod"
+    static let prayerHighLatitude = "prayerHighLatitude"
     static let reminderEnabled = "reminderEnabled"
     static let reminderHour = "reminderHour"
     static let reminderMinute = "reminderMinute"
@@ -76,6 +82,9 @@ enum ReminderScheduler {
         guard defaults.bool(forKey: SettingsKeys.reminderEnabled) else { return }
         let hour = defaults.object(forKey: SettingsKeys.reminderHour) as? Int ?? 9
         let minute = defaults.object(forKey: SettingsKeys.reminderMinute) as? Int ?? 0
+        let language = AppLanguage(
+            rawValue: defaults.string(forKey: SettingsKeys.appLanguage) ?? AppLanguage.english.rawValue
+        ) ?? .english
 
         Task {
             let granted = (try? await center.requestAuthorization(options: [.alert, .sound])) ?? false
@@ -91,8 +100,8 @@ enum ReminderScheduler {
 
                 let situation = SharedStore.situationOfTheDay(for: day)
                 let content = UNMutableNotificationContent()
-                content.title = "Ayah of the day"
-                content.body = "\(situation.title). \(situation.referenceLabel)"
+                content.title = language.pick("Ayah of the day", "آية اليوم")
+                content.body = "\(situation.localizedTitle(language)). \(situation.referenceLabel)"
                 content.sound = .default
                 content.userInfo = ["situationID": situation.id]
 

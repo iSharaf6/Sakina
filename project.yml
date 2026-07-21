@@ -13,6 +13,14 @@ settings:
     MARKETING_VERSION: "1.0"
     TARGETED_DEVICE_FAMILY: "1"
 
+packages:
+  Adhan:
+    url: https://github.com/batoulapps/adhan-swift.git
+    from: 1.5.0
+  GoogleSignIn:
+    url: https://github.com/google/GoogleSignIn-iOS.git
+    from: 9.0.0
+
 targets:
   Sakina:
     type: application
@@ -20,6 +28,8 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.islamsharaf.sakina
+        GOOGLE_CLIENT_ID: YOUR_IOS_CLIENT_ID.apps.googleusercontent.com
+        GOOGLE_REVERSED_CLIENT_ID: com.googleusercontent.apps.YOUR_IOS_CLIENT_ID
     sources:
       - Sakina
       - Shared
@@ -31,32 +41,48 @@ targets:
     info:
       path: Sakina/Info.plist
       properties:
-        CFBundleDisplayName: Sakina
+        CFBundleDisplayName: Yaqeen
         UILaunchScreen: {}
         UISupportedInterfaceOrientations:
           - UIInterfaceOrientationPortrait
         ITSAppUsesNonExemptEncryption: false
+        NSLocationWhenInUseUsageDescription: Yaqeen uses your approximate location to calculate accurate local prayer times. Your coordinates stay on this device.
+        GIDClientID: $(GOOGLE_CLIENT_ID)
         CFBundleIcons:
           CFBundlePrimaryIcon:
             CFBundleIconFiles:
               - AppIcon60x60
               - AppIcon76x76
         CFBundleURLTypes:
-          - CFBundleURLName: com.islamsharaf.sakina
+          - CFBundleURLName: com.islamsharaf.yaqeen
             CFBundleURLSchemes:
               - sakina
+              - yaqeen
+          - CFBundleURLName: com.googleusercontent.apps
+            CFBundleURLSchemes:
+              - $(GOOGLE_REVERSED_CLIENT_ID)
         UIAppFonts:
           - UthmanicHafs.ttf
     dependencies:
       - target: SakinaWidget
         embed: true
+      - package: Adhan
+      - package: GoogleSignIn
+        product: GoogleSignIn
+      - package: GoogleSignIn
+        product: GoogleSignInSwift
 
   SakinaWidget:
     type: app-extension
     platform: iOS
     sources:
       - SakinaWidget
-      - Shared
+      - path: Shared
+        excludes:
+          - ArabicReflections.swift
+          - CompanionContent.swift
+          - GuidanceCatalog.swift
+          - Localization.swift
     entitlements:
       path: SakinaWidget/SakinaWidget.entitlements
       properties:
@@ -65,7 +91,7 @@ targets:
     info:
       path: SakinaWidget/Info.plist
       properties:
-        CFBundleDisplayName: Sakina
+        CFBundleDisplayName: Yaqeen
         UIAppFonts:
           - UthmanicHafs.ttf
         NSExtension:
@@ -74,3 +100,15 @@ targets:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.islamsharaf.sakina.widget
         SKIP_INSTALL: true
+
+  SakinaTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - SakinaTests
+    dependencies:
+      - target: Sakina
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.islamsharaf.sakina.tests
+        GENERATE_INFOPLIST_FILE: YES
