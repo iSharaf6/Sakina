@@ -1,7 +1,9 @@
 import SwiftUI
+import UIKit
 
 struct ExploreView: View {
     @Binding var path: NavigationPath
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @AppStorage(SettingsKeys.appLanguage) private var languageRaw = AppLanguage.english.rawValue
     @State private var searchText = ""
     @FocusState private var searchFocused: Bool
@@ -10,6 +12,12 @@ struct ExploreView: View {
     private var copy: AppCopy { AppCopy(language: language) }
     private var isSearching: Bool { !searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
     private var results: [Situation] { GuidanceCatalog.search(searchText) }
+    private var groupColumns: [GridItem] {
+        if dynamicTypeSize.isAccessibilitySize {
+            return [GridItem(.flexible())]
+        }
+        return [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)]
+    }
 
     var body: some View {
         NavigationStack(path: $path) {
@@ -107,14 +115,14 @@ struct ExploreView: View {
             )
 
             LazyVGrid(
-                columns: [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)],
+                columns: groupColumns,
                 spacing: 12
             ) {
                 ForEach(GuidanceCatalog.groups) { group in
                     NavigationLink(value: group) {
                         LifeGroupCard(group: group, language: language)
                     }
-                    .buttonStyle(YaqeenPressStyle())
+                    .buttonStyle(.yaqeenPressable)
                 }
             }
         }
@@ -146,7 +154,7 @@ struct ExploreView: View {
                     NavigationLink(value: situation) {
                         SituationRow(situation: situation, language: language)
                     }
-                    .buttonStyle(YaqeenPressStyle())
+                    .buttonStyle(.yaqeenPressable)
                 }
             }
         }
@@ -160,17 +168,17 @@ struct LifeGroupCard: View {
     let language: AppLanguage
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 15) {
-            ZStack {
-                RoundedRectangle(cornerRadius: 13, style: .continuous)
-                    .fill(Color.sakinaInk.opacity(0.08))
-                Image(systemName: group.symbol)
-                    .font(.system(size: 18, weight: .medium))
-                    .foregroundStyle(Color.sakinaInk)
-            }
-            .frame(width: 42, height: 42)
-
-            Spacer(minLength: 4)
+        VStack(alignment: .leading, spacing: 14) {
+            LifeGroupArtwork(group: group)
+                .scaledToFit()
+                .frame(width: 118, height: 118)
+                .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+                .overlay {
+                    RoundedRectangle(cornerRadius: 20, style: .continuous)
+                        .strokeBorder(Color.sakinaHairline.opacity(0.72), lineWidth: 0.75)
+                }
+                .frame(maxWidth: .infinity)
+                .accessibilityHidden(true)
 
             VStack(alignment: .leading, spacing: 5) {
                 Text(group.title(language))
@@ -186,11 +194,31 @@ struct LifeGroupCard: View {
                     .foregroundStyle(Color.sakinaMuted)
             }
         }
-        .padding(17)
-        .frame(maxWidth: .infinity, minHeight: 164, alignment: .leading)
+        .padding(14)
+        .frame(maxWidth: .infinity, minHeight: 226, alignment: .leading)
         .sakinaCard(cornerRadius: 22)
         .accessibilityElement(children: .combine)
         .accessibilityHint(language.pick("Opens this life group", "يفتح هذه المجموعة"))
+    }
+}
+
+private struct LifeGroupArtwork: View {
+    let group: LifeGroup
+
+    @ViewBuilder
+    var body: some View {
+        if let artwork = UIImage(named: group.id.artworkAssetName) {
+            Image(uiImage: artwork)
+                .resizable()
+                .interpolation(.high)
+        } else {
+            Image(systemName: group.symbol)
+                .resizable()
+                .scaledToFit()
+                .foregroundStyle(Color.sakinaInk)
+                .padding(26)
+                .background(Color.sakinaInk.opacity(0.08))
+        }
     }
 }
 
@@ -239,7 +267,7 @@ struct LifeGroupView: View {
                                 NavigationLink(value: situation) {
                                     SituationRow(situation: situation, language: language)
                                 }
-                                .buttonStyle(YaqeenPressStyle())
+                                .buttonStyle(.yaqeenPressable)
                             }
                         }
                         .id(selectedStage.id)
@@ -261,14 +289,15 @@ struct LifeGroupView: View {
 
     private var groupHeader: some View {
         VStack(alignment: .leading, spacing: 18) {
-            ZStack {
-                RoundedRectangle(cornerRadius: 18, style: .continuous)
-                    .fill(Color.sakinaInk)
-                Image(systemName: group.symbol)
-                    .font(.system(size: 26, weight: .medium))
-                    .foregroundStyle(Color.sakinaCanvas)
-            }
-            .frame(width: 58, height: 58)
+            LifeGroupArtwork(group: group)
+                .scaledToFit()
+                .frame(width: 94, height: 94)
+                .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
+                .overlay {
+                    RoundedRectangle(cornerRadius: 24, style: .continuous)
+                        .strokeBorder(Color.sakinaHairline.opacity(0.72), lineWidth: 0.75)
+                }
+                .accessibilityHidden(true)
 
             VStack(alignment: .leading, spacing: 8) {
                 Text(group.title(language))
@@ -435,11 +464,4 @@ struct EmptyGuidanceState: View {
     }
 }
 
-struct YaqeenPressStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .scaleEffect(configuration.isPressed ? 0.985 : 1)
-            .opacity(configuration.isPressed ? 0.88 : 1)
-            .animation(.easeOut(duration: 0.1), value: configuration.isPressed)
-    }
-}
+typealias YaqeenPressStyle = YaqeenPressableButtonStyle

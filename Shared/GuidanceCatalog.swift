@@ -7,6 +7,18 @@ import Foundation
 /// moment within that life, then the exact feeling or situation.
 enum LifeGroupID: String, Codable, CaseIterable {
     case marriage, family, faith, wellbeing, provision
+
+    /// Branded Explore artwork. The compact Home cards keep their SF Symbols
+    /// so they remain crisp at very small sizes.
+    var artworkAssetName: String {
+        switch self {
+        case .marriage: return "LifeGroupMarriage"
+        case .family: return "LifeGroupFamily"
+        case .faith: return "LifeGroupFaith"
+        case .wellbeing: return "LifeGroupWellbeing"
+        case .provision: return "LifeGroupProvision"
+        }
+    }
 }
 
 struct GuidanceStage: Identifiable, Hashable {

@@ -9,6 +9,7 @@ struct SettingsView: View {
 
     @ObservedObject private var account = GoogleAccountManager.shared
     @ObservedObject private var prayerService = PrayerTimesService.shared
+    @AppStorage(SettingsKeys.hasOnboarded) private var hasOnboarded = true
     @AppStorage(SettingsKeys.appLanguage) private var languageRaw = AppLanguage.english.rawValue
     @AppStorage(SettingsKeys.translationVisible) private var translationVisible = true
     @AppStorage(SettingsKeys.transliterationVisible) private var transliterationVisible = true
@@ -396,6 +397,12 @@ struct SettingsView: View {
 
     private var trustSection: some View {
         Section {
+            Button {
+                hasOnboarded = false
+            } label: {
+                Label(copy("Run welcome setup again", "إعادة إعداد الترحيب"), systemImage: "sparkles")
+            }
+
             Button {
                 showAbout = true
             } label: {

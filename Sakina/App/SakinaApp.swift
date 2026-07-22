@@ -16,6 +16,7 @@ struct SakinaApp: App {
 struct RootView: View {
     enum Tab: Hashable { case home, explore, saved, settings }
 
+    @AppStorage(SettingsKeys.hasOnboarded) private var hasOnboarded = false
     @AppStorage(SettingsKeys.appLanguage) private var languageRaw = AppLanguage.english.rawValue
     @State private var selection: Tab = .home
     @State private var homePath = NavigationPath()
@@ -27,6 +28,56 @@ struct RootView: View {
     private var copy: AppCopy { AppCopy(language: language) }
 
     var body: some View {
+        Group {
+            if hasOnboarded {
+                appTabs
+                    .transition(.opacity)
+            } else {
+                OnboardingFlow {
+                    selection = .explore
+                    hasOnboarded = true
+                }
+                .transition(.opacity)
+            }
+        }
+        .animation(.easeOut(duration: 0.24), value: hasOnboarded)
+        .yaqeenLanguage(language)
+        .onAppear {
+            router.activate()
+            account.restorePreviousSignIn()
+            if hasOnboarded { ReminderScheduler.refresh() }
+        }
+        .onOpenURL { url in
+            if account.handle(url) { return }
+            guard let scheme = url.scheme, ["sakina", "yaqeen"].contains(scheme) else { return }
+
+            if url.host == "prayer-times" {
+                selection = .home
+                homePath = NavigationPath()
+                return
+            }
+
+            if url.host == "explore" {
+                selection = .explore
+                explorePath = NavigationPath()
+                return
+            }
+
+            // Guidance widget deep link: sakina://situation/<id>
+            guard url.host == "situation",
+                  let id = url.pathComponents.dropFirst().first,
+                  let situation = SituationCatalog.by(id: id) else { return }
+            open(situation)
+        }
+        .onChange(of: router.pendingSituationID) { _, newValue in
+            guard let newValue,
+                  let situation = SituationCatalog.by(id: newValue) else { return }
+            router.pendingSituationID = nil
+            open(situation)
+        }
+    }
+
+    private var appTabs: some View {
         TabView(selection: $selection) {
             HomeView(path: $homePath)
                 .tabItem { Label(copy("Home", "الرئيسية"), systemImage: "house.fill") }
@@ -45,34 +96,6 @@ struct RootView: View {
                 .tag(Tab.settings)
         }
         .tint(.sakinaInk)
-        .yaqeenLanguage(language)
-        .onAppear {
-            router.activate()
-            ReminderScheduler.refresh()
-            account.restorePreviousSignIn()
-        }
-        .onOpenURL { url in
-            if account.handle(url) { return }
-            guard let scheme = url.scheme, ["sakina", "yaqeen"].contains(scheme) else { return }
-
-            if url.host == "prayer-times" {
-                selection = .home
-                homePath = NavigationPath()
-                return
-            }
-
-            // Guidance widget deep link: sakina://situation/<id>
-            guard url.host == "situation",
-                  let id = url.pathComponents.dropFirst().first,
-                  let situation = SituationCatalog.by(id: id) else { return }
-            open(situation)
-        }
-        .onChange(of: router.pendingSituationID) { _, newValue in
-            guard let newValue,
-                  let situation = SituationCatalog.by(id: newValue) else { return }
-            router.pendingSituationID = nil
-            open(situation)
-        }
     }
 
     private func open(_ situation: Situation) {

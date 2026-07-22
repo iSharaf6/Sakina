@@ -22,6 +22,7 @@ enum Reciter: String, CaseIterable, Identifiable {
 // MARK: Settings keys
 
 enum SettingsKeys {
+    static let hasOnboarded = "hasCompletedOnboarding"
     static let reciter = "reciterFolder"
     static let arabicScale = "arabicScale"
     static let appLanguage = "appLanguage"
@@ -74,45 +75,69 @@ final class NotificationRouter: NSObject, ObservableObject, UNUserNotificationCe
 /// ayah of the day. Called on launch and whenever the setting changes.
 enum ReminderScheduler {
     static func refresh() {
+        Task {
+            _ = await refreshNow()
+        }
+    }
+
+    /// Requests notification access when needed and returns whether reminders
+    /// can actually be delivered. Onboarding uses the result so it never shows
+    /// an enabled preference after the system has denied notifications.
+    static func enableAndRefresh() async -> Bool {
+        await refreshNow()
+    }
+
+    private static func refreshNow() async -> Bool {
         let defaults = UserDefaults.standard
         let center = UNUserNotificationCenter.current()
         let ids = (0..<7).map { "sakinaDaily\($0)" }
         center.removePendingNotificationRequests(withIdentifiers: ids)
 
-        guard defaults.bool(forKey: SettingsKeys.reminderEnabled) else { return }
+        guard defaults.bool(forKey: SettingsKeys.reminderEnabled) else { return true }
         let hour = defaults.object(forKey: SettingsKeys.reminderHour) as? Int ?? 9
         let minute = defaults.object(forKey: SettingsKeys.reminderMinute) as? Int ?? 0
         let language = AppLanguage(
             rawValue: defaults.string(forKey: SettingsKeys.appLanguage) ?? AppLanguage.english.rawValue
         ) ?? .english
 
-        Task {
-            let granted = (try? await center.requestAuthorization(options: [.alert, .sound])) ?? false
-            guard granted else { return }
-
-            let cal = Calendar.current
-            for offset in 0..<7 {
-                guard let day = cal.date(byAdding: .day, value: offset, to: .now) else { continue }
-                var comps = cal.dateComponents([.year, .month, .day], from: day)
-                comps.hour = hour
-                comps.minute = minute
-                guard let fireDate = cal.date(from: comps), fireDate > .now else { continue }
-
-                let situation = SharedStore.situationOfTheDay(for: day)
-                let content = UNMutableNotificationContent()
-                content.title = language.pick("Ayah of the day", "آية اليوم")
-                content.body = "\(situation.localizedTitle(language)). \(situation.referenceLabel)"
-                content.sound = .default
-                content.userInfo = ["situationID": situation.id]
-
-                let trigger = UNCalendarNotificationTrigger(
-                    dateMatching: cal.dateComponents([.year, .month, .day, .hour, .minute], from: fireDate),
-                    repeats: false
-                )
-                try? await center.add(UNNotificationRequest(
-                    identifier: "sakinaDaily\(offset)", content: content, trigger: trigger
-                ))
-            }
+        let notificationSettings = await center.notificationSettings()
+        let granted: Bool
+        switch notificationSettings.authorizationStatus {
+        case .authorized, .provisional, .ephemeral:
+            granted = true
+        case .notDetermined:
+            granted = (try? await center.requestAuthorization(options: [.alert, .sound])) ?? false
+        case .denied:
+            granted = false
+        @unknown default:
+            granted = false
         }
+        guard granted else { return false }
+
+        let cal = Calendar.current
+        for offset in 0..<7 {
+            guard let day = cal.date(byAdding: .day, value: offset, to: .now) else { continue }
+            var comps = cal.dateComponents([.year, .month, .day], from: day)
+            comps.hour = hour
+            comps.minute = minute
+            guard let fireDate = cal.date(from: comps), fireDate > .now else { continue }
+
+            let situation = SharedStore.situationOfTheDay(for: day)
+            let content = UNMutableNotificationContent()
+            content.title = language.pick("Ayah of the day", "آية اليوم")
+            content.body = "\(situation.localizedTitle(language)). \(situation.referenceLabel)"
+            content.sound = .default
+            content.userInfo = ["situationID": situation.id]
+
+            let trigger = UNCalendarNotificationTrigger(
+                dateMatching: cal.dateComponents([.year, .month, .day, .hour, .minute], from: fireDate),
+                repeats: false
+            )
+            try? await center.add(UNNotificationRequest(
+                identifier: "sakinaDaily\(offset)", content: content, trigger: trigger
+            ))
+        }
+
+        return true
     }
 }

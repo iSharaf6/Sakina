@@ -1,4 +1,5 @@
 import CryptoKit
+import UIKit
 import XCTest
 @testable import Sakina
 
@@ -40,6 +41,18 @@ final class ContentIntegrityTests: XCTestCase {
             .flatMap(\.situationIDs)
         XCTAssertEqual(Set(groupedIDs), Set(SituationCatalog.all.map(\.id)))
         XCTAssertEqual(groupedIDs.count, Set(groupedIDs).count, "A situation appears in more than one stage")
+    }
+
+    func testEveryLifeGroupHasUniqueBundledArtwork() {
+        let groups = GuidanceCatalog.groups
+        let assetNames = groups.map(\.id.artworkAssetName)
+
+        XCTAssertEqual(Set(groups.map(\.id)), Set(LifeGroupID.allCases))
+        XCTAssertEqual(assetNames.count, Set(assetNames).count, "Life-group artwork names must be unique")
+
+        for assetName in assetNames {
+            XCTAssertNotNil(UIImage(named: assetName), "Missing bundled artwork: \(assetName)")
+        }
     }
 
     func testEverySituationHasBilingualCompanionContent() {

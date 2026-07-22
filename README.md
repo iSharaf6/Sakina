@@ -31,6 +31,8 @@ The notes are orientation, not tafsir, a fatwa, or professional counselling. Sen
 ## Features
 
 - Branded Yaqeen interface in forest green and warm ivory, built with native SwiftUI navigation, Dynamic Type, dark mode, reduced-motion support, and Arabic-aware layout
+- Five-step bilingual welcome setup for language, prayer times, daily reminders, reciter, and Arabic reading size
+- Original Yaqeen life-group illustrations for Marriage, Family, Faith, Wellbeing, and Provision
 - English and Arabic app modes, including right-to-left navigation in Arabic
 - Home screen with the next prayer, countdown, and today’s Fajr, sunrise, Dhuhr, Asr, Maghrib, and Isha times
 - Location-based prayer calculations using Adhan, with calculation-method, Asr-method, and high-latitude preferences
@@ -157,6 +159,8 @@ Hadith and du’a live in a separate curated catalog with canonical source URLs,
 | `Shared/Resources/verses.json` | Reviewed embedded Qur’an payload |
 | `Shared/PrayerSchedule.swift` | Coordinate-free schedule models shared with WidgetKit |
 | `Sakina/Prayer/` | Location request, Adhan calculation settings, and schedule generation |
+| `Sakina/Onboarding/` | First-run bilingual setup for prayer, reminders, and Qur’an reading preferences |
+| `Sakina/Resources/LifeGroupArt/` | Original branded artwork used by the Explore life-group cards |
 | `Sakina/Account/GoogleBackupService.swift` | Google Sign-In and manual Drive `appDataFolder` backup/restore |
 | `Sakina/Views/` | Home, Explore, guidance detail, Saved, Settings, and About interfaces |
 | `SakinaWidget/SakinaWidgets.swift` | Ayah, pinned-situation, Home Screen prayer, and Lock Screen prayer widgets |
