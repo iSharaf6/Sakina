@@ -5,6 +5,20 @@ import UIKit
 
 // MARK: - Flow
 
+enum OnboardingHeroArt: String, CaseIterable {
+    case prayer = "OnboardingPrayer"
+    case reminder = "OnboardingReminder"
+    case reading = "OnboardingReading"
+}
+
+enum PrayerMomentArt: String, CaseIterable {
+    case fajr = "PrayerFajr"
+    case dhuhr = "PrayerDhuhr"
+    case asr = "PrayerAsr"
+    case maghrib = "PrayerMaghrib"
+    case isha = "PrayerIsha"
+}
+
 /// A calm, first-run setup for the few preferences Yaqeen needs in order to
 /// feel useful immediately. Every choice is written through `AppStorage`, so
 /// onboarding and Settings always describe the same state.
@@ -260,7 +274,7 @@ private struct OnboardingPrayerView: View {
             ScrollView(showsIndicators: false) {
                 VStack(alignment: .leading, spacing: 0) {
                     OnboardingIntro(
-                        symbol: "location.fill",
+                        artwork: .prayer,
                         eyebrow: copy("Prayer times", "أوقات الصلاة"),
                         title: copy("Keep the day’s rhythm.", "حافظ على إيقاع يومك."),
                         body: copy(
@@ -305,26 +319,17 @@ private struct OnboardingPrayerView: View {
 
     private var prayerPreview: some View {
         VStack(alignment: .leading, spacing: 16) {
-            HStack(spacing: 8) {
-                Image(systemName: hasPrayerTimes ? "location.fill" : "location")
-                    .font(.caption.weight(.semibold))
-                    .accessibilityHidden(true)
-
-                Text(hasPrayerTimes
-                     ? copy("Using your current location", "وفق موقعك الحالي")
-                     : copy("Enable location to see prayer times", "فعّل الموقع لعرض أوقات الصلاة"))
-                    .font(.system(.caption, design: .default, weight: .semibold))
-            }
-            .foregroundStyle(hasPrayerTimes ? Color.yaqeenForest : Color.sakinaMuted)
+            Text(hasPrayerTimes
+                 ? copy("Using your current location", "وفق موقعك الحالي")
+                 : copy("Enable location to see prayer times", "فعّل الموقع لعرض أوقات الصلاة"))
+                .font(.system(.caption, design: .default, weight: .semibold))
+                .foregroundStyle(hasPrayerTimes ? Color.yaqeenForest : Color.sakinaMuted)
 
             HStack(alignment: .top, spacing: 4) {
                 ForEach(prayerKinds) { kind in
                     VStack(spacing: 7) {
-                        Image(systemName: onboardingSymbol(for: kind))
-                            .font(.system(size: 18, weight: .regular))
-                            .symbolRenderingMode(.monochrome)
-                            .foregroundStyle(hasPrayerTimes ? Color.yaqeenForest : Color.sakinaMuted.opacity(0.42))
-                            .frame(height: 20)
+                        PrayerMomentArtwork(artwork: artwork(for: kind))
+                            .opacity(hasPrayerTimes ? 1 : 0.38)
 
                         Text(kind.displayName(locale: language.locale))
                             .font(.caption2.weight(.semibold))
@@ -388,15 +393,36 @@ private struct OnboardingPrayerView: View {
         return formatter.string(from: date)
     }
 
-    private func onboardingSymbol(for kind: PrayerKind) -> String {
+    private func artwork(for kind: PrayerKind) -> PrayerMomentArt {
         switch kind {
-        case .fajr: return "sunrise"
-        case .dhuhr: return "sun.max"
-        case .asr: return "sun.min"
-        case .maghrib: return "sunset"
-        case .isha: return "moon.stars"
-        case .sunrise: return "sunrise.fill"
+        case .fajr, .sunrise: return .fajr
+        case .dhuhr: return .dhuhr
+        case .asr: return .asr
+        case .maghrib: return .maghrib
+        case .isha: return .isha
         }
+    }
+}
+
+private struct PrayerMomentArtwork: View {
+    let artwork: PrayerMomentArt
+
+    var body: some View {
+        Group {
+            if let image = UIImage(named: artwork.rawValue) {
+                Image(uiImage: image)
+                    .resizable()
+                    .interpolation(.high)
+                    .scaledToFit()
+            } else {
+                YaqeenMark()
+                    .fill(Color.sakinaInk)
+                    .padding(7)
+            }
+        }
+        .frame(width: 30, height: 30)
+        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+        .accessibilityHidden(true)
     }
 }
 
@@ -426,7 +452,7 @@ private struct OnboardingReminderView: View {
             ScrollView(showsIndicators: false) {
                 VStack(alignment: .leading, spacing: 0) {
                     OnboardingIntro(
-                        symbol: "bell",
+                        artwork: .reminder,
                         eyebrow: copy("Daily reminder", "تذكير يومي"),
                         title: copy("A gentle word each day.", "كلمة لطيفة كل يوم."),
                         body: copy(
@@ -483,11 +509,6 @@ private struct OnboardingReminderView: View {
     private var reminderCard: some View {
         VStack(spacing: 16) {
             HStack(spacing: 12) {
-                Image(systemName: "bell")
-                    .font(.system(size: 18, weight: .medium))
-                    .foregroundStyle(Color.sakinaInk)
-                    .accessibilityHidden(true)
-
                 Text(copy("Daily reminder", "التذكير اليومي"))
                     .font(.system(.body, design: .default, weight: .semibold))
                     .foregroundStyle(Color.sakinaInk)
@@ -638,7 +659,7 @@ private struct OnboardingReadingView: View {
             ScrollView(showsIndicators: false) {
                 VStack(alignment: .leading, spacing: 0) {
                     OnboardingIntro(
-                        symbol: "textformat.size",
+                        artwork: .reading,
                         eyebrow: copy("Reading", "القراءة"),
                         title: copy("Set your reading.", "اضبط قراءتك."),
                         body: copy(
@@ -932,13 +953,13 @@ private struct OnboardingProgressHeader: View {
 }
 
 private struct OnboardingIntro: View {
-    let symbol: String
+    let artwork: OnboardingHeroArt
     let eyebrow: String
     let title: String
     let detail: String
 
-    init(symbol: String, eyebrow: String, title: String, body: String) {
-        self.symbol = symbol
+    init(artwork: OnboardingHeroArt, eyebrow: String, title: String, body: String) {
+        self.artwork = artwork
         self.eyebrow = eyebrow
         self.title = title
         self.detail = body
@@ -946,15 +967,7 @@ private struct OnboardingIntro: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            Image(systemName: symbol)
-                .font(.system(size: 26, weight: .light))
-                .foregroundStyle(Color.sakinaInk)
-                .frame(width: 60, height: 60)
-                .background(
-                    Color.sakinaInk.opacity(0.08),
-                    in: RoundedRectangle(cornerRadius: 18, style: .continuous)
-                )
-                .accessibilityHidden(true)
+            OnboardingHeroArtwork(artwork: artwork)
 
             CapsLabel(text: eyebrow)
                 .padding(.top, 22)
@@ -974,6 +987,36 @@ private struct OnboardingIntro: View {
                 .padding(.top, 12)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
+    }
+}
+
+private struct OnboardingHeroArtwork: View {
+    let artwork: OnboardingHeroArt
+
+    var body: some View {
+        Group {
+            if let image = UIImage(named: artwork.rawValue) {
+                Image(uiImage: image)
+                    .resizable()
+                    .interpolation(.high)
+                    .scaledToFit()
+            } else {
+                ZStack {
+                    Color.sakinaElevated
+
+                    YaqeenMark()
+                        .fill(Color.sakinaInk)
+                        .padding(28)
+                }
+            }
+        }
+        .frame(width: 104, height: 104)
+        .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
+        .overlay {
+            RoundedRectangle(cornerRadius: 24, style: .continuous)
+                .strokeBorder(Color.sakinaHairline.opacity(0.72), lineWidth: 0.75)
+        }
+        .accessibilityHidden(true)
     }
 }
 

@@ -55,6 +55,40 @@ final class ContentIntegrityTests: XCTestCase {
         }
     }
 
+    func testEveryOnboardingHeroHasUniqueBundledArtwork() throws {
+        let assetNames = OnboardingHeroArt.allCases.map(\.rawValue)
+
+        XCTAssertEqual(
+            Set(assetNames),
+            Set(["OnboardingPrayer", "OnboardingReminder", "OnboardingReading"])
+        )
+        XCTAssertEqual(assetNames.count, Set(assetNames).count, "Onboarding artwork names must be unique")
+
+        for assetName in assetNames {
+            let image = try XCTUnwrap(UIImage(named: assetName), "Missing bundled artwork: \(assetName)")
+            let pixels = try XCTUnwrap(image.cgImage, "Artwork is not a raster image: \(assetName)")
+            XCTAssertEqual(pixels.width, 512, "\(assetName) must be 512 px wide")
+            XCTAssertEqual(pixels.height, 512, "\(assetName) must be 512 px high")
+        }
+    }
+
+    func testEveryPrayerMomentHasUniqueBundledArtwork() throws {
+        let assetNames = PrayerMomentArt.allCases.map(\.rawValue)
+
+        XCTAssertEqual(
+            Set(assetNames),
+            Set(["PrayerFajr", "PrayerDhuhr", "PrayerAsr", "PrayerMaghrib", "PrayerIsha"])
+        )
+        XCTAssertEqual(assetNames.count, Set(assetNames).count, "Prayer artwork names must be unique")
+
+        for assetName in assetNames {
+            let image = try XCTUnwrap(UIImage(named: assetName), "Missing bundled artwork: \(assetName)")
+            let pixels = try XCTUnwrap(image.cgImage, "Artwork is not a raster image: \(assetName)")
+            XCTAssertEqual(pixels.width, 256, "\(assetName) must be 256 px wide")
+            XCTAssertEqual(pixels.height, 256, "\(assetName) must be 256 px high")
+        }
+    }
+
     func testEverySituationHasBilingualCompanionContent() {
         XCTAssertTrue(
             CompanionContentCatalog.uncoveredSituationIDs.isEmpty,

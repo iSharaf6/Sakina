@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		0AD058C17BC3CA58BFF0DF87 /* SakinaApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B3F5118924C458398FD37BD /* SakinaApp.swift */; };
+		0BA7B154FF0DBD60E246CE3A /* OnboardingReading.png in Resources */ = {isa = PBXBuildFile; fileRef = 98DB2EBF9DA7F53EB4CA68A2 /* OnboardingReading.png */; };
 		0CBD9F38F6BEFD9E82290F7A /* verses.json in Resources */ = {isa = PBXBuildFile; fileRef = 73BDB5597C502DF9620D4EB9 /* verses.json */; };
 		110248806F05C890C56B77DD /* PrayerSchedule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 559F960ED9DDC87C9C69D8EC /* PrayerSchedule.swift */; };
 		111B6C1F045304D740B55DC7 /* GuidanceCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 312E1CB6F5C9FAFD3D326703 /* GuidanceCatalog.swift */; };
@@ -15,6 +16,7 @@
 		1209500D8182761B7E34CCF4 /* verses.json in Resources */ = {isa = PBXBuildFile; fileRef = 73BDB5597C502DF9620D4EB9 /* verses.json */; };
 		16303560416EC40292C59EB7 /* AppIcon76x76@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 8778E3432F3F2902279E9FC3 /* AppIcon76x76@2x.png */; };
 		16D963BDEF9A32A7B3F33C6A /* UthmanicHafs.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C176745055C5CEE71C134488 /* UthmanicHafs.ttf */; };
+		17AA1F95250D6C72E1B7D313 /* PrayerMaghrib.png in Resources */ = {isa = PBXBuildFile; fileRef = CFD288F8B42BA075D908D6DF /* PrayerMaghrib.png */; };
 		1CD3EED031A9F6879A5778BE /* LifeGroupProvision.png in Resources */ = {isa = PBXBuildFile; fileRef = 7243A48DC43A52C5EEC89F29 /* LifeGroupProvision.png */; };
 		1E9208D4490881F96B16D13D /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBF88022D366BA9A9E55A231 /* AppSettings.swift */; };
 		26A57449A3396F90FF00842A /* PrayerLocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349FECB8CEDBA04B288591DB /* PrayerLocationService.swift */; };
@@ -24,6 +26,7 @@
 		2B1A97D70212360D814E8284 /* LifeGroupMarriage.png in Resources */ = {isa = PBXBuildFile; fileRef = B933A69E06A4792272BA5D80 /* LifeGroupMarriage.png */; };
 		2B2C96A6903E9C8219325E58 /* ContentIntegrityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 08BCB593D183591E26DE5FB7 /* ContentIntegrityTests.swift */; };
 		2D91B346FFDD36D12206FAB2 /* Adhan in Frameworks */ = {isa = PBXBuildFile; productRef = 0F060E45073BCF3C5CC7AB57 /* Adhan */; };
+		2EBC861877B8F94AA01AD3E1 /* PrayerFajr.png in Resources */ = {isa = PBXBuildFile; fileRef = D4C36553DFE5720EB0957BE3 /* PrayerFajr.png */; };
 		313752037AA3D4F16064F2C0 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 812F742F72217F0819013056 /* Theme.swift */; };
 		32F57EF9FD499F6F94D374D8 /* LifeGroupWellbeing.png in Resources */ = {isa = PBXBuildFile; fileRef = 73FDCEAB69FC5FF591CBEACB /* LifeGroupWellbeing.png */; };
 		38FA7F46E6341FD407174CD3 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = 10800182FDA9B6D0BF263424 /* GoogleSignIn */; };
@@ -33,18 +36,23 @@
 		4EB66C91A5D3E7238FE723D6 /* SharedStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D724EF115C34278B04465229 /* SharedStore.swift */; };
 		5406EED7179563DE79A5EC33 /* UthmanicHafs.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 5841023F992C3CE227A0FED5 /* UthmanicHafs.ttf */; };
 		557099FFED7188AD67628BDF /* OnboardingFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7DA89E0F9B8A0C90FEC5D8B8 /* OnboardingFlow.swift */; };
+		5B78C5006959B6C0AE505046 /* OnboardingPrayer.png in Resources */ = {isa = PBXBuildFile; fileRef = DF341C8DCDBE7F13A13EAB57 /* OnboardingPrayer.png */; };
+		5F1673DA5ED3645E19FB12AC /* OnboardingReminder.png in Resources */ = {isa = PBXBuildFile; fileRef = 9E6C6868A271B01D7540F818 /* OnboardingReminder.png */; };
 		6E0433F59FDE9E36B2E01F07 /* PrayerTimesService.swift in Sources */ = {isa = PBXBuildFile; fileRef = C987C3A68109AC009EEBE541 /* PrayerTimesService.swift */; };
 		6EC25E792046B6782C2008F9 /* LifeGroupFamily.png in Resources */ = {isa = PBXBuildFile; fileRef = 760B8428C0897C6D2CCE2234 /* LifeGroupFamily.png */; };
 		70DC51EA2A8BCFC5ECB8AD92 /* AppIcon60x60@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = DFCBD69B0913648D27A8A02D /* AppIcon60x60@3x.png */; };
 		79273DED802F044CF9428D97 /* LibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDD2FB965151F6ABFB349296 /* LibraryView.swift */; };
 		7EEAB40223E3A47A14EF86F3 /* SakinaWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = B413F95EBD77CF107DB7E169 /* SakinaWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		83D618E0890F94D7DB94867F /* ArabicReflections.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75C9DF2B84425747CEB0944C /* ArabicReflections.swift */; };
+		88EE2055689E8C4750ADCF64 /* PrayerIsha.png in Resources */ = {isa = PBXBuildFile; fileRef = A99F85D233816DA30F65DF8B /* PrayerIsha.png */; };
 		8B027AC65EB41B1F2D2B4DC9 /* SituationDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35A7453DBF8D8E09E7E9D456 /* SituationDetailView.swift */; };
 		8B6355859F8D0E0D156095E9 /* PrayerSchedule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 559F960ED9DDC87C9C69D8EC /* PrayerSchedule.swift */; };
 		A44FE29C785FF1A9E28099B8 /* QuranCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC07A9B481218431697FE1FB /* QuranCatalog.swift */; };
 		BDF6F3021D497B78102FB283 /* ExploreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B41F0AE307F238DAE7968EB /* ExploreView.swift */; };
 		C062B0C6C0C5CE56004D2E2F /* PrayerCalculationSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3060B4B44BD6373F6EFD9309 /* PrayerCalculationSettings.swift */; };
 		C384438352BFFCFCC2C38EB3 /* CompanionContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = C973658D4D60E07B81BABDEA /* CompanionContent.swift */; };
+		C87735751A218E110A0278F4 /* PrayerAsr.png in Resources */ = {isa = PBXBuildFile; fileRef = C83BF68AB643F96D9AD26311 /* PrayerAsr.png */; };
+		C89D320E2D750975EC0434B1 /* PrayerDhuhr.png in Resources */ = {isa = PBXBuildFile; fileRef = 6DBF7A34C467659AC5B9CECA /* PrayerDhuhr.png */; };
 		CA714A7FBE9A2C7C722B70C5 /* AppIcon60x60@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FAA11D5F405A2BF91BEDF0F0 /* AppIcon60x60@2x.png */; };
 		CB93F143A65EAF05B9EDBEB9 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FF1EF6DFE596B4EFA06E760 /* SettingsView.swift */; };
 		CBFEE1EC2F7993F6967C2AF0 /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = B83F0981032609DC4C4FFCD8 /* GoogleSignInSwift */; };
@@ -100,6 +108,7 @@
 		55F91CDE5E2E74882DCDCBEB /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		5841023F992C3CE227A0FED5 /* UthmanicHafs.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = UthmanicHafs.ttf; sourceTree = "<group>"; };
 		5B41F0AE307F238DAE7968EB /* ExploreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreView.swift; sourceTree = "<group>"; };
+		6DBF7A34C467659AC5B9CECA /* PrayerDhuhr.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PrayerDhuhr.png; sourceTree = "<group>"; };
 		7243A48DC43A52C5EEC89F29 /* LifeGroupProvision.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = LifeGroupProvision.png; sourceTree = "<group>"; };
 		73BDB5597C502DF9620D4EB9 /* verses.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = verses.json; sourceTree = "<group>"; };
 		73FDCEAB69FC5FF591CBEACB /* LifeGroupWellbeing.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = LifeGroupWellbeing.png; sourceTree = "<group>"; };
@@ -110,18 +119,25 @@
 		8778E3432F3F2902279E9FC3 /* AppIcon76x76@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "AppIcon76x76@2x.png"; sourceTree = "<group>"; };
 		8FF1EF6DFE596B4EFA06E760 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		9162A56A57E5DC9D205C411C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		98DB2EBF9DA7F53EB4CA68A2 /* OnboardingReading.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = OnboardingReading.png; sourceTree = "<group>"; };
+		9E6C6868A271B01D7540F818 /* OnboardingReminder.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = OnboardingReminder.png; sourceTree = "<group>"; };
+		A99F85D233816DA30F65DF8B /* PrayerIsha.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PrayerIsha.png; sourceTree = "<group>"; };
 		AB2DE4D23275B34EC57D3143 /* PersistenceModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceModels.swift; sourceTree = "<group>"; };
 		B413F95EBD77CF107DB7E169 /* SakinaWidget.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = SakinaWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		B933A69E06A4792272BA5D80 /* LifeGroupMarriage.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = LifeGroupMarriage.png; sourceTree = "<group>"; };
 		BBF88022D366BA9A9E55A231 /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
 		C176745055C5CEE71C134488 /* UthmanicHafs.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = UthmanicHafs.ttf; sourceTree = "<group>"; };
+		C83BF68AB643F96D9AD26311 /* PrayerAsr.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PrayerAsr.png; sourceTree = "<group>"; };
 		C94B8B0D7FA881C025CBEEAA /* AboutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutView.swift; sourceTree = "<group>"; };
 		C973658D4D60E07B81BABDEA /* CompanionContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompanionContent.swift; sourceTree = "<group>"; };
 		C987C3A68109AC009EEBE541 /* PrayerTimesService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerTimesService.swift; sourceTree = "<group>"; };
 		CC07A9B481218431697FE1FB /* QuranCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuranCatalog.swift; sourceTree = "<group>"; };
+		CFD288F8B42BA075D908D6DF /* PrayerMaghrib.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PrayerMaghrib.png; sourceTree = "<group>"; };
 		D1EFDB8F8C78374354ED876F /* RecitationPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecitationPlayer.swift; sourceTree = "<group>"; };
 		D4B580FC23B29FCF7EDFC789 /* GoogleBackupService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleBackupService.swift; sourceTree = "<group>"; };
+		D4C36553DFE5720EB0957BE3 /* PrayerFajr.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = PrayerFajr.png; sourceTree = "<group>"; };
 		D724EF115C34278B04465229 /* SharedStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SharedStore.swift; sourceTree = "<group>"; };
+		DF341C8DCDBE7F13A13EAB57 /* OnboardingPrayer.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = OnboardingPrayer.png; sourceTree = "<group>"; };
 		DFCBD69B0913648D27A8A02D /* AppIcon60x60@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "AppIcon60x60@3x.png"; sourceTree = "<group>"; };
 		EE11737D69D6C70B0031887F /* Sakina.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Sakina.entitlements; sourceTree = "<group>"; };
 		F0305A74178E3392B59CE373 /* SakinaWidgets.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SakinaWidgets.swift; sourceTree = "<group>"; };
@@ -150,6 +166,17 @@
 				08BCB593D183591E26DE5FB7 /* ContentIntegrityTests.swift */,
 			);
 			path = SakinaTests;
+			sourceTree = "<group>";
+		};
+		14C1C00BBA577562B8DA44C9 /* OnboardingArt */ = {
+			isa = PBXGroup;
+			children = (
+				DF341C8DCDBE7F13A13EAB57 /* OnboardingPrayer.png */,
+				98DB2EBF9DA7F53EB4CA68A2 /* OnboardingReading.png */,
+				9E6C6868A271B01D7540F818 /* OnboardingReminder.png */,
+				9F260E47A1A8DD92E9559EB7 /* PrayerMoments */,
+			);
+			path = OnboardingArt;
 			sourceTree = "<group>";
 		};
 		186B83C6E2C60F40225AE1F5 /* Account */ = {
@@ -237,6 +264,18 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		9F260E47A1A8DD92E9559EB7 /* PrayerMoments */ = {
+			isa = PBXGroup;
+			children = (
+				C83BF68AB643F96D9AD26311 /* PrayerAsr.png */,
+				6DBF7A34C467659AC5B9CECA /* PrayerDhuhr.png */,
+				D4C36553DFE5720EB0957BE3 /* PrayerFajr.png */,
+				A99F85D233816DA30F65DF8B /* PrayerIsha.png */,
+				CFD288F8B42BA075D908D6DF /* PrayerMaghrib.png */,
+			);
+			path = PrayerMoments;
+			sourceTree = "<group>";
+		};
 		B89397B5429CF38946FA3E34 /* Models */ = {
 			isa = PBXGroup;
 			children = (
@@ -264,6 +303,7 @@
 				8778E3432F3F2902279E9FC3 /* AppIcon76x76@2x.png */,
 				5841023F992C3CE227A0FED5 /* UthmanicHafs.ttf */,
 				D0A5024651CA66B33EB9BE16 /* LifeGroupArt */,
+				14C1C00BBA577562B8DA44C9 /* OnboardingArt */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -451,6 +491,14 @@
 				2B1A97D70212360D814E8284 /* LifeGroupMarriage.png in Resources */,
 				1CD3EED031A9F6879A5778BE /* LifeGroupProvision.png in Resources */,
 				32F57EF9FD499F6F94D374D8 /* LifeGroupWellbeing.png in Resources */,
+				5B78C5006959B6C0AE505046 /* OnboardingPrayer.png in Resources */,
+				0BA7B154FF0DBD60E246CE3A /* OnboardingReading.png in Resources */,
+				5F1673DA5ED3645E19FB12AC /* OnboardingReminder.png in Resources */,
+				C87735751A218E110A0278F4 /* PrayerAsr.png in Resources */,
+				C89D320E2D750975EC0434B1 /* PrayerDhuhr.png in Resources */,
+				2EBC861877B8F94AA01AD3E1 /* PrayerFajr.png in Resources */,
+				88EE2055689E8C4750ADCF64 /* PrayerIsha.png in Resources */,
+				17AA1F95250D6C72E1B7D313 /* PrayerMaghrib.png in Resources */,
 				5406EED7179563DE79A5EC33 /* UthmanicHafs.ttf in Resources */,
 				1209500D8182761B7E34CCF4 /* verses.json in Resources */,
 			);
