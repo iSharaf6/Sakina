@@ -226,7 +226,7 @@ private struct PrayerHeroCard: View {
             let next = schedule.nextEvent(after: context.date)
 
             VStack(alignment: .leading, spacing: 21) {
-                HStack {
+                HStack(alignment: .top) {
                     VStack(alignment: .leading, spacing: 4) {
                         Text(copy("NEXT PRAYER", "الصلاة القادمة"))
                             .font(.caption2.weight(.bold))
@@ -251,10 +251,17 @@ private struct PrayerHeroCard: View {
 
                     Spacer()
 
-                    Image(systemName: next?.kind.symbolName ?? "moon.stars.fill")
-                        .font(.system(size: 27, weight: .light))
-                        .foregroundStyle(ivory)
-                        .symbolRenderingMode(.hierarchical)
+                    ZStack {
+                        Circle()
+                            .fill(ivory.opacity(0.94))
+                            .frame(width: 54, height: 54)
+
+                        PrayerMomentArtwork(
+                            artwork: PrayerMomentArt(kind: next?.kind ?? .isha),
+                            size: 60
+                        )
+                    }
+                    .frame(width: 64, height: 64)
                 }
 
                 Divider().overlay(ivory.opacity(0.18))
@@ -358,9 +365,7 @@ private struct PrayerPermissionCard: View {
                     .fixedSize(horizontal: false, vertical: true)
                 }
                 Spacer(minLength: 12)
-                Image(systemName: "location.viewfinder")
-                    .font(.system(size: 25, weight: .light))
-                    .foregroundStyle(Color.sakinaInk)
+                OnboardingHeroArtwork(artwork: .prayer, size: 64)
             }
 
             if let errorMessage {
@@ -397,32 +402,65 @@ private struct CompactLifeGroupCard: View {
     let group: LifeGroup
     let language: AppLanguage
 
-    var body: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            Image(systemName: group.symbol)
-                .font(.system(size: 19, weight: .medium))
-                .foregroundStyle(Color.sakinaInk)
-                .frame(width: 40, height: 40)
-                .background(Color.sakinaInk.opacity(0.07), in: RoundedRectangle(cornerRadius: 12))
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
 
-            VStack(alignment: .leading, spacing: 4) {
-                Text(group.title(language))
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(Color.sakinaInk)
-                    .lineLimit(2)
-                    .multilineTextAlignment(.leading)
-                Text(language.pick("\(group.stages.count) stages", "\(group.stages.count) مراحل"))
-                    .font(.caption2)
-                    .foregroundStyle(Color.sakinaMuted)
+    var body: some View {
+        Group {
+            if dynamicTypeSize.isAccessibilitySize {
+                accessibilityLayout
+            } else {
+                cornerLayout
             }
         }
-        .padding(15)
-        .frame(width: 152, height: 145, alignment: .leading)
         .background(Color.sakinaElevated, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
         .overlay(
             RoundedRectangle(cornerRadius: 20, style: .continuous)
                 .strokeBorder(Color.sakinaHairline, lineWidth: 1)
         )
+    }
+
+    private var cornerLayout: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            LifeGroupArtwork(group: group)
+                .scaledToFit()
+                .frame(width: 52, height: 52)
+                .frame(maxWidth: .infinity, alignment: .trailing)
+                .accessibilityHidden(true)
+
+            Spacer(minLength: 8)
+
+            labels
+        }
+        .frame(width: 122, height: 115, alignment: .topLeading)
+        .padding(15)
+    }
+
+    private var accessibilityLayout: some View {
+        HStack(alignment: .top, spacing: 16) {
+            labels
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+            LifeGroupArtwork(group: group)
+                .scaledToFit()
+                .frame(width: 60, height: 60)
+                .accessibilityHidden(true)
+        }
+        .padding(18)
+        .frame(width: 240, alignment: .topLeading)
+        .frame(minHeight: 132, alignment: .topLeading)
+    }
+
+    private var labels: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Text(group.title(language))
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(Color.sakinaInk)
+                .lineLimit(dynamicTypeSize.isAccessibilitySize ? nil : 2)
+                .multilineTextAlignment(.leading)
+            Text(language.pick("\(group.stages.count) stages", "\(group.stages.count) مراحل"))
+                .font(.caption2)
+                .foregroundStyle(Color.sakinaMuted)
+        }
     }
 }
 

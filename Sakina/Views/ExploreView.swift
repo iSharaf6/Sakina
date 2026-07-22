@@ -228,7 +228,7 @@ struct LifeGroupCard: View {
     }
 }
 
-private struct LifeGroupArtwork: View {
+struct LifeGroupArtwork: View {
     let group: LifeGroup
 
     @ViewBuilder
@@ -238,12 +238,16 @@ private struct LifeGroupArtwork: View {
                 .resizable()
                 .interpolation(.high)
         } else {
-            Image(systemName: group.symbol)
-                .resizable()
-                .scaledToFit()
-                .foregroundStyle(Color.sakinaInk)
-                .padding(26)
-                .background(Color.sakinaInk.opacity(0.08))
+            ZStack {
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .fill(Color.sakinaInk.opacity(0.08))
+
+                Image(systemName: group.symbol)
+                    .resizable()
+                    .scaledToFit()
+                    .foregroundStyle(Color.sakinaInk)
+                    .scaleEffect(0.5)
+            }
         }
     }
 }

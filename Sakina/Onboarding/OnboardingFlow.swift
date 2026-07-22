@@ -17,6 +17,16 @@ enum PrayerMomentArt: String, CaseIterable {
     case asr = "PrayerAsr"
     case maghrib = "PrayerMaghrib"
     case isha = "PrayerIsha"
+
+    init(kind: PrayerKind) {
+        switch kind {
+        case .fajr, .sunrise: self = .fajr
+        case .dhuhr: self = .dhuhr
+        case .asr: self = .asr
+        case .maghrib: self = .maghrib
+        case .isha: self = .isha
+        }
+    }
 }
 
 /// A calm, first-run setup for the few preferences Yaqeen needs in order to
@@ -328,7 +338,7 @@ private struct OnboardingPrayerView: View {
             HStack(alignment: .top, spacing: 4) {
                 ForEach(prayerKinds) { kind in
                     VStack(spacing: 7) {
-                        PrayerMomentArtwork(artwork: artwork(for: kind))
+                        PrayerMomentArtwork(artwork: PrayerMomentArt(kind: kind))
                             .opacity(hasPrayerTimes ? 1 : 0.38)
 
                         Text(kind.displayName(locale: language.locale))
@@ -392,20 +402,11 @@ private struct OnboardingPrayerView: View {
         formatter.setLocalizedDateFormatFromTemplate("j:mm")
         return formatter.string(from: date)
     }
-
-    private func artwork(for kind: PrayerKind) -> PrayerMomentArt {
-        switch kind {
-        case .fajr, .sunrise: return .fajr
-        case .dhuhr: return .dhuhr
-        case .asr: return .asr
-        case .maghrib: return .maghrib
-        case .isha: return .isha
-        }
-    }
 }
 
-private struct PrayerMomentArtwork: View {
+struct PrayerMomentArtwork: View {
     let artwork: PrayerMomentArt
+    var size: CGFloat = 30
 
     var body: some View {
         Group {
@@ -417,10 +418,10 @@ private struct PrayerMomentArtwork: View {
             } else {
                 YaqeenMark()
                     .fill(Color.sakinaInk)
-                    .padding(7)
+                    .padding(size * 0.23)
             }
         }
-        .frame(width: 30, height: 30)
+        .frame(width: size, height: size)
         .accessibilityHidden(true)
     }
 }
@@ -989,8 +990,9 @@ private struct OnboardingIntro: View {
     }
 }
 
-private struct OnboardingHeroArtwork: View {
+struct OnboardingHeroArtwork: View {
     let artwork: OnboardingHeroArt
+    var size: CGFloat = 104
 
     var body: some View {
         Group {
@@ -1002,10 +1004,10 @@ private struct OnboardingHeroArtwork: View {
             } else {
                 YaqeenMark()
                     .fill(Color.sakinaInk)
-                    .padding(28)
+                    .padding(size * 0.27)
             }
         }
-        .frame(width: 104, height: 104)
+        .frame(width: size, height: size)
         .accessibilityHidden(true)
     }
 }
