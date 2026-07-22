@@ -172,11 +172,6 @@ struct LifeGroupCard: View {
             LifeGroupArtwork(group: group)
                 .scaledToFit()
                 .frame(width: 118, height: 118)
-                .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
-                .overlay {
-                    RoundedRectangle(cornerRadius: 20, style: .continuous)
-                        .strokeBorder(Color.sakinaHairline.opacity(0.72), lineWidth: 0.75)
-                }
                 .frame(maxWidth: .infinity)
                 .accessibilityHidden(true)
 
@@ -292,11 +287,6 @@ struct LifeGroupView: View {
             LifeGroupArtwork(group: group)
                 .scaledToFit()
                 .frame(width: 94, height: 94)
-                .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
-                .overlay {
-                    RoundedRectangle(cornerRadius: 24, style: .continuous)
-                        .strokeBorder(Color.sakinaHairline.opacity(0.72), lineWidth: 0.75)
-                }
                 .accessibilityHidden(true)
 
             VStack(alignment: .leading, spacing: 8) {

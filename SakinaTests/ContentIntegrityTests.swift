@@ -43,7 +43,7 @@ final class ContentIntegrityTests: XCTestCase {
         XCTAssertEqual(groupedIDs.count, Set(groupedIDs).count, "A situation appears in more than one stage")
     }
 
-    func testEveryLifeGroupHasUniqueBundledArtwork() {
+    func testEveryLifeGroupHasUniqueBundledArtwork() throws {
         let groups = GuidanceCatalog.groups
         let assetNames = groups.map(\.id.artworkAssetName)
 
@@ -51,7 +51,11 @@ final class ContentIntegrityTests: XCTestCase {
         XCTAssertEqual(assetNames.count, Set(assetNames).count, "Life-group artwork names must be unique")
 
         for assetName in assetNames {
-            XCTAssertNotNil(UIImage(named: assetName), "Missing bundled artwork: \(assetName)")
+            let image = try XCTUnwrap(UIImage(named: assetName), "Missing bundled artwork: \(assetName)")
+            let pixels = try XCTUnwrap(image.cgImage, "Artwork is not a raster image: \(assetName)")
+            XCTAssertEqual(pixels.width, 512, "\(assetName) must be 512 px wide")
+            XCTAssertEqual(pixels.height, 512, "\(assetName) must be 512 px high")
+            try assertArtworkHasTransparentBackground(image, assetName: assetName)
         }
     }
 
@@ -69,6 +73,7 @@ final class ContentIntegrityTests: XCTestCase {
             let pixels = try XCTUnwrap(image.cgImage, "Artwork is not a raster image: \(assetName)")
             XCTAssertEqual(pixels.width, 512, "\(assetName) must be 512 px wide")
             XCTAssertEqual(pixels.height, 512, "\(assetName) must be 512 px high")
+            try assertArtworkHasTransparentBackground(image, assetName: assetName)
         }
     }
 
@@ -86,6 +91,7 @@ final class ContentIntegrityTests: XCTestCase {
             let pixels = try XCTUnwrap(image.cgImage, "Artwork is not a raster image: \(assetName)")
             XCTAssertEqual(pixels.width, 256, "\(assetName) must be 256 px wide")
             XCTAssertEqual(pixels.height, 256, "\(assetName) must be 256 px high")
+            try assertArtworkHasTransparentBackground(image, assetName: assetName)
         }
     }
 
@@ -117,5 +123,57 @@ final class ContentIntegrityTests: XCTestCase {
         let data = try Data(contentsOf: url)
         let actual = SHA256.hash(data: data).map { String(format: "%02x", $0) }.joined()
         XCTAssertEqual(actual, reviewedVersesSHA256)
+    }
+
+    private func assertArtworkHasTransparentBackground(
+        _ image: UIImage,
+        assetName: String,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) throws {
+        let source = try XCTUnwrap(
+            image.cgImage,
+            "Artwork is not a raster image: \(assetName)",
+            file: file,
+            line: line
+        )
+        let width = source.width
+        let height = source.height
+        let bytesPerRow = width * 4
+        var rgba = [UInt8](repeating: 0, count: height * bytesPerRow)
+        let context = try XCTUnwrap(
+            CGContext(
+                data: &rgba,
+                width: width,
+                height: height,
+                bitsPerComponent: 8,
+                bytesPerRow: bytesPerRow,
+                space: CGColorSpaceCreateDeviceRGB(),
+                bitmapInfo: CGBitmapInfo.byteOrder32Big.rawValue
+                    | CGImageAlphaInfo.premultipliedLast.rawValue
+            ),
+            "Could not decode alpha for \(assetName)",
+            file: file,
+            line: line
+        )
+
+        context.draw(source, in: CGRect(x: 0, y: 0, width: width, height: height))
+
+        let alphaValues = stride(from: 3, to: rgba.count, by: 4).map { rgba[$0] }
+        XCTAssertTrue(alphaValues.contains(0), "\(assetName) needs transparent pixels", file: file, line: line)
+        XCTAssertTrue(alphaValues.contains(255), "\(assetName) needs opaque subject pixels", file: file, line: line)
+
+        let cornerAlphaOffsets = [
+            3,
+            (width - 1) * 4 + 3,
+            (height - 1) * bytesPerRow + 3,
+            (height - 1) * bytesPerRow + (width - 1) * 4 + 3
+        ]
+        XCTAssertTrue(
+            cornerAlphaOffsets.allSatisfy { rgba[$0] == 0 },
+            "\(assetName) must be clear at every canvas corner",
+            file: file,
+            line: line
+        )
     }
 }

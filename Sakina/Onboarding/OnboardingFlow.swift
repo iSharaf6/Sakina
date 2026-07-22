@@ -421,7 +421,6 @@ private struct PrayerMomentArtwork: View {
             }
         }
         .frame(width: 30, height: 30)
-        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
         .accessibilityHidden(true)
     }
 }
@@ -1001,21 +1000,12 @@ private struct OnboardingHeroArtwork: View {
                     .interpolation(.high)
                     .scaledToFit()
             } else {
-                ZStack {
-                    Color.sakinaElevated
-
-                    YaqeenMark()
-                        .fill(Color.sakinaInk)
-                        .padding(28)
-                }
+                YaqeenMark()
+                    .fill(Color.sakinaInk)
+                    .padding(28)
             }
         }
         .frame(width: 104, height: 104)
-        .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
-        .overlay {
-            RoundedRectangle(cornerRadius: 24, style: .continuous)
-                .strokeBorder(Color.sakinaHairline.opacity(0.72), lineWidth: 0.75)
-        }
         .accessibilityHidden(true)
     }
 }
