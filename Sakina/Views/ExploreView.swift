@@ -167,33 +167,64 @@ struct LifeGroupCard: View {
     let group: LifeGroup
     let language: AppLanguage
 
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+
     var body: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            LifeGroupArtwork(group: group)
-                .scaledToFit()
-                .frame(width: 118, height: 118)
-                .frame(maxWidth: .infinity)
-                .accessibilityHidden(true)
-
-            VStack(alignment: .leading, spacing: 5) {
-                Text(group.title(language))
-                    .font(.headline)
-                    .foregroundStyle(Color.sakinaInk)
-                    .multilineTextAlignment(.leading)
-                    .fixedSize(horizontal: false, vertical: true)
-
-                Text(group.situations.count == 1
-                     ? language.pick("1 moment", "موقف واحد")
-                     : language.pick("\(group.situations.count) moments", "\(group.situations.count) موقفًا"))
-                    .font(.caption)
-                    .foregroundStyle(Color.sakinaMuted)
+        Group {
+            if dynamicTypeSize.isAccessibilitySize {
+                accessibilityLayout
+            } else {
+                cornerLayout
             }
         }
-        .padding(14)
-        .frame(maxWidth: .infinity, minHeight: 226, alignment: .leading)
+        .padding(16)
+        .frame(maxWidth: .infinity, alignment: .leading)
         .sakinaCard(cornerRadius: 22)
         .accessibilityElement(children: .combine)
         .accessibilityHint(language.pick("Opens this life group", "يفتح هذه المجموعة"))
+    }
+
+    private var cornerLayout: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            LifeGroupArtwork(group: group)
+                .scaledToFit()
+                .frame(width: 68, height: 68)
+                .frame(maxWidth: .infinity, alignment: .trailing)
+                .accessibilityHidden(true)
+
+            Spacer(minLength: 12)
+
+            labels
+        }
+        .frame(maxWidth: .infinity, minHeight: 156, alignment: .topLeading)
+    }
+
+    private var accessibilityLayout: some View {
+        HStack(alignment: .top, spacing: 16) {
+            labels
+                .frame(maxWidth: .infinity, alignment: .leading)
+
+            LifeGroupArtwork(group: group)
+                .scaledToFit()
+                .frame(width: 62, height: 62)
+                .accessibilityHidden(true)
+        }
+    }
+
+    private var labels: some View {
+        VStack(alignment: .leading, spacing: 5) {
+            Text(group.title(language))
+                .font(.headline)
+                .foregroundStyle(Color.sakinaInk)
+                .multilineTextAlignment(.leading)
+                .fixedSize(horizontal: false, vertical: true)
+
+            Text(group.situations.count == 1
+                 ? language.pick("1 moment", "موقف واحد")
+                 : language.pick("\(group.situations.count) moments", "\(group.situations.count) موقفًا"))
+                .font(.caption)
+                .foregroundStyle(Color.sakinaMuted)
+        }
     }
 }
 
