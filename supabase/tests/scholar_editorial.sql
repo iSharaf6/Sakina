@@ -26,21 +26,45 @@ select results_eq(
   'rejecting a null manifest leaves active guidance unchanged'
 );
 
-select has_table('public', 'user_roles');
-select has_table('public', 'scholar_profiles');
-select has_table('public', 'guidance_items');
-select has_table('public', 'scholar_insights');
-select has_table('public', 'scholar_insight_revisions');
-select has_table('public', 'editorial_audit_log');
+select has_table('public', 'user_roles', 'public.user_roles exists');
+select has_table('public', 'scholar_profiles', 'public.scholar_profiles exists');
+select has_table('public', 'guidance_items', 'public.guidance_items exists');
+select has_table('public', 'scholar_insights', 'public.scholar_insights exists');
+select has_table(
+  'public',
+  'scholar_insight_revisions',
+  'public.scholar_insight_revisions exists'
+);
+select has_table('public', 'editorial_audit_log', 'public.editorial_audit_log exists');
 
-select has_type('public', 'app_role');
-select has_type('public', 'insight_status');
-select has_type('public', 'translation_status');
+select has_type('public', 'app_role', 'public.app_role exists');
+select has_type('public', 'insight_status', 'public.insight_status exists');
+select has_type('public', 'translation_status', 'public.translation_status exists');
 
-select has_index('public', 'guidance_items', 'guidance_items_identity_unique');
-select has_index('public', 'scholar_insights', 'scholar_insights_one_working_copy_idx');
-select has_index('public', 'scholar_insights', 'scholar_insights_one_published_copy_idx');
-select has_index('public', 'guidance_items', 'guidance_items_review_queue_idx');
+select has_index(
+  'public',
+  'guidance_items',
+  'guidance_items_identity_unique',
+  'guidance identity index exists'
+);
+select has_index(
+  'public',
+  'scholar_insights',
+  'scholar_insights_one_working_copy_idx',
+  'one-working-copy index exists'
+);
+select has_index(
+  'public',
+  'scholar_insights',
+  'scholar_insights_one_published_copy_idx',
+  'one-published-copy index exists'
+);
+select has_index(
+  'public',
+  'guidance_items',
+  'guidance_items_review_queue_idx',
+  'review queue index exists'
+);
 select ok(
   exists (
     select 1
@@ -135,9 +159,15 @@ select ok(
 select has_trigger(
   'public',
   'scholar_insight_revisions',
-  'scholar_insight_revisions_immutable'
+  'scholar_insight_revisions_immutable',
+  'scholar insight revisions are immutable'
 );
-select has_trigger('public', 'editorial_audit_log', 'editorial_audit_log_immutable');
+select has_trigger(
+  'public',
+  'editorial_audit_log',
+  'editorial_audit_log_immutable',
+  'editorial audit rows are immutable'
+);
 
 select ok(
   exists (
