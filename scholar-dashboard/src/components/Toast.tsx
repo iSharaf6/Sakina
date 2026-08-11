@@ -1,4 +1,5 @@
-import { CheckCircle2, CircleAlert } from 'lucide-react'
+import { CheckCircle } from '@phosphor-icons/react/CheckCircle'
+import { WarningCircle } from '@phosphor-icons/react/WarningCircle'
 
 export interface ToastState {
   message: string
@@ -11,9 +12,9 @@ export function Toast({ toast }: { toast: ToastState | null }) {
       {toast ? (
         <div className={`toast toast--${toast.tone}`} role={toast.tone === 'error' ? 'alert' : 'status'}>
           {toast.tone === 'success' ? (
-            <CheckCircle2 aria-hidden="true" size={18} />
+            <CheckCircle aria-hidden="true" size={18} weight="bold" />
           ) : (
-            <CircleAlert aria-hidden="true" size={18} />
+            <WarningCircle aria-hidden="true" size={18} weight="bold" />
           )}
           {toast.message}
         </div>

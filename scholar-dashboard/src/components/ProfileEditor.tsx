@@ -1,6 +1,9 @@
-import { ExternalLink } from 'lucide-react'
+import { ArrowSquareOut } from '@phosphor-icons/react/ArrowSquareOut'
 import { useEffect, useState } from 'react'
 import scholarPortrait from '../assets/dr-abdullah-abu-hatab.png'
+import { useTranslation } from '../i18n/useTranslation'
+import { localizedErrorMessage } from '../i18n/localizedError'
+import type { TranslationKey } from '../i18n/translations'
 import { isDevelopmentDemo, publicScholarAvatarURL } from '../lib/supabase'
 import type { AppRole, ScholarProfile } from '../types'
 import { CommandButton } from './CommandButton'
@@ -13,15 +16,20 @@ interface ProfileEditorProps {
   onNotify: (message: string, tone?: 'success' | 'error') => void
 }
 
-const socialFields: Array<{ key: keyof ScholarProfile; label: string; placeholder: string }> = [
-  { key: 'facebookUrl', label: 'Facebook', placeholder: 'https://facebook.com/…' },
-  { key: 'instagramUrl', label: 'Instagram', placeholder: 'https://instagram.com/…' },
-  { key: 'youtubeUrl', label: 'YouTube', placeholder: 'Not provided' },
-  { key: 'tiktokUrl', label: 'TikTok', placeholder: 'Not provided' },
-  { key: 'websiteUrl', label: 'Website', placeholder: 'Not provided' },
+const socialFields: Array<{
+  key: keyof ScholarProfile
+  labelKey: TranslationKey
+  placeholder?: string
+}> = [
+  { key: 'facebookUrl', labelKey: 'profile.facebook', placeholder: 'https://facebook.com/…' },
+  { key: 'instagramUrl', labelKey: 'profile.instagram', placeholder: 'https://instagram.com/…' },
+  { key: 'youtubeUrl', labelKey: 'profile.youtube' },
+  { key: 'tiktokUrl', labelKey: 'profile.tiktok' },
+  { key: 'websiteUrl', labelKey: 'profile.website' },
 ]
 
 export function ProfileEditor({ profile, role, onSave, onSetVisibility, onNotify }: ProfileEditorProps) {
+  const { locale, t } = useTranslation()
   const [draft, setDraft] = useState(profile)
   const [saving, setSaving] = useState(false)
   const [visibilityBusy, setVisibilityBusy] = useState(false)
@@ -50,11 +58,11 @@ export function ProfileEditor({ profile, role, onSave, onSetVisibility, onNotify
       await onSave(draft)
       onNotify(
         role === 'scholar'
-          ? 'Profile saved privately and sent for administrator review'
-          : 'Scholar profile saved; its review status was preserved',
+          ? t('notice.profileScholarSaved')
+          : t('notice.profileAdminSaved'),
       )
     } catch (error) {
-      onNotify(error instanceof Error ? error.message : 'Unable to save the profile.', 'error')
+      onNotify(localizedErrorMessage(error, locale, t, 'errors.profileSave'), 'error')
     } finally {
       setSaving(false)
     }
@@ -65,36 +73,39 @@ export function ProfileEditor({ profile, role, onSave, onSetVisibility, onNotify
     try {
       if (makePublic) await onSave(draft)
       await onSetVisibility(makePublic ? true : profile.verified, makePublic)
-      onNotify(makePublic ? 'Scholar profile verified and published' : 'Scholar profile made private')
+      onNotify(makePublic ? t('notice.profilePublished') : t('notice.profilePrivate'))
     } catch (error) {
-      onNotify(error instanceof Error ? error.message : 'Unable to change profile visibility.', 'error')
+      onNotify(localizedErrorMessage(error, locale, t, 'errors.profileVisibility'), 'error')
     } finally {
       setVisibilityBusy(false)
     }
   }
 
   const reviewState = profile.isPublic && profile.verified
-    ? 'Public and verified'
+    ? t('profile.publicVerified')
     : profile.verified
-      ? 'Private · verified'
-      : 'Private · awaiting administrator review'
+      ? t('profile.privateVerified')
+      : t('profile.awaitingReview')
   const avatarReadyForPublication = isDevelopmentDemo || avatarLoadState === 'loaded'
   const avatarStatus = isDevelopmentDemo && !remoteAvatarURL
-    ? 'Bundled supplied portrait · development preview'
+    ? t('profile.avatarBundled')
     : avatarLoadState === 'loaded'
-      ? 'Exact public Storage portrait loaded for review'
+      ? t('profile.avatarLoaded')
       : avatarLoadState === 'loading'
-        ? 'Loading the exact public Storage portrait…'
+        ? t('profile.avatarLoading')
         : avatarLoadState === 'failed'
-          ? 'Public portrait could not be loaded · verification is blocked'
-          : 'No public avatar path is set · verification is blocked'
+          ? t('profile.avatarFailed')
+          : t('profile.avatarMissing')
+  const displayName = locale === 'ar'
+    ? draft.displayNameAr || draft.displayNameEn || t('profile.nameFallback')
+    : draft.displayNameEn || draft.displayNameAr || t('profile.nameFallback')
 
   return (
     <main className="profile-page">
       <header className="profile-header">
         <div>
-          <h1>Scholar profile</h1>
-          <p>Only publish identity, qualifications and biography that the scholar has approved.</p>
+          <h1>{t('profile.title')}</h1>
+          <p>{t('profile.description')}</p>
           <span className={`profile-review-state ${profile.verified && profile.isPublic ? 'profile-review-state--public' : ''}`}>
             {reviewState}
           </span>
@@ -107,7 +118,7 @@ export function ProfileEditor({ profile, role, onSave, onSetVisibility, onNotify
                 onClick={() => void updateVisibility(false)}
                 variant="quiet"
               >
-                {visibilityBusy ? 'Updating…' : 'Make private'}
+                {visibilityBusy ? t('profile.updating') : t('profile.makePrivate')}
               </CommandButton>
             ) : (
               <CommandButton
@@ -120,7 +131,7 @@ export function ProfileEditor({ profile, role, onSave, onSetVisibility, onNotify
                 onClick={() => void updateVisibility(true)}
                 variant="primary"
               >
-                {visibilityBusy ? 'Publishing…' : 'Verify & publish'}
+                {visibilityBusy ? t('profile.publishing') : t('profile.verifyPublish')}
               </CommandButton>
             )
           ) : null}
@@ -134,7 +145,7 @@ export function ProfileEditor({ profile, role, onSave, onSetVisibility, onNotify
             onClick={save}
             variant={role === 'admin' ? 'secondary' : 'primary'}
           >
-            {saving ? 'Saving…' : 'Save profile'}
+            {saving ? t('profile.saving') : t('profile.save')}
           </CommandButton>
         </div>
       </header>
@@ -142,7 +153,7 @@ export function ProfileEditor({ profile, role, onSave, onSetVisibility, onNotify
       <div className="profile-layout">
         <aside className="profile-identity">
           <img
-            alt={`${draft.displayNameEn || 'Scholar'} public profile portrait`}
+            alt={t('profile.portraitAlt', { name: displayName })}
             key={remoteAvatarURL ?? 'bundled-portrait'}
             onError={() => {
               if (remoteAvatarURL) setAvatarLoadState('failed')
@@ -156,19 +167,21 @@ export function ProfileEditor({ profile, role, onSave, onSetVisibility, onNotify
           >
             {avatarStatus}
           </p>
-          <h2>{draft.displayNameEn || 'Scholar name'}</h2>
-          {draft.displayNameAr ? (
+          <h2>{displayName}</h2>
+          {locale === 'en' && draft.displayNameAr ? (
             <p dir="rtl" lang="ar">{draft.displayNameAr}</p>
+          ) : locale === 'ar' && draft.displayNameEn ? (
+            <p dir="ltr" lang="en">{draft.displayNameEn}</p>
           ) : (
-            <p className="empty-profile-value">Arabic display name not provided</p>
+            <p className="empty-profile-value">{t('profile.arabicNameMissing')}</p>
           )}
           <div className="profile-links">
-            {socialFields.map(({ key, label }) => {
+            {socialFields.map(({ key, labelKey }) => {
               const value = draft[key]
               return typeof value === 'string' && value ? (
                 <a href={value} key={key} rel="noreferrer" target="_blank">
-                  {label}
-                  <ExternalLink aria-hidden="true" size={15} />
+                  {t(labelKey)}
+                  <ArrowSquareOut aria-hidden="true" size={15} weight="bold" />
                 </a>
               ) : null
             })}
@@ -183,11 +196,13 @@ export function ProfileEditor({ profile, role, onSave, onSetVisibility, onNotify
           }}
         >
           <div className="profile-review-notice">
-            <strong>{role === 'scholar' ? 'Profile review required after changes' : 'Administrator edit'}</strong>
+            <strong>
+              {role === 'scholar' ? t('profile.scholarReviewTitle') : t('profile.adminEditTitle')}
+            </strong>
             <p>
               {role === 'scholar'
-                ? 'Saving any change makes this profile private and clears verification. An administrator must review and republish it before the public app shows the update.'
-                : 'Administrator text and link edits preserve the current review state. A changed portrait path becomes private automatically. Verify & publish is enabled only after the exact public portrait loads and every field has been checked.'}
+                ? t('profile.scholarReviewDescription')
+                : t('profile.adminEditDescription')}
             </p>
             {role === 'scholar' ? (
               <label>
@@ -197,14 +212,16 @@ export function ProfileEditor({ profile, role, onSave, onSetVisibility, onNotify
                   onChange={(event) => setReviewResetConfirmed(event.target.checked)}
                   type="checkbox"
                 />
-                I understand this profile will become private until reviewed.
+                {t('profile.reviewConfirmation')}
               </label>
             ) : null}
           </div>
           <div className="profile-form__pair">
             <label className="form-field">
-              <span>English display name</span>
+              <span>{t('profile.englishName')}</span>
               <input
+                dir="ltr"
+                lang="en"
                 name="display-name-en"
                 onChange={(event) => update('displayNameEn', event.target.value)}
                 required
@@ -212,58 +229,62 @@ export function ProfileEditor({ profile, role, onSave, onSetVisibility, onNotify
               />
             </label>
             <label className="form-field">
-              <span>Arabic display name</span>
+              <span>{t('profile.arabicName')}</span>
               <input
                 dir="rtl"
                 lang="ar"
                 name="display-name-ar"
                 onChange={(event) => update('displayNameAr', event.target.value)}
-                placeholder="Not provided"
+                placeholder={t('profile.notProvided')}
                 value={draft.displayNameAr}
               />
             </label>
           </div>
           <div className="profile-form__pair">
             <label className="form-field">
-              <span>English title or qualification</span>
+              <span>{t('profile.englishTitle')}</span>
               <input
+                dir="ltr"
+                lang="en"
                 name="title-en"
                 onChange={(event) => update('titleEn', event.target.value)}
-                placeholder="Not provided"
+                placeholder={t('profile.notProvided')}
                 value={draft.titleEn}
               />
             </label>
             <label className="form-field">
-              <span>Arabic title or qualification</span>
+              <span>{t('profile.arabicTitle')}</span>
               <input
                 dir="rtl"
                 lang="ar"
                 name="title-ar"
                 onChange={(event) => update('titleAr', event.target.value)}
-                placeholder="غير متوفر"
+                placeholder={t('profile.notProvided')}
                 value={draft.titleAr}
               />
             </label>
           </div>
           <div className="profile-form__pair">
             <label className="form-field">
-              <span>English biography</span>
+              <span>{t('profile.englishBio')}</span>
               <textarea
+                dir="ltr"
+                lang="en"
                 name="bio-en"
                 onChange={(event) => update('bioEn', event.target.value)}
-                placeholder="Not provided"
+                placeholder={t('profile.notProvided')}
                 rows={5}
                 value={draft.bioEn}
               />
             </label>
             <label className="form-field">
-              <span>Arabic biography</span>
+              <span>{t('profile.arabicBio')}</span>
               <textarea
                 dir="rtl"
                 lang="ar"
                 name="bio-ar"
                 onChange={(event) => update('bioAr', event.target.value)}
-                placeholder="غير متوفر"
+                placeholder={t('profile.notProvided')}
                 rows={5}
                 value={draft.bioAr}
               />
@@ -271,15 +292,16 @@ export function ProfileEditor({ profile, role, onSave, onSetVisibility, onNotify
           </div>
 
           <fieldset className="social-fieldset">
-            <legend>Approved links</legend>
-            {socialFields.map(({ key, label, placeholder }) => (
+            <legend>{t('profile.approvedLinks')}</legend>
+            {socialFields.map(({ key, labelKey, placeholder }) => (
               <label className="form-field" key={key}>
-                <span>{label}</span>
+                <span>{t(labelKey)}</span>
                 <input
+                  dir="ltr"
                   inputMode="url"
                   name={String(key)}
                   onChange={(event) => update(key, event.target.value)}
-                  placeholder={placeholder}
+                  placeholder={placeholder ?? t('profile.notProvided')}
                   type="url"
                   value={String(draft[key])}
                 />

@@ -14,8 +14,8 @@
     "@fontsource/dm-sans": "^5.2.5",
     "@fontsource/lora": "^5.2.6",
     "@fontsource/noto-naskh-arabic": "^5.2.6",
+    "@phosphor-icons/react": "^2.1.10",
     "@supabase/supabase-js": "^2.57.4",
-    "lucide-react": "^0.468.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1"
   },

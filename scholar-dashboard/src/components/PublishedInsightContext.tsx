@@ -1,3 +1,4 @@
+import { useTranslation } from '../i18n/useTranslation'
 import type { Insight } from '../types'
 
 interface PublishedInsightContextProps {
@@ -6,54 +7,61 @@ interface PublishedInsightContextProps {
 }
 
 export function PublishedInsightContext({ insight, workingInsight }: PublishedInsightContextProps) {
+  const { t } = useTranslation()
   return (
     <section aria-labelledby="currently-published-title" className="published-context">
       <header className="published-context__header">
         <div>
-          <span className="published-context__eyebrow">Live version</span>
-          <h2 id="currently-published-title">Currently published</h2>
+          <span className="published-context__eyebrow">{t('published.liveVersion')}</span>
+          <h2 id="currently-published-title">{t('published.currently')}</h2>
         </div>
-        <span className="published-context__readonly">Read only</span>
+        <span className="published-context__readonly">{t('published.readOnly')}</span>
       </header>
       <p className="published-context__note">
         {workingInsight
-          ? 'This version remains public while the replacement moves through review.'
-          : 'This is the version currently visible in the public app.'}
+          ? t('published.noteWithReplacement')
+          : t('published.noteCurrent')}
       </p>
       <div className="published-context__body">
         <article>
-          <h3>Published Arabic insight</h3>
+          <h3>{t('published.arabicTitle')}</h3>
           {insight.bodyAr.trim() ? (
             <p className="published-context__arabic" dir="rtl" lang="ar">{insight.bodyAr}</p>
           ) : (
-            <p className="published-context__empty">No published Arabic insight is available.</p>
+            <p className="published-context__empty">{t('published.arabicEmpty')}</p>
           )}
         </article>
         <article>
-          <h3>Published English</h3>
+          <h3>{t('published.englishTitle')}</h3>
           {insight.bodyEn.trim() ? (
-            <p>{insight.bodyEn}</p>
+            <p dir="ltr" lang="en">{insight.bodyEn}</p>
           ) : (
-            <p className="published-context__empty">No published English translation is available.</p>
+            <p className="published-context__empty">{t('published.englishEmpty')}</p>
           )}
         </article>
       </div>
       {workingInsight ? (
-        <section aria-label="Working replacement" className="published-context__replacement">
+        <section aria-label={t('published.workingLabel')} className="published-context__replacement">
           <header>
             <div>
-              <span className="published-context__eyebrow">Replacement</span>
-              <h3>Working insight</h3>
+              <span className="published-context__eyebrow">{t('published.replacement')}</span>
+              <h3>{t('published.working')}</h3>
             </div>
             <span className="published-context__replacement-status">
-              {workingInsight.status === 'submitted' ? 'Submitted for approval' : 'Draft in progress'}
+              {workingInsight.status === 'submitted'
+                ? t('published.submittedApproval')
+                : t('published.draftProgress')}
             </span>
           </header>
           <div className="published-context__replacement-copy">
             <p dir="rtl" lang="ar">
-              {workingInsight.bodyAr.trim() || 'لا توجد معاينة عربية بعد.'}
+              {workingInsight.bodyAr.trim() || t('published.arabicPreviewEmpty')}
             </p>
-            <p>{workingInsight.bodyEn.trim() || 'No English replacement preview yet.'}</p>
+            {workingInsight.bodyEn.trim() ? (
+              <p dir="ltr" lang="en">{workingInsight.bodyEn}</p>
+            ) : (
+              <p>{t('published.englishPreviewEmpty')}</p>
+            )}
           </div>
         </section>
       ) : null}

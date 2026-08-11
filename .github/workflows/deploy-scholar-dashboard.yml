@@ -1,0 +1,99 @@
+name: Deploy scholar dashboard
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "scholar-dashboard/**"
+      - ".github/workflows/deploy-scholar-dashboard.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: scholar-dashboard-pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build private review dashboard
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      VITE_BASE_PATH: /Sakina/
+      VITE_SUPABASE_URL: ${{ vars.YAQEEN_SUPABASE_URL }}
+      VITE_SUPABASE_PUBLISHABLE_KEY: ${{ vars.YAQEEN_SUPABASE_PUBLISHABLE_KEY }}
+      VITE_TRANSLATION_FUNCTION: translate-scholar-insight
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: scholar-dashboard/package-lock.json
+
+      - name: Install dashboard dependencies
+        working-directory: scholar-dashboard
+        run: npm ci
+
+      - name: Validate production configuration
+        working-directory: scholar-dashboard
+        run: |
+          test "$VITE_BASE_PATH" = "/Sakina/"
+          test -n "$VITE_SUPABASE_URL"
+          test -n "$VITE_SUPABASE_PUBLISHABLE_KEY"
+          node --input-type=module <<'NODE'
+          const endpoint = new URL(process.env.VITE_SUPABASE_URL)
+          if (endpoint.protocol !== 'https:') {
+            throw new Error('YAQEEN_SUPABASE_URL must use HTTPS')
+          }
+          NODE
+
+      - name: Lint dashboard
+        working-directory: scholar-dashboard
+        run: npm run lint
+
+      - name: Build dashboard
+        working-directory: scholar-dashboard
+        run: npm run build
+
+      - name: Verify production artifact
+        working-directory: scholar-dashboard
+        run: |
+          test -f dist/index.html
+          grep -q 'src="/Sakina/assets/' dist/index.html
+          if find dist -type f -name '*.map' -print -quit | grep -q .; then
+            echo "Production source maps must not be published." >&2
+            exit 1
+          fi
+          if grep -R -E -q \
+            --include='*.js' \
+            'development-demo@localhost|Development preview only' \
+            dist; then
+            echo "Development demo code leaked into the production bundle." >&2
+            exit 1
+          fi
+
+      - uses: actions/configure-pages@v5
+
+      - name: Upload dashboard artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: scholar-dashboard/dist
+
+  deploy:
+    name: Publish dashboard
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-24.04
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

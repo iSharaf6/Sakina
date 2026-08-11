@@ -29,11 +29,15 @@ async function main() {
   const paths = {
     schema: resolve(
       root,
-      "supabase/migrations/202608110001_scholar_editorial_schema.sql",
+      "supabase/migrations/20260811074636_scholar_editorial_schema.sql",
     ),
     workflow: resolve(
       root,
-      "supabase/migrations/202608110002_scholar_editorial_security_and_workflow.sql",
+      "supabase/migrations/20260811074804_scholar_editorial_security_and_workflow_retry.sql",
+    ),
+    seed: resolve(
+      root,
+      "supabase/migrations/20260811074900_seed_guidance_manifest_103.sql",
     ),
     syncFunction: resolve(root, "supabase/functions/sync-guidance-manifest/index.ts"),
     translationFunction: resolve(
@@ -51,6 +55,7 @@ async function main() {
   const [
     schema,
     workflow,
+    seed,
     syncFunction,
     translationFunction,
     manifestSource,
@@ -60,6 +65,12 @@ async function main() {
 
   assertBalancedDollarQuotes(schema, "schema migration");
   assertBalancedDollarQuotes(workflow, "workflow migration");
+  assertBalancedDollarQuotes(seed, "historical manifest seed migration");
+  assertIncludes(
+    seed,
+    "select public.sync_guidance_manifest(",
+    "historical manifest seed migration",
+  );
 
   for (const enumName of ["app_role", "insight_status", "translation_status"]) {
     assertIncludes(schema, `create type public.${enumName} as enum`, "schema migration");
@@ -275,6 +286,15 @@ async function main() {
 
   const manifest = JSON.parse(manifestSource);
   assert(Array.isArray(manifest) && manifest.length >= 50, "Manifest is unexpectedly small");
+  const seedManifestMatch = seed.match(
+    /\$manifest\$\n([\s\S]*?)\n\$manifest\$::jsonb/,
+  );
+  assert(seedManifestMatch, "Historical manifest seed payload is missing");
+  const seedManifest = JSON.parse(seedManifestMatch[1]);
+  assert(
+    Array.isArray(seedManifest) && seedManifest.length === 103,
+    "Historical manifest seed must contain exactly 103 items",
+  );
   const identities = new Set();
   for (const item of manifest) {
     const identity = `${item.situation_id}\u0000${item.verse_key}`;

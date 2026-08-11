@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from 'react'
 import { freshDemoItems, freshDemoProfile } from '../data/demoData'
 import { isDevelopmentDemo } from '../lib/supabase'
+import { useTranslation } from '../i18n/useTranslation'
+import { LocalizedUIError, localizedErrorMessage } from '../i18n/localizedError'
 import {
   generateEnglishDraft as requestEnglishDraft,
   loadGuidanceItems,
@@ -26,11 +28,8 @@ interface DataState {
   profile: ScholarProfile
 }
 
-function errorMessage(error: unknown): string {
-  return error instanceof Error ? error.message : 'Something went wrong. Please try again.'
-}
-
 export function useDashboardData(userId: string, role: AppRole) {
+  const { locale, t } = useTranslation()
   const [state, setState] = useState<DataState>(() => ({
     loading: true,
     error: '',
@@ -48,7 +47,11 @@ export function useDashboardData(userId: string, role: AppRole) {
         if (current) setState({ loading: false, error: '', items, profile })
       } catch (error) {
         if (current) {
-          setState((previous) => ({ ...previous, loading: false, error: errorMessage(error) }))
+          setState((previous) => ({
+            ...previous,
+            loading: false,
+            error: localizedErrorMessage(error, locale, t),
+          }))
         }
       }
     }
@@ -56,7 +59,7 @@ export function useDashboardData(userId: string, role: AppRole) {
     return () => {
       current = false
     }
-  }, [role, userId])
+  }, [locale, role, t, userId])
 
   const replaceInsight = useCallback((itemId: string, insight: Insight) => {
     setState((previous) => ({
@@ -116,10 +119,10 @@ export function useDashboardData(userId: string, role: AppRole) {
 
   const generateEnglishDraft = useCallback(
     async (itemId: string, insight: Insight): Promise<Insight> => {
-      if (!insight.id) throw new Error('Save the Arabic draft before generating a translation.')
+      if (!insight.id) throw new LocalizedUIError(t('errors.saveBeforeTranslate'))
       const translation = isDevelopmentDemo
         ? {
-            bodyEn: 'Development preview only — configure the protected translation Edge Function to generate a real draft.',
+            bodyEn: 'Development preview only. Configure the protected translation Edge Function to generate a real draft.',
             revisionNumber: insight.revisionNumber,
           }
         : await requestEnglishDraft(insight.id)
@@ -132,30 +135,30 @@ export function useDashboardData(userId: string, role: AppRole) {
       replaceInsight(itemId, translated)
       return translated
     },
-    [replaceInsight],
+    [replaceInsight, t],
   )
 
   const reviewEnglishDraft = useCallback(
     async (itemId: string, insight: Insight): Promise<Insight> => {
-      if (!insight.bodyEn.trim()) throw new Error('The reviewed English draft cannot be empty.')
+      if (!insight.bodyEn.trim()) throw new LocalizedUIError(t('errors.emptyReviewedEnglish'))
       const reviewed = isDevelopmentDemo
         ? { ...insight, translationStatus: 'reviewed' as const }
         : await persistReviewedEnglish(insight)
       replaceInsight(itemId, reviewed)
       return reviewed
     },
-    [replaceInsight],
+    [replaceInsight, t],
   )
 
   const setStatus = useCallback(
     async (itemId: string, insight: Insight, status: 'published' | 'archived') => {
-      if (!insight.id) throw new Error('There is no saved insight to update.')
+      if (!insight.id) throw new LocalizedUIError(t('errors.noSavedInsight'))
       const updated = isDevelopmentDemo
         ? { ...insight, status }
         : await updateInsightStatus(insight.id, status, insight.scholarId)
       replaceInsight(itemId, updated)
     },
-    [replaceInsight],
+    [replaceInsight, t],
   )
 
   const saveProfile = useCallback(async (profile: ScholarProfile) => {
@@ -167,7 +170,7 @@ export function useDashboardData(userId: string, role: AppRole) {
   }, [role])
 
   const setProfileVisibility = useCallback(async (verified: boolean, isPublic: boolean) => {
-    if (role !== 'admin') throw new Error('Only an administrator can change public profile visibility.')
+    if (role !== 'admin') throw new LocalizedUIError(t('errors.adminVisibilityOnly'))
     if (!isDevelopmentDemo) {
       await persistProfileVisibility(state.profile.userId, verified, isPublic)
     }
@@ -175,7 +178,7 @@ export function useDashboardData(userId: string, role: AppRole) {
       ...previous,
       profile: { ...previous.profile, verified, isPublic },
     }))
-  }, [role, state.profile.userId])
+  }, [role, state.profile.userId, t])
 
   return {
     ...state,

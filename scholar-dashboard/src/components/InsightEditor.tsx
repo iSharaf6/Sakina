@@ -1,5 +1,11 @@
-import { BookOpen, ChevronLeft, ExternalLink, Trash2 } from 'lucide-react'
+import { ArrowSquareOut } from '@phosphor-icons/react/ArrowSquareOut'
+import { BookOpen } from '@phosphor-icons/react/BookOpen'
+import { CaretLeft } from '@phosphor-icons/react/CaretLeft'
+import { CaretRight } from '@phosphor-icons/react/CaretRight'
+import { Trash } from '@phosphor-icons/react/Trash'
 import { useEffect, useState } from 'react'
+import { useTranslation } from '../i18n/useTranslation'
+import { LocalizedUIError, localizedErrorMessage } from '../i18n/localizedError'
 import type { AppRole, GuidanceItem, Insight, InsightStatus, ReferenceMaterial } from '../types'
 import { CommandButton } from './CommandButton'
 import { PublishedInsightContext } from './PublishedInsightContext'
@@ -32,6 +38,7 @@ export function InsightEditor({
   onNotify,
   viewingPublished,
 }: InsightEditorProps) {
+  const { locale, t } = useTranslation()
   const initialInsight = viewingPublished && item.publishedInsight ? item.publishedInsight : item.insight
   const [insight, setInsight] = useState<Insight>(initialInsight)
   const [savedArabic, setSavedArabic] = useState(initialInsight.bodyAr)
@@ -54,7 +61,7 @@ export function InsightEditor({
     try {
       await operation()
     } catch (error) {
-      onNotify(error instanceof Error ? error.message : 'Something went wrong.', 'error')
+      onNotify(localizedErrorMessage(error, locale, t), 'error')
     } finally {
       setBusy(null)
     }
@@ -69,49 +76,49 @@ export function InsightEditor({
 
   const saveDraft = () =>
     run('save', async () => {
-      if (role !== 'scholar') throw new Error('Only the scholar can create or save a working draft.')
+      if (role !== 'scholar') throw new LocalizedUIError(t('errors.scholarDraftOnly'))
       await save('draft')
-      onNotify('Draft saved')
+      onNotify(t('notice.draftSaved'))
     })
 
   const createReplacement = () =>
     run('save', async () => {
       if (role !== 'scholar' || insight.status !== 'published') {
-        throw new Error('A replacement can only be created from a published insight.')
+        throw new LocalizedUIError(t('errors.replacementPublishedOnly'))
       }
       const saved = await save('draft')
-      onNotify('Replacement draft created')
+      onNotify(t('notice.replacementCreated'))
       onOpenWorking(saved.status === 'submitted' ? 'submitted' : 'draft')
     })
 
   const submit = () =>
     run('submit', async () => {
-      if (!insight.bodyAr.trim()) throw new Error('Add the Arabic insight before submitting.')
+      if (!insight.bodyAr.trim()) throw new LocalizedUIError(t('errors.addArabicSubmit'))
       if (insight.translationStatus !== 'reviewed' || !insight.bodyEn.trim()) {
-        throw new Error('Review the English translation before submitting.')
+        throw new LocalizedUIError(t('errors.reviewEnglishSubmit'))
       }
       await save('submitted')
-      onNotify('Submitted for publication')
+      onNotify(t('notice.submitted'))
     })
 
   const publish = () =>
     run('publish', async () => {
-      if (!insight.bodyAr.trim()) throw new Error('Add the Arabic insight before publishing.')
+      if (!insight.bodyAr.trim()) throw new LocalizedUIError(t('errors.addArabicPublish'))
       if (insight.translationStatus !== 'reviewed') {
-        throw new Error('Review the English translation before publishing.')
+        throw new LocalizedUIError(t('errors.reviewEnglishPublish'))
       }
       if (insight.status !== 'submitted') {
-        throw new Error('Only a submitted insight can be published.')
+        throw new LocalizedUIError(t('errors.submittedPublishOnly'))
       }
       await onStatus(item.id, insight, 'published')
-      onNotify('Insight published')
+      onNotify(t('notice.published'))
     })
 
   const archive = () =>
     run('archive', async () => {
-      if (!insight.id) throw new Error('Save the insight before archiving it.')
+      if (!insight.id) throw new LocalizedUIError(t('errors.saveBeforeArchive'))
       await onStatus(item.id, insight, 'archived')
-      onNotify('Insight archived')
+      onNotify(t('notice.archived'))
     })
 
   const generate = () =>
@@ -119,14 +126,14 @@ export function InsightEditor({
       const translated = await onGenerate(item.id, insight)
       setInsight(translated)
       setPreviewLanguage('en')
-      onNotify('English draft generated')
+      onNotify(t('notice.englishGenerated'))
     })
 
   const reviewEnglish = () =>
     run('review', async () => {
       const reviewed = await onReviewEnglish(item.id, insight)
       setInsight(reviewed)
-      onNotify('English translation marked as reviewed')
+      onNotify(t('notice.englishReviewed'))
     })
 
   const addReference = (reference: ReferenceMaterial) => {
@@ -144,20 +151,26 @@ export function InsightEditor({
     insight.id && insight.status === 'draft' && insight.bodyAr.trim() && insight.bodyAr === savedArabic,
   )
   const contentIsReadOnly = role === 'admin' || viewingPublished || insight.status === 'published'
+  const BackIcon = locale === 'ar' ? CaretRight : CaretLeft
 
   return (
     <main className="editor-page">
       <header className="editor-command-bar">
         <div>
-          <h1>Review insight</h1>
+          <h1>{t('editor.title')}</h1>
           <button className="editor-breadcrumb" onClick={onBack} type="button">
-            <ChevronLeft aria-hidden="true" size={19} />
-            <span>Review queue</span>
+            <BackIcon aria-hidden="true" size={19} weight="bold" />
+            <span>{t('editor.queueBreadcrumb')}</span>
             <span aria-hidden="true">/</span>
             <span>{item.verseKey}</span>
           </button>
         </div>
         <div className="editor-command-bar__actions">
+          <div className={`editor-role-state editor-role-state--${role}`}>
+            <span>{role === 'admin' ? t('nav.administrator') : t('nav.scholar')}</span>
+            <span aria-hidden="true" className="editor-role-state__divider" />
+            <StatusMark status={insight.status} />
+          </div>
           {role === 'scholar' && (viewingPublished || insight.status === 'published') ? (
             item.workingInsight ? (
               <CommandButton
@@ -165,17 +178,23 @@ export function InsightEditor({
                 onClick={() => onOpenWorking(item.workingInsight?.status === 'submitted' ? 'submitted' : 'draft')}
                 variant="secondary"
               >
-                {item.workingInsight.status === 'submitted' ? 'View submitted replacement' : 'Open replacement draft'}
+                {item.workingInsight.status === 'submitted'
+                  ? t('editor.viewSubmittedReplacement')
+                  : t('editor.openReplacementDraft')}
               </CommandButton>
             ) : (
               <CommandButton disabled={busy !== null} onClick={createReplacement} variant="primary">
-                {busy === 'save' ? 'Creating…' : 'Create replacement draft'}
+                {busy === 'save' ? t('editor.creating') : t('editor.createReplacementDraft')}
               </CommandButton>
             )
           ) : role === 'scholar' ? (
             <>
               <CommandButton disabled={busy !== null} onClick={saveDraft}>
-                {busy === 'save' ? 'Saving…' : insight.status === 'published' ? 'Create replacement draft' : 'Save draft'}
+                {busy === 'save'
+                  ? t('editor.saving')
+                  : insight.status === 'published'
+                    ? t('editor.createReplacementDraft')
+                    : t('editor.saveDraft')}
               </CommandButton>
               <CommandButton
                 disabled={
@@ -189,20 +208,20 @@ export function InsightEditor({
                 variant="primary"
               >
                 {busy === 'submit'
-                  ? 'Submitting…'
+                  ? t('editor.submitting')
                   : insight.status === 'submitted'
-                    ? 'Submitted'
-                    : 'Submit for publication'}
+                    ? t('editor.submitted')
+                    : t('editor.submitPublication')}
               </CommandButton>
             </>
           ) : insight.status === 'published' ? (
             <CommandButton disabled={busy !== null || !insight.id} onClick={archive} variant="quiet">
-              {busy === 'archive' ? 'Archiving…' : 'Archive live version'}
+              {busy === 'archive' ? t('editor.archiving') : t('editor.archiveLive')}
             </CommandButton>
           ) : insight.status === 'submitted' ? (
             <>
               <CommandButton disabled={busy !== null || !insight.id} onClick={archive} variant="quiet">
-                {busy === 'archive' ? 'Archiving…' : 'Archive submission'}
+                {busy === 'archive' ? t('editor.archiving') : t('editor.archiveSubmission')}
               </CommandButton>
               <CommandButton
                 disabled={
@@ -213,11 +232,11 @@ export function InsightEditor({
                 onClick={publish}
                 variant="primary"
               >
-                {busy === 'publish' ? 'Publishing…' : 'Publish'}
+                {busy === 'publish' ? t('editor.publishing') : t('editor.publish')}
               </CommandButton>
             </>
           ) : (
-            <span className="editor-readonly-label">No submitted insight to review</span>
+            <span className="editor-readonly-label">{t('editor.noSubmission')}</span>
           )}
         </div>
       </header>
@@ -233,18 +252,20 @@ export function InsightEditor({
           ) : null}
           <section className="editor-section editor-section--arabic">
             <div className="section-heading">
-              <h2>Arabic insight</h2>
-              <p>{contentIsReadOnly ? 'Read-only insight content' : 'Write the scholar’s original explanation in Arabic'}</p>
+              <h2>{t('editor.arabicTitle')}</h2>
+              <p>
+                {contentIsReadOnly ? t('editor.readOnlyContent') : t('editor.arabicDescription')}
+              </p>
             </div>
             <label>
-              <span className="sr-only">Arabic insight</span>
+              <span className="sr-only">{t('editor.arabicTitle')}</span>
               <textarea
                 className="arabic-editor-field"
                 dir="rtl"
                 lang="ar"
                 name="body-ar"
                 onChange={(event) => update('bodyAr', event.target.value)}
-                placeholder="اكتب الشرح الأصلي باللغة العربية…"
+                placeholder={t('editor.arabicPlaceholder')}
                 readOnly={contentIsReadOnly}
                 rows={7}
                 value={insight.bodyAr}
@@ -255,11 +276,17 @@ export function InsightEditor({
           <section className="editor-section editor-section--references">
             <div className="section-heading section-heading--inline">
               <div>
-                <h2>Sources and references</h2>
-                <p>{contentIsReadOnly ? 'References supplied with this insight' : 'Add a book, tafsir, hadith reference, or URL'}</p>
+                <h2>{t('editor.referencesTitle')}</h2>
+                <p>
+                  {contentIsReadOnly
+                    ? t('editor.referencesReadOnly')
+                    : t('editor.referencesDescription')}
+                </p>
               </div>
               {role === 'scholar' && !contentIsReadOnly ? (
-                <CommandButton onClick={() => setReferenceOpen(true)}>Add reference</CommandButton>
+                <CommandButton onClick={() => setReferenceOpen(true)}>
+                  {t('editor.addReference')}
+                </CommandButton>
               ) : null}
             </div>
             {insight.references.length ? (
@@ -270,14 +297,18 @@ export function InsightEditor({
                     <span className="reference-list__actions">
                       {reference.url ? (
                         <a href={reference.url} rel="noreferrer" target="_blank">
-                          <span className="sr-only">Open {reference.label}</span>
-                          <ExternalLink aria-hidden="true" size={17} />
+                          <span className="sr-only">
+                            {t('editor.openReference', { label: reference.label })}
+                          </span>
+                          <ArrowSquareOut aria-hidden="true" size={17} weight="bold" />
                         </a>
                       ) : null}
                       {role === 'scholar' && !contentIsReadOnly ? (
                         <button onClick={() => removeReference(reference.id)} type="button">
-                          <span className="sr-only">Remove {reference.label}</span>
-                          <Trash2 aria-hidden="true" size={17} />
+                          <span className="sr-only">
+                            {t('editor.removeReference', { label: reference.label })}
+                          </span>
+                          <Trash aria-hidden="true" size={17} weight="bold" />
                         </button>
                       ) : null}
                     </span>
@@ -290,7 +321,7 @@ export function InsightEditor({
           <section className="editor-section editor-section--translation">
             <div className="section-heading section-heading--inline">
               <div>
-                <h2>English translation</h2>
+                <h2>{t('editor.englishTitle')}</h2>
                 <StatusMark status={insight.translationStatus} />
               </div>
               {role === 'scholar' && !contentIsReadOnly ? (
@@ -298,20 +329,24 @@ export function InsightEditor({
                   disabled={busy !== null || !arabicIsSaved}
                   onClick={generate}
                 >
-                  {busy === 'generate' ? 'Generating…' : 'Generate English draft'}
+                  {busy === 'generate' ? t('editor.generating') : t('editor.generateDraft')}
                 </CommandButton>
               ) : null}
             </div>
             <p className="translation-note">
-              The Arabic is saved first. Translation never changes Qur’anic text.
+              {t('editor.translationNote')}
             </p>
             {insight.bodyEn ? (
               <div className="translation-review">
                 <label>
                   <span className="sr-only">
-                    {contentIsReadOnly ? 'English translation' : 'Editable English translation'}
+                    {contentIsReadOnly
+                      ? t('editor.englishReadOnlyLabel')
+                      : t('editor.englishEditableLabel')}
                   </span>
                   <textarea
+                    dir="ltr"
+                    lang="en"
                     name="body-en"
                     onChange={(event) => {
                       setInsight((current) => ({
@@ -333,10 +368,10 @@ export function InsightEditor({
                     variant={insight.translationStatus === 'reviewed' ? 'primary' : 'secondary'}
                   >
                     {busy === 'review'
-                      ? 'Saving review…'
+                      ? t('editor.savingReview')
                       : insight.translationStatus === 'reviewed'
-                        ? 'English reviewed'
-                        : 'Mark English reviewed'}
+                        ? t('editor.englishReviewed')
+                        : t('editor.markEnglishReviewed')}
                   </CommandButton>
                 ) : null}
               </div>
@@ -345,21 +380,21 @@ export function InsightEditor({
 
           <section className="editor-section editor-section--preview">
             <div className="section-heading section-heading--inline">
-              <h2>Preview</h2>
-              <div aria-label="Preview language" className="preview-tabs" role="group">
+              <h2>{t('editor.preview')}</h2>
+              <div aria-label={t('editor.previewLanguage')} className="preview-tabs" role="group">
                 <button
                   aria-pressed={previewLanguage === 'ar'}
                   onClick={() => setPreviewLanguage('ar')}
                   type="button"
                 >
-                  Arabic
+                  {t('editor.arabic')}
                 </button>
                 <button
                   aria-pressed={previewLanguage === 'en'}
                   onClick={() => setPreviewLanguage('en')}
                   type="button"
                 >
-                  English
+                  {t('editor.english')}
                 </button>
               </div>
             </div>
@@ -369,16 +404,16 @@ export function InsightEditor({
                   {insight.bodyAr}
                 </p>
               ) : previewLanguage === 'en' && insight.bodyEn.trim() ? (
-                <p>{insight.bodyEn}</p>
+                <p dir="ltr" lang="en">{insight.bodyEn}</p>
               ) : (
                 <div className="preview-empty">
-                  <BookOpen aria-hidden="true" size={34} strokeWidth={1.4} />
+                  <BookOpen aria-hidden="true" size={34} weight="regular" />
                   <strong>
                     {previewLanguage === 'ar'
-                      ? 'Add Arabic insight to preview'
-                      : 'Generate English draft to preview'}
+                      ? t('editor.previewArabicEmpty')
+                      : t('editor.previewEnglishEmpty')}
                   </strong>
-                  <span>Your preview will appear here once content is entered.</span>
+                  <span>{t('editor.previewEmptyDescription')}</span>
                 </div>
               )}
             </div>

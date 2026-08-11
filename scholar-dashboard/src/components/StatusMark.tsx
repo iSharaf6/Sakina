@@ -1,15 +1,17 @@
+import { useTranslation } from '../i18n/useTranslation'
+import type { TranslationKey } from '../i18n/translations'
 import type { InsightStatus, ReviewState, TranslationStatus } from '../types'
 
-const labels: Record<ReviewState | InsightStatus | TranslationStatus, string> = {
-  needs_review: 'Needs review',
-  changed: 'Changed since review',
-  draft: 'Draft',
-  submitted: 'Submitted',
-  published: 'Published',
-  archived: 'Archived',
-  not_started: 'Not generated',
-  generated: 'Generated draft',
-  reviewed: 'English reviewed',
+const labelKeys: Record<ReviewState | InsightStatus | TranslationStatus, TranslationKey> = {
+  needs_review: 'status.needs_review',
+  changed: 'status.changed',
+  draft: 'status.draft',
+  submitted: 'status.submitted',
+  published: 'status.published',
+  archived: 'status.archived',
+  not_started: 'status.not_started',
+  generated: 'status.generated',
+  reviewed: 'status.reviewed',
 }
 
 export function StatusMark({
@@ -17,10 +19,11 @@ export function StatusMark({
 }: {
   status: ReviewState | InsightStatus | TranslationStatus
 }) {
+  const { t } = useTranslation()
   return (
     <span className={`status-mark status-mark--${status}`}>
       <span aria-hidden="true" className="status-mark__dot" />
-      {labels[status]}
+      {t(labelKeys[status])}
     </span>
   )
 }

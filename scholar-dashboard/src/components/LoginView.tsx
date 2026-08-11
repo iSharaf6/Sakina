@@ -1,6 +1,10 @@
-import { useState } from 'react'
+import { DeviceMobile } from '@phosphor-icons/react/DeviceMobile'
+import { useEffect, useState } from 'react'
+import { useTranslation } from '../i18n/useTranslation'
+import { localizedErrorMessage } from '../i18n/localizedError'
 import { BrandMark } from './BrandMark'
 import { CommandButton } from './CommandButton'
+import { LanguageSwitcher } from './LanguageSwitcher'
 
 interface LoginViewProps {
   status: 'signed_out' | 'unauthorized' | 'misconfigured'
@@ -9,11 +13,16 @@ interface LoginViewProps {
 }
 
 export function LoginView({ status, onSendMagicLink, onVerifyCode }: LoginViewProps) {
+  const { locale, t } = useTranslation()
   const [email, setEmail] = useState('')
   const [token, setToken] = useState('')
   const [sent, setSent] = useState(false)
   const [busy, setBusy] = useState(false)
   const [message, setMessage] = useState('')
+
+  useEffect(() => {
+    setMessage(sent ? t('login.sent') : '')
+  }, [locale, sent, t])
 
   const sendLink = async () => {
     setBusy(true)
@@ -21,9 +30,9 @@ export function LoginView({ status, onSendMagicLink, onVerifyCode }: LoginViewPr
     try {
       await onSendMagicLink(email.trim())
       setSent(true)
-      setMessage('Check your invited email for a secure link or one-time code.')
+      setMessage(t('login.sent'))
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : 'Unable to send the secure link.')
+      setMessage(localizedErrorMessage(error, locale, t, 'errors.sendLink'))
     } finally {
       setBusy(false)
     }
@@ -35,7 +44,7 @@ export function LoginView({ status, onSendMagicLink, onVerifyCode }: LoginViewPr
     try {
       await onVerifyCode(email.trim(), token.trim())
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : 'Unable to verify the code.')
+      setMessage(localizedErrorMessage(error, locale, t, 'errors.verifyCode'))
       setBusy(false)
     }
   }
@@ -45,23 +54,24 @@ export function LoginView({ status, onSendMagicLink, onVerifyCode }: LoginViewPr
       <section className="login-panel">
         <div className="login-brand">
           <BrandMark size={40} />
-          <span>Yaqeen Review</span>
+          <span>{t('app.brand')}</span>
         </div>
+        <LanguageSwitcher compact />
         <div className="login-copy">
-          <h1>Scholar sign in</h1>
+          <h1>{t('login.title')}</h1>
           {status === 'misconfigured' ? (
             <>
-              <p>This production deployment has not been connected to Supabase.</p>
+              <p>{t('login.misconfigured')}</p>
               <p className="login-notice">
-                Add the public Supabase URL and publishable key at deployment time. Development demo access is never enabled in production.
+                {t('login.misconfiguredNotice')}
               </p>
             </>
           ) : (
             <>
-              <p>Use the email address that was privately invited to review Yaqeen content.</p>
+              <p>{t('login.description')}</p>
               {status === 'unauthorized' ? (
                 <p className="login-notice" role="alert">
-                  That account is not authorised for scholar review and has been signed out.
+                  {t('login.unauthorized')}
                 </p>
               ) : null}
               <form
@@ -70,49 +80,62 @@ export function LoginView({ status, onSendMagicLink, onVerifyCode }: LoginViewPr
                   void (sent && token.trim() ? verify() : sendLink())
                 }}
               >
-                <label className="form-field">
-                  <span>Invited email</span>
+                <label className="form-field" htmlFor="login-email">
+                  <span>{t('login.emailLabel')}</span>
                   <input
                     autoComplete="email"
+                    dir="ltr"
+                    id="login-email"
                     name="email"
                     onChange={(event) => setEmail(event.target.value)}
-                    placeholder="name@example.com"
+                    placeholder={t('login.emailPlaceholder')}
                     required
                     type="email"
                     value={email}
                   />
                 </label>
                 {sent ? (
-                  <label className="form-field">
-                    <span>One-time code</span>
+                  <label className="form-field" htmlFor="login-otp">
+                    <span>{t('login.codeLabel')}</span>
                     <input
                       autoComplete="one-time-code"
+                      dir="ltr"
+                      id="login-otp"
                       inputMode="numeric"
                       name="otp"
                       onChange={(event) => setToken(event.target.value.replace(/\D/g, '').slice(0, 8))}
-                      placeholder="Enter the code"
+                      placeholder={t('login.codePlaceholder')}
                       value={token}
                     />
                   </label>
                 ) : null}
                 {message ? <p className="login-message" role="status">{message}</p> : null}
                 <CommandButton disabled={busy || !email.trim()} type="submit" variant="primary">
-                  {busy ? 'Please wait…' : sent && token.trim() ? 'Verify code' : 'Email secure sign-in link'}
+                  {busy ? t('login.wait') : sent && token.trim() ? t('login.verify') : t('login.sendLink')}
                 </CommandButton>
                 {sent ? (
                   <button className="login-resend" disabled={busy} onClick={sendLink} type="button">
-                    Send another link or code
+                    {t('login.resend')}
                   </button>
                 ) : null}
               </form>
             </>
           )}
+          <a
+            aria-label={t('app.openAppHint')}
+            className="login-open-app"
+            href="yaqeen://"
+            title={t('app.openAppHint')}
+          >
+            <DeviceMobile aria-hidden="true" size={18} weight="bold" />
+            <span>{t('app.openApp')}</span>
+          </a>
         </div>
-        <p className="login-footer">Invite-only editorial access · No public registration</p>
+        <p className="login-footer">{t('login.footer')}</p>
       </section>
       <div className="login-atmosphere" aria-hidden="true">
-        <span>Review with care.</span>
-        <p>Original Arabic insight, human-reviewed English, and clear sources.</p>
+        <span>{t('login.atmosphereTitle')}</span>
+        <p>{t('login.atmosphereBody')}</p>
       </div>
     </main>
   )

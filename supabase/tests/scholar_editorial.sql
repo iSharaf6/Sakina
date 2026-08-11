@@ -41,10 +41,17 @@ select has_index('public', 'guidance_items', 'guidance_items_identity_unique');
 select has_index('public', 'scholar_insights', 'scholar_insights_one_working_copy_idx');
 select has_index('public', 'scholar_insights', 'scholar_insights_one_published_copy_idx');
 select has_index('public', 'guidance_items', 'guidance_items_review_queue_idx');
-select has_check(
-  'public',
-  'scholar_insights',
-  'scholar_insights_reference_material_shape',
+select ok(
+  exists (
+    select 1
+    from pg_constraint c
+    join pg_class t on t.oid = c.conrelid
+    join pg_namespace n on n.oid = t.relnamespace
+    where n.nspname = 'public'
+      and t.relname = 'scholar_insights'
+      and c.conname = 'scholar_insights_reference_material_shape'
+      and c.contype = 'c'
+  ),
   'public insight reference JSON has a database shape constraint'
 );
 select ok(

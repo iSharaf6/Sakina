@@ -28,9 +28,11 @@ export interface GuidanceItem {
   titleAr: string
   verseKey: string
   surahNameEn: string
+  surahNameAr: string
   ayahAr: string
   meaningEn: string
   orientationEn: string
+  orientationAr: string
   reviewState: ReviewState
   needsReview?: boolean
   active: boolean

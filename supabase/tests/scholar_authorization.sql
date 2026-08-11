@@ -3,7 +3,7 @@ begin;
 create extension if not exists pgtap with schema extensions;
 set local search_path = extensions, public;
 
-select plan(29);
+select plan(32);
 
 -- Deterministic local-only identities. The transaction is rolled back at EOF.
 insert into auth.users (
@@ -24,6 +24,11 @@ insert into auth.users (
     '33333333-3333-4333-8333-333333333333', 'authenticated', 'authenticated',
     'editorial-ordinary@example.invalid', '', '{}'::jsonb, '{}'::jsonb,
     statement_timestamp(), statement_timestamp()
+  ),
+  (
+    '44444444-4444-4444-8444-444444444444', 'authenticated', 'authenticated',
+    'editorial-second-scholar@example.invalid', '', '{}'::jsonb, '{}'::jsonb,
+    statement_timestamp(), statement_timestamp()
   );
 
 insert into public.user_roles (user_id, role, assigned_by) values
@@ -34,6 +39,11 @@ insert into public.user_roles (user_id, role, assigned_by) values
   ),
   (
     '22222222-2222-4222-8222-222222222222',
+    'scholar'::public.app_role,
+    '11111111-1111-4111-8111-111111111111'
+  ),
+  (
+    '44444444-4444-4444-8444-444444444444',
     'scholar'::public.app_role,
     '11111111-1111-4111-8111-111111111111'
   );
@@ -49,6 +59,12 @@ insert into public.scholar_profiles (
   statement_timestamp(),
   '11111111-1111-4111-8111-111111111111',
   statement_timestamp()
+);
+
+insert into public.scholar_profiles (user_id, display_name_en)
+values (
+  '44444444-4444-4444-8444-444444444444',
+  'Second Authorization Test Scholar'
 );
 
 insert into public.guidance_items (
@@ -104,6 +120,19 @@ begin
   );
 end;
 $$;
+
+-- A second scholar can work on the same guidance item without sharing drafts.
+set local app.editorial_actor_id = '44444444-4444-4444-8444-444444444444';
+insert into public.scholar_insights (
+  id, guidance_item_id, scholar_id, body_ar, reference_material
+) values (
+  'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbb4',
+  'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1',
+  '44444444-4444-4444-8444-444444444444',
+  'مسودة الباحث الثاني',
+  '[]'::jsonb
+);
+set local app.editorial_actor_id = '22222222-2222-4222-8222-222222222222';
 
 set local app.editorial_actor_id = '11111111-1111-4111-8111-111111111111';
 do $$
@@ -201,6 +230,13 @@ select results_eq(
   'active scholar can read their own working insights'
 );
 select results_eq(
+  $$select count(*)::bigint from public.scholar_insights
+    where scholar_id = '44444444-4444-4444-8444-444444444444'
+      and status in ('draft', 'submitted')$$,
+  array[0::bigint],
+  'a scholar cannot read another scholar''s working insights'
+);
+select results_eq(
   $$select (public.create_scholar_replacement_draft(
       'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbb1'
     )).id::text$$,
@@ -217,6 +253,23 @@ select throws_ok(
 );
 reset role;
 
+set local request.jwt.claims = '{"role":"authenticated","sub":"44444444-4444-4444-8444-444444444444"}';
+set local role authenticated;
+select results_eq(
+  $$select count(*)::bigint from public.scholar_insights where status in ('draft', 'submitted')$$,
+  array[1::bigint],
+  'a second scholar can read their own working insight'
+);
+select results_eq(
+  $$select count(*)::bigint from public.scholar_insights
+    where scholar_id = '22222222-2222-4222-8222-222222222222'
+      and status in ('draft', 'submitted')$$,
+  array[0::bigint],
+  'a second scholar cannot read the first scholar''s working insights'
+);
+reset role;
+
+set local request.jwt.claims = '{"role":"authenticated","sub":"22222222-2222-4222-8222-222222222222"}';
 delete from public.user_roles
 where user_id = '22222222-2222-4222-8222-222222222222';
 

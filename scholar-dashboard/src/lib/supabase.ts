@@ -2,9 +2,12 @@ import { createClient } from '@supabase/supabase-js'
 
 const url = import.meta.env.VITE_SUPABASE_URL?.trim() ?? ''
 const publishableKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY?.trim() ?? ''
+const requestedDevelopmentDemo =
+  import.meta.env.DEV && new URLSearchParams(window.location.search).has('demoRole')
 
 export const hasSupabaseConfiguration = Boolean(url && publishableKey)
-export const isDevelopmentDemo = import.meta.env.DEV && !hasSupabaseConfiguration
+export const isDevelopmentDemo =
+  import.meta.env.DEV && (!hasSupabaseConfiguration || requestedDevelopmentDemo)
 export const translationFunctionName =
   import.meta.env.VITE_TRANSLATION_FUNCTION?.trim() || 'translate-scholar-insight'
 

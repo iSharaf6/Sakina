@@ -28,9 +28,11 @@ interface GuidanceRow {
   title_ar: string | null
   verse_key: string
   surah_name_en: string
+  surah_name_ar: string
   verse_ar: string
   verse_en: string
   context_en: string
+  context_ar: string
   source_revision: number
   needs_review: boolean
   active: boolean
@@ -139,9 +141,11 @@ export async function loadGuidanceItems(userId: string, role: AppRole): Promise<
       titleAr: row.title_ar ?? '',
       verseKey: row.verse_key,
       surahNameEn: row.surah_name_en,
+      surahNameAr: row.surah_name_ar,
       ayahAr: row.verse_ar,
       meaningEn: row.verse_en,
       orientationEn: row.context_en,
+      orientationAr: row.context_ar,
       reviewState: row.needs_review && row.source_revision > 1 ? 'changed' : 'needs_review',
       needsReview: row.needs_review,
       active: row.active,

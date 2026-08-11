@@ -11,6 +11,8 @@ npm run dev -- --host 127.0.0.1
 
 Open `http://127.0.0.1:5173/`. When Supabase variables are absent, Vite development mode uses deterministic local queue data and shows `Development demo · local data only`. This bypass exists only behind `import.meta.env.DEV`; a production build without provider configuration shows a configuration-required screen and never simulates authentication.
 
+The first visit opens an Arabic-first language choice. Arabic and English are both complete interface languages, the choice persists locally, and the document switches its `lang` and `dir` attributes between RTL and LTR. The language can always be changed again from sign-in or the workspace navigation.
+
 To inspect the admin-only controls locally, open:
 
 ```text
@@ -18,6 +20,8 @@ http://127.0.0.1:5173/?demoRole=admin
 ```
 
 Direct editor QA is available through `?review=<guidance-item-id>`, for example `?review=marriage-problems-4-35` in the deterministic demo.
+
+`demoRole` is compiled out of production behavior. The deployed dashboard accepts only invited Supabase Auth users with an explicit `scholar` or `admin` role.
 
 ## Quality checks
 
@@ -30,6 +34,20 @@ npm run preview -- --host 127.0.0.1
 
 The same lint, type-check, production build, and high-severity dependency audit
 run in `.github/workflows/scholar-dashboard.yml` for every dashboard change.
+
+## Visual QA evidence
+
+The canonical candidate-3 captures are under `docs/screenshots/`:
+
+- `candidate3-login-ar-768x1024.png`
+- `candidate3-queue-ar-390x844.png`
+- `candidate3-queue-ar-1440x900.png`
+- `candidate3-editor-ar-390x844.png`
+- `candidate3-reference-dialog-ar-390x844.png`
+- `candidate3-profile-consent-ar-390x844.png`
+- `candidate3-profile-ar-1440x900.png`
+
+The final responsive audit covers 390, 430, 768, 1024, and 1440 CSS-pixel viewports; Arabic RTL and English LTR; keyboard focus traps and restoration; 44px effective targets; reduced motion; horizontal overflow; Axe WCAG checks; console/network errors; and mobile bottom-navigation clearance.
 
 ## Provider setup
 

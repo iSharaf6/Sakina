@@ -87,7 +87,7 @@ export function useAuth() {
       email,
       options: {
         shouldCreateUser: false,
-        emailRedirectTo: window.location.origin,
+        emailRedirectTo: new URL(import.meta.env.BASE_URL, window.location.origin).toString(),
       },
     })
     if (error) throw error

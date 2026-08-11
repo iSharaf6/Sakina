@@ -1,17 +1,16 @@
-import { BookOpen, ChevronLeft, ChevronRight, Search, X } from 'lucide-react'
-import { useDeferredValue, useEffect, useMemo, useState } from 'react'
+import { BookOpen } from '@phosphor-icons/react/BookOpen'
+import { CaretLeft } from '@phosphor-icons/react/CaretLeft'
+import { CaretRight } from '@phosphor-icons/react/CaretRight'
+import { MagnifyingGlass } from '@phosphor-icons/react/MagnifyingGlass'
+import { X } from '@phosphor-icons/react/X'
+import { useDeferredValue, useEffect, useMemo, useRef, useState } from 'react'
+import { useTranslation } from '../i18n/useTranslation'
 import type { GuidanceItem, NavDestination, ReviewState } from '../types'
 import { CommandButton } from './CommandButton'
 import { SourceContext } from './SourceContext'
 import { StatusMark } from './StatusMark'
 
 type QueueFilter = ReviewState | 'all'
-
-const filterLabels: Array<{ value: QueueFilter; label: string }> = [
-  { value: 'needs_review', label: 'Needs review' },
-  { value: 'changed', label: 'Changed' },
-  { value: 'all', label: 'All' },
-]
 
 const normalized = (value: string) =>
   value
@@ -40,10 +39,13 @@ interface ReviewQueueProps {
 }
 
 export function ReviewQueue({ items, destination, selectedId, onSelect, onOpen }: ReviewQueueProps) {
+  const { locale, t } = useTranslation()
   const [query, setQuery] = useState('')
   const [filter, setFilter] = useState<QueueFilter>('needs_review')
   const [contextOpen, setContextOpen] = useState(false)
   const [page, setPage] = useState(1)
+  const contextDialogRef = useRef<HTMLDialogElement>(null)
+  const contextTriggerRef = useRef<HTMLButtonElement>(null)
   const deferredQuery = useDeferredValue(query)
 
   const visibleItems = useMemo(() => {
@@ -91,15 +93,42 @@ export function ReviewQueue({ items, destination, selectedId, onSelect, onOpen }
     }
   }, [onSelect, pageItems, selectedId])
 
+  useEffect(() => {
+    const dialog = contextDialogRef.current
+    if (!dialog) return
+
+    if (contextOpen && !dialog.open) {
+      dialog.showModal()
+    } else if (!contextOpen && dialog.open) {
+      dialog.close()
+    }
+  }, [contextOpen])
+
+  useEffect(() => {
+    const compactLayout = window.matchMedia('(max-width: 1280px)')
+    const closeWhenDocked = () => {
+      if (!compactLayout.matches) setContextOpen(false)
+    }
+    compactLayout.addEventListener('change', closeWhenDocked)
+    return () => compactLayout.removeEventListener('change', closeWhenDocked)
+  }, [])
+
   const selected = pageItems.find((item) => item.id === selectedId) ?? pageItems[0] ?? visibleItems[0] ?? items[0]
+  const filterLabels: Array<{ value: QueueFilter; label: string }> = [
+    { value: 'needs_review', label: t('queue.filterNeedsReview') },
+    { value: 'changed', label: t('queue.filterChanged') },
+    { value: 'all', label: t('queue.filterAll') },
+  ]
   const title =
     destination === 'queue'
-      ? 'Review queue'
+      ? t('nav.queue')
       : destination === 'drafts'
-        ? 'Drafts'
+        ? t('nav.drafts')
         : destination === 'submitted'
-          ? 'Submitted'
-          : 'Published'
+          ? t('nav.submitted')
+          : t('nav.published')
+  const PreviousIcon = locale === 'ar' ? CaretRight : CaretLeft
+  const NextIcon = locale === 'ar' ? CaretLeft : CaretRight
 
   return (
     <div className="queue-layout">
@@ -107,18 +136,18 @@ export function ReviewQueue({ items, destination, selectedId, onSelect, onOpen }
         <h1>{title}</h1>
         <div className="queue-toolbar">
           <label className="search-field">
-            <span className="sr-only">Search situations or ayat</span>
-            <Search aria-hidden="true" size={20} strokeWidth={1.8} />
+            <span className="sr-only">{t('queue.searchLabel')}</span>
+            <MagnifyingGlass aria-hidden="true" size={20} weight="regular" />
             <input
               name="queue-search"
               onChange={(event) => setQuery(event.target.value)}
-              placeholder="Search situations or ayat"
+              placeholder={t('queue.searchPlaceholder')}
               type="search"
               value={query}
             />
           </label>
           {destination === 'queue' ? (
-            <div aria-label="Review status" className="review-filter" role="group">
+            <div aria-label={t('queue.filterLabel')} className="review-filter" role="group">
               {filterLabels.map((option) => (
                 <button
                   aria-pressed={filter === option.value}
@@ -133,23 +162,25 @@ export function ReviewQueue({ items, destination, selectedId, onSelect, onOpen }
             </div>
           ) : null}
           <button
+            aria-controls="queue-source-context-dialog"
             aria-expanded={contextOpen}
             className="context-toggle"
             onClick={() => setContextOpen(true)}
+            ref={contextTriggerRef}
             type="button"
           >
-            <BookOpen aria-hidden="true" size={18} />
-            Source context
+            <BookOpen aria-hidden="true" size={18} weight="regular" />
+            {t('queue.sourceContext')}
           </button>
         </div>
 
         <div className="review-table" role="table" aria-label={title}>
           <div className="review-table__header" role="row">
-            <span role="columnheader">Situation</span>
-            <span role="columnheader">Ayah</span>
-            <span role="columnheader">Orientation</span>
-            <span role="columnheader">Status</span>
-            <span role="columnheader">Action</span>
+            <span role="columnheader">{t('queue.situation')}</span>
+            <span role="columnheader">{t('queue.ayah')}</span>
+            <span role="columnheader">{t('queue.orientation')}</span>
+            <span role="columnheader">{t('queue.status')}</span>
+            <span role="columnheader">{t('queue.action')}</span>
           </div>
           <div className="review-table__body" role="rowgroup">
             {pageItems.length ? (
@@ -174,10 +205,15 @@ export function ReviewQueue({ items, destination, selectedId, onSelect, onOpen }
                     tabIndex={0}
                   >
                     <span className="review-row__situation" role="cell">
-                      {item.titleEn}
+                      {locale === 'ar' ? item.titleAr || item.titleEn : item.titleEn || item.titleAr}
                     </span>
-                    <span role="cell">{`Surah ${item.surahNameEn} · ${item.verseKey}`}</span>
-                    <span role="cell">Existing app orientation</span>
+                    <span role="cell">
+                      {t('queue.surahVerse', {
+                        surah: locale === 'ar' ? item.surahNameAr || item.surahNameEn : item.surahNameEn || item.surahNameAr,
+                        verse: item.verseKey,
+                      })}
+                    </span>
+                    <span role="cell">{t('queue.existingOrientation')}</span>
                     <span role="cell">
                       <StatusMark status={destination === 'queue' ? item.reviewState : workflowStatus} />
                     </span>
@@ -189,7 +225,7 @@ export function ReviewQueue({ items, destination, selectedId, onSelect, onOpen }
                         }}
                         variant={isSelected ? 'primary' : 'secondary'}
                       >
-                        Open review
+                        {t('queue.openReview')}
                       </CommandButton>
                     </span>
                   </div>
@@ -197,27 +233,30 @@ export function ReviewQueue({ items, destination, selectedId, onSelect, onOpen }
               })
             ) : (
               <div className="queue-empty" role="row">
-                <p role="cell">No review items match this view.</p>
+                <p role="cell">{t('queue.empty')}</p>
               </div>
             )}
           </div>
         </div>
 
-        <nav aria-label={`Queue pages, page ${currentPage} of ${pageCount}`} className="pagination">
+        <nav
+          aria-label={t('queue.pagesLabel', { current: currentPage, total: pageCount })}
+          className="pagination"
+        >
           <button
-            aria-label="Previous page"
+            aria-label={t('queue.previousPage')}
             disabled={currentPage === 1}
             onClick={() => setPage((current) => Math.max(1, current - 1))}
             type="button"
           >
-            <ChevronLeft aria-hidden="true" size={16} />
+            <PreviousIcon aria-hidden="true" size={16} weight="bold" />
           </button>
           {pageTokens.map((token, index) => token === 'ellipsis' ? (
             <span aria-hidden="true" key={`ellipsis-${index}`}>…</span>
           ) : (
             <button
               aria-current={currentPage === token ? 'page' : undefined}
-              aria-label={`Page ${token}`}
+              aria-label={t('queue.page', { page: token })}
               className={currentPage === token ? 'pagination__current' : undefined}
               key={token}
               onClick={() => setPage(token)}
@@ -227,27 +266,83 @@ export function ReviewQueue({ items, destination, selectedId, onSelect, onOpen }
             </button>
           ))}
           <button
-            aria-label="Next page"
+            aria-label={t('queue.nextPage')}
             disabled={currentPage === pageCount}
             onClick={() => setPage((current) => Math.min(pageCount, current + 1))}
             type="button"
           >
-            <ChevronRight aria-hidden="true" size={16} />
+            <NextIcon aria-hidden="true" size={16} weight="bold" />
           </button>
         </nav>
       </main>
       {selected ? (
-        <div className={`queue-context-drawer ${contextOpen ? 'queue-context-drawer--open' : ''}`}>
-          <button
-            aria-label="Close source context"
-            className="context-drawer-close"
-            onClick={() => setContextOpen(false)}
-            type="button"
+        <>
+          <aside aria-label={t('queue.sourceContext')} className="queue-context-rail">
+            <SourceContext item={selected} />
+          </aside>
+          <dialog
+            aria-label={t('queue.sourceContext')}
+            className="queue-context-dialog"
+            id="queue-source-context-dialog"
+            onCancel={(event) => {
+              event.preventDefault()
+              setContextOpen(false)
+            }}
+            onClick={(event) => {
+              if (event.target === event.currentTarget) setContextOpen(false)
+            }}
+            onKeyDown={(event) => {
+              if (event.key === 'Escape') {
+                event.preventDefault()
+                setContextOpen(false)
+                return
+              }
+
+              if (event.key !== 'Tab') return
+              const dialog = contextDialogRef.current
+              const focusable = dialog
+                ? Array.from(
+                    dialog.querySelectorAll<HTMLElement>(
+                      'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])',
+                    ),
+                  ).filter((element) => element.getClientRects().length > 0)
+                : []
+              const first = focusable[0]
+              const last = focusable[focusable.length - 1]
+
+              if (!first || !last) {
+                event.preventDefault()
+                dialog?.focus()
+              } else if (
+                document.activeElement === dialog ||
+                (event.shiftKey && document.activeElement === first) ||
+                (!event.shiftKey && document.activeElement === last)
+              ) {
+                event.preventDefault()
+                ;(event.shiftKey ? last : first).focus()
+              }
+            }}
+            onClose={() => {
+              setContextOpen(false)
+              contextTriggerRef.current?.focus()
+            }}
+            ref={contextDialogRef}
+            tabIndex={-1}
           >
-            <X aria-hidden="true" size={20} />
-          </button>
-          <SourceContext item={selected} />
-        </div>
+            <div className="queue-context-dialog__surface">
+              <button
+                aria-label={t('queue.closeContext')}
+                autoFocus
+                className="context-drawer-close"
+                onClick={() => setContextOpen(false)}
+                type="button"
+              >
+                <X aria-hidden="true" size={20} weight="bold" />
+              </button>
+              <SourceContext item={selected} />
+            </div>
+          </dialog>
+        </>
       ) : null}
     </div>
   )
