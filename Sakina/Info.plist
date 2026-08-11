@@ -8,17 +8,6 @@
 	<string>Yaqeen</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
-	<key>CFBundleIcons</key>
-	<dict>
-		<key>CFBundlePrimaryIcon</key>
-		<dict>
-			<key>CFBundleIconFiles</key>
-			<array>
-				<string>AppIcon60x60</string>
-				<string>AppIcon76x76</string>
-			</array>
-		</dict>
-	</dict>
 	<key>CFBundleIdentifier</key>
 	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>CFBundleInfoDictionaryVersion</key>
@@ -40,23 +29,13 @@
 				<string>yaqeen</string>
 			</array>
 		</dict>
-		<dict>
-			<key>CFBundleURLName</key>
-			<string>com.googleusercontent.apps</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>$(GOOGLE_REVERSED_CLIENT_ID)</string>
-			</array>
-		</dict>
 	</array>
 	<key>CFBundleVersion</key>
 	<string>1</string>
-	<key>GIDClientID</key>
-	<string>$(GOOGLE_CLIENT_ID)</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Yaqeen uses your approximate location to calculate accurate local prayer times. Your coordinates stay on this device.</string>
+	<string>Yaqeen uses your approximate location to calculate local prayer times and the Qibla direction. Your coordinates stay on this device.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>UthmanicHafs.ttf</string>
@@ -67,5 +46,9 @@
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 	</array>
+	<key>YaqeenScholarSupabasePublishableKey</key>
+	<string>$(YAQEEN_SCHOLAR_SUPABASE_PUBLISHABLE_KEY)</string>
+	<key>YaqeenScholarSupabaseURL</key>
+	<string>$(YAQEEN_SCHOLAR_SUPABASE_URL)</string>
 </dict>
 </plist>

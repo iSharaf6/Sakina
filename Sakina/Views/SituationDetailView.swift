@@ -13,6 +13,7 @@ struct SituationDetailView: View {
     @Query(sort: \JournalEntry.createdAt, order: .reverse) private var allEntries: [JournalEntry]
     @ObservedObject private var player = RecitationPlayer.shared
     @ObservedObject private var account = GoogleAccountManager.shared
+    @EnvironmentObject private var scholarStore: ScholarContentStore
 
     @AppStorage(SettingsKeys.appLanguage) private var languageRaw = AppLanguage.english.rawValue
     @AppStorage(SettingsKeys.arabicScale) private var arabicScale = 1.0
@@ -88,6 +89,9 @@ struct SituationDetailView: View {
         }
         .task(id: "\(situation.id)-\(languageRaw)-\(translationVisible)") {
             renderShareCard()
+        }
+        .task(id: situation.id) {
+            await scholarStore.loadInsights(forSituationID: situation.id)
         }
         .onDisappear { player.stopIfPlaying(id: situation.id) }
         .animation(reduceMotion ? nil : .easeInOut(duration: 0.18), value: selectedSection)
@@ -295,8 +299,24 @@ struct SituationDetailView: View {
             )
 
             ForEach(situation.verses) { verse in
-                verseCard(verse)
+                VStack(spacing: 12) {
+                    verseCard(verse)
+
+                    if let insight = scholarStore.insight(
+                        situationID: situation.id,
+                        verseKey: verse.key
+                    ) {
+                        ScholarInsightCard(
+                            insight: insight,
+                            profile: scholarStore.profile,
+                            language: language,
+                            store: scholarStore
+                        )
+                    }
+                }
             }
+
+            scholarInsightStatus
 
             contextCard
 
@@ -304,6 +324,51 @@ struct SituationDetailView: View {
                 .font(.caption2)
                 .foregroundStyle(Color.sakinaMuted)
                 .frame(maxWidth: .infinity, alignment: .center)
+        }
+    }
+
+    @ViewBuilder
+    private var scholarInsightStatus: some View {
+        switch scholarStore.state(for: situation.id) {
+        case .loading where situation.verses.allSatisfy({ verse in
+            scholarStore.insight(situationID: situation.id, verseKey: verse.key) == nil
+        }):
+            HStack(spacing: 9) {
+                ProgressView()
+                    .controlSize(.small)
+                Text(copy("Checking for published scholarly insights…", "جارٍ التحقق من الإضاءات الشرعية المنشورة…"))
+                    .font(.caption)
+                    .foregroundStyle(Color.sakinaMuted)
+            }
+            .frame(maxWidth: .infinity, alignment: .center)
+            .accessibilityElement(children: .combine)
+
+        case .offline where situation.verses.contains(where: { verse in
+            scholarStore.insight(situationID: situation.id, verseKey: verse.key) != nil
+        }):
+            Label(
+                copy("Showing saved scholarly insight", "تُعرض إضاءة شرعية محفوظة"),
+                systemImage: "wifi.slash"
+            )
+            .font(.caption2)
+            .foregroundStyle(Color.sakinaMuted)
+            .frame(maxWidth: .infinity, alignment: .center)
+
+        case .failed:
+            Button {
+                Task { await scholarStore.loadInsights(forSituationID: situation.id, force: true) }
+            } label: {
+                Label(
+                    copy("Couldn’t refresh scholarly insights · Try again", "تعذّر تحديث الإضاءات الشرعية · أعد المحاولة"),
+                    systemImage: "arrow.clockwise"
+                )
+                .font(.caption.weight(.medium))
+                .foregroundStyle(Color.sakinaMuted)
+            }
+            .buttonStyle(.plain)
+
+        default:
+            EmptyView()
         }
     }
 

@@ -1,0 +1,8 @@
+project_id = "yaqeen-editorial"
+
+[functions.sync-guidance-manifest]
+verify_jwt = false
+
+[functions.translate-scholar-insight]
+verify_jwt = true
+

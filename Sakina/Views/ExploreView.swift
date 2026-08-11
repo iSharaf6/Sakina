@@ -1,9 +1,7 @@
 import SwiftUI
-import UIKit
 
 struct ExploreView: View {
     @Binding var path: NavigationPath
-    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @AppStorage(SettingsKeys.appLanguage) private var languageRaw = AppLanguage.english.rawValue
     @State private var searchText = ""
     @FocusState private var searchFocused: Bool
@@ -12,12 +10,6 @@ struct ExploreView: View {
     private var copy: AppCopy { AppCopy(language: language) }
     private var isSearching: Bool { !searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
     private var results: [Situation] { GuidanceCatalog.search(searchText) }
-    private var groupColumns: [GridItem] {
-        if dynamicTypeSize.isAccessibilitySize {
-            return [GridItem(.flexible())]
-        }
-        return [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)]
-    }
 
     var body: some View {
         NavigationStack(path: $path) {
@@ -32,6 +24,13 @@ struct ExploreView: View {
                         if isSearching {
                             searchResults
                         } else {
+                            NavigationLink {
+                                QuickGuidanceView()
+                            } label: {
+                                QuickGuidanceShortcutCard(language: language)
+                            }
+                            .buttonStyle(YaqeenPressStyle())
+
                             groupsGrid
                         }
                     }
@@ -115,14 +114,14 @@ struct ExploreView: View {
             )
 
             LazyVGrid(
-                columns: groupColumns,
+                columns: [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)],
                 spacing: 12
             ) {
                 ForEach(GuidanceCatalog.groups) { group in
                     NavigationLink(value: group) {
                         LifeGroupCard(group: group, language: language)
                     }
-                    .buttonStyle(.yaqeenPressable)
+                    .buttonStyle(YaqeenPressStyle())
                 }
             }
         }
@@ -154,7 +153,7 @@ struct ExploreView: View {
                     NavigationLink(value: situation) {
                         SituationRow(situation: situation, language: language)
                     }
-                    .buttonStyle(.yaqeenPressable)
+                    .buttonStyle(YaqeenPressStyle())
                 }
             }
         }
@@ -167,88 +166,38 @@ struct LifeGroupCard: View {
     let group: LifeGroup
     let language: AppLanguage
 
-    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
-
     var body: some View {
-        Group {
-            if dynamicTypeSize.isAccessibilitySize {
-                accessibilityLayout
-            } else {
-                cornerLayout
+        VStack(alignment: .leading, spacing: 15) {
+            ZStack {
+                RoundedRectangle(cornerRadius: 13, style: .continuous)
+                    .fill(Color.sakinaInk.opacity(0.08))
+                Image(systemName: group.symbol)
+                    .font(.system(size: 18, weight: .medium))
+                    .foregroundStyle(Color.sakinaInk)
+            }
+            .frame(width: 42, height: 42)
+
+            Spacer(minLength: 4)
+
+            VStack(alignment: .leading, spacing: 5) {
+                Text(group.title(language))
+                    .font(.headline)
+                    .foregroundStyle(Color.sakinaInk)
+                    .multilineTextAlignment(.leading)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                Text(group.situations.count == 1
+                     ? language.pick("1 moment", "موقف واحد")
+                     : language.pick("\(group.situations.count) moments", "\(group.situations.count) موقفًا"))
+                    .font(.caption)
+                    .foregroundStyle(Color.sakinaMuted)
             }
         }
-        .padding(16)
-        .frame(maxWidth: .infinity, alignment: .leading)
+        .padding(17)
+        .frame(maxWidth: .infinity, minHeight: 164, alignment: .leading)
         .sakinaCard(cornerRadius: 22)
         .accessibilityElement(children: .combine)
         .accessibilityHint(language.pick("Opens this life group", "يفتح هذه المجموعة"))
-    }
-
-    private var cornerLayout: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            LifeGroupArtwork(group: group)
-                .scaledToFit()
-                .frame(width: 68, height: 68)
-                .frame(maxWidth: .infinity, alignment: .trailing)
-                .accessibilityHidden(true)
-
-            Spacer(minLength: 12)
-
-            labels
-        }
-        .frame(maxWidth: .infinity, minHeight: 156, alignment: .topLeading)
-    }
-
-    private var accessibilityLayout: some View {
-        HStack(alignment: .top, spacing: 16) {
-            labels
-                .frame(maxWidth: .infinity, alignment: .leading)
-
-            LifeGroupArtwork(group: group)
-                .scaledToFit()
-                .frame(width: 62, height: 62)
-                .accessibilityHidden(true)
-        }
-    }
-
-    private var labels: some View {
-        VStack(alignment: .leading, spacing: 5) {
-            Text(group.title(language))
-                .font(.headline)
-                .foregroundStyle(Color.sakinaInk)
-                .multilineTextAlignment(.leading)
-                .fixedSize(horizontal: false, vertical: true)
-
-            Text(group.situations.count == 1
-                 ? language.pick("1 moment", "موقف واحد")
-                 : language.pick("\(group.situations.count) moments", "\(group.situations.count) موقفًا"))
-                .font(.caption)
-                .foregroundStyle(Color.sakinaMuted)
-        }
-    }
-}
-
-struct LifeGroupArtwork: View {
-    let group: LifeGroup
-
-    @ViewBuilder
-    var body: some View {
-        if let artwork = UIImage(named: group.id.artworkAssetName) {
-            Image(uiImage: artwork)
-                .resizable()
-                .interpolation(.high)
-        } else {
-            ZStack {
-                RoundedRectangle(cornerRadius: 12, style: .continuous)
-                    .fill(Color.sakinaInk.opacity(0.08))
-
-                Image(systemName: group.symbol)
-                    .resizable()
-                    .scaledToFit()
-                    .foregroundStyle(Color.sakinaInk)
-                    .scaleEffect(0.5)
-            }
-        }
     }
 }
 
@@ -297,7 +246,7 @@ struct LifeGroupView: View {
                                 NavigationLink(value: situation) {
                                     SituationRow(situation: situation, language: language)
                                 }
-                                .buttonStyle(.yaqeenPressable)
+                                .buttonStyle(YaqeenPressStyle())
                             }
                         }
                         .id(selectedStage.id)
@@ -319,10 +268,14 @@ struct LifeGroupView: View {
 
     private var groupHeader: some View {
         VStack(alignment: .leading, spacing: 18) {
-            LifeGroupArtwork(group: group)
-                .scaledToFit()
-                .frame(width: 94, height: 94)
-                .accessibilityHidden(true)
+            ZStack {
+                RoundedRectangle(cornerRadius: 18, style: .continuous)
+                    .fill(Color.sakinaInk)
+                Image(systemName: group.symbol)
+                    .font(.system(size: 26, weight: .medium))
+                    .foregroundStyle(Color.sakinaCanvas)
+            }
+            .frame(width: 58, height: 58)
 
             VStack(alignment: .leading, spacing: 8) {
                 Text(group.title(language))
@@ -489,4 +442,11 @@ struct EmptyGuidanceState: View {
     }
 }
 
-typealias YaqeenPressStyle = YaqeenPressableButtonStyle
+struct YaqeenPressStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .scaleEffect(configuration.isPressed ? 0.985 : 1)
+            .opacity(configuration.isPressed ? 0.88 : 1)
+            .animation(.easeOut(duration: 0.1), value: configuration.isPressed)
+    }
+}

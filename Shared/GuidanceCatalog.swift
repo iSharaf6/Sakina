@@ -1,5 +1,33 @@
 import Foundation
 
+private func normalizedGuidanceSearchText(_ value: String) -> String {
+    let arabicMarks = CharacterSet(charactersIn:
+        "\u{0610}\u{0611}\u{0612}\u{0613}\u{0614}\u{0615}\u{0616}\u{0617}\u{0618}\u{0619}\u{061A}" +
+        "\u{064B}\u{064C}\u{064D}\u{064E}\u{064F}\u{0650}\u{0651}\u{0652}\u{0653}\u{0654}\u{0655}" +
+        "\u{0656}\u{0657}\u{0658}\u{0659}\u{065A}\u{065B}\u{065C}\u{065D}\u{065E}\u{065F}\u{0670}\u{06D6}\u{06D7}\u{06D8}\u{06D9}\u{06DA}\u{06DB}\u{06DC}\u{06DF}\u{06E0}\u{06E1}\u{06E2}\u{06E3}\u{06E4}\u{06E7}\u{06E8}\u{06EA}\u{06EB}\u{06EC}\u{06ED}"
+    )
+
+    let foldedScalars = value
+        .folding(options: [.caseInsensitive, .diacriticInsensitive, .widthInsensitive], locale: .current)
+        .unicodeScalars
+        .filter { !arabicMarks.contains($0) && $0.value != 0x0640 }
+        .map(String.init)
+        .joined()
+
+    let normalizedArabic = foldedScalars
+        .replacingOccurrences(of: "أ", with: "ا")
+        .replacingOccurrences(of: "إ", with: "ا")
+        .replacingOccurrences(of: "آ", with: "ا")
+        .replacingOccurrences(of: "ٱ", with: "ا")
+        .replacingOccurrences(of: "ى", with: "ي")
+
+    return normalizedArabic.unicodeScalars
+        .map { CharacterSet.alphanumerics.contains($0) ? String($0) : " " }
+        .joined()
+        .split(whereSeparator: \.isWhitespace)
+        .joined(separator: " ")
+}
+
 // MARK: - Human-centred navigation
 
 /// The old editorial chapters remain as source metadata on each situation. This
@@ -7,18 +35,6 @@ import Foundation
 /// moment within that life, then the exact feeling or situation.
 enum LifeGroupID: String, Codable, CaseIterable {
     case marriage, family, faith, wellbeing, provision
-
-    /// Branded Explore artwork. The compact Home cards keep their SF Symbols
-    /// so they remain crisp at very small sizes.
-    var artworkAssetName: String {
-        switch self {
-        case .marriage: return "LifeGroupMarriage"
-        case .family: return "LifeGroupFamily"
-        case .faith: return "LifeGroupFaith"
-        case .wellbeing: return "LifeGroupWellbeing"
-        case .provision: return "LifeGroupProvision"
-        }
-    }
 }
 
 struct GuidanceStage: Identifiable, Hashable {
@@ -62,6 +78,240 @@ struct LifeGroup: Identifiable, Hashable {
     var situations: [Situation] {
         var seen = Set<String>()
         return stages.flatMap(\.situations).filter { seen.insert($0.id).inserted }
+    }
+}
+
+// MARK: - Emergency guidance prompts
+
+/// Short, human-language ways into the existing reviewed guidance catalog.
+///
+/// These prompts intentionally point to canonical `Situation` records instead
+/// of repeating an ayah under a second situation ID. That keeps the Qur'an text,
+/// contextual note, Arabic reflection, companion content, and scholar-review
+/// identity in one place while still meeting people in the words they use.
+struct EmergencyGuidancePrompt: Identifiable, Hashable {
+    let id: String
+    let titleEnglish: String
+    let titleArabic: String
+    let situationID: String
+    let searchAliasesEnglish: [String]
+
+    init(
+        id: String,
+        titleEnglish: String,
+        titleArabic: String,
+        situationID: String,
+        searchAliasesEnglish: [String] = []
+    ) {
+        self.id = id
+        self.titleEnglish = titleEnglish
+        self.titleArabic = titleArabic
+        self.situationID = situationID
+        self.searchAliasesEnglish = searchAliasesEnglish
+    }
+
+    func title(_ language: AppLanguage) -> String {
+        language.pick(titleEnglish, titleArabic)
+    }
+
+    var situation: Situation? {
+        SituationCatalog.by(id: situationID)
+    }
+
+    var searchablePhrases: [String] {
+        [titleEnglish, titleArabic] + searchAliasesEnglish
+    }
+}
+
+/// A deduplicated interpretation of the supplied “Qur'an emergency numbers”
+/// references. Screenshot phrases that express the same need are consolidated,
+/// and each prompt leads to an already reviewed situation whose ayat are present
+/// in `verses.json`.
+enum EmergencyGuidanceCatalog {
+    static let prompts: [EmergencyGuidancePrompt] = [
+        EmergencyGuidancePrompt(
+            id: "overwhelmed-responsibilities",
+            titleEnglish: "When deadlines and responsibilities feel overwhelming",
+            titleArabic: "عندما تشعرك المواعيد والمسؤوليات بالإنهاك",
+            situationID: "tooManyBurdens",
+            searchAliasesEnglish: [
+                "When you're overwhelmed with deadlines",
+                "When you feel like you're carrying too much alone",
+            ]
+        ),
+        EmergencyGuidancePrompt(
+            id: "worry-will-not-settle",
+            titleEnglish: "When worry or overthinking will not settle",
+            titleArabic: "عندما لا يهدأ القلق أو التفكير المفرط",
+            situationID: "scaredOfFuture",
+            searchAliasesEnglish: [
+                "When you're anxious before an exam",
+                "When you're afraid of what's coming",
+                "When you feel crushed by anxiety",
+                "When you can't stop overthinking",
+            ]
+        ),
+        EmergencyGuidancePrompt(
+            id: "doubting-ability",
+            titleEnglish: "When you doubt your ability or feel unqualified",
+            titleArabic: "عندما تشك في قدرتك أو تشعر أنك غير مؤهل",
+            situationID: "feelingInsecure",
+            searchAliasesEnglish: [
+                "When you feel like you're not smart enough",
+                "When you feel unqualified for the task ahead",
+                "When you're questioning your own worth",
+            ]
+        ),
+        EmergencyGuidancePrompt(
+            id: "comparing-progress",
+            titleEnglish: "When you compare your progress with other people",
+            titleArabic: "عندما تقارن تقدمك بتقدم الآخرين",
+            situationID: "everyoneAhead",
+            searchAliasesEnglish: [
+                "When you're comparing your grades to others",
+                "When you feel behind everyone else",
+                "When you feel like you're falling behind in life",
+            ]
+        ),
+        EmergencyGuidancePrompt(
+            id: "struggling-to-continue",
+            titleEnglish: "When you're exhausted and struggling to keep going",
+            titleArabic: "عندما ترهقك المحاولة ويصعب عليك الاستمرار",
+            situationID: "movingOn",
+            searchAliasesEnglish: [
+                "When you're burned out from studying",
+                "When you need motivation to keep going",
+                "When you're tired of trying",
+                "When you feel like giving up on a goal",
+                "When you feel like giving up on your goals",
+            ]
+        ),
+        EmergencyGuidancePrompt(
+            id: "lost-next-step",
+            titleEnglish: "When you feel lost or do not know what to do next",
+            titleArabic: "عندما تشعر بالضياع أو لا تعرف خطوتك التالية",
+            situationID: "needGuidance",
+            searchAliasesEnglish: [
+                "When you don't know what to major in",
+                "When you feel lost in life",
+                "When you don't know your purpose",
+                "When you're seeking guidance",
+                "When you feel stuck between two decisions",
+            ]
+        ),
+        EmergencyGuidancePrompt(
+            id: "setback-after-effort",
+            titleEnglish: "When something you worked hard for does not work out",
+            titleArabic: "عندما لا ينجح أمر بذلت فيه جهدًا كبيرًا",
+            situationID: "disappointed",
+            searchAliasesEnglish: [
+                "When you fail at something you worked hard for",
+                "When it feels like nothing is going right",
+            ]
+        ),
+        EmergencyGuidancePrompt(
+            id: "effort-feels-unseen",
+            titleEnglish: "When your effort feels unseen or produces no result",
+            titleArabic: "عندما تشعر أن جهدك لا يُرى أو لا يثمر",
+            situationID: "workNoResults",
+            searchAliasesEnglish: [
+                "When you feel unseen for your effort",
+                "When you're working hard but see no results",
+            ]
+        ),
+        EmergencyGuidancePrompt(
+            id: "alone-or-misunderstood",
+            titleEnglish: "When you feel alone, invisible, or misunderstood",
+            titleArabic: "عندما تشعر بالوحدة أو أنك غير مرئي أو غير مفهوم",
+            situationID: "feelAlone",
+            searchAliasesEnglish: [
+                "When you're studying alone and it feels lonely",
+                "When you feel like no one understands you",
+                "When you feel invisible or unseen",
+            ]
+        ),
+        EmergencyGuidancePrompt(
+            id: "distant-from-faith",
+            titleEnglish: "When you feel distant from Allah or your faith feels low",
+            titleArabic: "عندما تشعر بالبعد عن الله أو بضعف إيمانك",
+            situationID: "imanLow",
+            searchAliasesEnglish: [
+                "When you feel disconnected from Allah",
+                "When you feel far from your deen",
+            ]
+        ),
+        EmergencyGuidancePrompt(
+            id: "repeating-mistake",
+            titleEnglish: "When you keep returning to the same mistake",
+            titleArabic: "عندما تعود إلى الخطأ نفسه مرارًا",
+            situationID: "sameSin",
+            searchAliasesEnglish: [
+                "When you're stuck in the same cycle",
+            ]
+        ),
+        EmergencyGuidancePrompt(
+            id: "fear-too-late-to-return",
+            titleEnglish: "When you fear it is too late to return to Allah",
+            titleArabic: "عندما تخشى أن يكون قد فات أوان العودة إلى الله",
+            situationID: "madeAMistake",
+            searchAliasesEnglish: [
+                "When you're afraid it's too late to change",
+                "When you feel like you've messed up too much",
+            ]
+        ),
+        EmergencyGuidancePrompt(
+            id: "outcome-beyond-control",
+            titleEnglish: "When the outcome is outside your control",
+            titleArabic: "عندما تكون النتيجة خارج سيطرتك",
+            situationID: "afraidOfFailure",
+            searchAliasesEnglish: [
+                "When you're stressed about results out of your control",
+            ]
+        ),
+        EmergencyGuidancePrompt(
+            id: "fear-of-judgment",
+            titleEnglish: "When you fear other people's judgment",
+            titleArabic: "عندما تخشى أحكام الناس عليك",
+            situationID: "afraidPeopleThink",
+            searchAliasesEnglish: [
+                "When you're afraid of judgment from others",
+            ]
+        ),
+        EmergencyGuidancePrompt(
+            id: "hurt-or-wronged",
+            titleEnglish: "When someone has hurt or wronged you",
+            titleArabic: "عندما يؤذيك شخص أو يظلمك",
+            situationID: "someoneHurtsYou"
+        ),
+        EmergencyGuidancePrompt(
+            id: "hope-feels-far",
+            titleEnglish: "When hope feels far away",
+            titleArabic: "عندما يبدو الأمل بعيدًا",
+            situationID: "disappointed",
+            searchAliasesEnglish: [
+                "When you feel hopeless",
+                "When you feel like giving up",
+            ]
+        ),
+        EmergencyGuidancePrompt(
+            id: "beginning-again",
+            titleEnglish: "When you need to begin again after a setback",
+            titleArabic: "عندما تحتاج إلى بداية جديدة بعد انتكاسة",
+            situationID: "movingOn",
+            searchAliasesEnglish: [
+                "When you're starting over",
+            ]
+        ),
+    ]
+
+    static func matching(_ query: String) -> [EmergencyGuidancePrompt] {
+        let value = normalizedGuidanceSearchText(query)
+        guard !value.isEmpty else { return [] }
+        return prompts.filter { prompt in
+            prompt.searchablePhrases.contains {
+                normalizedGuidanceSearchText($0).contains(value)
+            }
+        }
     }
 }
 
@@ -280,15 +530,107 @@ enum GuidanceCatalog {
     }
 
     static func search(_ query: String) -> [Situation] {
-        let value = query.trimmingCharacters(in: .whitespacesAndNewlines)
+        let value = normalizedGuidanceSearchText(query)
         guard !value.isEmpty else { return [] }
-        return SituationCatalog.all.filter { situation in
-            let group = group(containing: situation)
-            return situation.title.localizedCaseInsensitiveContains(value)
-                || situation.arabicTitle.localizedCaseInsensitiveContains(value)
-                || situation.referenceLabel.localizedCaseInsensitiveContains(value)
-                || group.titleEnglish.localizedCaseInsensitiveContains(value)
-                || group.titleArabic.localizedCaseInsensitiveContains(value)
+
+        let emergencySituationIDs = Set(
+            EmergencyGuidanceCatalog.matching(value).map(\.situationID)
+        )
+
+        let queryTokens = value.split(separator: " ").map(String.init).filter {
+            !searchStopWords.contains($0)
+        }
+
+        let scored: [(situation: Situation, score: Int, index: Int)] =
+            SituationCatalog.all.enumerated().compactMap { pair -> (Situation, Int, Int)? in
+            let (index, situation) = pair
+            let title = normalizedGuidanceSearchText(
+                "\(situation.title) \(situation.arabicTitle) \(situation.referenceLabel)"
+            )
+            let document = searchDocument(for: situation)
+            var score = 0
+
+            if title == value { score += 1_000 }
+            if title.hasPrefix(value) { score += 500 }
+            if title.contains(value) { score += 300 }
+            if document.contains(value) { score += 150 }
+
+            let matchedTokens = queryTokens.filter { document.contains($0) }.count
+            if !queryTokens.isEmpty && matchedTokens == queryTokens.count {
+                score += 120 + matchedTokens * 20
+            } else {
+                score += matchedTokens * 18
+            }
+
+            if emergencySituationIDs.contains(situation.id) { score += 800 }
+            score += semanticCueScore(for: situation.id, query: value)
+
+            guard score > 0 else { return nil }
+            return (situation, score, index)
+        }
+
+        return scored.sorted {
+            if $0.score == $1.score { return $0.index < $1.index }
+            return $0.score > $1.score
+        }
+        .map(\.situation)
+    }
+
+    private static let searchStopWords: Set<String> = [
+        "a", "an", "and", "are", "at", "be", "do", "for", "i", "in", "is", "it",
+        "me", "my", "of", "on", "or", "the", "to", "when", "with", "you", "your",
+        "من", "في", "على", "عن", "الى", "إلى", "انا", "أنا", "عندما", "مع",
+    ]
+
+    private static func searchDocument(for situation: Situation) -> String {
+        let group = group(containing: situation)
+        let stage = stage(containing: situation)
+        let companion = CompanionContentCatalog.content(for: situation)
+
+        let verseText = situation.verses.flatMap {
+            [$0.arabic, $0.translation, $0.surahName, $0.surahNameArabic, $0.surahNameTranslated]
+        }
+        let hadithText = companion.hadiths.flatMap {
+            [$0.titleEnglish, $0.titleArabic, $0.english, $0.arabic, $0.contextEnglish, $0.contextArabic]
+        }
+        let duaText = companion.supplications.flatMap {
+            [
+                $0.titleEnglish, $0.titleArabic, $0.arabic, $0.transliteration,
+                $0.meaningEnglish, $0.meaningArabic, $0.contextEnglish, $0.contextArabic,
+            ]
+        }
+
+        return normalizedGuidanceSearchText(([
+            situation.title,
+            situation.arabicTitle,
+            situation.referenceLabel,
+            situation.whyNote,
+            group.titleEnglish,
+            group.titleArabic,
+            stage?.titleEnglish ?? "",
+            stage?.titleArabic ?? "",
+        ] + verseText + hadithText + duaText).joined(separator: " "))
+    }
+
+    private static func semanticCueScore(for situationID: String, query: String) -> Int {
+        let cues: [(terms: [String], targets: Set<String>)] = [
+            (["anxious", "anxiety", "overthinking", "overthink", "exam"], ["scaredOfFuture", "afraidOfFailure"]),
+            (["failed", "failure", "setback", "rejected", "rejection"], ["disappointed", "facingRejection", "afraidOfFailure"]),
+            (["job", "career", "unemployed", "fired"], ["losingJob", "workNoResults", "worriedAboutRizq"]),
+            (["toxic marriage", "marriage conflict", "arguing"], ["marriageProblems", "constantlyArguing", "spouseWrongedYou"]),
+            (["lonely", "loneliness", "alone", "misunderstood"], ["feelAlone"]),
+            (["debt", "bills", "money", "rent"], ["stressedAboutDebt", "payingBills", "moneyStress"]),
+            (["lost", "purpose", "decision", "guidance"], ["needGuidance", "majorFinancialDecision"]),
+            (["sin", "mistake", "repent", "guilt", "shame"], ["madeAMistake", "sameSin", "forgiveYourself"]),
+            (["compare", "comparison", "behind", "grades"], ["everyoneAhead", "everyoneAheadDuha", "comparingFinances"]),
+            (["burnout", "burned out", "exhausted", "tired"], ["tooManyBurdens", "movingOn"]),
+            (["rizq", "provision", "salary", "savings"], ["worriedAboutRizq", "salaryNotEnough", "savingsLow"]),
+            (["pray", "prayer", "salah", "khushu"], ["salahConnection", "hardToPray", "losingFocus"]),
+        ]
+
+        return cues.reduce(into: 0) { score, cue in
+            guard cue.targets.contains(situationID), cue.terms.contains(where: query.contains) else { return }
+            score += 260
         }
     }
 }

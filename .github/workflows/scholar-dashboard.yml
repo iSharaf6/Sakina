@@ -1,0 +1,44 @@
+name: Validate scholar dashboard
+
+on:
+  pull_request:
+    paths:
+      - "scholar-dashboard/**"
+      - ".github/workflows/scholar-dashboard.yml"
+  push:
+    branches: [main]
+    paths:
+      - "scholar-dashboard/**"
+      - ".github/workflows/scholar-dashboard.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: scholar-dashboard-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Lint, type-check, build, and audit
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: scholar-dashboard
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: scholar-dashboard/package-lock.json
+
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm run build
+      - name: Reject high or critical production dependency advisories
+        run: npm audit --omit=dev --audit-level=high --registry=https://registry.npmjs.org/

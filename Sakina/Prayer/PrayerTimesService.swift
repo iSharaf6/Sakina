@@ -78,7 +78,9 @@ final class PrayerTimesService: ObservableObject {
             )
             schedule = newSchedule
             SharedStore.prayerSchedule = newSchedule
-            WidgetCenter.shared.reloadTimelines(ofKind: PrayerSchedule.widgetKind)
+            // The schedule powers the Home Screen widget plus both paired
+            // Lock Screen halves, so invalidate them as one atomic update.
+            WidgetCenter.shared.reloadAllTimelines()
             errorMessage = nil
             return newSchedule
         } catch {

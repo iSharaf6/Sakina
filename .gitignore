@@ -17,3 +17,12 @@ xcuserdata/
 # Xcode generated metadata
 *.xccheckout
 *.xcscmblueprint
+
+# Local service configuration and dashboard dependencies
+Config/ScholarBackend.xcconfig
+scholar-dashboard/.env
+scholar-dashboard/.env.local
+scholar-dashboard/.env.*.local
+scholar-dashboard/node_modules/
+scholar-dashboard/dist/
+supabase/.temp/

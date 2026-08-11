@@ -9,9 +9,12 @@ settings:
   base:
     SWIFT_VERSION: "5.0"
     CODE_SIGN_STYLE: Automatic
+    DEVELOPMENT_TEAM: U9Z36KR28N
     CURRENT_PROJECT_VERSION: 1
     MARKETING_VERSION: "1.0"
     TARGETED_DEVICE_FAMILY: "1"
+    YAQEEN_SCHOLAR_SUPABASE_URL: ""
+    YAQEEN_SCHOLAR_SUPABASE_PUBLISHABLE_KEY: ""
 
 packages:
   Adhan:
@@ -20,6 +23,9 @@ packages:
   GoogleSignIn:
     url: https://github.com/google/GoogleSignIn-iOS.git
     from: 9.0.0
+  Supabase:
+    url: https://github.com/supabase/supabase-swift.git
+    from: 2.46.0
 
 targets:
   Sakina:
@@ -28,8 +34,8 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.islamsharaf.sakina
-        GOOGLE_CLIENT_ID: YOUR_IOS_CLIENT_ID.apps.googleusercontent.com
-        GOOGLE_REVERSED_CLIENT_ID: com.googleusercontent.apps.YOUR_IOS_CLIENT_ID
+        TARGETED_DEVICE_FAMILY: "1"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
     sources:
       - Sakina
       - Shared
@@ -46,21 +52,14 @@ targets:
         UISupportedInterfaceOrientations:
           - UIInterfaceOrientationPortrait
         ITSAppUsesNonExemptEncryption: false
-        NSLocationWhenInUseUsageDescription: Yaqeen uses your approximate location to calculate accurate local prayer times. Your coordinates stay on this device.
-        GIDClientID: $(GOOGLE_CLIENT_ID)
-        CFBundleIcons:
-          CFBundlePrimaryIcon:
-            CFBundleIconFiles:
-              - AppIcon60x60
-              - AppIcon76x76
+        NSLocationWhenInUseUsageDescription: Yaqeen uses your approximate location to calculate local prayer times and the Qibla direction. Your coordinates stay on this device.
+        YaqeenScholarSupabaseURL: $(YAQEEN_SCHOLAR_SUPABASE_URL)
+        YaqeenScholarSupabasePublishableKey: $(YAQEEN_SCHOLAR_SUPABASE_PUBLISHABLE_KEY)
         CFBundleURLTypes:
           - CFBundleURLName: com.islamsharaf.yaqeen
             CFBundleURLSchemes:
               - sakina
               - yaqeen
-          - CFBundleURLName: com.googleusercontent.apps
-            CFBundleURLSchemes:
-              - $(GOOGLE_REVERSED_CLIENT_ID)
         UIAppFonts:
           - UthmanicHafs.ttf
     dependencies:
@@ -71,6 +70,8 @@ targets:
         product: GoogleSignIn
       - package: GoogleSignIn
         product: GoogleSignInSwift
+      - package: Supabase
+        product: Supabase
 
   SakinaWidget:
     type: app-extension
@@ -99,6 +100,7 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.islamsharaf.sakina.widget
+        TARGETED_DEVICE_FAMILY: "1"
         SKIP_INSTALL: true
 
   SakinaTests:

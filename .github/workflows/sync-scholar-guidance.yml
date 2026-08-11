@@ -1,0 +1,103 @@
+name: Validate and sync scholar guidance
+
+on:
+  pull_request:
+    paths:
+      - "Shared/**"
+      - "SakinaTests/**"
+      - "scripts/generate-guidance-manifest.mjs"
+      - "scripts/scholar-backend/**"
+      - "supabase/**"
+      - ".github/workflows/sync-scholar-guidance.yml"
+  push:
+    branches: [main]
+    paths:
+      - "Shared/**"
+      - "SakinaTests/**"
+      - "scripts/generate-guidance-manifest.mjs"
+      - "scripts/scholar-backend/**"
+      - "supabase/**"
+      - ".github/workflows/sync-scholar-guidance.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: scholar-guidance-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    name: Content and backend integrity
+    runs-on: macos-15
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Verify generated guidance manifest
+        run: node scripts/generate-guidance-manifest.mjs --check
+
+      - name: Validate scholar backend security invariants
+        run: node scripts/scholar-backend/validate.mjs
+
+      - name: Run iOS content-integrity tests
+        run: >-
+          xcodebuild test
+          -project Sakina.xcodeproj
+          -scheme Sakina
+          -destination 'platform=iOS Simulator,name=iPhone 16 Pro,OS=latest'
+          CODE_SIGNING_ALLOWED=NO
+
+  database-tests:
+    name: Editorial RLS and RPC behavior
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Supabase CLI
+        uses: supabase/setup-cli@v2
+        with:
+          version: 2.84.2
+          github-token: ${{ github.token }}
+
+      - name: Apply migrations to an isolated database
+        run: supabase db start
+
+      - name: Exercise pgTAP authorization matrix
+        run: supabase test db
+
+  sync:
+    name: Sync protected Supabase queue
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [validate, database-tests]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Re-verify manifest on deployment runner
+        run: node scripts/generate-guidance-manifest.mjs --check
+
+      - name: Sync manifest through protected Edge Function
+        env:
+          GUIDANCE_SYNC_FUNCTION_URL: ${{ secrets.GUIDANCE_SYNC_FUNCTION_URL }}
+          GUIDANCE_SYNC_TOKEN: ${{ secrets.GUIDANCE_SYNC_TOKEN }}
+        run: |
+          test -n "$GUIDANCE_SYNC_FUNCTION_URL"
+          test -n "$GUIDANCE_SYNC_TOKEN"
+          curl --fail-with-body --silent --show-error \
+            --retry 3 --retry-all-errors \
+            --request POST "$GUIDANCE_SYNC_FUNCTION_URL" \
+            --header "content-type: application/json" \
+            --header "x-guidance-sync-token: $GUIDANCE_SYNC_TOKEN" \
+            --data-binary @supabase/manifests/guidance-manifest.json

@@ -14,41 +14,61 @@ struct SakinaApp: App {
 // MARK: Root
 
 struct RootView: View {
-    enum Tab: Hashable { case home, explore, saved, settings }
+    enum Tab: Hashable { case home, explore, qibla, saved, settings }
 
-    @AppStorage(SettingsKeys.hasOnboarded) private var hasOnboarded = false
+    @Environment(\.scenePhase) private var scenePhase
     @AppStorage(SettingsKeys.appLanguage) private var languageRaw = AppLanguage.english.rawValue
     @State private var selection: Tab = .home
     @State private var homePath = NavigationPath()
     @State private var explorePath = NavigationPath()
     @StateObject private var router = NotificationRouter.shared
+    @StateObject private var scholarStore = ScholarContentStore()
     @ObservedObject private var account = GoogleAccountManager.shared
 
     private var language: AppLanguage { AppLanguage(rawValue: languageRaw) ?? .english }
     private var copy: AppCopy { AppCopy(language: language) }
 
     var body: some View {
-        Group {
-            if hasOnboarded {
-                appTabs
-                    .transition(.opacity)
-            } else {
-                OnboardingFlow {
-                    selection = .explore
-                    hasOnboarded = true
-                }
-                .transition(.opacity)
+        TabView(selection: $selection) {
+            HomeView(path: $homePath)
+                .tabItem { Label(copy("Home", "الرئيسية"), systemImage: "house.fill") }
+                .tag(Tab.home)
+
+            ExploreView(path: $explorePath)
+                .tabItem { Label(copy("Explore", "استكشف"), systemImage: "square.grid.2x2.fill") }
+                .tag(Tab.explore)
+
+            NavigationStack {
+                QiblaView()
             }
+            .tabItem { Label(copy("Qibla", "القبلة"), systemImage: "location.north.circle.fill") }
+            .tag(Tab.qibla)
+
+            LibraryView()
+                .tabItem { Label(copy("Saved", "المحفوظات"), systemImage: "bookmark.fill") }
+                .tag(Tab.saved)
+
+            SettingsView()
+                .tabItem { Label(copy("Settings", "الإعدادات"), systemImage: "gearshape.fill") }
+                .tag(Tab.settings)
         }
-        .animation(.easeOut(duration: 0.24), value: hasOnboarded)
+        .tint(.sakinaInk)
         .yaqeenLanguage(language)
+        .environmentObject(scholarStore)
+        .task {
+            await scholarStore.loadProfileAndPublishedInsights()
+        }
         .onAppear {
             router.activate()
+            ReminderScheduler.refresh()
             account.restorePreviousSignIn()
-            if hasOnboarded { ReminderScheduler.refresh() }
+            handlePendingIntent()
+        }
+        .onChange(of: scenePhase) { _, phase in
+            if phase == .active { handlePendingIntent() }
         }
         .onOpenURL { url in
-            if account.handle(url) { return }
+            if account.isConfigured, account.handle(url) { return }
             guard let scheme = url.scheme, ["sakina", "yaqeen"].contains(scheme) else { return }
 
             if url.host == "prayer-times" {
@@ -57,9 +77,8 @@ struct RootView: View {
                 return
             }
 
-            if url.host == "explore" {
-                selection = .explore
-                explorePath = NavigationPath()
+            if url.host == "qibla" {
+                selection = .qibla
                 return
             }
 
@@ -77,30 +96,19 @@ struct RootView: View {
         }
     }
 
-    private var appTabs: some View {
-        TabView(selection: $selection) {
-            HomeView(path: $homePath)
-                .tabItem { Label(copy("Home", "الرئيسية"), systemImage: "house.fill") }
-                .tag(Tab.home)
-
-            ExploreView(path: $explorePath)
-                .tabItem { Label(copy("Explore", "استكشف"), systemImage: "square.grid.2x2.fill") }
-                .tag(Tab.explore)
-
-            LibraryView()
-                .tabItem { Label(copy("Saved", "المحفوظات"), systemImage: "bookmark.fill") }
-                .tag(Tab.saved)
-
-            SettingsView()
-                .tabItem { Label(copy("Settings", "الإعدادات"), systemImage: "gearshape.fill") }
-                .tag(Tab.settings)
-        }
-        .tint(.sakinaInk)
-    }
-
     private func open(_ situation: Situation) {
         selection = .explore
         explorePath = NavigationPath()
         explorePath.append(situation)
+    }
+
+    private func handlePendingIntent() {
+        guard let destination = YaqeenIntentDestination.consume() else { return }
+        switch destination {
+        case .today:
+            open(SharedStore.situationOfTheDay())
+        case .qibla:
+            selection = .qibla
+        }
     }
 }

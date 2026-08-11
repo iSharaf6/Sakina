@@ -2,10 +2,12 @@ import SwiftUI
 
 struct AboutView: View {
     @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject private var scholarStore: ScholarContentStore
     @AppStorage(SettingsKeys.appLanguage) private var languageRaw = AppLanguage.english.rawValue
 
     private var language: AppLanguage { AppLanguage(rawValue: languageRaw) ?? .english }
     private var copy: AppCopy { AppCopy(language: language) }
+    private var scholarProfile: ScholarProfile { scholarStore.profile }
 
     var body: some View {
         NavigationStack {
@@ -18,6 +20,7 @@ struct AboutView: View {
                         trustCard
                         privacyCard
                         careCard
+                        scholarlyReview
                         links
                         version
                     }
@@ -78,8 +81,8 @@ struct AboutView: View {
             symbol: "lock",
             title: copy("Private by default", "الخصوصية أولًا"),
             body: copy(
-                "Bookmarks, reflections, and prayer preferences begin on this iPhone. Prayer coordinates never enter the widget payload. Google backup is optional and uses a private app-data folder after you grant permission.",
-                "تبدأ المحفوظات والتأملات وتفضيلات الصلاة على هذا الهاتف. لا تدخل إحداثيات الصلاة في بيانات الأداة. والنسخ الاحتياطي إلى Google اختياري ويستخدم مساحة خاصة بعد موافقتك."
+                "Bookmarks, reflections, and prayer preferences stay on this iPhone unless you deliberately connect a backup option shown in Settings. Prayer coordinates never enter the widget payload. Yaqeen has no advertising, analytics, or tracking.",
+                "تبقى المحفوظات والتأملات وتفضيلات الصلاة على هذا الهاتف ما لم تربط بنفسك خيار نسخ احتياطي يظهر في الإعدادات. ولا تدخل إحداثيات الصلاة في بيانات الأداة. ولا يستخدم يقين الإعلانات أو التحليلات أو التتبع."
             )
         )
     }
@@ -93,6 +96,70 @@ struct AboutView: View {
                 "يميّز يقين بين سياق النص المباشر والمبدأ العام. ولا يجعل العفو إذنًا بالضرر، ولا الصبر سببًا للبقاء في الخطر. والتأملات ليست تفسيرًا ولا بديلًا عن أهل العلم أو الحماية أو الرعاية المتخصصة."
             )
         )
+    }
+
+    private var scholarlyReview: some View {
+        NavigationLink {
+            ScholarProfileView()
+        } label: {
+            HStack(spacing: 14) {
+                ScholarAvatarView(profile: scholarProfile, size: 58, language: language)
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(copy("Scholarly review", "المراجعة الشرعية"))
+                        .font(.headline)
+                        .foregroundStyle(Color.sakinaInk)
+                    Text(scholarProfile.displayName(language))
+                        .font(.subheadline.weight(.medium))
+                        .foregroundStyle(Color.sakinaInk)
+                    if let title = scholarProfile.title(language) {
+                        Text(title)
+                            .font(.caption)
+                            .foregroundStyle(Color.sakinaMuted)
+                    }
+                    Label(scholarTrustText, systemImage: scholarTrustSymbol)
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(Color.sakinaMuted)
+                }
+
+                Spacer(minLength: 8)
+                Image(systemName: language == .arabic ? "chevron.left" : "chevron.right")
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(Color.sakinaMuted)
+            }
+            .padding(16)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(Color.sakinaElevated, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+            .overlay {
+                RoundedRectangle(cornerRadius: 20, style: .continuous)
+                    .strokeBorder(Color.sakinaHairline, lineWidth: 1)
+            }
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityHint(
+            scholarStore.isShowingLocalPlaceholder
+                ? copy(
+                    "Opens local placeholder details that are not verified online",
+                    "يفتح بيانات محلية مؤقتة غير موثّقة عبر الإنترنت"
+                )
+                : copy("Opens the verified public scholar profile", "يفتح الملف العام الموثّق للمراجع")
+        )
+    }
+
+    private var scholarTrustText: String {
+        switch scholarStore.profileSource {
+        case .localPlaceholder:
+            return copy("Local placeholder · unverified", "عنصر محلي مؤقت · غير موثّق")
+        case .cachedVerified:
+            return copy("Previously verified · saved", "سبق توثيقه · محفوظ")
+        case .liveVerified:
+            return copy("Verified public profile", "ملف عام موثّق")
+        }
+    }
+
+    private var scholarTrustSymbol: String {
+        scholarStore.isShowingLocalPlaceholder ? "exclamationmark.circle" : "checkmark.seal.fill"
     }
 
     private func aboutCard(symbol: String, title: String, body: String) -> some View {
@@ -117,6 +184,12 @@ struct AboutView: View {
 
     private var links: some View {
         VStack(spacing: 0) {
+            NavigationLink {
+                PrivacyPolicyView()
+            } label: {
+                sourceRow(copy("Privacy policy", "سياسة الخصوصية"), detail: copy("Read in Yaqeen", "اقرأها في يقين"))
+            }
+            Divider().padding(.leading, 46)
             Link(destination: URL(string: "https://quran.com")!) {
                 sourceRow(copy("Qur’an text and tafsir", "نص القرآن والتفسير"), detail: "Quran.com")
             }

@@ -126,8 +126,8 @@ struct LibraryView: View {
                 EmptyGuidanceState(
                     title: copy("A quiet place for your words", "مكان هادئ لكلماتك"),
                     detail: copy(
-                        "Your private reflections stay on this iPhone and are backed up when Google is connected.",
-                        "تبقى تأملاتك الخاصة على هذا الهاتف وتُنسخ احتياطيًا عند ربط حساب Google."
+                        "Your private reflections stay on this iPhone. If a backup option is available and you choose to connect it, Yaqeen will explain what is shared before you continue.",
+                        "تبقى تأملاتك الخاصة على هذا الهاتف. وإذا توفر خيار نسخ احتياطي واخترت ربطه، فسيشرح يقين ما تتم مشاركته قبل المتابعة."
                     ),
                     symbol: "square.and.pencil"
                 )

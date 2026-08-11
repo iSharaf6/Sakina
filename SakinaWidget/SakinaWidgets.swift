@@ -100,6 +100,23 @@ struct PrayerProvider: TimelineProvider {
     }
 }
 
+/// The Lock Screen only has room for three comfortably readable prayer rows in
+/// an accessory rectangular widget. Two companion widgets recreate the full
+/// six-event schedule: place `early` on the left and `late` on the right.
+private enum PrayerWidgetSide {
+    case early
+    case late
+
+    var kinds: [PrayerKind] {
+        switch self {
+        case .early:
+            return [.fajr, .sunrise, .dhuhr]
+        case .late:
+            return [.asr, .maghrib, .isha]
+        }
+    }
+}
+
 // MARK: - Shared widget view
 
 struct VerseWidgetView: View {
@@ -432,6 +449,106 @@ struct PrayerWidgetView: View {
     }
 }
 
+/// A compact three-row schedule designed specifically for the Lock Screen.
+/// WidgetKit renders accessory widgets with the user's selected Lock Screen
+/// tint, so the view intentionally uses semantic primary/secondary styles.
+private struct PrayerScheduleHalfView: View {
+    let entry: PrayerWidgetEntry
+    let side: PrayerWidgetSide
+
+    @Environment(\.locale) private var locale
+
+    private var nextEvent: PrayerEvent? {
+        entry.schedule?.nextEvent(after: entry.date)
+    }
+
+    var body: some View {
+        Group {
+            if let schedule = entry.schedule,
+               !schedule.isStale(at: entry.date),
+               !events(in: schedule).isEmpty {
+                prayerRows(events(in: schedule), schedule: schedule)
+            } else {
+                unavailable
+            }
+        }
+        .containerBackground(for: .widget) {
+            Color.clear
+        }
+        .widgetURL(URL(string: "sakina://prayer-times"))
+    }
+
+    private func prayerRows(_ events: [PrayerEvent], schedule: PrayerSchedule) -> some View {
+        VStack(alignment: .leading, spacing: 0) {
+            ForEach(events) { event in
+                HStack(spacing: 5) {
+                    prayerMarker(isNext: event.id == nextEvent?.id)
+
+                    Text(event.kind.displayName(locale: locale))
+                        .font(.system(size: 11, weight: .medium, design: .rounded))
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.78)
+
+                    Spacer(minLength: 3)
+
+                    Text(timeLabel(event.time, schedule: schedule))
+                        .font(.system(size: 11, weight: .semibold, design: .rounded))
+                        .monospacedDigit()
+                        .lineLimit(1)
+                        .minimumScaleFactor(0.72)
+                }
+                .frame(maxHeight: .infinity)
+            }
+        }
+        .accessibilityElement(children: .combine)
+    }
+
+    private func prayerMarker(isNext: Bool) -> some View {
+        ZStack {
+            Circle()
+                .stroke(lineWidth: 1.25)
+            if isNext {
+                Circle()
+                    .fill()
+            }
+        }
+        .frame(width: 8, height: 8)
+        .accessibilityHidden(true)
+    }
+
+    private func events(in schedule: PrayerSchedule) -> [PrayerEvent] {
+        // After Isha, advance both halves together to tomorrow's schedule.
+        let scheduleDate = schedule.nextEvent(after: entry.date)?.time ?? entry.date
+        let dayEvents = schedule.events(on: scheduleDate)
+        return side.kinds.compactMap { kind in
+            dayEvents.first { $0.kind == kind }
+        }
+    }
+
+    private var unavailable: some View {
+        HStack(spacing: 7) {
+            Image(systemName: "location.circle")
+                .font(.system(size: 20, weight: .medium))
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Prayer times")
+                    .font(.system(size: 12, weight: .semibold, design: .rounded))
+                Text("Open Yaqeen to set your location")
+                    .font(.system(size: 9.5, weight: .medium))
+                    .foregroundStyle(.secondary)
+                    .lineLimit(2)
+            }
+        }
+    }
+
+    private func timeLabel(_ date: Date, schedule: PrayerSchedule) -> String {
+        let formatter = DateFormatter()
+        formatter.locale = locale
+        formatter.timeZone = schedule.timeZone
+        formatter.setLocalizedDateFormatFromTemplate("jm")
+        return formatter.string(from: date)
+    }
+}
+
 /// Khatam star, duplicated locally so the widget stays independent of the app theme.
 struct SmallStar: Shape {
     func path(in rect: CGRect) -> Path {
@@ -494,11 +611,51 @@ struct PrayerTimesWidget: Widget {
     }
 }
 
+struct EarlyPrayerTimesWidget: Widget {
+    static let kind = "YaqeenPrayerTimesEarly"
+
+    var body: some WidgetConfiguration {
+        StaticConfiguration(kind: Self.kind, provider: PrayerProvider()) { entry in
+            PrayerScheduleHalfView(entry: entry, side: .early)
+        }
+        .configurationDisplayName("Prayer Times · Fajr–Dhuhr")
+        .description("Place this widget on the left of your Lock Screen for Fajr, Sunrise and Dhuhr.")
+        .supportedFamilies([.accessoryRectangular])
+    }
+}
+
+struct LatePrayerTimesWidget: Widget {
+    static let kind = "YaqeenPrayerTimesLate"
+
+    var body: some WidgetConfiguration {
+        StaticConfiguration(kind: Self.kind, provider: PrayerProvider()) { entry in
+            PrayerScheduleHalfView(entry: entry, side: .late)
+        }
+        .configurationDisplayName("Prayer Times · Asr–Isha")
+        .description("Place this widget on the right of your Lock Screen for Asr, Maghrib and Isha.")
+        .supportedFamilies([.accessoryRectangular])
+    }
+}
+
 @main
 struct SakinaWidgetBundle: WidgetBundle {
     var body: some Widget {
         VerseOfDayWidget()
         PinnedVerseWidget()
         PrayerTimesWidget()
+        EarlyPrayerTimesWidget()
+        LatePrayerTimesWidget()
     }
+}
+
+#Preview("Fajr–Dhuhr Lock Screen", as: .accessoryRectangular) {
+    EarlyPrayerTimesWidget()
+} timeline: {
+    PrayerWidgetEntry(date: .now, schedule: .placeholder())
+}
+
+#Preview("Asr–Isha Lock Screen", as: .accessoryRectangular) {
+    LatePrayerTimesWidget()
+} timeline: {
+    PrayerWidgetEntry(date: .now, schedule: .placeholder())
 }

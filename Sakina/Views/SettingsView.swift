@@ -9,7 +9,6 @@ struct SettingsView: View {
 
     @ObservedObject private var account = GoogleAccountManager.shared
     @ObservedObject private var prayerService = PrayerTimesService.shared
-    @AppStorage(SettingsKeys.hasOnboarded) private var hasOnboarded = true
     @AppStorage(SettingsKeys.appLanguage) private var languageRaw = AppLanguage.english.rawValue
     @AppStorage(SettingsKeys.translationVisible) private var translationVisible = true
     @AppStorage(SettingsKeys.transliterationVisible) private var transliterationVisible = true
@@ -70,6 +69,7 @@ struct SettingsView: View {
             .onChange(of: reminderEnabled) { _, _ in ReminderScheduler.refresh() }
             .onChange(of: reminderHour) { _, _ in ReminderScheduler.refresh() }
             .onChange(of: reminderMinute) { _, _ in ReminderScheduler.refresh() }
+            .onChange(of: languageRaw) { _, _ in ReminderScheduler.refresh() }
         }
     }
 
@@ -77,7 +77,25 @@ struct SettingsView: View {
 
     private var accountSection: some View {
         Section {
-            if account.isSignedIn {
+            if !account.isConfigured {
+                VStack(alignment: .leading, spacing: 10) {
+                    Label(
+                        copy("Private on this iPhone", "خاص على هذا الهاتف"),
+                        systemImage: "iphone.gen3.badge.checkmark"
+                    )
+                    .font(.headline)
+                    .foregroundStyle(Color.sakinaInk)
+
+                    Text(copy(
+                        "Saved moments and reflections stay in Yaqeen’s private app storage. No account is required.",
+                        "تبقى المواقف المحفوظة والتأملات في مساحة يقين الخاصة، ولا يلزم إنشاء حساب."
+                    ))
+                    .font(.subheadline)
+                    .foregroundStyle(Color.sakinaMuted)
+                    .fixedSize(horizontal: false, vertical: true)
+                }
+                .padding(.vertical, 5)
+            } else if account.isSignedIn {
                 HStack(spacing: 13) {
                     AsyncImage(url: account.imageURL) { phase in
                         if case .success(let image) = phase {
@@ -157,12 +175,21 @@ struct SettingsView: View {
                 }
             }
         } header: {
-            Text(copy("Account & backup", "الحساب والنسخ الاحتياطي"))
+            Text(account.isConfigured
+                 ? copy("Account & backup", "الحساب والنسخ الاحتياطي")
+                 : copy("Privacy & storage", "الخصوصية والتخزين"))
         } footer: {
-            Text(copy(
-                "While connected, changes to Saved are backed up after you make them. The backup lives in a hidden app-data folder that only Yaqeen can access after you grant permission.",
-                "أثناء الاتصال، تُنسخ تغييرات المحفوظات احتياطيًا بعد إجرائها. وتُحفظ النسخة في مساحة مخفية لا يصل إليها إلا تطبيق يقين بعد موافقتك."
-            ))
+            if account.isConfigured {
+                Text(copy(
+                    "While connected, changes to Saved are backed up after you make them. The backup lives in a hidden app-data folder that only Yaqeen can access after you grant permission.",
+                    "أثناء الاتصال، تُنسخ تغييرات المحفوظات احتياطيًا بعد إجرائها. وتُحفظ النسخة في مساحة مخفية لا يصل إليها إلا تطبيق يقين بعد موافقتك."
+                ))
+            } else {
+                Text(copy(
+                    "Your private writing is not uploaded by Yaqeen.",
+                    "لا يرفع يقين كتاباتك الخاصة إلى أي خادم."
+                ))
+            }
         }
         .listRowBackground(Color.sakinaElevated)
     }
@@ -397,12 +424,6 @@ struct SettingsView: View {
 
     private var trustSection: some View {
         Section {
-            Button {
-                hasOnboarded = false
-            } label: {
-                Label(copy("Run welcome setup again", "إعادة إعداد الترحيب"), systemImage: "sparkles")
-            }
-
             Button {
                 showAbout = true
             } label: {

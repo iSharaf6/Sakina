@@ -1,0 +1,9 @@
+// Copy these values into an uncommitted local xcconfig or provide them as
+// build settings. The publishable key is safe in a client only because database
+// access is constrained by Row Level Security. Scholar avatars are deliberately
+// public profile media; only avatar writes are owner/admin restricted.
+// Never put a Supabase secret/service-role key in the iOS app.
+
+// `$()` preserves the two slashes because `//` starts a comment in xcconfig.
+YAQEEN_SCHOLAR_SUPABASE_URL = https:/$()/YOUR_PROJECT_REF.supabase.co
+YAQEEN_SCHOLAR_SUPABASE_PUBLISHABLE_KEY = YOUR_PUBLISHABLE_KEY
