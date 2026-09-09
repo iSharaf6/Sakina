@@ -1,0 +1,109 @@
+{
+  "assets": [
+    {
+      "contentType": "image/webp",
+      "id": "907136e2dd075d98",
+      "kind": "image",
+      "name": "Apple%20Health%20Syncing.png.df8ed3b02469.w800.webp",
+      "path": "/var/folders/p9/3_8j9l711b511b18fssv59yc0000gn/T/browser-use/assets/a424e480-e265-46e1-84e0-5c006b15259d/907136e2dd075d98.webp",
+      "url": "https://www.amyfoodjournal.com/_optimized/FeatureSectionAssets/Apple%20Health%20Syncing.png.df8ed3b02469.w800.webp"
+    },
+    {
+      "contentType": "image/webp",
+      "id": "661b4fd92529f79b",
+      "kind": "image",
+      "name": "Calorie%20estimate%20bias.png.aa720448b236.w800.webp",
+      "path": "/var/folders/p9/3_8j9l711b511b18fssv59yc0000gn/T/browser-use/assets/a424e480-e265-46e1-84e0-5c006b15259d/661b4fd92529f79b.webp",
+      "url": "https://www.amyfoodjournal.com/_optimized/FeatureSectionAssets/Calorie%20estimate%20bias.png.aa720448b236.w800.webp"
+    },
+    {
+      "contentType": "image/webp",
+      "id": "96c9dd92c9187d4b",
+      "kind": "image",
+      "name": "Easy%20editing.png.a4114adbd399.w800.webp",
+      "path": "/var/folders/p9/3_8j9l711b511b18fssv59yc0000gn/T/browser-use/assets/a424e480-e265-46e1-84e0-5c006b15259d/96c9dd92c9187d4b.webp",
+      "url": "https://www.amyfoodjournal.com/_optimized/FeatureSectionAssets/Easy%20editing.png.a4114adbd399.w800.webp"
+    },
+    {
+      "contentType": "image/webp",
+      "id": "639162b54f566c61",
+      "kind": "image",
+      "name": "Goals%20at%20a%20glance.png.9914de7800d9.w800.webp",
+      "path": "/var/folders/p9/3_8j9l711b511b18fssv59yc0000gn/T/browser-use/assets/a424e480-e265-46e1-84e0-5c006b15259d/639162b54f566c61.webp",
+      "url": "https://www.amyfoodjournal.com/_optimized/FeatureSectionAssets/Goals%20at%20a%20glance.png.9914de7800d9.w800.webp"
+    },
+    {
+      "contentType": "image/webp",
+      "id": "40e742ab4bddc623",
+      "kind": "image",
+      "name": "Home%20&%20Lock%20screen%20widgets.png.79aa27f67671.w800.webp",
+      "path": "/var/folders/p9/3_8j9l711b511b18fssv59yc0000gn/T/browser-use/assets/a424e480-e265-46e1-84e0-5c006b15259d/40e742ab4bddc623.webp",
+      "url": "https://www.amyfoodjournal.com/_optimized/FeatureSectionAssets/Home%20&%20Lock%20screen%20widgets.png.79aa27f67671.w800.webp"
+    },
+    {
+      "contentType": "image/png",
+      "id": "6eb3bf33363358f8",
+      "kind": "image",
+      "name": "Amy's%20thought%20process.png",
+      "path": "/var/folders/p9/3_8j9l711b511b18fssv59yc0000gn/T/browser-use/assets/a424e480-e265-46e1-84e0-5c006b15259d/6eb3bf33363358f8.png",
+      "url": "https://www.amyfoodjournal.com/FeatureSectionAssets/Amy's%20thought%20process.png"
+    },
+    {
+      "contentType": "image/webp",
+      "id": "afcd00b8d9c0ec3c",
+      "kind": "image",
+      "name": "Customized%20nutrition%20plan.png.e27010074000.w800.webp",
+      "path": "/var/folders/p9/3_8j9l711b511b18fssv59yc0000gn/T/browser-use/assets/a424e480-e265-46e1-84e0-5c006b15259d/afcd00b8d9c0ec3c.webp",
+      "url": "https://www.amyfoodjournal.com/_optimized/FeatureSectionAssets/Customized%20nutrition%20plan.png.e27010074000.w800.webp"
+    },
+    {
+      "contentType": "image/webp",
+      "id": "9944de47a74eec5c",
+      "kind": "image",
+      "name": "Nutrition%20breakdown.png.c2ae5a59b9b0.w800.webp",
+      "path": "/var/folders/p9/3_8j9l711b511b18fssv59yc0000gn/T/browser-use/assets/a424e480-e265-46e1-84e0-5c006b15259d/9944de47a74eec5c.webp",
+      "url": "https://www.amyfoodjournal.com/_optimized/FeatureSectionAssets/Nutrition%20breakdown.png.c2ae5a59b9b0.w800.webp"
+    },
+    {
+      "contentType": "image/webp",
+      "id": "98fb5fe9902d26f1",
+      "kind": "image",
+      "name": "Quick%20saved%20meals.png.58b0dea58e65.w800.webp",
+      "path": "/var/folders/p9/3_8j9l711b511b18fssv59yc0000gn/T/browser-use/assets/a424e480-e265-46e1-84e0-5c006b15259d/98fb5fe9902d26f1.webp",
+      "url": "https://www.amyfoodjournal.com/_optimized/FeatureSectionAssets/Quick%20saved%20meals.png.58b0dea58e65.w800.webp"
+    },
+    {
+      "contentType": "image/webp",
+      "id": "58294a59a2052ace",
+      "kind": "image",
+      "name": "Streaks%20and%20badges.png.2f8777165527.w800.webp",
+      "path": "/var/folders/p9/3_8j9l711b511b18fssv59yc0000gn/T/browser-use/assets/a424e480-e265-46e1-84e0-5c006b15259d/58294a59a2052ace.webp",
+      "url": "https://www.amyfoodjournal.com/_optimized/FeatureSectionAssets/Streaks%20and%20badges.png.2f8777165527.w800.webp"
+    },
+    {
+      "contentType": "image/webp",
+      "id": "e7cc1a78baa805e8",
+      "kind": "image",
+      "name": "Location%20tracking%20for%20accurate%20restaurant%20information.png.7dbd0b702d9a.w800.webp",
+      "path": "/var/folders/p9/3_8j9l711b511b18fssv59yc0000gn/T/browser-use/assets/a424e480-e265-46e1-84e0-5c006b15259d/e7cc1a78baa805e8.webp",
+      "url": "https://www.amyfoodjournal.com/_optimized/FeatureSectionAssets/Location%20tracking%20for%20accurate%20restaurant%20information.png.7dbd0b702d9a.w800.webp"
+    },
+    {
+      "contentType": "image/webp",
+      "id": "8d06129f35c670b4",
+      "kind": "image",
+      "name": "Reminders.png.e85345802dd4.w1290.webp",
+      "path": "/var/folders/p9/3_8j9l711b511b18fssv59yc0000gn/T/browser-use/assets/a424e480-e265-46e1-84e0-5c006b15259d/8d06129f35c670b4.webp",
+      "url": "https://www.amyfoodjournal.com/_optimized/FeatureSectionAssets/Reminders.png.e85345802dd4.w1290.webp"
+    },
+    {
+      "contentType": "image/webp",
+      "id": "6398f4e6bd963a22",
+      "kind": "image",
+      "name": "AmyHomeScreen.png.e8d45b397fd8.w1475.webp",
+      "path": "/var/folders/p9/3_8j9l711b511b18fssv59yc0000gn/T/browser-use/assets/a424e480-e265-46e1-84e0-5c006b15259d/6398f4e6bd963a22.webp",
+      "url": "https://www.amyfoodjournal.com/_optimized/AmyHomeScreen.png.e8d45b397fd8.w1475.webp"
+    }
+  ],
+  "failures": []
+}

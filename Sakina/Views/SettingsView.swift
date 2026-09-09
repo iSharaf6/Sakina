@@ -3,6 +3,8 @@ import SwiftData
 import SwiftUI
 
 struct SettingsView: View {
+    var showsDismissButton = false
+    @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var context
     @Query(sort: \Bookmark.createdAt, order: .reverse) private var bookmarks: [Bookmark]
     @Query(sort: \JournalEntry.updatedAt, order: .reverse) private var entries: [JournalEntry]
@@ -47,6 +49,13 @@ struct SettingsView: View {
             .navigationTitle(copy("Settings", "الإعدادات"))
             .navigationBarTitleDisplayMode(.large)
             .toolbarBackground(.hidden, for: .navigationBar)
+            .toolbar {
+                if showsDismissButton {
+                    ToolbarItem(placement: .confirmationAction) {
+                        Button(copy("Done", "تم")) { dismiss() }
+                    }
+                }
+            }
             .sheet(isPresented: $showAbout) { AboutView() }
             .sheet(isPresented: $account.showConfigurationHelp) {
                 GoogleConfigurationHelp(language: language)

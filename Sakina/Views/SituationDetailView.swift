@@ -22,12 +22,13 @@ struct SituationDetailView: View {
     @AppStorage(SettingsKeys.transliterationVisible) private var transliterationVisible = true
     @ScaledMetric(relativeTo: .title2) private var arabicProseSize = 23
 
+    @State private var contentIndex = 0
+    @State private var showMeaning = false
     @State private var selectedSection = GuidanceSection.quran
     @State private var draft = ""
     @State private var toast: String?
     @State private var shareImage: Image?
     @FocusState private var editorFocused: Bool
-    @Namespace private var sectionNamespace
 
     private var language: AppLanguage { AppLanguage(rawValue: languageRaw) ?? .english }
     private var copy: AppCopy { AppCopy(language: language) }
@@ -59,9 +60,10 @@ struct SituationDetailView: View {
 
                     selectedContent
                         .id(selectedSection)
-                        .transition(.opacity.combined(with: .offset(y: 5)))
+                        .transition(reduceMotion ? .opacity : .opacity.combined(with: .offset(y: 5)))
 
-                    reflectionSection
+                    DisclosureGroup(copy("Make space for a reflection", "فسحة للتأمل")) { reflectionSection }
+                        .font(.subheadline.weight(.medium)).tint(Color.yaqeenForest)
                 }
                 .padding(.horizontal, 20)
                 .padding(.top, 6)
@@ -77,12 +79,13 @@ struct SituationDetailView: View {
             }
         }
         .navigationBarTitleDisplayMode(.inline)
+        .toolbar(.hidden, for: .tabBar)
         .toolbarBackground(.ultraThinMaterial, for: .navigationBar)
         .toolbarBackground(.visible, for: .navigationBar)
         .toolbar {
             ToolbarItem(placement: .principal) {
                 YaqeenMark()
-                    .fill(Color.sakinaInk)
+                    .fill(Color.yaqeenForest)
                     .frame(width: 16, height: 23)
                     .accessibilityLabel("Yaqeen")
             }
@@ -94,6 +97,7 @@ struct SituationDetailView: View {
             await scholarStore.loadInsights(forSituationID: situation.id)
         }
         .onDisappear { player.stopIfPlaying(id: situation.id) }
+        .onChange(of: selectedSection) { _, _ in contentIndex = 0 }
         .animation(reduceMotion ? nil : .easeInOut(duration: 0.18), value: selectedSection)
     }
 
@@ -102,8 +106,6 @@ struct SituationDetailView: View {
     private var header: some View {
         VStack(alignment: .leading, spacing: 16) {
             HStack(spacing: 7) {
-                Image(systemName: group.symbol)
-                    .font(.caption.weight(.semibold))
                 Text(group.title(language))
                 if let stage {
                     Image(systemName: language == .arabic ? "chevron.left" : "chevron.right")
@@ -115,7 +117,7 @@ struct SituationDetailView: View {
             .foregroundStyle(Color.sakinaMuted)
 
             Text(situation.localizedTitle(language))
-                .font(.display(34))
+                .font(.display(28))
                 .foregroundStyle(Color.sakinaInk)
                 .multilineTextAlignment(.leading)
                 .fixedSize(horizontal: false, vertical: true)
@@ -151,7 +153,7 @@ struct SituationDetailView: View {
         singular: String,
         plural: String
     ) -> some View {
-        Label("\(count) \(count == 1 ? singular : plural)", systemImage: symbol)
+        Text("\(count) \(count == 1 ? singular : plural)")
             .font(.caption2.weight(.medium))
             .foregroundStyle(Color.sakinaMuted)
             .lineLimit(1)
@@ -213,64 +215,24 @@ struct SituationDetailView: View {
     }
 
     private func actionLabel(symbol: String, title: String, isActive: Bool = false) -> some View {
-        VStack(spacing: 7) {
-            Image(systemName: symbol)
-                .font(.system(size: 16, weight: .semibold))
-                .contentTransition(.symbolEffect(.replace))
-            Text(title)
-                .font(.caption2.weight(.semibold))
-                .lineLimit(1)
-                .minimumScaleFactor(0.8)
-        }
-        .foregroundStyle(isActive ? Color.sakinaCanvas : Color.sakinaInk)
-        .frame(maxWidth: .infinity, minHeight: 66)
-        .background(
-            isActive ? Color.sakinaInk : Color.sakinaElevated,
-            in: RoundedRectangle(cornerRadius: 17, style: .continuous)
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 17, style: .continuous)
-                .strokeBorder(isActive ? Color.clear : Color.sakinaHairline, lineWidth: 1)
-        )
+        Text(title)
+            .font(.subheadline.weight(.semibold))
+            .foregroundStyle(isActive ? Color.yaqeenOnAccent : Color.yaqeenForest)
+            .frame(maxWidth: .infinity, minHeight: 44)
+            .background(isActive ? Color.yaqeenForest : Color.yaqeenSage,
+                        in: RoundedRectangle(cornerRadius: 12))
     }
 
     // MARK: Source picker
 
     private var sourcePicker: some View {
-        HStack(spacing: 6) {
+        Picker(copy("Reading source", "مصدر القراءة"), selection: $selectedSection) {
             ForEach(GuidanceSection.allCases) { section in
-                Button {
-                    withAnimation(reduceMotion ? nil : .spring(response: 0.3, dampingFraction: 1)) {
-                        selectedSection = section
-                    }
-                } label: {
-                    HStack(spacing: 6) {
-                        Image(systemName: section.symbol)
-                            .font(.caption.weight(.semibold))
-                        Text(section.title(language))
-                            .font(.subheadline.weight(.semibold))
-                            .lineLimit(1)
-                    }
-                    .foregroundStyle(selectedSection == section ? Color.sakinaCanvas : Color.sakinaInk)
-                    .frame(maxWidth: .infinity, minHeight: 43)
-                    .background {
-                        if selectedSection == section {
-                            RoundedRectangle(cornerRadius: 14, style: .continuous)
-                                .fill(Color.sakinaInk)
-                                .matchedGeometryEffect(id: "source-selection", in: sectionNamespace)
-                        }
-                    }
-                }
-                .buttonStyle(.plain)
-                .accessibilityAddTraits(selectedSection == section ? .isSelected : [])
+                Text(section.title(language)).tag(section)
             }
         }
-        .padding(5)
-        .background(Color.sakinaElevated, in: RoundedRectangle(cornerRadius: 18, style: .continuous))
-        .overlay(
-            RoundedRectangle(cornerRadius: 18, style: .continuous)
-                .strokeBorder(Color.sakinaHairline, lineWidth: 1)
-        )
+        .pickerStyle(.segmented)
+        .sensoryFeedback(.selection, trigger: selectedSection)
     }
 
     @ViewBuilder
@@ -288,43 +250,47 @@ struct SituationDetailView: View {
     // MARK: Qur'an
 
     private var quranSection: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            sectionIntroduction(
-                title: copy("Read the Qur’an", "اقرأ القرآن"),
-                detail: copy(
-                    "Begin with Allah’s words, then open the source to study each ayah in context.",
-                    "ابدأ بكلام الله، ثم افتح المصدر لدراسة كل آية في سياقها."
-                ),
-                symbol: "book.closed.fill"
-            )
+        VStack(alignment: .leading, spacing: 16) {
+            readingOptions(count: situation.verses.count)
+            if situation.verses.indices.contains(contentIndex) {
+                let verse = situation.verses[contentIndex]
+                verseCard(verse)
+                DisclosureGroup(copy("Why this reading?", "لماذا هذه القراءة؟")) {
+                    VStack(spacing: 16) {
+                        contextCard
+                        if let insight = scholarStore.insight(situationID: situation.id, verseKey: verse.key) {
+                            ScholarInsightCard(insight: insight, profile: scholarStore.profile, language: language, store: scholarStore)
+                        }
+                        scholarInsightStatus
+                    }.padding(.top, 12)
+                }.font(.subheadline.weight(.medium)).tint(Color.yaqeenForest)
+            }
+            Text(copy("Recitation by \(reciterName)", "تلاوة \(reciterName)"))
+                .font(.caption2).foregroundStyle(Color.sakinaMuted)
+        }
+    }
 
-            ForEach(situation.verses) { verse in
-                VStack(spacing: 12) {
-                    verseCard(verse)
-
-                    if let insight = scholarStore.insight(
-                        situationID: situation.id,
-                        verseKey: verse.key
-                    ) {
-                        ScholarInsightCard(
-                            insight: insight,
-                            profile: scholarStore.profile,
-                            language: language,
-                            store: scholarStore
-                        )
-                    }
+    private func readingOptions(count: Int) -> some View {
+        HStack {
+            if count > 1 {
+                Button { contentIndex = max(0, contentIndex - 1) } label: {
+                    Image(systemName: language == .arabic ? "chevron.right" : "chevron.left")
+                        .font(.system(size: 15, weight: .semibold)).frame(width: 44, height: 44)
+                }.disabled(contentIndex == 0).accessibilityLabel(copy("Previous passage", "المقطع السابق"))
+                Text("\(contentIndex + 1) / \(count)").font(.caption.monospacedDigit())
+                Button { contentIndex = min(count - 1, contentIndex + 1) } label: {
+                    Image(systemName: language == .arabic ? "chevron.left" : "chevron.right")
+                        .font(.system(size: 15, weight: .semibold)).frame(width: 44, height: 44)
+                }.disabled(contentIndex >= count - 1).accessibilityLabel(copy("Next passage", "المقطع التالي"))
+            }
+            Spacer()
+            if translationVisible {
+                Button { showMeaning.toggle() } label: {
+                    Text(showMeaning ? copy("Read Arabic", "اقرأ العربية") : copy("Read meaning", "اقرأ المعنى"))
+                        .font(.subheadline.weight(.semibold)).frame(minHeight: 44)
                 }
             }
-
-            scholarInsightStatus
-
-            contextCard
-
-            Text(copy("Recitation by \(reciterName)", "تلاوة \(reciterName)"))
-                .font(.caption2)
-                .foregroundStyle(Color.sakinaMuted)
-                .frame(maxWidth: .infinity, alignment: .center)
-        }
+        }.foregroundStyle(Color.yaqeenForest)
     }
 
     @ViewBuilder
@@ -392,6 +358,7 @@ struct SituationDetailView: View {
 
             Divider().overlay(Color.sakinaHairline)
 
+            if !showMeaning || !translationVisible {
             Text(verse.arabic)
                 .font(.arabic(27 * arabicScale))
                 .lineSpacing(15 * arabicScale)
@@ -400,8 +367,9 @@ struct SituationDetailView: View {
                 .frame(maxWidth: .infinity)
                 .environment(\.layoutDirection, .rightToLeft)
                 .accessibilityLabel(verse.arabic)
+            }
 
-            if translationVisible {
+            if showMeaning && translationVisible {
                 VStack(alignment: .leading, spacing: 7) {
                     CapsLabel(
                         text: copy("Saheeh International", "المعنى بالإنجليزية — صحيح إنترناشونال"),
@@ -438,7 +406,7 @@ struct SituationDetailView: View {
 
     private var contextCard: some View {
         VStack(alignment: .leading, spacing: 11) {
-            Label(copy("Why this reading", "لماذا هذه القراءة؟"), systemImage: "scope")
+            Text(copy("The connection", "صلة الآية بالموقف"))
                 .font(.headline)
                 .foregroundStyle(Color.sakinaInk)
 
@@ -464,18 +432,8 @@ struct SituationDetailView: View {
 
     private var hadithSection: some View {
         VStack(alignment: .leading, spacing: 14) {
-            sectionIntroduction(
-                title: copy("Prophetic guidance", "الهدي النبوي"),
-                detail: copy(
-                    "Every narration includes its collection, number, grading, and how directly it applies.",
-                    "يظهر مع كل حديث مصدره ورقمه ودرجته ومدى صلته بالموقف."
-                ),
-                symbol: "text.book.closed.fill"
-            )
-
-            ForEach(companion.hadiths) { hadith in
-                hadithCard(hadith)
-            }
+            readingOptions(count: companion.hadiths.count)
+            if companion.hadiths.indices.contains(contentIndex) { hadithCard(companion.hadiths[contentIndex]) }
         }
     }
 
@@ -494,6 +452,7 @@ struct SituationDetailView: View {
                 }
             }
 
+            if !showMeaning || !translationVisible {
             Text(hadith.arabic)
                 .font(.system(size: arabicProseSize * arabicScale, weight: .regular))
                 .lineSpacing(13 * arabicScale)
@@ -502,7 +461,8 @@ struct SituationDetailView: View {
                 .frame(maxWidth: .infinity, alignment: .trailing)
                 .environment(\.layoutDirection, .rightToLeft)
 
-            if translationVisible {
+            }
+            if showMeaning && translationVisible {
                 Text(hadith.english)
                     .font(.reading(16))
                     .lineSpacing(6)
@@ -510,7 +470,7 @@ struct SituationDetailView: View {
                     .environment(\.layoutDirection, .leftToRight)
             }
 
-            contextBlock(hadith.context(language))
+            DisclosureGroup(copy("Context", "السياق")) { contextBlock(hadith.context(language)).padding(.top, 10) }
 
             if let caution = hadith.caution(language) {
                 cautionBlock(caution)
@@ -525,18 +485,16 @@ struct SituationDetailView: View {
     // MARK: Supplication
 
     private var supplicationSection: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            sectionIntroduction(
-                title: copy("Make du’a", "ادعُ الله"),
-                detail: copy(
-                    "Use a Qur’anic or Prophetic supplication, with its source kept beside it.",
-                    "ادعُ بدعاء قرآني أو نبوي مع إبقاء مصدره ظاهرًا بجانبه."
-                ),
-                symbol: "hands.sparkles.fill"
-            )
-
-            ForEach(companion.supplications) { supplication in
-                supplicationCard(supplication)
+        VStack(alignment: .leading, spacing: 12) {
+            Text(copy("Take a du’a with you.", "خذ معك دعاءً.")).font(.headline)
+            RowGroup {
+                ForEach(Array(companion.supplications.enumerated()), id: \.element.id) { index, supplication in
+                    NavigationLink { DuaReaderView(dua: supplication) } label: {
+                        BadgeRow(symbol: "hands.sparkles", tint: .yqAccent, title: supplication.title(language),
+                                 subtitle: DuaCollection.sourceLabel(supplication, language: language), badgeStyle: .tinted)
+                    }.buttonStyle(.yqPressSoft)
+                    if index < companion.supplications.count - 1 { RowDivider() }
+                }
             }
         }
     }
@@ -601,22 +559,12 @@ struct SituationDetailView: View {
     // MARK: Source trust components
 
     private func sectionIntroduction(title: String, detail: String, symbol: String) -> some View {
-        HStack(alignment: .top, spacing: 12) {
-            Image(systemName: symbol)
-                .font(.system(size: 16, weight: .semibold))
-                .foregroundStyle(Color.sakinaCanvas)
-                .frame(width: 38, height: 38)
-                .background(Color.sakinaInk, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
-
-            VStack(alignment: .leading, spacing: 4) {
-                Text(title)
-                    .font(.headline)
-                    .foregroundStyle(Color.sakinaInk)
-                Text(detail)
-                    .font(.subheadline)
-                    .foregroundStyle(Color.sakinaMuted)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
+        VStack(alignment: .leading, spacing: 6) {
+            Text(title).font(.headline).foregroundStyle(Color.sakinaInk)
+            Text(detail)
+                .font(.subheadline)
+                .foregroundStyle(Color.sakinaMuted)
+                .fixedSize(horizontal: false, vertical: true)
         }
     }
 
@@ -703,35 +651,29 @@ struct SituationDetailView: View {
     }
 
     private var safetyNotices: some View {
-        VStack(spacing: 10) {
-            ForEach(companion.safetyNotices) { notice in
-                HStack(alignment: .top, spacing: 11) {
-                    Image(systemName: notice.kind.symbol)
-                        .font(.body.weight(.semibold))
-                        .foregroundStyle(.red.opacity(0.82))
-                        .frame(width: 28, height: 28)
-                        .background(Color.red.opacity(0.07), in: Circle())
-
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(notice.title(language))
-                            .font(.subheadline.weight(.semibold))
-                            .foregroundStyle(Color.sakinaInk)
-                        Text(notice.message(language))
-                            .font(.caption)
-                            .lineSpacing(3)
-                            .foregroundStyle(Color.sakinaMuted)
-                            .fixedSize(horizontal: false, vertical: true)
-                    }
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
+        VStack(alignment: .leading, spacing: 10) {
+            if companion.safetyNotices.contains(where: { $0.kind == .immediateSafety }) {
+                Text(copy("Safety comes first", "السلامة أولًا"))
+                    .font(.subheadline.weight(.semibold))
+                Text(copy(
+                    "If there is abuse or danger, seek emergency or specialist support. Forgiveness never requires staying in harm.",
+                    "عند وجود إساءة أو خطر، اطلب الطوارئ أو دعمًا مختصًا. العفو لا يلزمك بالبقاء في الأذى."
+                )).font(.subheadline).lineSpacing(3)
             }
+            DisclosureGroup(copy("Support & important context", "الدعم والسياق المهم")) {
+                VStack(alignment: .leading, spacing: 18) {
+                    ForEach(companion.safetyNotices) { notice in
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text(notice.title(language)).font(.subheadline.weight(.semibold))
+                            Text(notice.message(language)).font(.subheadline).lineSpacing(4)
+                                .foregroundStyle(Color.sakinaMuted)
+                        }
+                    }
+                }.padding(.top, 14)
+            }.font(.subheadline.weight(.medium)).tint(Color.yaqeenForest)
         }
         .padding(16)
-        .background(Color.red.opacity(0.045), in: RoundedRectangle(cornerRadius: 19, style: .continuous))
-        .overlay(
-            RoundedRectangle(cornerRadius: 19, style: .continuous)
-                .strokeBorder(Color.red.opacity(0.14), lineWidth: 1)
-        )
+        .background(Color.yaqeenSage.opacity(0.55), in: RoundedRectangle(cornerRadius: 16))
     }
 
     // MARK: Reflection

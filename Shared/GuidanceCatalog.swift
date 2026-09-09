@@ -529,6 +529,25 @@ enum GuidanceCatalog {
         groups.flatMap(\.stages).first { $0.situationIDs.contains(situation.id) }
     }
 
+    private struct SearchEntry {
+        let situation: Situation
+        let index: Int
+        let title: String
+        let document: String
+    }
+
+    /// The catalog is immutable. Normalize its bilingual text once, not on every keystroke.
+    private static let searchIndex: [SearchEntry] = SituationCatalog.all.enumerated().map { index, situation in
+        SearchEntry(
+            situation: situation,
+            index: index,
+            title: normalizedGuidanceSearchText("\(situation.title) \(situation.arabicTitle) \(situation.referenceLabel)"),
+            document: searchDocument(for: situation)
+        )
+    }
+
+    static func prepareSearch() { _ = searchIndex }
+
     static func search(_ query: String) -> [Situation] {
         let value = normalizedGuidanceSearchText(query)
         guard !value.isEmpty else { return [] }
@@ -542,12 +561,10 @@ enum GuidanceCatalog {
         }
 
         let scored: [(situation: Situation, score: Int, index: Int)] =
-            SituationCatalog.all.enumerated().compactMap { pair -> (Situation, Int, Int)? in
-            let (index, situation) = pair
-            let title = normalizedGuidanceSearchText(
-                "\(situation.title) \(situation.arabicTitle) \(situation.referenceLabel)"
-            )
-            let document = searchDocument(for: situation)
+            searchIndex.compactMap { entry -> (Situation, Int, Int)? in
+            let situation = entry.situation
+            let title = entry.title
+            let document = entry.document
             var score = 0
 
             if title == value { score += 1_000 }
@@ -566,7 +583,7 @@ enum GuidanceCatalog {
             score += semanticCueScore(for: situation.id, query: value)
 
             guard score > 0 else { return nil }
-            return (situation, score, index)
+            return (situation, score, entry.index)
         }
 
         return scored.sorted {
@@ -612,8 +629,7 @@ enum GuidanceCatalog {
         ] + verseText + hadithText + duaText).joined(separator: " "))
     }
 
-    private static func semanticCueScore(for situationID: String, query: String) -> Int {
-        let cues: [(terms: [String], targets: Set<String>)] = [
+    private static let semanticCues: [(terms: [String], targets: Set<String>)] = [
             (["anxious", "anxiety", "overthinking", "overthink", "exam"], ["scaredOfFuture", "afraidOfFailure"]),
             (["failed", "failure", "setback", "rejected", "rejection"], ["disappointed", "facingRejection", "afraidOfFailure"]),
             (["job", "career", "unemployed", "fired"], ["losingJob", "workNoResults", "worriedAboutRizq"]),
@@ -628,7 +644,8 @@ enum GuidanceCatalog {
             (["pray", "prayer", "salah", "khushu"], ["salahConnection", "hardToPray", "losingFocus"]),
         ]
 
-        return cues.reduce(into: 0) { score, cue in
+    private static func semanticCueScore(for situationID: String, query: String) -> Int {
+        return semanticCues.reduce(into: 0) { score, cue in
             guard cue.targets.contains(situationID), cue.terms.contains(where: query.contains) else { return }
             score += 260
         }

@@ -30,6 +30,11 @@ The notes are orientation, not tafsir, a fatwa, or professional counselling. Sen
 
 ## Features
 
+- A one-screen Home: next prayer in a dark hero card, six feeling chips that open a du’a in one tap, a seven-day heart strip, and today’s collection, ayah, last reading and Qibla as badge tiles
+- A Du’a & dhikr tab with 15 collections (146 source-verified readings across morning, evening, before sleep, tahajjud, in salah, after salah, ummah, ruqyah & illness, praise, salawat, Qur’anic, Sunnah, istighfar, dhikr and the 99 names), a 31-feeling chip cloud, and search across feelings, titles, Arabic, sources and names
+- A paged reader that shows Arabic, pronunciation and meaning together, a tap-to-count recitation ring wherever the source states a count, source-and-context sheets, and a completion mark that remembers what you finished today
+- White canvas with a single green accent, solid SF Symbol icon badges, hairline cards, springy press feedback, graded haptics, and an eight-point star-and-cross field drawn behind every screen at ten percent
+- An optional 30-second nature breathing pause, available offline; it is not presented as a prescribed religious practice
 - Branded Yaqeen interface in forest green and warm ivory, built with native SwiftUI navigation, Dynamic Type, dark mode, reduced-motion support, and Arabic-aware layout
 - English and Arabic app modes, including right-to-left navigation in Arabic
 - Home screen with the next prayer, countdown, and today’s Fajr, sunrise, Dhuhr, Asr, Maghrib, and Isha times
@@ -169,6 +174,7 @@ The App Group carries only widget-facing state: the pinned situation and a coord
 - Qur’an recitation streams from EveryAyah; audio files are not bundled.
 - When configured, the public app fetches only a verified scholar profile and published insight content from Supabase. Bookmarks, reflections, searches, prayer location, and Google backup data are not sent to the scholar service.
 - No analytics or advertising SDK is configured in this project.
+- Du’a favorites and the last-read du’a ID stay in local UserDefaults. They are separate from the optional Google backup of saved situations and reflections.
 
 ## Content integrity
 
@@ -207,8 +213,14 @@ Hadith and du’a live in a separate curated catalog with canonical source URLs,
 | `Design/YaqeenAppIcon-1024.png` | Master Yaqeen icon artwork |
 | `project.yml` | XcodeGen source of truth for targets, packages, plist values, and entitlements |
 
+## Current interface
+
+The latest white-and-green redesign uses Mobbin reading/discovery references and Chris Raroque’s interaction principles. See `Design/PracticeAndFeelings/DesignNotes.md` for the current design, content scope and verification. Earlier visual passes remain in `Design/WhiteGreen/` for history.
+
 ## Attribution
 
+- [Heroicons](https://github.com/tailwindlabs/heroicons) 2.2.0 is bundled under its MIT license; see `Sakina/Resources/Heroicons-LICENSE.txt`.
+- The locally bundled forest photograph was created with the built-in image generator; provenance and the revised design references are in `Design/Sanctuary/DesignNotes.md`.
 - KFGQPC HAFS Uthmanic Script is bundled for Qur’anic Arabic.
 - Qur’an text and visible translation data are sourced from the [Quran.com API](https://api-docs.quran.com/docs/category/quran.com-api).
 - Recitation audio streams from [EveryAyah](https://everyayah.com/).

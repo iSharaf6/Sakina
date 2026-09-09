@@ -14,13 +14,17 @@ struct SakinaApp: App {
 // MARK: Root
 
 struct RootView: View {
-    enum Tab: Hashable { case home, explore, qibla, saved, settings }
+    enum Tab: Hashable { case home, explore, duas, saved }
 
     @Environment(\.scenePhase) private var scenePhase
     @AppStorage(SettingsKeys.appLanguage) private var languageRaw = AppLanguage.english.rawValue
     @State private var selection: Tab = .home
     @State private var homePath = NavigationPath()
     @State private var explorePath = NavigationPath()
+    @State private var duaPath = NavigationPath()
+    @State private var exploreQuery = ""
+    @State private var showQibla = false
+    @State private var prayerRequest = 0
     @StateObject private var router = NotificationRouter.shared
     @StateObject private var scholarStore = ScholarContentStore()
     @ObservedObject private var account = GoogleAccountManager.shared
@@ -30,32 +34,44 @@ struct RootView: View {
 
     var body: some View {
         TabView(selection: $selection) {
-            HomeView(path: $homePath)
-                .tabItem { Label(copy("Home", "الرئيسية"), systemImage: "house.fill") }
-                .tag(Tab.home)
+            HomeView(path: $homePath, prayerRequest: prayerRequest, openSearch: { query in
+                exploreQuery = query
+                explorePath = NavigationPath()
+                selection = .explore
+            })
+            .tabItem { tabLabel(copy("Home", "الرئيسية"), symbol: "house", tab: .home) }
+            .tag(Tab.home)
 
-            ExploreView(path: $explorePath)
-                .tabItem { Label(copy("Explore", "استكشف"), systemImage: "square.grid.2x2.fill") }
+            ExploreView(path: $explorePath, searchText: $exploreQuery)
+                .tabItem { tabLabel(copy("Explore", "استكشف"), symbol: "square.grid.2x2", tab: .explore) }
                 .tag(Tab.explore)
 
-            NavigationStack {
-                QiblaView()
+            NavigationStack(path: $duaPath) {
+                DuasView()
             }
-            .tabItem { Label(copy("Qibla", "القبلة"), systemImage: "location.north.circle.fill") }
-            .tag(Tab.qibla)
+            .tabItem { tabLabel(copy("Du’as", "الأدعية"), symbol: "text.book.closed", tab: .duas) }
+            .tag(Tab.duas)
 
             LibraryView()
-                .tabItem { Label(copy("Saved", "المحفوظات"), systemImage: "bookmark.fill") }
+                .tabItem { tabLabel(copy("Saved", "المحفوظات"), symbol: "bookmark", tab: .saved) }
                 .tag(Tab.saved)
-
-            SettingsView()
-                .tabItem { Label(copy("Settings", "الإعدادات"), systemImage: "gearshape.fill") }
-                .tag(Tab.settings)
         }
-        .tint(.sakinaInk)
+        .tint(.yqAccent)
         .yaqeenLanguage(language)
         .environmentObject(scholarStore)
+        .sensoryFeedback(.selection, trigger: selection)
+        .sheet(isPresented: $showQibla) {
+            NavigationStack {
+                QiblaView()
+                    .toolbar {
+                        ToolbarItem(placement: .confirmationAction) {
+                            Button(copy("Done", "تم")) { showQibla = false }
+                        }
+                    }
+            }
+        }
         .task {
+            await Task.detached(priority: .utility) { GuidanceCatalog.prepareSearch() }.value
             await scholarStore.loadProfileAndPublishedInsights()
         }
         .onAppear {
@@ -63,6 +79,7 @@ struct RootView: View {
             ReminderScheduler.refresh()
             account.restorePreviousSignIn()
             handlePendingIntent()
+            applyDebugRoute()
         }
         .onChange(of: scenePhase) { _, phase in
             if phase == .active { handlePendingIntent() }
@@ -74,11 +91,21 @@ struct RootView: View {
             if url.host == "prayer-times" {
                 selection = .home
                 homePath = NavigationPath()
+                prayerRequest += 1
                 return
             }
 
             if url.host == "qibla" {
-                selection = .qibla
+                showQibla = true
+                return
+            }
+
+            if url.host == "duas" {
+                selection = .duas
+                duaPath = NavigationPath()
+                if let id = url.pathComponents.dropFirst().first, let dua = DuaCollection.dua(id) {
+                    duaPath.append(dua)
+                }
                 return
             }
 
@@ -108,7 +135,52 @@ struct RootView: View {
         case .today:
             open(SharedStore.situationOfTheDay())
         case .qibla:
-            selection = .qibla
+            showQibla = true
         }
+    }
+
+    private func tabLabel(_ title: String, symbol: String, tab: Tab) -> some View {
+        Label(title, systemImage: selection == tab ? "\(symbol).fill" : symbol)
+    }
+
+    /// Debug builds accept `-yqScreen <route>` so any screen can be opened
+    /// directly for screenshots: explore, group:<id>, situation:<id>, duas,
+    /// feelings, mood:<id>, practice:<id>, saved, prayers.
+    private func applyDebugRoute() {
+        #if DEBUG
+        let args = ProcessInfo.processInfo.arguments
+        guard let index = args.firstIndex(of: "-yqScreen"), index + 1 < args.count else { return }
+        let parts = args[index + 1].split(separator: ":", maxSplits: 1).map(String.init)
+        let argument = parts.count > 1 ? parts[1] : ""
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
+            switch parts[0] {
+            case "explore":
+                selection = .explore
+            case "group":
+                selection = .explore
+                if let group = GuidanceCatalog.groups.first(where: { $0.id.rawValue == argument }) { explorePath.append(group) }
+            case "situation":
+                selection = .explore
+                if let situation = SituationCatalog.by(id: argument) { explorePath.append(situation) }
+            case "duas":
+                selection = .duas
+            case "feelings":
+                selection = .duas
+                duaPath.append(DuaRoute.feelings)
+            case "mood":
+                selection = .duas
+                if let mood = DuaMood(rawValue: argument) { duaPath.append(mood) }
+            case "practice":
+                selection = .duas
+                if let practice = DuaPractice(rawValue: argument) { duaPath.append(practice) }
+            case "saved":
+                selection = .saved
+            case "prayers":
+                prayerRequest += 1
+            default:
+                break
+            }
+        }
+        #endif
     }
 }

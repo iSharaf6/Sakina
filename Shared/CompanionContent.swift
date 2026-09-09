@@ -129,6 +129,10 @@ struct GuidanceSupplication: Codable, Identifiable, Hashable, Sendable {
     let source: GuidanceSourceMetadata
     let cautionEnglish: String?
     let cautionArabic: String?
+    /// A repetition count only when the cited source itself states one.
+    let repeatCount: Int?
+    let timingEnglish: String?
+    let timingArabic: String?
 
     init(
         id: String,
@@ -144,7 +148,10 @@ struct GuidanceSupplication: Codable, Identifiable, Hashable, Sendable {
         applicability: GuidanceApplicabilityMetadata,
         source: GuidanceSourceMetadata,
         cautionEnglish: String? = nil,
-        cautionArabic: String? = nil
+        cautionArabic: String? = nil,
+        repeatCount: Int? = nil,
+        timingEnglish: String? = nil,
+        timingArabic: String? = nil
     ) {
         self.id = id
         self.titleEnglish = titleEnglish
@@ -160,6 +167,13 @@ struct GuidanceSupplication: Codable, Identifiable, Hashable, Sendable {
         self.source = source
         self.cautionEnglish = cautionEnglish
         self.cautionArabic = cautionArabic
+        self.repeatCount = repeatCount
+        self.timingEnglish = timingEnglish
+        self.timingArabic = timingArabic
+    }
+
+    func timing(_ language: AppLanguage) -> String? {
+        language == .arabic ? timingArabic : timingEnglish
     }
 
     func title(_ language: AppLanguage) -> String {

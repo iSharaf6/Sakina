@@ -1,6 +1,10 @@
 # macOS
 .DS_Store
 
+# Python generated cache
+__pycache__/
+*.py[cod]
+
 # Local assistant/editor settings
 .claude/
 
