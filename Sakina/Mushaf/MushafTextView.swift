@@ -7,8 +7,17 @@ import UIKit
 /// where an ayah is on the page (for scrolling and the focus pulse).
 final class MushafTextProxy {
     var rectForKey: ((String) -> CGRect?)?
+    var scrollToKey: ((String, Bool) -> Bool)?
+    /// Called with the text view's top edge relative to the scroll view's
+    /// visible area whenever the enclosing UIScrollView moves.
+    var onScroll: ((CGFloat) -> Void)?
 
     func rect(for key: String) -> CGRect? { rectForKey?(key) }
+
+    /// Scrolls the enclosing UIScrollView so the ayah sits near the top.
+    /// Returns false when layout is not ready yet.
+    @discardableResult
+    func scroll(to key: String, animated: Bool) -> Bool { scrollToKey?(key, animated) ?? false }
 }
 
 // MARK: - Text view
@@ -90,6 +99,7 @@ struct MushafTextView: UIViewRepresentable {
         view.addGestureRecognizer(press)
 
         view.onLayout = { [weak coordinator] in coordinator?.publishRects() }
+        view.onScroll = { [weak coordinator] top in coordinator?.proxy?.onScroll?(top) }
         return view
     }
 
@@ -99,6 +109,8 @@ struct MushafTextView: UIViewRepresentable {
         coordinator.onLayout = onLayout
         coordinator.language = language
         proxy?.rectForKey = { [weak coordinator] key in coordinator?.rect(for: key) }
+        proxy?.scrollToKey = { [weak coordinator] key, animated in coordinator?.scroll(to: key, animated: animated) ?? false }
+        coordinator.proxy = proxy
         uiView.accessibilityLabel = surahName
 
         let inputs = inputs
@@ -132,6 +144,7 @@ struct MushafTextView: UIViewRepresentable {
         var storage: NSTextStorage?
         var onTap: ((QuranAyah) -> Void)?
         var onLayout: (([String: CGRect]) -> Void)?
+        weak var proxy: MushafTextProxy?
         var language: AppLanguage = .english
         fileprivate var lastInputs: Inputs?
 
@@ -288,6 +301,21 @@ struct MushafTextView: UIViewRepresentable {
 
         // MARK: Geometry
 
+        /// Drives the enclosing UIScrollView directly; SwiftUI's scrollTo is
+        /// unreliable for content tens of thousands of points tall.
+        func scroll(to key: String, animated: Bool) -> Bool {
+            guard let textView, textView.bounds.width > 0, let rect = rect(for: key) else { return false }
+            var view: UIView? = textView.superview
+            while let candidate = view, !(candidate is UIScrollView) { view = candidate.superview }
+            guard let scrollView = view as? UIScrollView else { return false }
+            let target = textView.convert(rect, to: scrollView)
+            let visible = scrollView.bounds.height - scrollView.adjustedContentInset.top - scrollView.adjustedContentInset.bottom
+            let maxY = max(-scrollView.adjustedContentInset.top, scrollView.contentSize.height - visible - scrollView.adjustedContentInset.top)
+            let y = min(maxY, max(-scrollView.adjustedContentInset.top, target.minY - scrollView.adjustedContentInset.top - visible * 0.12))
+            scrollView.setContentOffset(CGPoint(x: scrollView.contentOffset.x, y: y), animated: animated)
+            return true
+        }
+
         func rect(for key: String) -> CGRect? {
             guard let textView, let index = entryByKey[key] else { return nil }
             let layoutManager = textView.layoutManager
@@ -335,6 +363,22 @@ final class MushafUITextView: UITextView {
 
     private var lastLayoutSize: CGSize = .zero
     private var lastGeneration = -1
+    var onScroll: ((CGFloat) -> Void)?
+    private var offsetObservation: NSKeyValueObservation?
+
+    override func didMoveToWindow() {
+        super.didMoveToWindow()
+        offsetObservation = nil
+        guard window != nil else { return }
+        var view: UIView? = superview
+        while let candidate = view, !(candidate is UIScrollView) { view = candidate.superview }
+        guard let scrollView = view as? UIScrollView else { return }
+        offsetObservation = scrollView.observe(\.contentOffset, options: [.new]) { [weak self, weak scrollView] _, _ in
+            guard let self, let scrollView else { return }
+            let top = self.convert(CGPoint.zero, to: scrollView).y - scrollView.contentOffset.y
+            self.onScroll?(top)
+        }
+    }
 
     override func layoutSubviews() {
         super.layoutSubviews()

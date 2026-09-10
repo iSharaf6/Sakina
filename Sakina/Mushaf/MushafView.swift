@@ -200,6 +200,12 @@ struct MushafView: View {
                 tracker.textTop = value
                 scheduleVisibleUpdate()
             }
+            .onAppear {
+                textProxy.onScroll = { top in
+                    tracker.textTop = top
+                    scheduleVisibleUpdate()
+                }
+            }
             .simultaneousGesture(
                 DragGesture(minimumDistance: 30)
                     .onEnded { value in handleSwipe(value) }
@@ -432,19 +438,13 @@ struct MushafView: View {
     }
 
     private func performFocus(_ scroll: ScrollViewProxy) {
-        guard let key = focusKey, let rect = anchors[key] else { return }
-        let anchor = UnitPoint(x: 0.5, y: 0.12)
-        scroll.scrollTo(key, anchor: anchor)
+        guard let key = focusKey, anchors[key] != nil else { return }
+        guard textProxy.scroll(to: key, animated: false) else { return }
         focusKey = nil
-        // The scroll view's content height can still be settling on the first
-        // pass, which clamps the offset short; settle again once layout is done.
+        // Settle once more after SwiftUI finishes its own layout pass.
         Task { @MainActor in
             try? await Task.sleep(for: .milliseconds(250))
-            if reduceMotion {
-                scroll.scrollTo(key, anchor: anchor)
-            } else {
-                withAnimation(.easeInOut(duration: 0.3)) { scroll.scrollTo(key, anchor: anchor) }
-            }
+            textProxy.scroll(to: key, animated: !reduceMotion)
             if pulseKey == key { runPulse() }
         }
     }
