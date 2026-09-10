@@ -283,39 +283,22 @@ struct MushafPageView: View {
 
 // MARK: - Book chrome
 
-/// The page border: a hairline rounded rectangle, a second inset line, and
-/// a small star at each corner. White paper over the patterned canvas. A
-/// fitted page adds a third line inside, as the printed border's inner rule.
+/// A quiet printed border; its white image background becomes transparent
+/// through a luminance mask, so the same engraving works on both paper tones.
 struct PageFrame: View {
-    var cornerRadius: CGFloat = 16
+    var cornerRadius: CGFloat = 0
     var fit = false
-
     var body: some View {
-        let outer = RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-        let inner = RoundedRectangle(cornerRadius: cornerRadius - 5, style: .continuous)
-        let innermost = RoundedRectangle(cornerRadius: max(2, cornerRadius - 9), style: .continuous)
         ZStack {
-            outer.fill(Color.yqSurface)
-            outer.strokeBorder(Color.yqHairline, lineWidth: 1)
-            inner.strokeBorder(Color.yqHairline, lineWidth: 1)
-                .padding(5)
-            if fit {
-                innermost.strokeBorder(Color.yqAccent.opacity(0.35), lineWidth: 1)
-                    .padding(9)
+            MushafPaper.background
+            MushafPaper.gold.mask {
+                Image("MushafOrnament")
+                    .resizable()
+                    .colorInvert()
+                    .luminanceToAlpha()
             }
         }
-        .overlay(alignment: .topLeading) { cornerStar }
-        .overlay(alignment: .topTrailing) { cornerStar }
-        .overlay(alignment: .bottomLeading) { cornerStar }
-        .overlay(alignment: .bottomTrailing) { cornerStar }
         .accessibilityHidden(true)
-    }
-
-    private var cornerStar: some View {
-        EightPointStar()
-            .fill(Color.yqAccent)
-            .frame(width: 9, height: 9)
-            .padding(7)
     }
 }
 
@@ -335,19 +318,12 @@ struct PageNumberBadge: View {
             Haptics.press()
             action()
         } label: {
-            HStack(spacing: 5) {
-                Image(systemName: "book.closed")
-                    .font(.system(size: 11, weight: .semibold))
-                Text(number)
-                    .font(.yqCaptionBold)
-                    .monospacedDigit()
-            }
-            .foregroundStyle(Color.yqInk)
-            .padding(.horizontal, 11)
-            .padding(.vertical, 5)
-            .background(Color.yqSurface, in: Capsule(style: .continuous))
-            .overlay(Capsule(style: .continuous).strokeBorder(Color.yqHairline, lineWidth: 1))
-            .contentShape(Capsule())
+            Text(QuranAyah.arabicDigits(page))
+                .font(.system(size: 17, weight: .medium, design: .serif))
+                .foregroundStyle(Color(uiColor: MushafPaper.ink))
+                .frame(minWidth: 54, minHeight: 34)
+                .background(MushafPaper.background)
+                .contentShape(Rectangle())
         }
         .buttonStyle(.yqPressSoft)
         .accessibilityLabel(language == .arabic ? "صفحة \(number)، الانتقال إلى صفحة" : "Page \(number), go to page")
@@ -357,8 +333,8 @@ struct PageNumberBadge: View {
 // MARK: - Surah banner
 
 /// The Madani cartouche: a rounded band with a hairline, a second line
-/// inside it, and a small circle overlapping each end, with the surah name
-/// in the middle. Green is the only colour; there is no gold and no shadow.
+/// inside it and a small ornament overlapping each end, with the surah
+/// name in the middle. It shares the printed reader's muted ink palette.
 /// `compact` is the fitted page's shorter band with a fixed-size name.
 struct SurahBanner: View {
     let surah: QuranSurah
@@ -370,11 +346,11 @@ struct SurahBanner: View {
     var body: some View {
         ZStack {
             Capsule(style: .continuous)
-                .fill(Color.yqSurface)
+                .fill(MushafPaper.background)
             Capsule(style: .continuous)
-                .strokeBorder(Color.yqHairline, lineWidth: 1)
+                .strokeBorder(MushafPaper.gold.opacity(0.35), lineWidth: 1)
             Capsule(style: .continuous)
-                .strokeBorder(Color.yqHairline, lineWidth: 1)
+                .strokeBorder(MushafPaper.gold.opacity(0.35), lineWidth: 1)
                 .padding(4)
             Text(surah.nameArabic)
                 .font(compact ? Font.custom(MushafTextView.fontName, fixedSize: 20) : .arabic(24))
@@ -394,10 +370,10 @@ struct SurahBanner: View {
 
     private var endCircle: some View {
         ZStack {
-            Circle().fill(Color.yqSurface)
-            Circle().strokeBorder(Color.yqHairline, lineWidth: 1)
+            Circle().fill(MushafPaper.background)
+            Circle().strokeBorder(MushafPaper.gold.opacity(0.35), lineWidth: 1)
             EightPointStar()
-                .fill(Color.yqAccent)
+                .fill(MushafPaper.gold)
                 .frame(width: 9, height: 9)
         }
         .frame(width: 26, height: 26)

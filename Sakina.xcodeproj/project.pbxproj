@@ -116,6 +116,8 @@
 		064D1D381DF5D12BDD30691D /* QuranEditionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 216A21AA5ADF3DA43BFA4624 /* QuranEditionsTests.swift */; };
 		C090EBDAC41EA9B837FE5FC0 /* HafsSmart.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6620EC3873EEF13F6200F77A /* HafsSmart.ttf */; };
 		5ACC6245C72768E6172A0B30 /* hafs-smart.json in Resources */ = {isa = PBXBuildFile; fileRef = 6F11C20B8FC458A0D2CD3AE3 /* hafs-smart.json */; };
+		D10200000000000000000002 /* PrintedMushafPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D10200000000000000000001 /* PrintedMushafPage.swift */; };
+		D10200000000000000000004 /* mushaf-lines.json in Resources */ = {isa = PBXBuildFile; fileRef = D10200000000000000000003 /* mushaf-lines.json */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -254,6 +256,8 @@
 		216A21AA5ADF3DA43BFA4624 /* QuranEditionsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuranEditionsTests.swift; sourceTree = "<group>"; };
 		6620EC3873EEF13F6200F77A /* HafsSmart.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = HafsSmart.ttf; sourceTree = "<group>"; };
 		6F11C20B8FC458A0D2CD3AE3 /* hafs-smart.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = hafs-smart.json; sourceTree = "<group>"; };
+		D10200000000000000000001 /* PrintedMushafPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PrintedMushafPage.swift"; sourceTree = "<group>"; };
+		D10200000000000000000003 /* mushaf-lines.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "mushaf-lines.json"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -441,6 +445,7 @@
 			isa = PBXGroup;
 			children = (
 				6620EC3873EEF13F6200F77A /* HafsSmart.ttf */,
+				D10200000000000000000003 /* mushaf-lines.json */,
 				FAA11D5F405A2BF91BEDF0F0 /* AppIcon60x60@2x.png */,
 				DFCBD69B0913648D27A8A02D /* AppIcon60x60@3x.png */,
 				8778E3432F3F2902279E9FC3 /* AppIcon76x76@2x.png */,
@@ -526,6 +531,7 @@
 				991EF765A1F3D42572A9D8F1 /* MushafPlayerBar.swift */,
 				D1F45D409FA4B40B61F19DA7 /* MushafDisplaySheet.swift */,
 				EC7D29F4A70DEB3684B68EDF /* MushafPageView.swift */,
+				D10200000000000000000001 /* PrintedMushafPage.swift */,
 				490E1ACFD38E4F1B31230BEA /* QuranTextRenderer.swift */,
 				E3D99C0BB44888678A8DF4A1 /* QuranScripts.swift */,
 				B80BB4CA6983A2907A49C9DD /* MushafView.swift */,
@@ -672,6 +678,7 @@
 			files = (
 				5ACC6245C72768E6172A0B30 /* hafs-smart.json in Resources */,
 				C090EBDAC41EA9B837FE5FC0 /* HafsSmart.ttf in Resources */,
+				D10200000000000000000004 /* mushaf-lines.json in Resources */,
 				AB75D9E1FD123715FA8ABA9A /* translations.json in Resources */,
 				5B1851A8DDFCAFE1212F8AA0 /* quran-scripts.json in Resources */,
 				43266564C9CA1903B29F74A3 /* quran.json in Resources */,
@@ -724,6 +731,7 @@
 				1A3A1E2BCC595117EB4175C9 /* RecitationCache.swift in Sources */,
 				521493E876A4018BCD811569 /* MushafDisplaySheet.swift in Sources */,
 				CA2535C12249C04C2F6314F6 /* MushafPageView.swift in Sources */,
+				D10200000000000000000002 /* PrintedMushafPage.swift in Sources */,
 				8873A6CCEFD85C0FAFB7C52E /* QuranTextRenderer.swift in Sources */,
 				55B21165F84AEF1B79494518 /* QuranScripts.swift in Sources */,
 				40C51B53C5B95E1166E8C876 /* MushafView.swift in Sources */,

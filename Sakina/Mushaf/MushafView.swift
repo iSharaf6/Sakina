@@ -8,8 +8,8 @@ extension MushafPreferences {
 /// The Qur'an reader. Two layouts: Madani pages (604 of them, each holding
 /// exactly the ayat of the printed page) or one surah as flowing text.
 /// Pages turn sideways or scroll down according to the Direction setting.
-/// The navigation bar stays: surah in the middle, juz, Display and More on
-/// the trailing side; the tab bar stays too when this is the Qur'an tab.
+/// The compact toolbar offers surah navigation, focus mode and a reading
+/// menu. Focus mode gives the page the space otherwise occupied by tabs.
 struct MushafView: View {
     let language: AppLanguage
     private let initialKey: String?
@@ -29,6 +29,7 @@ struct MushafView: View {
     @State private var showJuzPicker = false
     @State private var showPagePicker = false
     @State private var showDisplay = false
+    @State private var focusedReading = false
     @State private var showReciter = false
     @State private var showSettings = false
     @State private var textProxy = MushafTextProxy()
@@ -45,6 +46,8 @@ struct MushafView: View {
     @AppStorage(MushafPreferences.showTranslationKey) private var showTranslation = false
     @AppStorage(MushafPreferences.fontScaleKey) private var fontScale = 1.0
     @AppStorage(MushafPreferences.fitKey) private var fitPage = true
+    @AppStorage("yaqeen.mushaf.printedPage") private var lastPrintedPage = 1
+    @AppStorage("yaqeen.mushaf.printedKey") private var lastPrintedKey = ""
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @ScaledMetric(relativeTo: .title2) private var baseArabicSize = 24.0
@@ -100,6 +103,14 @@ struct MushafView: View {
     private var store: QuranStore { QuranStore.shared }
     private var surah: QuranSurah? { store.surah(surahNumber) }
     private var ayat: [QuranAyah] { store.ayat(in: surahNumber) }
+    private var printedLayout: Bool { layout == .page && fitPage && script == .uthmani && !MushafLineStore.shared.pages.isEmpty }
+    private func readingPage(for ayah: QuranAyah) -> Int {
+        printedLayout ? (MushafLineStore.shared.page(for: ayah.key) ?? ayah.page) : ayah.page
+    }
+    private func firstReadingAyah(on number: Int) -> QuranAyah? {
+        if printedLayout, let key = MushafLineStore.shared.words(on: number).first?.k { return store.ayah(key) }
+        return store.firstAyah(onPage: number)
+    }
     private var fontSize: CGFloat { baseArabicSize * fontScale }
 
     private var highlights: [String: HighlightColor] {
@@ -113,7 +124,7 @@ struct MushafView: View {
     /// The surah shown in the bar: the page's first ayah in page mode.
     private var visibleSurah: QuranSurah? {
         switch layout {
-        case .page: return store.firstAyah(onPage: page).flatMap { store.surah($0.surah) }
+        case .page: return firstReadingAyah(on: page).flatMap { store.surah($0.surah) }
         case .surah: return surah
         }
     }
@@ -144,17 +155,24 @@ struct MushafView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
-        .yqScreen()
+        .background(MushafPaper.background.ignoresSafeArea())
+        .tint(MushafPaper.gold)
+        .toolbarBackground(MushafPaper.background, for: .navigationBar)
         .toolbarRole(.editor)
         .toolbar(.visible, for: .navigationBar)
-        .toolbar(showsTabBar ? .visible : .hidden, for: .tabBar)
+        .toolbar(showsTabBar && !focusedReading ? .visible : .hidden, for: .tabBar)
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .principal) { surahButton }
             ToolbarItemGroup(placement: .topBarTrailing) {
-                juzButton
-                if layout == .page { pageBadge }
-                displayButton
+                Button {
+                    Haptics.press()
+                    focusedReading.toggle()
+                } label: {
+                    Image(systemName: focusedReading ? "viewfinder.circle.fill" : "viewfinder")
+                        .foregroundStyle(MushafPaper.gold)
+                }
+                .accessibilityLabel(copy(focusedReading ? "Show app tabs" : "Focus reading", focusedReading ? "إظهار التبويبات" : "القراءة بتركيز"))
                 moreMenu
             }
         }
@@ -203,6 +221,8 @@ struct MushafView: View {
             guard let key, let ayah = store.ayah(key) else { return }
             followAlong(ayah)
         }
+        .onChange(of: fitPage) { _, _ in restorePageAfterDisplayChange() }
+        .onChange(of: script) { _, _ in restorePageAfterDisplayChange() }
         .onChange(of: layout) { old, new in
             switchLayout(from: old, to: new)
         }
@@ -242,54 +262,21 @@ struct MushafView: View {
         .accessibilityValue(visibleSurah?.name(language) ?? "")
     }
 
-    private var juzButton: some View {
-        Button {
-            Haptics.press()
-            showJuzPicker = true
-        } label: {
-            Text(juzTitle)
-                .font(.yqSubheadBold)
-                .foregroundStyle(Color.yqInk)
-                .lineLimit(1)
-                .contentShape(Rectangle())
-        }
-        .accessibilityLabel(copy("Choose juz", "اختر الجزء"))
-        .accessibilityValue(juzTitle)
-    }
-
-    /// The page number as a small badge; tapping it opens the page picker.
-    private var pageBadge: some View {
-        Button {
-            Haptics.press()
-            showPagePicker = true
-        } label: {
-            Text(pageNumberText)
-                .font(.yqCaptionBold)
-                .monospacedDigit()
-                .foregroundStyle(Color.yqInk)
-                .lineLimit(1)
-                .padding(.horizontal, 8)
-                .padding(.vertical, 4)
-                .background(Color.yqFill, in: Capsule(style: .continuous))
-                .overlay(Capsule(style: .continuous).strokeBorder(Color.yqHairline, lineWidth: 1))
-                .contentShape(Capsule())
-        }
-        .accessibilityLabel(copy("Go to page", "الانتقال إلى صفحة"))
-        .accessibilityValue(pageTitle)
-    }
-
-    private var displayButton: some View {
-        Button {
-            Haptics.press()
-            showDisplay = true
-        } label: {
-            Image(systemName: "textformat.size")
-        }
-        .accessibilityLabel(copy("Display options", "خيارات العرض"))
-    }
-
     private var moreMenu: some View {
         Menu {
+            Button { showDisplay = true } label: {
+                Label(copy("Reading appearance", "مظهر القراءة"), systemImage: "textformat.size")
+            }
+            Button { showSurahPicker = true } label: {
+                Label(copy("Choose surah", "اختر السورة"), systemImage: "list.bullet")
+            }
+            Button { showJuzPicker = true } label: {
+                Label(copy("Choose juz", "اختر الجزء"), systemImage: "book")
+            }
+            Button { showPagePicker = true } label: {
+                Label(copy("Go to page", "الانتقال إلى صفحة"), systemImage: "number")
+            }
+            Divider()
             NavigationLink {
                 AyahLibraryView(language: language)
             } label: {
@@ -308,6 +295,7 @@ struct MushafView: View {
             }
         } label: {
             Image(systemName: "ellipsis.circle")
+                .foregroundStyle(MushafPaper.gold)
         }
         .accessibilityLabel(copy("More", "المزيد"))
     }
@@ -415,6 +403,13 @@ struct MushafView: View {
                 .padding(.horizontal, MushafPageView.Metrics.outerHorizontal)
                 .padding(.vertical, MushafPageView.Metrics.outerVertical)
                 .accessibilityHidden(true)
+        } else if printedLayout {
+            PrintedMushafPage(page: number, language: language, onTap: { ayah in
+                Haptics.tap()
+                library.lastReadKey = ayah.key
+                selectedAyah = ayah
+            }, onPageTap: { showPagePicker = true })
+                .frame(minHeight: fitPage ? nil : size.height)
         } else {
             MushafPageView(
                 page: number,
@@ -601,14 +596,18 @@ struct MushafView: View {
     private func load() async {
         if !loaded {
             // Decode off the main thread the first time; the store is a lazy singleton.
-            await Task.detached(priority: .userInitiated) { _ = QuranStore.shared.isLoaded }.value
+            await Task.detached(priority: .userInitiated) { _ = QuranStore.shared.isLoaded; _ = MushafLineStore.shared.pages.count }.value
         }
         guard QuranStore.shared.isLoaded else { return }
         let key = initialKey ?? library.lastReadKey ?? "1:1"
         let ayah = store.ayah(key) ?? store.ayat.first
         surahNumber = ayah?.surah ?? 1
         currentJuz = ayah?.juz ?? 1
-        page = ayah?.page ?? 1
+        page = ayah.map { readingPage(for: $0) } ?? 1
+        if initialKey == nil, printedLayout, key == lastPrintedKey,
+           MushafLineStore.shared.words(on: lastPrintedPage).contains(where: { $0.k == key }) {
+            page = lastPrintedPage
+        }
         scrolledPage = page
         loaded = true
         if let ayah {
@@ -625,7 +624,7 @@ struct MushafView: View {
         guard let first = store.ayat(in: number).first else { return }
         switch layout {
         case .page:
-            open(page: first.page)
+            open(page: readingPage(for: first))
         case .surah:
             guard number != surahNumber else { return }
             rememberPlace()
@@ -642,7 +641,7 @@ struct MushafView: View {
         guard let ayah = store.ayah(key) else { return }
         switch layout {
         case .page:
-            open(page: ayah.page)
+            open(page: readingPage(for: ayah))
         case .surah:
             if ayah.surah != surahNumber {
                 rememberPlace()
@@ -656,6 +655,12 @@ struct MushafView: View {
         }
     }
 
+    private func restorePageAfterDisplayChange() {
+        guard loaded, let key = library.lastReadKey, let ayah = store.ayah(key) else { return }
+        page = readingPage(for: ayah)
+        scrolledPage = page
+    }
+
     private func open(page number: Int) {
         let target = min(max(number, 1), QuranStore.pageCount)
         guard target != page else { return }
@@ -665,15 +670,22 @@ struct MushafView: View {
 
     /// Runs whenever the page changes, by swipe, scroll or a picker.
     private func pageDidChange(_ number: Int) {
-        guard loaded, layout == .page, let first = store.firstAyah(onPage: number) else { return }
+        guard loaded, layout == .page, let first = firstReadingAyah(on: number) else { return }
         currentJuz = first.juz
-        library.lastReadKey = first.key
+        if !printedLayout || !MushafLineStore.shared.words(on: number).contains(where: { $0.k == library.lastReadKey }) {
+            library.lastReadKey = first.key
+        }
+        if printedLayout {
+            lastPrintedPage = number
+            lastPrintedKey = library.lastReadKey ?? first.key
+        }
     }
 
     private func followAlong(_ ayah: QuranAyah) {
         switch layout {
         case .page:
-            if ayah.page != page { page = ayah.page }
+            if printedLayout, MushafLineStore.shared.words(on: page).contains(where: { $0.k == ayah.key }) { return }
+            if readingPage(for: ayah) != page { page = readingPage(for: ayah) }
         case .surah:
             if ayah.surah != surahNumber {
                 open(key: ayah.key, pulse: false)
@@ -690,12 +702,12 @@ struct MushafView: View {
         case .page:
             let ayah = topmostVisibleAyah() ?? store.ayat(in: surahNumber).first
             if let ayah {
-                page = ayah.page
-                scrolledPage = ayah.page
+                page = readingPage(for: ayah)
+                scrolledPage = readingPage(for: ayah)
                 currentJuz = ayah.juz
             }
         case .surah:
-            guard let first = store.firstAyah(onPage: page) else { return }
+            guard let first = firstReadingAyah(on: page) else { return }
             anchors = [:]
             surahNumber = first.surah
             currentJuz = first.juz
@@ -769,7 +781,16 @@ struct MushafView: View {
         guard loaded else { return }
         switch layout {
         case .page:
-            if let first = store.firstAyah(onPage: page) { library.lastReadKey = first.key }
+            if printedLayout {
+                if !MushafLineStore.shared.words(on: page).contains(where: { $0.k == library.lastReadKey }),
+                   let first = firstReadingAyah(on: page) { library.lastReadKey = first.key }
+                lastPrintedPage = page
+                lastPrintedKey = library.lastReadKey ?? ""
+            } else if let key = library.lastReadKey, let ayah = store.ayah(key), readingPage(for: ayah) == page {
+                return
+            } else if let first = firstReadingAyah(on: page) {
+                library.lastReadKey = first.key
+            }
         case .surah:
             if let ayah = topmostVisibleAyah() { library.lastReadKey = ayah.key }
         }

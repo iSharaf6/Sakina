@@ -39,7 +39,14 @@ struct MushafDisplaySheet: View {
                     section(copy("Direction", "اتجاه التصفح")) { directionChips }
                     section(copy("Script", "الرسم")) { scriptCards }
                     section(copy("Translation", "الترجمة")) { translationCard }
-                    section(fitting ? copy("Maximum font size", "الحد الأقصى لحجم الخط") : copy("Font size", "حجم الخط")) { fontCard }
+                    if fitting && script == .uthmani {
+                        Text(copy("Printed pages keep their original lines. For larger, adjustable text, turn off Fit page to screen or choose Surah.",
+                                  "تحافظ الصفحات المطبوعة على سطورها. لتكبير النص، أوقف ملاءمة الصفحة للشاشة أو اختر عرض السورة."))
+                            .font(.yqCaption)
+                            .foregroundStyle(Color.yqSecondary)
+                    } else {
+                        section(fitting ? copy("Maximum font size", "الحد الأقصى لحجم الخط") : copy("Font size", "حجم الخط")) { fontCard }
+                    }
                     section(copy("Markers", "علامات الآيات")) { markersCard }
                 }
                 .padding(.horizontal, 20)

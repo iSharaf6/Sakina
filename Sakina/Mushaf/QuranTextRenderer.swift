@@ -1,34 +1,16 @@
 import SwiftUI
 import UIKit
 
-/// The one place Qur'an text is turned into attributed text, for both the
-/// UIKit mushaf (`NSAttributedString`) and SwiftUI `Text`
-/// (`AttributedString`). It knows three things the views should not:
-///
-/// 1. Which font each script uses. Uthmani and Tajweed use the bundled
-///    KFGQPC HAFS Uthmanic Script. IndoPak uses the system Arabic face: no
-///    IndoPak (Naskh/Nastaliq) font is bundled yet, and the KFGQPC font
-///    maps every Persian/Urdu letter and the extended digits (U+0679…06FF)
-///    to a placeholder glyph, so it must never draw IndoPak text.
-/// 2. Which marks the KFGQPC font draws wrongly. The bundled font is the
-///    2009 release; a whole block of codepoints, including U+06DF (the
-///    sifr mustadir on silent alif/waw), is a composite of the `uni0600`
-///    placeholder that renders as a large black dot. Those characters are
-///    drawn in the system font, which has the correct small marks.
-/// 3. How the Quran.com tajweed rule classes map to colours. The bundled
-///    scripts file carries them as UTF-16 spans over the verified Uthmani
-///    text (`TajweedSpan`); the HTML parser is kept for the build script
-///    and tests.
-///
-/// The Qur'an text itself is never changed: only fonts and colours are
-/// attached to it. The ayah number is appended after a space in the KFGQPC
-/// font, whose Arabic-Indic digits already sit inside the ornate frame.
+/// Shared Arabic rendering for UIKit and SwiftUI. The default Uthmani text
+/// uses Quran Foundation's QPC Unicode edition with its matching KFGQPC font.
+/// Canonical text remains untouched for copy/search and Tajweed span offsets.
+/// Legacy scripts fall back by complete word, never by isolated diacritic.
 enum QuranTextRenderer {
 
     // MARK: Fonts
 
-    /// The Madani mushaf face. The bundled build maps three marks to a
-    /// placeholder (see `fallbackMarks`); a newer KFGQPC build fixes them.
+    /// The QPC Hafs face, paired with text_qpc_hafs. Three marks used by
+    /// the legacy text_uthmani encoding are unsupported (see fallbackMarks).
     static let uthmaniFontName = "KFGQPC HAFS Uthmanic Script"
 
     /// The Complex's pre-shaped Madani font, driven by `HafsSmartStore`.
@@ -40,7 +22,8 @@ enum QuranTextRenderer {
 
     /// Whether this script draws the Complex's pre-shaped glyphs.
     static func usesSmartGlyphs(_ script: QuranScript) -> Bool {
-        script == .uthmani && HafsSmartStore.shared.isLoaded
+        script == .uthmani && MushafLineStore.shared.pages.isEmpty
+            && HafsSmartStore.shared.isLoaded && UIFont(name: smartFontName, size: 24) != nil
     }
 
     /// The smart glyph string split into the Arabic and its trailing ayah
@@ -278,18 +261,18 @@ enum QuranTextRenderer {
     static func runs(for ayah: QuranAyah, script: QuranScript) -> (script: QuranScript, runs: [Run]) {
         switch script {
         case .uthmani:
-            return (.uthmani, [Run(text: ayah.displayArabic, color: nil)])
+            return (.uthmani, [Run(text: MushafLineStore.shared.text(for: ayah.key) ?? ayah.displayArabic, color: nil)])
         case .tajweed:
             // Spans index the verbatim `arabic`; the edges are trimmed
             // afterwards so the letters match `displayArabic` exactly.
             guard let spans = QuranScriptStore.shared.tajweedSpans(for: ayah.key), !spans.isEmpty else {
-                return (.uthmani, [Run(text: ayah.displayArabic, color: nil)])
+                return (.uthmani, [Run(text: MushafLineStore.shared.text(for: ayah.key) ?? ayah.displayArabic, color: nil)])
             }
             let runs = trimmingEdges(tajweedRuns(for: ayah.arabic, spans: spans))
             return runs.isEmpty ? (.uthmani, [Run(text: ayah.displayArabic, color: nil)]) : (.tajweed, runs)
         case .indopak:
             guard let raw = QuranScriptStore.shared.indopak(for: ayah.key) else {
-                return (.uthmani, [Run(text: ayah.displayArabic, color: nil)])
+                return (.uthmani, [Run(text: MushafLineStore.shared.text(for: ayah.key) ?? ayah.displayArabic, color: nil)])
             }
             // Quran.com's IndoPak text carries Private Use Area pause glyphs
             // (U+E01A…E022) that only its own font can draw; iOS shows some
@@ -377,29 +360,38 @@ enum QuranTextRenderer {
         let isMark: Bool
     }
 
-    /// Splits runs into pieces at every fallback mark. Only Uthmani-family
-    /// scripts need this; IndoPak already uses the system font throughout.
+    /// A fallback must cover the whole word, including its base letters.
+    /// Switching font for a combining mark alone destroys its positioning.
+    /// QPC display text needs no fallback; this protects legacy Tajweed text
+    /// without altering the canonical string or its colour-span offsets.
     static func pieces(for runs: [Run], script: QuranScript) -> [Piece] {
         guard script != .indopak else {
             return runs.map { Piece(text: $0.text, color: $0.color, isMark: false) }
         }
-        var pieces: [Piece] = []
-        for run in runs {
-            var current = String.UnicodeScalarView()
-            var currentIsMark = false
-            func flush() {
-                guard !current.isEmpty else { return }
-                pieces.append(Piece(text: String(current), color: run.color, isMark: currentIsMark))
-                current = String.UnicodeScalarView()
-            }
-            for scalar in run.text.unicodeScalars {
-                let isMark = isFallbackMark(scalar)
-                if isMark != currentIsMark { flush(); currentIsMark = isMark }
-                current.append(scalar)
-            }
-            flush()
+        let full = runs.map(\.text).joined()
+        let ns = full as NSString
+        let words = (try? NSRegularExpression(pattern: "\\S+"))?.matches(in: full, range: NSRange(location: 0, length: ns.length)) ?? []
+        let fallbackRanges = words.map(\.range).filter {
+            ns.substring(with: $0).unicodeScalars.contains(where: isFallbackMark)
         }
-        return pieces
+        var offset = 0
+        var result: [Piece] = []
+        for run in runs {
+            var buffer = ""
+            var fallback = false
+            for character in run.text {
+                let needsFallback = fallbackRanges.contains { NSLocationInRange(offset, $0) }
+                if needsFallback != fallback, !buffer.isEmpty {
+                    result.append(Piece(text: buffer, color: run.color, isMark: fallback))
+                    buffer = ""
+                }
+                fallback = needsFallback
+                buffer.append(character)
+                offset += String(character).utf16.count
+            }
+            if !buffer.isEmpty { result.append(Piece(text: buffer, color: run.color, isMark: fallback)) }
+        }
+        return result
     }
 
     // MARK: UIKit
