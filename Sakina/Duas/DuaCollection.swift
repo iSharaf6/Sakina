@@ -152,12 +152,23 @@ enum FeelingFamily: String, CaseIterable, Identifiable {
 }
 
 enum DuaCollection {
-    static let allEntries = CompanionContentCatalog.supplications + DailyDuaCatalog.entries + DuaLibrary.entries
+    static let allEntries = CompanionContentCatalog.supplications + DailyDuaCatalog.entries + DuaLibrary.entries + RuqyahCatalog.quran + RuqyahCatalog.added
     private static let byID = Dictionary(uniqueKeysWithValues: allEntries.map { ($0.id, $0) })
     static let savedKey = "yaqeen.savedDuaIDs"
     static let lastReadKey = "yaqeen.lastReadDuaID"
 
     static func dua(_ id: String) -> GuidanceSupplication? { byID[id] }
+
+    /// Deterministic daily pick, the same for everyone on a given date.
+    /// Short entries only, so the Home card can show the Arabic in full.
+    static func duaOfTheDay(for date: Date = .now) -> GuidanceSupplication {
+        let pool = allEntries.filter { $0.arabic.count <= 160 && $0.kind != .quranic }
+        let candidates = pool.isEmpty ? allEntries : pool
+        let cal = Calendar(identifier: .gregorian)
+        let day = cal.ordinality(of: .day, in: .year, for: date) ?? 1
+        let year = cal.component(.year, from: date)
+        return candidates[(day &+ year &* 17) % candidates.count]
+    }
 
     static func entries(mood: DuaMood? = nil, query: String = "", savedOnly: Bool = false, savedIDs: [String] = []) -> [GuidanceSupplication] {
         let values = mood.map { $0.supplicationIDs.compactMap(dua) } ?? allEntries

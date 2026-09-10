@@ -10,6 +10,7 @@ struct SettingsView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var context
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @Environment(\.openURL) private var openURL
     @Query(sort: \Bookmark.createdAt, order: .reverse) private var bookmarks: [Bookmark]
     @Query(sort: \JournalEntry.updatedAt, order: .reverse) private var entries: [JournalEntry]
 
@@ -26,6 +27,7 @@ struct SettingsView: View {
     @AppStorage(SettingsKeys.prayerCalculationMethod) private var prayerMethodRaw = PrayerCalculationMethod.muslimWorldLeague.rawValue
     @AppStorage(SettingsKeys.prayerAsrMethod) private var prayerAsrRaw = PrayerAsrMethod.standard.rawValue
     @AppStorage(SettingsKeys.prayerHighLatitude) private var highLatitudeRaw = PrayerHighLatitudePreference.automatic.rawValue
+    @AppStorage(Haptics.enabledKey) private var hapticsEnabled = true
 
     @State private var showAbout = false
     @State private var showDisconnectConfirmation = false
@@ -43,8 +45,11 @@ struct SettingsView: View {
                     prayerSection.revealed(1, appeared: appeared, reduceMotion: reduceMotion)
                     readingSection.revealed(2, appeared: appeared, reduceMotion: reduceMotion)
                     remindersSection.revealed(3, appeared: appeared, reduceMotion: reduceMotion)
-                    backupSection.revealed(4, appeared: appeared, reduceMotion: reduceMotion)
-                    aboutSection.revealed(5, appeared: appeared, reduceMotion: reduceMotion)
+                    feedbackSection.revealed(4, appeared: appeared, reduceMotion: reduceMotion)
+                    helpSection.revealed(5, appeared: appeared, reduceMotion: reduceMotion)
+                    communitySection.revealed(6, appeared: appeared, reduceMotion: reduceMotion)
+                    backupSection.revealed(7, appeared: appeared, reduceMotion: reduceMotion)
+                    aboutSection.revealed(8, appeared: appeared, reduceMotion: reduceMotion)
                 }
                 .padding(.horizontal, 20)
                 .padding(.top, 8)
@@ -82,6 +87,7 @@ struct SettingsView: View {
                 ))
             }
             .onAppear { appeared = true }
+            .onChange(of: hapticsEnabled) { _, on in if on { Haptics.success() } }
             .onChange(of: reminderEnabled) { _, _ in ReminderScheduler.refresh() }
             .onChange(of: reminderHour) { _, _ in ReminderScheduler.refresh() }
             .onChange(of: reminderMinute) { _, _ in ReminderScheduler.refresh() }
@@ -245,6 +251,63 @@ struct SettingsView: View {
         }
     }
 
+    // MARK: Feedback
+
+    private var feedbackSection: some View {
+        SettingsGroup(
+            title: copy("Feel", "الإحساس"),
+            footnote: copy("Taps, dhikr counts and finished goals answer back with a small vibration.",
+                           "الضغطات وعدّ الذكر وإتمام الأهداف تردّ عليك باهتزاز خفيف.")
+        ) {
+            ToggleRow(symbol: "hand.tap.fill", title: copy("Haptics", "الاهتزاز"), isOn: $hapticsEnabled)
+        }
+    }
+
+    // MARK: Help
+
+    private var helpSection: some View {
+        SettingsGroup(title: copy("Help", "المساعدة")) {
+            NavigationLink { FAQView(language: language) } label: {
+                BadgeRow(symbol: "questionmark.circle.fill", title: copy("Questions & answers", "أسئلة وأجوبة"))
+            }
+            .buttonStyle(.yqPressSoft)
+            RowDivider()
+            NavigationLink { ContactSupportView(language: language) } label: {
+                BadgeRow(symbol: "envelope.fill", title: copy("Contact support", "الدعم الفني"),
+                         subtitle: copy("Report a problem or send an idea", "أبلغ عن مشكلة أو أرسل فكرة"))
+            }
+            .buttonStyle(.yqPressSoft)
+            RowDivider()
+            NavigationLink { AboutUsView(language: language) } label: {
+                BadgeRow(symbol: "person.2.fill", title: copy("About us", "من نحن"))
+            }
+            .buttonStyle(.yqPressSoft)
+        }
+    }
+
+    // MARK: Community
+
+    private var communitySection: some View {
+        SettingsGroup(title: copy("Spread the word", "انشر الخير")) {
+            ShareLink(item: AppLinks.shareText(language)) {
+                BadgeRow(symbol: "square.and.arrow.up.fill", title: copy("Share Yaqeen", "شارك يقين"),
+                         subtitle: copy("Send it to someone who’d use it", "أرسله لمن ينتفع به"))
+            }
+            .buttonStyle(.yqPressSoft)
+            RowDivider()
+            Button { AppRating.request(fallback: openURL) } label: {
+                BadgeRow(symbol: "star.fill", title: copy("Rate Yaqeen", "قيّم يقين"),
+                         subtitle: copy("A review helps others find it", "تقييمك يساعد غيرك على إيجاده"))
+            }
+            .buttonStyle(.yqPressSoft)
+            RowDivider()
+            NavigationLink { FollowUsView(language: language) } label: {
+                BadgeRow(symbol: "at", title: copy("Follow us", "تابعنا"))
+            }
+            .buttonStyle(.yqPressSoft)
+        }
+    }
+
     // MARK: Backup
 
     @ViewBuilder
@@ -404,7 +467,7 @@ struct SettingsView: View {
 
     private var aboutSection: some View {
         SettingsGroup(
-            title: copy("About", "حول التطبيق"),
+            title: copy("Sources & privacy", "المصادر والخصوصية"),
             footnote: copy(
                 "Qur’anic guidance supports reflection; it does not replace qualified scholarship, pastoral care, or professional help.",
                 "الهداية القرآنية تعين على التدبر، ولا تغني عن سؤال أهل العلم أو الدعم الأسري أو المساعدة المتخصصة."
@@ -412,7 +475,7 @@ struct SettingsView: View {
         ) {
             Button { showAbout = true } label: {
                 BadgeRow(symbol: "checkmark.shield.fill",
-                         title: copy("Sources, privacy & about", "المصادر والخصوصية وحول التطبيق"))
+                         title: copy("Sources, privacy & review", "المصادر والخصوصية والمراجعة"))
             }
             .buttonStyle(.yqPress)
 
@@ -479,6 +542,7 @@ private struct ToggleRow: View {
                 .labelsHidden()
                 .tint(.yqAccentDeep)
         }
+        .haptic(.press, on: isOn)
         .accessibilityElement(children: .combine)
     }
 }

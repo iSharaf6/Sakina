@@ -1,0 +1,670 @@
+{
+ "source": "Quran.com API v4. Arabic: Uthmani script. Translation: Saheeh International; HTML footnote markers removed for display. Fetched 2026-09-10.",
+ "passages": [
+  {
+   "id": "ruqyah-quran-1-1-7",
+   "surah": 1,
+   "surahName": "Al-Fatihah",
+   "surahNameArabic": "الفاتحة",
+   "from": 1,
+   "to": 7,
+   "titleEnglish": "Al-Fatihah",
+   "titleArabic": "الفاتحة",
+   "ayat": [
+    {
+     "key": "1:1",
+     "arabic": "بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ",
+     "translation": "In the name of Allāh, the Entirely Merciful, the Especially Merciful."
+    },
+    {
+     "key": "1:2",
+     "arabic": "ٱلْحَمْدُ لِلَّهِ رَبِّ ٱلْعَـٰلَمِينَ",
+     "translation": "[All] praise is [due] to Allāh, Lord of the worlds -"
+    },
+    {
+     "key": "1:3",
+     "arabic": "ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ",
+     "translation": "The Entirely Merciful, the Especially Merciful,"
+    },
+    {
+     "key": "1:4",
+     "arabic": "مَـٰلِكِ يَوْمِ ٱلدِّينِ",
+     "translation": "Sovereign of the Day of Recompense."
+    },
+    {
+     "key": "1:5",
+     "arabic": "إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ",
+     "translation": "It is You we worship and You we ask for help."
+    },
+    {
+     "key": "1:6",
+     "arabic": "ٱهْدِنَا ٱلصِّرَٰطَ ٱلْمُسْتَقِيمَ",
+     "translation": "Guide us to the straight path -"
+    },
+    {
+     "key": "1:7",
+     "arabic": "صِرَٰطَ ٱلَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ ٱلْمَغْضُوبِ عَلَيْهِمْ وَلَا ٱلضَّآلِّينَ",
+     "translation": "The path of those upon whom You have bestowed favor, not of those who have earned [Your] anger or of those who are astray."
+    }
+   ]
+  },
+  {
+   "id": "ruqyah-quran-2-1-5",
+   "surah": 2,
+   "surahName": "Al-Baqarah",
+   "surahNameArabic": "البقرة",
+   "from": 1,
+   "to": 5,
+   "titleEnglish": "Opening of al-Baqarah",
+   "titleArabic": "فاتحة سورة البقرة",
+   "ayat": [
+    {
+     "key": "2:1",
+     "arabic": "الٓمٓ",
+     "translation": "Alif, Lām, Meem."
+    },
+    {
+     "key": "2:2",
+     "arabic": "ذَٰلِكَ ٱلْكِتَـٰبُ لَا رَيْبَ ۛ فِيهِ ۛ هُدًى لِّلْمُتَّقِينَ",
+     "translation": "This is the Book about which there is no doubt, a guidance for those conscious of Allāh -"
+    },
+    {
+     "key": "2:3",
+     "arabic": "ٱلَّذِينَ يُؤْمِنُونَ بِٱلْغَيْبِ وَيُقِيمُونَ ٱلصَّلَوٰةَ وَمِمَّا رَزَقْنَـٰهُمْ يُنفِقُونَ",
+     "translation": "Who believe in the unseen, establish prayer, and spend out of what We have provided for them,"
+    },
+    {
+     "key": "2:4",
+     "arabic": "وَٱلَّذِينَ يُؤْمِنُونَ بِمَآ أُنزِلَ إِلَيْكَ وَمَآ أُنزِلَ مِن قَبْلِكَ وَبِٱلْـَٔاخِرَةِ هُمْ يُوقِنُونَ",
+     "translation": "And who believe in what has been revealed to you, [O Muḥammad], and what was revealed before you, and of the Hereafter they are certain [in faith]."
+    },
+    {
+     "key": "2:5",
+     "arabic": "أُو۟لَـٰٓئِكَ عَلَىٰ هُدًى مِّن رَّبِّهِمْ ۖ وَأُو۟لَـٰٓئِكَ هُمُ ٱلْمُفْلِحُونَ",
+     "translation": "Those are upon [right] guidance from their Lord, and it is those who are the successful."
+    }
+   ]
+  },
+  {
+   "id": "ruqyah-quran-2-102",
+   "surah": 2,
+   "surahName": "Al-Baqarah",
+   "surahNameArabic": "البقرة",
+   "from": 102,
+   "to": 102,
+   "titleEnglish": "The verse on magic (2:102)",
+   "titleArabic": "آية السحر",
+   "ayat": [
+    {
+     "key": "2:102",
+     "arabic": "وَٱتَّبَعُوا۟ مَا تَتْلُوا۟ ٱلشَّيَـٰطِينُ عَلَىٰ مُلْكِ سُلَيْمَـٰنَ ۖ وَمَا كَفَرَ سُلَيْمَـٰنُ وَلَـٰكِنَّ ٱلشَّيَـٰطِينَ كَفَرُوا۟ يُعَلِّمُونَ ٱلنَّاسَ ٱلسِّحْرَ وَمَآ أُنزِلَ عَلَى ٱلْمَلَكَيْنِ بِبَابِلَ هَـٰرُوتَ وَمَـٰرُوتَ ۚ وَمَا يُعَلِّمَانِ مِنْ أَحَدٍ حَتَّىٰ يَقُولَآ إِنَّمَا نَحْنُ فِتْنَةٌ فَلَا تَكْفُرْ ۖ فَيَتَعَلَّمُونَ مِنْهُمَا مَا يُفَرِّقُونَ بِهِۦ بَيْنَ ٱلْمَرْءِ وَزَوْجِهِۦ ۚ وَمَا هُم بِضَآرِّينَ بِهِۦ مِنْ أَحَدٍ إِلَّا بِإِذْنِ ٱللَّهِ ۚ وَيَتَعَلَّمُونَ مَا يَضُرُّهُمْ وَلَا يَنفَعُهُمْ ۚ وَلَقَدْ عَلِمُوا۟ لَمَنِ ٱشْتَرَىٰهُ مَا لَهُۥ فِى ٱلْـَٔاخِرَةِ مِنْ خَلَـٰقٍ ۚ وَلَبِئْسَ مَا شَرَوْا۟ بِهِۦٓ أَنفُسَهُمْ ۚ لَوْ كَانُوا۟ يَعْلَمُونَ",
+     "translation": "And they followed [instead] what the devils had recited during the reign of Solomon. It was not Solomon who disbelieved, but the devils disbelieved, teaching people magic and that which was revealed to the two angels at Babylon, Hārūt and Mārūt. But they [i.e., the two angels] do not teach anyone unless they say, \"We are a trial, so do not disbelieve [by practicing magic].\" And [yet] they learn from them that by which they cause separation between a man and his wife. But they do not harm anyone through it except by permission of Allāh. And they [i.e., people] learn what harms them and does not benefit them. But they [i.e., the Children of Israel] certainly knew that whoever purchased it [i.e., magic] would not have in the Hereafter any share. And wretched is that for which they sold themselves, if they only knew."
+    }
+   ]
+  },
+  {
+   "id": "ruqyah-quran-2-163-164",
+   "surah": 2,
+   "surahName": "Al-Baqarah",
+   "surahNameArabic": "البقرة",
+   "from": 163,
+   "to": 164,
+   "titleEnglish": "Your God is one God (2:163-164)",
+   "titleArabic": "وإلهكم إله واحد",
+   "ayat": [
+    {
+     "key": "2:163",
+     "arabic": "وَإِلَـٰهُكُمْ إِلَـٰهٌ وَٰحِدٌ ۖ لَّآ إِلَـٰهَ إِلَّا هُوَ ٱلرَّحْمَـٰنُ ٱلرَّحِيمُ",
+     "translation": "And your god is one God. There is no deity [worthy of worship] except Him, the Entirely Merciful, the Especially Merciful."
+    },
+    {
+     "key": "2:164",
+     "arabic": "إِنَّ فِى خَلْقِ ٱلسَّمَـٰوَٰتِ وَٱلْأَرْضِ وَٱخْتِلَـٰفِ ٱلَّيْلِ وَٱلنَّهَارِ وَٱلْفُلْكِ ٱلَّتِى تَجْرِى فِى ٱلْبَحْرِ بِمَا يَنفَعُ ٱلنَّاسَ وَمَآ أَنزَلَ ٱللَّهُ مِنَ ٱلسَّمَآءِ مِن مَّآءٍ فَأَحْيَا بِهِ ٱلْأَرْضَ بَعْدَ مَوْتِهَا وَبَثَّ فِيهَا مِن كُلِّ دَآبَّةٍ وَتَصْرِيفِ ٱلرِّيَـٰحِ وَٱلسَّحَابِ ٱلْمُسَخَّرِ بَيْنَ ٱلسَّمَآءِ وَٱلْأَرْضِ لَـَٔايَـٰتٍ لِّقَوْمٍ يَعْقِلُونَ",
+     "translation": "Indeed, in the creation of the heavens and the earth, and the alternation of the night and the day, and the [great] ships which sail through the sea with that which benefits people, and what Allāh has sent down from the heavens of rain, giving life thereby to the earth after its lifelessness and dispersing therein every [kind of] moving creature, and [His] directing of the winds and the clouds controlled between the heaven and earth are signs for a people who use reason."
+    }
+   ]
+  },
+  {
+   "id": "ruqyah-quran-2-255-257",
+   "surah": 2,
+   "surahName": "Al-Baqarah",
+   "surahNameArabic": "البقرة",
+   "from": 255,
+   "to": 257,
+   "titleEnglish": "The verse of the Throne and the two ayat after it",
+   "titleArabic": "آية الكرسي وما بعدها",
+   "ayat": [
+    {
+     "key": "2:255",
+     "arabic": "ٱللَّهُ لَآ إِلَـٰهَ إِلَّا هُوَ ٱلْحَىُّ ٱلْقَيُّومُ ۚ لَا تَأْخُذُهُۥ سِنَةٌ وَلَا نَوْمٌ ۚ لَّهُۥ مَا فِى ٱلسَّمَـٰوَٰتِ وَمَا فِى ٱلْأَرْضِ ۗ مَن ذَا ٱلَّذِى يَشْفَعُ عِندَهُۥٓ إِلَّا بِإِذْنِهِۦ ۚ يَعْلَمُ مَا بَيْنَ أَيْدِيهِمْ وَمَا خَلْفَهُمْ ۖ وَلَا يُحِيطُونَ بِشَىْءٍ مِّنْ عِلْمِهِۦٓ إِلَّا بِمَا شَآءَ ۚ وَسِعَ كُرْسِيُّهُ ٱلسَّمَـٰوَٰتِ وَٱلْأَرْضَ ۖ وَلَا يَـُٔودُهُۥ حِفْظُهُمَا ۚ وَهُوَ ٱلْعَلِىُّ ٱلْعَظِيمُ",
+     "translation": "Allāh - there is no deity except Him, the Ever-Living, the Self-Sustaining. Neither drowsiness overtakes Him nor sleep. To Him belongs whatever is in the heavens and whatever is on the earth. Who is it that can intercede with Him except by His permission? He knows what is [presently] before them and what will be after them, and they encompass not a thing of His knowledge except for what He wills. His Kursī extends over the heavens and the earth, and their preservation tires Him not. And He is the Most High, the Most Great."
+    },
+    {
+     "key": "2:256",
+     "arabic": "لَآ إِكْرَاهَ فِى ٱلدِّينِ ۖ قَد تَّبَيَّنَ ٱلرُّشْدُ مِنَ ٱلْغَىِّ ۚ فَمَن يَكْفُرْ بِٱلطَّـٰغُوتِ وَيُؤْمِنۢ بِٱللَّهِ فَقَدِ ٱسْتَمْسَكَ بِٱلْعُرْوَةِ ٱلْوُثْقَىٰ لَا ٱنفِصَامَ لَهَا ۗ وَٱللَّهُ سَمِيعٌ عَلِيمٌ",
+     "translation": "There shall be no compulsion in [acceptance of] the religion. The right course has become distinct from the wrong. So whoever disbelieves in ṭāghūt and believes in Allāh has grasped the most trustworthy handhold with no break in it. And Allāh is Hearing and Knowing."
+    },
+    {
+     "key": "2:257",
+     "arabic": "ٱللَّهُ وَلِىُّ ٱلَّذِينَ ءَامَنُوا۟ يُخْرِجُهُم مِّنَ ٱلظُّلُمَـٰتِ إِلَى ٱلنُّورِ ۖ وَٱلَّذِينَ كَفَرُوٓا۟ أَوْلِيَآؤُهُمُ ٱلطَّـٰغُوتُ يُخْرِجُونَهُم مِّنَ ٱلنُّورِ إِلَى ٱلظُّلُمَـٰتِ ۗ أُو۟لَـٰٓئِكَ أَصْحَـٰبُ ٱلنَّارِ ۖ هُمْ فِيهَا خَـٰلِدُونَ",
+     "translation": "Allāh is the Ally of those who believe. He brings them out from darknesses into the light. And those who disbelieve - their allies are ṭāghūt. They take them out of the light into darknesses. Those are the companions of the Fire; they will abide eternally therein."
+    }
+   ]
+  },
+  {
+   "id": "ruqyah-quran-2-284-286",
+   "surah": 2,
+   "surahName": "Al-Baqarah",
+   "surahNameArabic": "البقرة",
+   "from": 284,
+   "to": 286,
+   "titleEnglish": "Closing of al-Baqarah",
+   "titleArabic": "خواتيم سورة البقرة",
+   "ayat": [
+    {
+     "key": "2:284",
+     "arabic": "لِّلَّهِ مَا فِى ٱلسَّمَـٰوَٰتِ وَمَا فِى ٱلْأَرْضِ ۗ وَإِن تُبْدُوا۟ مَا فِىٓ أَنفُسِكُمْ أَوْ تُخْفُوهُ يُحَاسِبْكُم بِهِ ٱللَّهُ ۖ فَيَغْفِرُ لِمَن يَشَآءُ وَيُعَذِّبُ مَن يَشَآءُ ۗ وَٱللَّهُ عَلَىٰ كُلِّ شَىْءٍ قَدِيرٌ",
+     "translation": "To Allāh belongs whatever is in the heavens and whatever is in the earth. Whether you show what is within yourselves or conceal it, Allāh will bring you to account for it. Then He will forgive whom He wills and punish whom He wills, and Allāh is over all things competent."
+    },
+    {
+     "key": "2:285",
+     "arabic": "ءَامَنَ ٱلرَّسُولُ بِمَآ أُنزِلَ إِلَيْهِ مِن رَّبِّهِۦ وَٱلْمُؤْمِنُونَ ۚ كُلٌّ ءَامَنَ بِٱللَّهِ وَمَلَـٰٓئِكَتِهِۦ وَكُتُبِهِۦ وَرُسُلِهِۦ لَا نُفَرِّقُ بَيْنَ أَحَدٍ مِّن رُّسُلِهِۦ ۚ وَقَالُوا۟ سَمِعْنَا وَأَطَعْنَا ۖ غُفْرَانَكَ رَبَّنَا وَإِلَيْكَ ٱلْمَصِيرُ",
+     "translation": "The Messenger has believed in what was revealed to him from his Lord, and [so have] the believers. All of them have believed in Allāh and His angels and His books and His messengers, [saying], \"We make no distinction between any of His messengers.\" And they say, \"We hear and we obey. [We seek] Your forgiveness, our Lord, and to You is the [final] destination.\""
+    },
+    {
+     "key": "2:286",
+     "arabic": "لَا يُكَلِّفُ ٱللَّهُ نَفْسًا إِلَّا وُسْعَهَا ۚ لَهَا مَا كَسَبَتْ وَعَلَيْهَا مَا ٱكْتَسَبَتْ ۗ رَبَّنَا لَا تُؤَاخِذْنَآ إِن نَّسِينَآ أَوْ أَخْطَأْنَا ۚ رَبَّنَا وَلَا تَحْمِلْ عَلَيْنَآ إِصْرًا كَمَا حَمَلْتَهُۥ عَلَى ٱلَّذِينَ مِن قَبْلِنَا ۚ رَبَّنَا وَلَا تُحَمِّلْنَا مَا لَا طَاقَةَ لَنَا بِهِۦ ۖ وَٱعْفُ عَنَّا وَٱغْفِرْ لَنَا وَٱرْحَمْنَآ ۚ أَنتَ مَوْلَىٰنَا فَٱنصُرْنَا عَلَى ٱلْقَوْمِ ٱلْكَـٰفِرِينَ",
+     "translation": "Allāh does not charge a soul except [with that within] its capacity. It will have [the consequence of] what [good] it has gained, and it will bear [the consequence of] what [evil] it has earned. \"Our Lord, do not impose blame upon us if we have forgotten or erred. Our Lord, and lay not upon us a burden like that which You laid upon those before us. Our Lord, and burden us not with that which we have no ability to bear. And pardon us; and forgive us; and have mercy upon us. You are our protector, so give us victory over the disbelieving people.\""
+    }
+   ]
+  },
+  {
+   "id": "ruqyah-quran-3-18-19",
+   "surah": 3,
+   "surahName": "Ali 'Imran",
+   "surahNameArabic": "آل عمران",
+   "from": 18,
+   "to": 19,
+   "titleEnglish": "Allah bears witness (3:18-19)",
+   "titleArabic": "شهد الله",
+   "ayat": [
+    {
+     "key": "3:18",
+     "arabic": "شَهِدَ ٱللَّهُ أَنَّهُۥ لَآ إِلَـٰهَ إِلَّا هُوَ وَٱلْمَلَـٰٓئِكَةُ وَأُو۟لُوا۟ ٱلْعِلْمِ قَآئِمًۢا بِٱلْقِسْطِ ۚ لَآ إِلَـٰهَ إِلَّا هُوَ ٱلْعَزِيزُ ٱلْحَكِيمُ",
+     "translation": "Allāh witnesses that there is no deity except Him, and [so do] the angels and those of knowledge - [that He is] maintaining [creation] in justice. There is no deity except Him, the Exalted in Might, the Wise."
+    },
+    {
+     "key": "3:19",
+     "arabic": "إِنَّ ٱلدِّينَ عِندَ ٱللَّهِ ٱلْإِسْلَـٰمُ ۗ وَمَا ٱخْتَلَفَ ٱلَّذِينَ أُوتُوا۟ ٱلْكِتَـٰبَ إِلَّا مِنۢ بَعْدِ مَا جَآءَهُمُ ٱلْعِلْمُ بَغْيًۢا بَيْنَهُمْ ۗ وَمَن يَكْفُرْ بِـَٔايَـٰتِ ٱللَّهِ فَإِنَّ ٱللَّهَ سَرِيعُ ٱلْحِسَابِ",
+     "translation": "Indeed, the religion in the sight of Allāh is Islām. And those who were given the Scripture did not differ except after knowledge had come to them - out of jealous animosity between themselves. And whoever disbelieves in the verses of Allāh, then indeed, Allāh is swift in [taking] account."
+    }
+   ]
+  },
+  {
+   "id": "ruqyah-quran-7-54-56",
+   "surah": 7,
+   "surahName": "Al-A'raf",
+   "surahNameArabic": "الأعراف",
+   "from": 54,
+   "to": 56,
+   "titleEnglish": "Your Lord is Allah (7:54-56)",
+   "titleArabic": "إن ربكم الله",
+   "ayat": [
+    {
+     "key": "7:54",
+     "arabic": "إِنَّ رَبَّكُمُ ٱللَّهُ ٱلَّذِى خَلَقَ ٱلسَّمَـٰوَٰتِ وَٱلْأَرْضَ فِى سِتَّةِ أَيَّامٍ ثُمَّ ٱسْتَوَىٰ عَلَى ٱلْعَرْشِ يُغْشِى ٱلَّيْلَ ٱلنَّهَارَ يَطْلُبُهُۥ حَثِيثًا وَٱلشَّمْسَ وَٱلْقَمَرَ وَٱلنُّجُومَ مُسَخَّرَٰتٍۭ بِأَمْرِهِۦٓ ۗ أَلَا لَهُ ٱلْخَلْقُ وَٱلْأَمْرُ ۗ تَبَارَكَ ٱللَّهُ رَبُّ ٱلْعَـٰلَمِينَ",
+     "translation": "Indeed, your Lord is Allāh, who created the heavens and earth in six days and then established Himself above the Throne. He covers the night with the day, [another night] chasing it rapidly; and [He created] the sun, the moon, and the stars, subjected by His command. Unquestionably, His is the creation and the command; blessed is Allāh, Lord of the worlds."
+    },
+    {
+     "key": "7:55",
+     "arabic": "ٱدْعُوا۟ رَبَّكُمْ تَضَرُّعًا وَخُفْيَةً ۚ إِنَّهُۥ لَا يُحِبُّ ٱلْمُعْتَدِينَ",
+     "translation": "Call upon your Lord in humility and privately; indeed, He does not like transgressors."
+    },
+    {
+     "key": "7:56",
+     "arabic": "وَلَا تُفْسِدُوا۟ فِى ٱلْأَرْضِ بَعْدَ إِصْلَـٰحِهَا وَٱدْعُوهُ خَوْفًا وَطَمَعًا ۚ إِنَّ رَحْمَتَ ٱللَّهِ قَرِيبٌ مِّنَ ٱلْمُحْسِنِينَ",
+     "translation": "And cause not corruption upon the earth after its reformation. And invoke Him in fear and aspiration. Indeed, the mercy of Allāh is near to the doers of good."
+    }
+   ]
+  },
+  {
+   "id": "ruqyah-quran-7-117-122",
+   "surah": 7,
+   "surahName": "Al-A'raf",
+   "surahNameArabic": "الأعراف",
+   "from": 117,
+   "to": 122,
+   "titleEnglish": "Musa and the magicians",
+   "titleArabic": "موسى والسحرة",
+   "ayat": [
+    {
+     "key": "7:117",
+     "arabic": "۞ وَأَوْحَيْنَآ إِلَىٰ مُوسَىٰٓ أَنْ أَلْقِ عَصَاكَ ۖ فَإِذَا هِىَ تَلْقَفُ مَا يَأْفِكُونَ",
+     "translation": "And We inspired to Moses, \"Throw your staff,\" and at once it devoured what they were falsifying."
+    },
+    {
+     "key": "7:118",
+     "arabic": "فَوَقَعَ ٱلْحَقُّ وَبَطَلَ مَا كَانُوا۟ يَعْمَلُونَ",
+     "translation": "So the truth was established, and abolished was what they were doing."
+    },
+    {
+     "key": "7:119",
+     "arabic": "فَغُلِبُوا۟ هُنَالِكَ وَٱنقَلَبُوا۟ صَـٰغِرِينَ",
+     "translation": "And they [i.e., Pharaoh and his people] were overcome right there and became debased."
+    },
+    {
+     "key": "7:120",
+     "arabic": "وَأُلْقِىَ ٱلسَّحَرَةُ سَـٰجِدِينَ",
+     "translation": "And the magicians fell down in prostration [to Allāh]."
+    },
+    {
+     "key": "7:121",
+     "arabic": "قَالُوٓا۟ ءَامَنَّا بِرَبِّ ٱلْعَـٰلَمِينَ",
+     "translation": "They said, \"We have believed in the Lord of the worlds,"
+    },
+    {
+     "key": "7:122",
+     "arabic": "رَبِّ مُوسَىٰ وَهَـٰرُونَ",
+     "translation": "The Lord of Moses and Aaron.\""
+    }
+   ]
+  },
+  {
+   "id": "ruqyah-quran-10-81-82",
+   "surah": 10,
+   "surahName": "Yunus",
+   "surahNameArabic": "يونس",
+   "from": 81,
+   "to": 82,
+   "titleEnglish": "Yunus 81-82",
+   "titleArabic": "يونس ٨١–٨٢",
+   "ayat": [
+    {
+     "key": "10:81",
+     "arabic": "فَلَمَّآ أَلْقَوْا۟ قَالَ مُوسَىٰ مَا جِئْتُم بِهِ ٱلسِّحْرُ ۖ إِنَّ ٱللَّهَ سَيُبْطِلُهُۥٓ ۖ إِنَّ ٱللَّهَ لَا يُصْلِحُ عَمَلَ ٱلْمُفْسِدِينَ",
+     "translation": "And when they had thrown, Moses said, \"What you have brought is [only] magic. Indeed, Allāh will expose its worthlessness. Indeed, Allāh does not amend the work of corrupters."
+    },
+    {
+     "key": "10:82",
+     "arabic": "وَيُحِقُّ ٱللَّهُ ٱلْحَقَّ بِكَلِمَـٰتِهِۦ وَلَوْ كَرِهَ ٱلْمُجْرِمُونَ",
+     "translation": "And Allāh will establish the truth by His words, even if the criminals dislike it.\""
+    }
+   ]
+  },
+  {
+   "id": "ruqyah-quran-20-69",
+   "surah": 20,
+   "surahName": "Taha",
+   "surahNameArabic": "طه",
+   "from": 69,
+   "to": 69,
+   "titleEnglish": "Ta-Ha 69",
+   "titleArabic": "طه ٦٩",
+   "ayat": [
+    {
+     "key": "20:69",
+     "arabic": "وَأَلْقِ مَا فِى يَمِينِكَ تَلْقَفْ مَا صَنَعُوٓا۟ ۖ إِنَّمَا صَنَعُوا۟ كَيْدُ سَـٰحِرٍ ۖ وَلَا يُفْلِحُ ٱلسَّاحِرُ حَيْثُ أَتَىٰ",
+     "translation": "And throw what is in your right hand; it will swallow up what they have crafted. What they have crafted is but the trick of a magician, and the magician will not succeed wherever he is.\""
+    }
+   ]
+  },
+  {
+   "id": "ruqyah-quran-23-115-118",
+   "surah": 23,
+   "surahName": "Al-Mu'minun",
+   "surahNameArabic": "المؤمنون",
+   "from": 115,
+   "to": 118,
+   "titleEnglish": "Did you think We created you in vain?",
+   "titleArabic": "أفحسبتم أنما خلقناكم عبثًا",
+   "ayat": [
+    {
+     "key": "23:115",
+     "arabic": "أَفَحَسِبْتُمْ أَنَّمَا خَلَقْنَـٰكُمْ عَبَثًا وَأَنَّكُمْ إِلَيْنَا لَا تُرْجَعُونَ",
+     "translation": "Then did you think that We created you uselessly and that to Us you would not be returned?\""
+    },
+    {
+     "key": "23:116",
+     "arabic": "فَتَعَـٰلَى ٱللَّهُ ٱلْمَلِكُ ٱلْحَقُّ ۖ لَآ إِلَـٰهَ إِلَّا هُوَ رَبُّ ٱلْعَرْشِ ٱلْكَرِيمِ",
+     "translation": "So exalted is Allāh, the Sovereign, the Truth; there is no deity except Him, Lord of the Noble Throne."
+    },
+    {
+     "key": "23:117",
+     "arabic": "وَمَن يَدْعُ مَعَ ٱللَّهِ إِلَـٰهًا ءَاخَرَ لَا بُرْهَـٰنَ لَهُۥ بِهِۦ فَإِنَّمَا حِسَابُهُۥ عِندَ رَبِّهِۦٓ ۚ إِنَّهُۥ لَا يُفْلِحُ ٱلْكَـٰفِرُونَ",
+     "translation": "And whoever invokes besides Allāh another deity for which he has no proof - then his account is only with his Lord. Indeed, the disbelievers will not succeed."
+    },
+    {
+     "key": "23:118",
+     "arabic": "وَقُل رَّبِّ ٱغْفِرْ وَٱرْحَمْ وَأَنتَ خَيْرُ ٱلرَّٰحِمِينَ",
+     "translation": "And, [O Muḥammad], say, \"My Lord, forgive and have mercy, and You are the best of the merciful.\""
+    }
+   ]
+  },
+  {
+   "id": "ruqyah-quran-37-1-10",
+   "surah": 37,
+   "surahName": "As-Saffat",
+   "surahNameArabic": "الصافات",
+   "from": 1,
+   "to": 10,
+   "titleEnglish": "As-Saffat 1-10",
+   "titleArabic": "الصافات ١–١٠",
+   "ayat": [
+    {
+     "key": "37:1",
+     "arabic": "وَٱلصَّـٰٓفَّـٰتِ صَفًّا",
+     "translation": "By those [angels] lined up in rows"
+    },
+    {
+     "key": "37:2",
+     "arabic": "فَٱلزَّٰجِرَٰتِ زَجْرًا",
+     "translation": "And those who drive [the clouds]"
+    },
+    {
+     "key": "37:3",
+     "arabic": "فَٱلتَّـٰلِيَـٰتِ ذِكْرًا",
+     "translation": "And those who recite the message,"
+    },
+    {
+     "key": "37:4",
+     "arabic": "إِنَّ إِلَـٰهَكُمْ لَوَٰحِدٌ",
+     "translation": "Indeed, your God is One,"
+    },
+    {
+     "key": "37:5",
+     "arabic": "رَّبُّ ٱلسَّمَـٰوَٰتِ وَٱلْأَرْضِ وَمَا بَيْنَهُمَا وَرَبُّ ٱلْمَشَـٰرِقِ",
+     "translation": "Lord of the heavens and the earth and that between them and Lord of the sunrises."
+    },
+    {
+     "key": "37:6",
+     "arabic": "إِنَّا زَيَّنَّا ٱلسَّمَآءَ ٱلدُّنْيَا بِزِينَةٍ ٱلْكَوَاكِبِ",
+     "translation": "Indeed, We have adorned the nearest heaven with an adornment of stars"
+    },
+    {
+     "key": "37:7",
+     "arabic": "وَحِفْظًا مِّن كُلِّ شَيْطَـٰنٍ مَّارِدٍ",
+     "translation": "And as protection against every rebellious devil"
+    },
+    {
+     "key": "37:8",
+     "arabic": "لَّا يَسَّمَّعُونَ إِلَى ٱلْمَلَإِ ٱلْأَعْلَىٰ وَيُقْذَفُونَ مِن كُلِّ جَانِبٍ",
+     "translation": "[So] they may not listen to the exalted assembly [of angels] and are pelted from every side,"
+    },
+    {
+     "key": "37:9",
+     "arabic": "دُحُورًا ۖ وَلَهُمْ عَذَابٌ وَاصِبٌ",
+     "translation": "Repelled; and for them is a constant punishment,"
+    },
+    {
+     "key": "37:10",
+     "arabic": "إِلَّا مَنْ خَطِفَ ٱلْخَطْفَةَ فَأَتْبَعَهُۥ شِهَابٌ ثَاقِبٌ",
+     "translation": "Except one who snatches [some words] by theft, but they are pursued by a burning flame, piercing [in brightness]."
+    }
+   ]
+  },
+  {
+   "id": "ruqyah-quran-46-29-32",
+   "surah": 46,
+   "surahName": "Al-Ahqaf",
+   "surahNameArabic": "الأحقاف",
+   "from": 29,
+   "to": 32,
+   "titleEnglish": "The jinn who listened",
+   "titleArabic": "الجن الذين استمعوا",
+   "ayat": [
+    {
+     "key": "46:29",
+     "arabic": "وَإِذْ صَرَفْنَآ إِلَيْكَ نَفَرًا مِّنَ ٱلْجِنِّ يَسْتَمِعُونَ ٱلْقُرْءَانَ فَلَمَّا حَضَرُوهُ قَالُوٓا۟ أَنصِتُوا۟ ۖ فَلَمَّا قُضِىَ وَلَّوْا۟ إِلَىٰ قَوْمِهِم مُّنذِرِينَ",
+     "translation": "And [mention, O Muḥammad], when We directed to you a few of the jinn, listening to the Qur’ān. And when they attended it, they said, \"Listen attentively.\" And when it was concluded, they went back to their people as warners."
+    },
+    {
+     "key": "46:30",
+     "arabic": "قَالُوا۟ يَـٰقَوْمَنَآ إِنَّا سَمِعْنَا كِتَـٰبًا أُنزِلَ مِنۢ بَعْدِ مُوسَىٰ مُصَدِّقًا لِّمَا بَيْنَ يَدَيْهِ يَهْدِىٓ إِلَى ٱلْحَقِّ وَإِلَىٰ طَرِيقٍ مُّسْتَقِيمٍ",
+     "translation": "They said, \"O our people, indeed we have heard a [recited] Book revealed after Moses confirming what was before it which guides to the truth and to a straight path."
+    },
+    {
+     "key": "46:31",
+     "arabic": "يَـٰقَوْمَنَآ أَجِيبُوا۟ دَاعِىَ ٱللَّهِ وَءَامِنُوا۟ بِهِۦ يَغْفِرْ لَكُم مِّن ذُنُوبِكُمْ وَيُجِرْكُم مِّنْ عَذَابٍ أَلِيمٍ",
+     "translation": "O our people, respond to the Caller [i.e., Messenger] of Allāh and believe in him; He [i.e., Allāh] will forgive for you your sins and protect you from a painful punishment."
+    },
+    {
+     "key": "46:32",
+     "arabic": "وَمَن لَّا يُجِبْ دَاعِىَ ٱللَّهِ فَلَيْسَ بِمُعْجِزٍ فِى ٱلْأَرْضِ وَلَيْسَ لَهُۥ مِن دُونِهِۦٓ أَوْلِيَآءُ ۚ أُو۟لَـٰٓئِكَ فِى ضَلَـٰلٍ مُّبِينٍ",
+     "translation": "But he who does not respond to the Caller of Allāh will not cause failure [to Him] upon earth, and he will not have besides Him any protectors. Those are in manifest error.\""
+    }
+   ]
+  },
+  {
+   "id": "ruqyah-quran-55-33-36",
+   "surah": 55,
+   "surahName": "Ar-Rahman",
+   "surahNameArabic": "الرحمن",
+   "from": 33,
+   "to": 36,
+   "titleEnglish": "Ar-Rahman 33-36",
+   "titleArabic": "الرحمن ٣٣–٣٦",
+   "ayat": [
+    {
+     "key": "55:33",
+     "arabic": "يَـٰمَعْشَرَ ٱلْجِنِّ وَٱلْإِنسِ إِنِ ٱسْتَطَعْتُمْ أَن تَنفُذُوا۟ مِنْ أَقْطَارِ ٱلسَّمَـٰوَٰتِ وَٱلْأَرْضِ فَٱنفُذُوا۟ ۚ لَا تَنفُذُونَ إِلَّا بِسُلْطَـٰنٍ",
+     "translation": "O company of jinn and mankind, if you are able to pass beyond the regions of the heavens and the earth, then pass. You will not pass except by authority [from Allāh]."
+    },
+    {
+     "key": "55:34",
+     "arabic": "فَبِأَىِّ ءَالَآءِ رَبِّكُمَا تُكَذِّبَانِ",
+     "translation": "So which of the favors of your Lord would you deny?"
+    },
+    {
+     "key": "55:35",
+     "arabic": "يُرْسَلُ عَلَيْكُمَا شُوَاظٌ مِّن نَّارٍ وَنُحَاسٌ فَلَا تَنتَصِرَانِ",
+     "translation": "There will be sent upon you a flame of fire and smoke, and you will not defend yourselves."
+    },
+    {
+     "key": "55:36",
+     "arabic": "فَبِأَىِّ ءَالَآءِ رَبِّكُمَا تُكَذِّبَانِ",
+     "translation": "So which of the favors of your Lord would you deny?"
+    }
+   ]
+  },
+  {
+   "id": "ruqyah-quran-59-21-24",
+   "surah": 59,
+   "surahName": "Al-Hashr",
+   "surahNameArabic": "الحشر",
+   "from": 21,
+   "to": 24,
+   "titleEnglish": "Closing of al-Hashr",
+   "titleArabic": "خواتيم سورة الحشر",
+   "ayat": [
+    {
+     "key": "59:21",
+     "arabic": "لَوْ أَنزَلْنَا هَـٰذَا ٱلْقُرْءَانَ عَلَىٰ جَبَلٍ لَّرَأَيْتَهُۥ خَـٰشِعًا مُّتَصَدِّعًا مِّنْ خَشْيَةِ ٱللَّهِ ۚ وَتِلْكَ ٱلْأَمْثَـٰلُ نَضْرِبُهَا لِلنَّاسِ لَعَلَّهُمْ يَتَفَكَّرُونَ",
+     "translation": "If We had sent down this Qur’ān upon a mountain, you would have seen it humbled and splitting from fear of Allāh. And these examples We present to the people that perhaps they will give thought."
+    },
+    {
+     "key": "59:22",
+     "arabic": "هُوَ ٱللَّهُ ٱلَّذِى لَآ إِلَـٰهَ إِلَّا هُوَ ۖ عَـٰلِمُ ٱلْغَيْبِ وَٱلشَّهَـٰدَةِ ۖ هُوَ ٱلرَّحْمَـٰنُ ٱلرَّحِيمُ",
+     "translation": "He is Allāh, other than whom there is no deity, Knower of the unseen and the witnessed. He is the Entirely Merciful, the Especially Merciful."
+    },
+    {
+     "key": "59:23",
+     "arabic": "هُوَ ٱللَّهُ ٱلَّذِى لَآ إِلَـٰهَ إِلَّا هُوَ ٱلْمَلِكُ ٱلْقُدُّوسُ ٱلسَّلَـٰمُ ٱلْمُؤْمِنُ ٱلْمُهَيْمِنُ ٱلْعَزِيزُ ٱلْجَبَّارُ ٱلْمُتَكَبِّرُ ۚ سُبْحَـٰنَ ٱللَّهِ عَمَّا يُشْرِكُونَ",
+     "translation": "He is Allāh, other than whom there is no deity, the Sovereign, the Pure, the Perfection, the Grantor of Security, the Overseer, the Exalted in Might, the Compeller, the Superior. Exalted is Allāh above whatever they associate with Him."
+    },
+    {
+     "key": "59:24",
+     "arabic": "هُوَ ٱللَّهُ ٱلْخَـٰلِقُ ٱلْبَارِئُ ٱلْمُصَوِّرُ ۖ لَهُ ٱلْأَسْمَآءُ ٱلْحُسْنَىٰ ۚ يُسَبِّحُ لَهُۥ مَا فِى ٱلسَّمَـٰوَٰتِ وَٱلْأَرْضِ ۖ وَهُوَ ٱلْعَزِيزُ ٱلْحَكِيمُ",
+     "translation": "He is Allāh, the Creator, the Producer, the Fashioner; to Him belong the best names. Whatever is in the heavens and earth is exalting Him. And He is the Exalted in Might, the Wise."
+    }
+   ]
+  },
+  {
+   "id": "ruqyah-quran-72-1-9",
+   "surah": 72,
+   "surahName": "Al-Jinn",
+   "surahNameArabic": "الجن",
+   "from": 1,
+   "to": 9,
+   "titleEnglish": "Al-Jinn 1-9",
+   "titleArabic": "الجن ١–٩",
+   "ayat": [
+    {
+     "key": "72:1",
+     "arabic": "قُلْ أُوحِىَ إِلَىَّ أَنَّهُ ٱسْتَمَعَ نَفَرٌ مِّنَ ٱلْجِنِّ فَقَالُوٓا۟ إِنَّا سَمِعْنَا قُرْءَانًا عَجَبًا",
+     "translation": "Say, [O Muḥammad], \"It has been revealed to me that a group of the jinn listened and said, 'Indeed, we have heard an amazing Qur’ān [i.e., recitation]."
+    },
+    {
+     "key": "72:2",
+     "arabic": "يَهْدِىٓ إِلَى ٱلرُّشْدِ فَـَٔامَنَّا بِهِۦ ۖ وَلَن نُّشْرِكَ بِرَبِّنَآ أَحَدًا",
+     "translation": "It guides to the right course, and we have believed in it. And we will never associate with our Lord anyone."
+    },
+    {
+     "key": "72:3",
+     "arabic": "وَأَنَّهُۥ تَعَـٰلَىٰ جَدُّ رَبِّنَا مَا ٱتَّخَذَ صَـٰحِبَةً وَلَا وَلَدًا",
+     "translation": "And [it teaches] that exalted is the nobleness of our Lord; He has not taken a wife or a son"
+    },
+    {
+     "key": "72:4",
+     "arabic": "وَأَنَّهُۥ كَانَ يَقُولُ سَفِيهُنَا عَلَى ٱللَّهِ شَطَطًا",
+     "translation": "And that our foolish one [i.e., Iblees] has been saying about Allāh an excessive transgression."
+    },
+    {
+     "key": "72:5",
+     "arabic": "وَأَنَّا ظَنَنَّآ أَن لَّن تَقُولَ ٱلْإِنسُ وَٱلْجِنُّ عَلَى ٱللَّهِ كَذِبًا",
+     "translation": "And we had thought that mankind and the jinn would never speak about Allāh a lie."
+    },
+    {
+     "key": "72:6",
+     "arabic": "وَأَنَّهُۥ كَانَ رِجَالٌ مِّنَ ٱلْإِنسِ يَعُوذُونَ بِرِجَالٍ مِّنَ ٱلْجِنِّ فَزَادُوهُمْ رَهَقًا",
+     "translation": "And there were men from mankind who sought refuge in men from the jinn, so they [only] increased them in burden [i.e., sin]."
+    },
+    {
+     "key": "72:7",
+     "arabic": "وَأَنَّهُمْ ظَنُّوا۟ كَمَا ظَنَنتُمْ أَن لَّن يَبْعَثَ ٱللَّهُ أَحَدًا",
+     "translation": "And they had thought, as you thought, that Allāh would never send anyone [as a messenger]."
+    },
+    {
+     "key": "72:8",
+     "arabic": "وَأَنَّا لَمَسْنَا ٱلسَّمَآءَ فَوَجَدْنَـٰهَا مُلِئَتْ حَرَسًا شَدِيدًا وَشُهُبًا",
+     "translation": "And we have sought [to reach] the heaven but found it filled with powerful guards and burning flames."
+    },
+    {
+     "key": "72:9",
+     "arabic": "وَأَنَّا كُنَّا نَقْعُدُ مِنْهَا مَقَـٰعِدَ لِلسَّمْعِ ۖ فَمَن يَسْتَمِعِ ٱلْـَٔانَ يَجِدْ لَهُۥ شِهَابًا رَّصَدًا",
+     "translation": "And we used to sit therein in positions for hearing, but whoever listens now will find a burning flame lying in wait for him."
+    }
+   ]
+  },
+  {
+   "id": "ruqyah-quran-112-1-4",
+   "surah": 112,
+   "surahName": "Al-Ikhlas",
+   "surahNameArabic": "الإخلاص",
+   "from": 1,
+   "to": 4,
+   "titleEnglish": "Al-Ikhlas",
+   "titleArabic": "الإخلاص",
+   "ayat": [
+    {
+     "key": "112:1",
+     "arabic": "قُلْ هُوَ ٱللَّهُ أَحَدٌ",
+     "translation": "Say, \"He is Allāh, [who is] One,"
+    },
+    {
+     "key": "112:2",
+     "arabic": "ٱللَّهُ ٱلصَّمَدُ",
+     "translation": "Allāh, the Eternal Refuge."
+    },
+    {
+     "key": "112:3",
+     "arabic": "لَمْ يَلِدْ وَلَمْ يُولَدْ",
+     "translation": "He neither begets nor is born,"
+    },
+    {
+     "key": "112:4",
+     "arabic": "وَلَمْ يَكُن لَّهُۥ كُفُوًا أَحَدٌۢ",
+     "translation": "Nor is there to Him any equivalent.\""
+    }
+   ]
+  },
+  {
+   "id": "ruqyah-quran-113-1-5",
+   "surah": 113,
+   "surahName": "Al-Falaq",
+   "surahNameArabic": "الفلق",
+   "from": 1,
+   "to": 5,
+   "titleEnglish": "Al-Falaq",
+   "titleArabic": "الفلق",
+   "ayat": [
+    {
+     "key": "113:1",
+     "arabic": "قُلْ أَعُوذُ بِرَبِّ ٱلْفَلَقِ",
+     "translation": "Say, \"I seek refuge in the Lord of daybreak"
+    },
+    {
+     "key": "113:2",
+     "arabic": "مِن شَرِّ مَا خَلَقَ",
+     "translation": "From the evil of that which He created"
+    },
+    {
+     "key": "113:3",
+     "arabic": "وَمِن شَرِّ غَاسِقٍ إِذَا وَقَبَ",
+     "translation": "And from the evil of darkness when it settles"
+    },
+    {
+     "key": "113:4",
+     "arabic": "وَمِن شَرِّ ٱلنَّفَّـٰثَـٰتِ فِى ٱلْعُقَدِ",
+     "translation": "And from the evil of the blowers in knots"
+    },
+    {
+     "key": "113:5",
+     "arabic": "وَمِن شَرِّ حَاسِدٍ إِذَا حَسَدَ",
+     "translation": "And from the evil of an envier when he envies.\""
+    }
+   ]
+  },
+  {
+   "id": "ruqyah-quran-114-1-6",
+   "surah": 114,
+   "surahName": "An-Nas",
+   "surahNameArabic": "الناس",
+   "from": 1,
+   "to": 6,
+   "titleEnglish": "An-Nas",
+   "titleArabic": "الناس",
+   "ayat": [
+    {
+     "key": "114:1",
+     "arabic": "قُلْ أَعُوذُ بِرَبِّ ٱلنَّاسِ",
+     "translation": "Say, \"I seek refuge in the Lord of mankind,"
+    },
+    {
+     "key": "114:2",
+     "arabic": "مَلِكِ ٱلنَّاسِ",
+     "translation": "The Sovereign of mankind,"
+    },
+    {
+     "key": "114:3",
+     "arabic": "إِلَـٰهِ ٱلنَّاسِ",
+     "translation": "The God of mankind,"
+    },
+    {
+     "key": "114:4",
+     "arabic": "مِن شَرِّ ٱلْوَسْوَاسِ ٱلْخَنَّاسِ",
+     "translation": "From the evil of the retreating whisperer -"
+    },
+    {
+     "key": "114:5",
+     "arabic": "ٱلَّذِى يُوَسْوِسُ فِى صُدُورِ ٱلنَّاسِ",
+     "translation": "Who whispers [evil] into the breasts of mankind -"
+    },
+    {
+     "key": "114:6",
+     "arabic": "مِنَ ٱلْجِنَّةِ وَٱلنَّاسِ",
+     "translation": "From among the jinn and mankind\"."
+    }
+   ]
+  }
+ ]
+}

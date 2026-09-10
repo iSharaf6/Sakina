@@ -26,8 +26,9 @@ struct ExploreView: View {
                         searchResults
                     } else {
                         ayahNow.revealed(2, appeared: appeared, reduceMotion: reduceMotion)
-                        groups.revealed(3, appeared: appeared, reduceMotion: reduceMotion)
-                        feelingRow.revealed(4, appeared: appeared, reduceMotion: reduceMotion)
+                        nearYou.revealed(3, appeared: appeared, reduceMotion: reduceMotion)
+                        groups.revealed(4, appeared: appeared, reduceMotion: reduceMotion)
+                        feelingRow.revealed(5, appeared: appeared, reduceMotion: reduceMotion)
                     }
                 }
                 .padding(.horizontal, 20)
@@ -39,6 +40,7 @@ struct ExploreView: View {
             .navigationDestination(for: LifeGroup.self) { LifeGroupView(group: $0) }
             .navigationDestination(for: Situation.self) { SituationDetailView(situation: $0) }
             .navigationDestination(for: DuaMood.self) { MoodDetailView(mood: $0, language: language) }
+            .navigationDestination(for: NearbyPlaceKind.self) { NearbyPlacesView(kind: $0, language: language) }
             .toolbar(.hidden, for: .navigationBar)
             .onAppear { appeared = true }
         }
@@ -67,6 +69,25 @@ struct ExploreView: View {
             .yqCard(cornerRadius: 20)
         }
         .buttonStyle(.yqPress)
+    }
+
+    private var nearYou: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            SectionHeader(copy("Near you", "بالقرب منك"))
+            RowGroup {
+                NavigationLink { NearbyPlacesView(kind: .mosques, language: language) } label: {
+                    BadgeRow(symbol: "building.columns.fill", title: copy("Mosques near me", "مساجد قريبة"),
+                             subtitle: copy("Apple Maps and OpenStreetMap, cross-checked", "خرائط Apple وOpenStreetMap مع مطابقة"))
+                }
+                .buttonStyle(.yqPressSoft)
+                RowDivider()
+                NavigationLink { NearbyPlacesView(kind: .halal, language: language) } label: {
+                    BadgeRow(symbol: "fork.knife", title: copy("Halal food near me", "طعام حلال قريب"),
+                             subtitle: copy("Confirm with the restaurant before you order", "تأكد من المطعم قبل الطلب"))
+                }
+                .buttonStyle(.yqPressSoft)
+            }
+        }
     }
 
     private var groups: some View {

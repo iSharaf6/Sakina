@@ -344,6 +344,9 @@ struct YaqeenPressableButtonStyle: ButtonStyle {
                         : .spring(response: 0.32, dampingFraction: 0.72),
                 value: configuration.isPressed
             )
+            .onChange(of: configuration.isPressed) { _, pressed in
+                if pressed { scale < 0.99 ? Haptics.tap() : Haptics.press() }
+            }
     }
 }
 

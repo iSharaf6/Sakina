@@ -4,7 +4,7 @@ import SwiftUI
 
 /// Value-based routes inside the Du'as stack.
 enum DuaRoute: Hashable {
-    case feelings
+    case feelings, counter, ruqyah, benefits, goals
 }
 
 struct DuasView: View {
@@ -50,8 +50,9 @@ struct DuasView: View {
                     searchResults
                 } else {
                     rightNow.revealed(2, appeared: appeared, reduceMotion: reduceMotion)
-                    heart.revealed(3, appeared: appeared, reduceMotion: reduceMotion)
-                    collections.revealed(4, appeared: appeared, reduceMotion: reduceMotion)
+                    tools.revealed(3, appeared: appeared, reduceMotion: reduceMotion)
+                    heart.revealed(4, appeared: appeared, reduceMotion: reduceMotion)
+                    collections.revealed(5, appeared: appeared, reduceMotion: reduceMotion)
                 }
             }
             .padding(.horizontal, 20)
@@ -66,8 +67,13 @@ struct DuasView: View {
         .navigationDestination(for: DuaRoute.self) { route in
             switch route {
             case .feelings: FeelingsView(language: language)
+            case .counter: DhikrListView(language: language)
+            case .ruqyah: RuqyahView(language: language)
+            case .benefits: AdhkarBenefitsView(language: language)
+            case .goals: DailyGoalsView(language: language)
             }
         }
+        .navigationDestination(for: DhikrItem.self) { DhikrCounterView(item: $0, language: language) }
         .toolbar(showsNavigationBar ? .visible : .hidden, for: .navigationBar)
         .onAppear { appeared = true }
     }
@@ -129,6 +135,37 @@ struct DuasView: View {
               let position = practice.entryIDs.firstIndex(of: entryID),
               !practice.entries.isEmpty else { return nil }
         return Double(position) / Double(practice.entries.count)
+    }
+
+    // MARK: Tools
+
+    private var tools: some View {
+        LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 10), count: typeSize.isAccessibilitySize ? 1 : 2), spacing: 10) {
+            NavigationLink(value: DuaRoute.counter) {
+                BadgeTile(symbol: "hand.tap.fill", tint: .yqAccent,
+                          title: copy("Tasbih", "التسبيح"),
+                          detail: copy("Tap to count dhikr", "اضغط لعدّ الذكر"), artwork: .anytime)
+            }
+            .buttonStyle(.yqPress)
+            NavigationLink(value: DuaRoute.goals) {
+                BadgeTile(symbol: "checkmark.circle.fill", tint: .yqAccent,
+                          title: copy("Daily goals", "أهداف اليوم"),
+                          detail: copy("Small, daily, yours", "صغيرة، يومية، لك"), artwork: .salah)
+            }
+            .buttonStyle(.yqPress)
+            NavigationLink(value: DuaRoute.ruqyah) {
+                BadgeTile(symbol: "cross.case.fill", tint: .yqAccent,
+                          title: copy("Ruqyah", "الرقية"),
+                          detail: copy("Qur’an and Sunnah", "من القرآن والسنة"), artwork: .healing)
+            }
+            .buttonStyle(.yqPress)
+            NavigationLink(value: DuaRoute.benefits) {
+                BadgeTile(symbol: "sparkles", tint: .yqAccent,
+                          title: copy("Why dhikr?", "لماذا الذكر؟"),
+                          detail: copy("The benefits of adhkar", "فوائد الأذكار"), artwork: .praise)
+            }
+            .buttonStyle(.yqPress)
+        }
     }
 
     // MARK: Heart
@@ -392,62 +429,13 @@ struct MoodDetailView: View {
     private var title: String { copy("For when you feel \(mood.title(language).lowercased())", "حين تشعر أنك \(mood.title(language))") }
 
     var body: some View {
-        if mood == .suicidal {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 20) {
-                    PageHeader(title: copy("You matter.", "أنت مهم."),
-                               subtitle: copy("Please reach out to someone now, and stay with these words.", "تواصل مع أحد الآن، وابقَ مع هذه الكلمات."))
-                    ImmediateSupportCard(language: language)
-                    if let first = entries.first {
-                        NavigationLink {
-                            DuaReaderView(dua: first, sequence: entries, collectionTitle: title, mood: mood)
-                        } label: {
-                            SecondaryButton(title: copy("Read a du’a", "اقرأ دعاءً"), symbol: language == .arabic ? "arrow.left" : "arrow.right")
-                        }
-                        .buttonStyle(.yqPress)
-                    }
-                }
-                .padding(20)
-            }
-            .yqScreen()
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar(.visible, for: .navigationBar)
-            .toolbar(.hidden, for: .tabBar)
-        } else if let first = entries.first {
+        if let first = entries.first {
             DuaReaderView(dua: first, sequence: entries, collectionTitle: title, mood: mood)
         } else {
             EmptyGuidanceState(title: copy("Nothing here yet", "لا يوجد شيء بعد"),
                                detail: copy("Try another feeling.", "جرّب شعورًا آخر."), symbol: "heart", artwork: mood.artwork)
                 .yqScreen()
         }
-    }
-}
-
-struct ImmediateSupportCard: View {
-    let language: AppLanguage
-    var body: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            HStack(spacing: 12) {
-                CompanionIllustration(artwork: .support, size: 48)
-                Text(language.pick("You deserve support right now.", "أنت تستحق الدعم الآن."))
-                    .font(.yqHeadline)
-                    .foregroundStyle(Color.yqInk)
-            }
-            Text(language.pick("If you might act on these thoughts, contact your local emergency service or go to the nearest emergency department. Stay with someone you trust and move away from anything you could use to hurt yourself.",
-                               "إذا خشيت أن تؤذي نفسك، اتصل بالطوارئ المحلية أو توجّه إلى أقرب قسم طوارئ. ابقَ مع شخص تثق به وابتعد عما قد تستخدمه لإيذاء نفسك."))
-                .font(.yqSubhead)
-                .lineSpacing(4)
-                .foregroundStyle(Color.yqInk)
-            Link(destination: URL(string: "https://findahelpline.com/")!) {
-                PrimaryButton(title: language.pick("Find someone to talk to", "ابحث عمّن تتحدث إليه"), symbol: "phone.fill")
-            }
-            .buttonStyle(.yqPress)
-            Text(language.pick("You can make du’a while reaching for help. You do not have to face this alone.", "يمكنك الدعاء وطلب المساعدة معًا. لا تواجه هذا وحدك."))
-                .font(.yqCaption)
-                .foregroundStyle(Color.yqSecondary)
-        }
-        .padding(18)
-        .yqCard(cornerRadius: 20)
     }
 }
 

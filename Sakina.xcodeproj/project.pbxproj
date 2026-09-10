@@ -82,6 +82,18 @@
 		F4441890D4E6E2D3A5348B81 /* QiblaCompassModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8DFEF2C5DA9B7782DA0A5B63 /* QiblaCompassModel.swift */; };
 		F80D8D20BAECC03475FEA5C4 /* DuaCollectionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 091EF70E03B8E1FAE35CF613 /* DuaCollectionTests.swift */; };
 		FC618310ADF2D46E9E79D12B /* QuickGuidanceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 477A197493D3A21DDCD93754 /* QuickGuidanceView.swift */; };
+		E7CEC14CCD05B705BA4E80C8 /* Haptics.swift in Sources */ = {isa = PBXBuildFile; fileRef = B848644891880C8D720EB03E /* Haptics.swift */; };
+		C75554E6F033D6F8E5259D27 /* SupportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFC51FFE16AFA094EEA98311 /* SupportView.swift */; };
+		84684F61CB728D5EDCC09E51 /* DailyGoals.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2E6EF8B02F2D7E65B31AF51 /* DailyGoals.swift */; };
+		9CA187197D602825117FF6C2 /* DailyGoalsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55AF880D953C5A934ED02E3B /* DailyGoalsView.swift */; };
+		9A10540E6E4A584FBBAFE3B5 /* DhikrCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B7CD3F8A1DC3C9A71577104 /* DhikrCatalog.swift */; };
+		2AC029276CDF3F89448161BC /* DhikrCounterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FCDD2EAE72F0C2BAE32BFE02 /* DhikrCounterView.swift */; };
+		42F7A4103BBA37AE8D50266F /* AdhkarBenefitsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CAA3170D63C45A4BD9329844 /* AdhkarBenefitsView.swift */; };
+		93831208CEBBDA06F81B6CA2 /* NearbyPlacesService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7193F35EB028C006F850B94A /* NearbyPlacesService.swift */; };
+		81096E8FC0B3255A906CFAA9 /* NearbyPlacesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C0E22951738888CDF77C1B0 /* NearbyPlacesView.swift */; };
+		11CA701C23621A1A10CF2229 /* RuqyahCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFE880EDD0E477B6F2D9A3FC /* RuqyahCatalog.swift */; };
+		FCA3976C1D60CD8BF51624F6 /* RuqyahView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C0A6E8367F2F884BD618BBB /* RuqyahView.swift */; };
+		890C7E4721106661A6EB936F /* ruqyah.json in Resources */ = {isa = PBXBuildFile; fileRef = F870CB07E982A87E9972E481 /* ruqyah.json */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -186,6 +198,18 @@
 		FAC722F8CCF85D78978CE0E4 /* Components.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Components.swift; sourceTree = "<group>"; };
 		FDC7C33EE9BD89763D8B6372 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		FDD2FB965151F6ABFB349296 /* LibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryView.swift; sourceTree = "<group>"; };
+		B848644891880C8D720EB03E /* Haptics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Haptics.swift; sourceTree = "<group>"; };
+		FFC51FFE16AFA094EEA98311 /* SupportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupportView.swift; sourceTree = "<group>"; };
+		B2E6EF8B02F2D7E65B31AF51 /* DailyGoals.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyGoals.swift; sourceTree = "<group>"; };
+		55AF880D953C5A934ED02E3B /* DailyGoalsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyGoalsView.swift; sourceTree = "<group>"; };
+		6B7CD3F8A1DC3C9A71577104 /* DhikrCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DhikrCatalog.swift; sourceTree = "<group>"; };
+		FCDD2EAE72F0C2BAE32BFE02 /* DhikrCounterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DhikrCounterView.swift; sourceTree = "<group>"; };
+		CAA3170D63C45A4BD9329844 /* AdhkarBenefitsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdhkarBenefitsView.swift; sourceTree = "<group>"; };
+		7193F35EB028C006F850B94A /* NearbyPlacesService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NearbyPlacesService.swift; sourceTree = "<group>"; };
+		5C0E22951738888CDF77C1B0 /* NearbyPlacesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NearbyPlacesView.swift; sourceTree = "<group>"; };
+		EFE880EDD0E477B6F2D9A3FC /* RuqyahCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuqyahCatalog.swift; sourceTree = "<group>"; };
+		5C0A6E8367F2F884BD618BBB /* RuqyahView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuqyahView.swift; sourceTree = "<group>"; };
+		F870CB07E982A87E9972E481 /* ruqyah.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ruqyah.json; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -225,6 +249,7 @@
 		19812B5D9562EE1E59EDEA0C /* Theme */ = {
 			isa = PBXGroup;
 			children = (
+				B848644891880C8D720EB03E /* Haptics.swift */,
 				1A2CB131C8671017333ED3B7 /* CompanionArtworkMapping.swift */,
 				FAC722F8CCF85D78978CE0E4 /* Components.swift */,
 				9A0A3ED82BE80822A5DD6F30 /* OttomanGeometry.swift */,
@@ -256,6 +281,7 @@
 		4437C01E203EBF9D07991845 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				F870CB07E982A87E9972E481 /* ruqyah.json */,
 				73BDB5597C502DF9620D4EB9 /* verses.json */,
 			);
 			path = Resources;
@@ -333,6 +359,11 @@
 		B8948ECB5F0BE6D477479CF1 /* Duas */ = {
 			isa = PBXGroup;
 			children = (
+				5C0A6E8367F2F884BD618BBB /* RuqyahView.swift */,
+				EFE880EDD0E477B6F2D9A3FC /* RuqyahCatalog.swift */,
+				CAA3170D63C45A4BD9329844 /* AdhkarBenefitsView.swift */,
+				FCDD2EAE72F0C2BAE32BFE02 /* DhikrCounterView.swift */,
+				6B7CD3F8A1DC3C9A71577104 /* DhikrCatalog.swift */,
 				B805C5620A23DD65CA03AF22 /* DailyDuaCatalog.swift */,
 				55EFA2554E918CCE76E9C8AE /* DuaCollection.swift */,
 				3C923DD523105A8594B87A6E /* DuaLibrary.swift */,
@@ -369,6 +400,8 @@
 		E7765FE3C400A4D239818254 /* Sakina */ = {
 			isa = PBXGroup;
 			children = (
+				639A88F7E8B51C2FA83BF1DE /* Places */,
+				872E58719536D39601DD555E /* Goals */,
 				FDC7C33EE9BD89763D8B6372 /* Assets.xcassets */,
 				4E8F6FBD6690F33853748BD8 /* Info.plist */,
 				1A0F3FA0D5540DA7C77D239B /* PrivacyInfo.xcprivacy */,
@@ -391,6 +424,7 @@
 		F45288AA0AD4613F94CA2847 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				FFC51FFE16AFA094EEA98311 /* SupportView.swift */,
 				C94B8B0D7FA881C025CBEEAA /* AboutView.swift */,
 				557A901947C3D7EC37E32441 /* BreathingView.swift */,
 				A3CE619CAE16BAEE05A6B2E7 /* CompanionWidgetGallery.swift */,
@@ -413,6 +447,24 @@
 				C987C3A68109AC009EEBE541 /* PrayerTimesService.swift */,
 			);
 			path = Prayer;
+			sourceTree = "<group>";
+		};
+		872E58719536D39601DD555E /* Goals */ = {
+			isa = PBXGroup;
+			children = (
+				55AF880D953C5A934ED02E3B /* DailyGoalsView.swift */,
+				B2E6EF8B02F2D7E65B31AF51 /* DailyGoals.swift */,
+			);
+			path = Goals;
+			sourceTree = "<group>";
+		};
+		639A88F7E8B51C2FA83BF1DE /* Places */ = {
+			isa = PBXGroup;
+			children = (
+				5C0E22951738888CDF77C1B0 /* NearbyPlacesView.swift */,
+				7193F35EB028C006F850B94A /* NearbyPlacesService.swift */,
+			);
+			path = Places;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -544,6 +596,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				890C7E4721106661A6EB936F /* ruqyah.json in Resources */,
 				CA714A7FBE9A2C7C722B70C5 /* AppIcon60x60@2x.png in Resources */,
 				70DC51EA2A8BCFC5ECB8AD92 /* AppIcon60x60@3x.png in Resources */,
 				16303560416EC40292C59EB7 /* AppIcon76x76@2x.png in Resources */,
@@ -586,6 +639,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FCA3976C1D60CD8BF51624F6 /* RuqyahView.swift in Sources */,
+				11CA701C23621A1A10CF2229 /* RuqyahCatalog.swift in Sources */,
+				81096E8FC0B3255A906CFAA9 /* NearbyPlacesView.swift in Sources */,
+				93831208CEBBDA06F81B6CA2 /* NearbyPlacesService.swift in Sources */,
+				42F7A4103BBA37AE8D50266F /* AdhkarBenefitsView.swift in Sources */,
+				2AC029276CDF3F89448161BC /* DhikrCounterView.swift in Sources */,
+				9A10540E6E4A584FBBAFE3B5 /* DhikrCatalog.swift in Sources */,
+				9CA187197D602825117FF6C2 /* DailyGoalsView.swift in Sources */,
+				84684F61CB728D5EDCC09E51 /* DailyGoals.swift in Sources */,
+				C75554E6F033D6F8E5259D27 /* SupportView.swift in Sources */,
+				E7CEC14CCD05B705BA4E80C8 /* Haptics.swift in Sources */,
 				E4DACF7F33F1A2DEB05EC6D9 /* AboutView.swift in Sources */,
 				1E9208D4490881F96B16D13D /* AppSettings.swift in Sources */,
 				83D618E0890F94D7DB94867F /* ArabicReflections.swift in Sources */,

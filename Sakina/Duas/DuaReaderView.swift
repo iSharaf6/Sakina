@@ -270,9 +270,6 @@ struct DuaReaderView: View {
             Text(copy("Breathe first if you need to. Then read.", "تنفس أولًا إن احتجت، ثم اقرأ."))
                 .font(.yqCaption).foregroundStyle(Color.yqSecondary)
             Spacer(minLength: 0)
-            Link(destination: URL(string: "https://findahelpline.com/")!) {
-                Text(copy("Reach out", "تواصل")).font(.yqCaptionBold).foregroundStyle(Color.yqAccentDeep)
-            }
         }
         .padding(.horizontal, 12)
         .frame(minHeight: 40)

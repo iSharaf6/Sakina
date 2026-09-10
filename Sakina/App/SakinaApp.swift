@@ -86,6 +86,7 @@ struct RootView: View {
             await scholarStore.loadProfileAndPublishedInsights()
         }
         .onAppear {
+            Haptics.prepare()
             router.activate()
             ReminderScheduler.refresh()
             account.restorePreviousSignIn()
@@ -207,6 +208,14 @@ struct RootView: View {
                 selection = .saved
             case "settings":
                 settingsRequest += 1
+            case "counter", "ruqyah", "benefits", "goals":
+                selection = .duas
+                let routes: [String: DuaRoute] = ["counter": .counter, "ruqyah": .ruqyah, "benefits": .benefits, "goals": .goals]
+                if let route = routes[parts[0]] { duaPath.append(route) }
+                if parts[0] == "counter", let item = DhikrCatalog.item(id: argument) { duaPath.append(item) }
+            case "mosques", "halal":
+                selection = .explore
+                explorePath.append(parts[0] == "mosques" ? NearbyPlaceKind.mosques : NearbyPlaceKind.halal)
             case "prayers":
                 prayerRequest += 1
             default:

@@ -22,6 +22,7 @@ struct HomeView: View {
     @State private var sheet: HomeSheet?
     @State private var showBreathing = false
     @State private var today = SharedStore.situationOfTheDay()
+    @State private var duaToday = DuaCollection.duaOfTheDay()
     @State private var appeared = false
     @FocusState private var searchFocused: Bool
 
@@ -48,8 +49,10 @@ struct HomeView: View {
                     header.revealed(0, appeared: appeared, reduceMotion: reduceMotion)
                     searchField.revealed(1, appeared: appeared, reduceMotion: reduceMotion)
                     prayerCard.revealed(2, appeared: appeared, reduceMotion: reduceMotion)
-                    heart.revealed(3, appeared: appeared, reduceMotion: reduceMotion)
-                    todayGrid.revealed(4, appeared: appeared, reduceMotion: reduceMotion)
+                    duaTodayCard.revealed(3, appeared: appeared, reduceMotion: reduceMotion)
+                    goalsCard.revealed(4, appeared: appeared, reduceMotion: reduceMotion)
+                    heart.revealed(5, appeared: appeared, reduceMotion: reduceMotion)
+                    todayGrid.revealed(6, appeared: appeared, reduceMotion: reduceMotion)
                 }
                 .padding(.horizontal, 20)
                 .padding(.top, 8)
@@ -83,7 +86,10 @@ struct HomeView: View {
             .onChange(of: prayerRequest) { _, _ in sheet = .prayers }
             .onChange(of: settingsRequest) { _, _ in sheet = .settings }
             .onChange(of: scenePhase) { _, phase in
-                if phase == .active { today = SharedStore.situationOfTheDay() }
+                if phase == .active {
+                    today = SharedStore.situationOfTheDay()
+                    duaToday = DuaCollection.duaOfTheDay()
+                }
             }
             .onAppear { appeared = true }
         }
@@ -176,6 +182,55 @@ struct HomeView: View {
 
     private func refreshPrayerTimes() {
         Task { await prayerService.refreshUsingCurrentLocation(settings: prayerSettings) }
+    }
+
+    // MARK: Du’a today
+
+    private var duaTodayCard: some View {
+        NavigationLink(value: duaToday) {
+            VStack(alignment: .leading, spacing: 10) {
+                HStack(spacing: 8) {
+                    CapsLabel(text: copy("Du’a today", "دعاء اليوم"), color: .yqAccentDeep)
+                    Spacer(minLength: 0)
+                    Text(DuaCollection.sourceLabel(duaToday, language: language))
+                        .font(.yqCaption)
+                        .foregroundStyle(Color.yqTertiary)
+                        .lineLimit(1)
+                }
+                Text(duaToday.arabic)
+                    .font(.arabicProse(22))
+                    .lineSpacing(8)
+                    .foregroundStyle(Color.yqInk)
+                    .lineLimit(2)
+                    .frame(maxWidth: .infinity, alignment: .trailing)
+                    .environment(\.layoutDirection, .rightToLeft)
+                HStack(spacing: 10) {
+                    CompanionIllustration(artwork: duaToday.kind == .quranic ? .quran : .sunnah, size: 34)
+                    Text(duaToday.title(language))
+                        .font(.yqSubheadBold)
+                        .foregroundStyle(Color.yqInk)
+                        .lineLimit(1)
+                    Spacer(minLength: 0)
+                    Text(copy("Read", "اقرأ"))
+                        .font(.yqSubheadBold)
+                        .foregroundStyle(Color.yqAccentDeep)
+                    Chevron()
+                }
+            }
+            .padding(16)
+            .yqCard(cornerRadius: 20)
+        }
+        .buttonStyle(.yqPress)
+        .accessibilityHint(copy("Opens today’s du’a", "يفتح دعاء اليوم"))
+    }
+
+    // MARK: Goals
+
+    private var goalsCard: some View {
+        NavigationLink { DailyGoalsView(language: language) } label: {
+            DailyGoalsCard(language: language)
+        }
+        .buttonStyle(.yqPress)
     }
 
     // MARK: Heart

@@ -35,7 +35,11 @@
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Yaqeen uses your approximate location to calculate local prayer times and the Qibla direction. Your coordinates stay on this device.</string>
+	<string>Yaqeen uses your location to calculate local prayer times, the Qibla direction, and to find mosques and halal food near you. Your coordinates stay on this device.</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>comgooglemaps</string>
+	</array>
 	<key>UIAppFonts</key>
 	<array>
 		<string>UthmanicHafs.ttf</string>
