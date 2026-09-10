@@ -49,7 +49,7 @@ struct ExploreView: View {
     private var ayahNow: some View {
         NavigationLink { QuickGuidanceView() } label: {
             HStack(spacing: 14) {
-                IconBadge(symbol: "quote.opening", tint: .yqAccent, size: 48)
+                CompanionIllustration(artwork: .quran, size: 56)
                 VStack(alignment: .leading, spacing: 3) {
                     Text(copy("An ayah for right now", "آية لهذه اللحظة"))
                         .font(.yqHeadline)
@@ -140,9 +140,9 @@ struct ExploreView: View {
             }
             if results.isEmpty {
                 EmptyGuidanceState(
-                    title: copy("Your words matter", "كلماتك مهمة"),
+                    title: copy("No matching moments", "لا توجد مواقف مطابقة"),
                     detail: copy("Try a simpler feeling, or choose a life group.", "ابحث بكلمة أبسط أو اختر مجموعة من مجموعات الحياة."),
-                    symbol: "text.magnifyingglass"
+                    symbol: "text.magnifyingglass", artwork: .evening
                 )
             } else {
                 RowGroup {

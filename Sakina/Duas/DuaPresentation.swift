@@ -109,25 +109,7 @@ extension DuaPractice {
         }
     }
 
-    var tint: Color {
-        switch self {
-        case .morning: return BadgeTint.orange.color
-        case .evening: return BadgeTint.purple.color
-        case .sleep: return BadgeTint.indigo.color
-        case .tahajjud: return BadgeTint.night.color
-        case .salah: return BadgeTint.green.color
-        case .afterSalah: return BadgeTint.teal.color
-        case .ummah: return BadgeTint.blue.color
-        case .healing: return BadgeTint.pink.color
-        case .praise: return BadgeTint.orange.color
-        case .salawat: return BadgeTint.red.color
-        case .quran: return BadgeTint.green.color
-        case .sunnah: return BadgeTint.teal.color
-        case .istighfar: return BadgeTint.cyan.color
-        case .anytime: return BadgeTint.slate.color
-        case .names: return BadgeTint.indigo.color
-        }
-    }
+    var tint: Color { .yqAccentDeep }
 
     /// A one-or-two-word title for tiles.
     func shortTitle(_ language: AppLanguage) -> String {

@@ -2,9 +2,7 @@ import SwiftUI
 
 // MARK: - Icon badge
 //
-// The single most recognisable element of the system: a solid rounded square
-// with a white SF Symbol, exactly like Settings, Luna and Amy. Sizes: 28 in
-// chips, 36 in rows, 44 in cards, 56 in heroes.
+// Utility symbols stay quiet; content collections use original illustrations.
 
 struct IconBadge: View {
     enum Style { case solid, tinted, outline }
@@ -12,7 +10,7 @@ struct IconBadge: View {
     let symbol: String
     var tint: Color = .yqAccent
     var size: CGFloat = 40
-    var style: Style = .solid
+    var style: Style = .tinted
 
     private var radius: CGFloat { size * 0.27 }
 
@@ -34,15 +32,15 @@ struct IconBadge: View {
 
     private var fill: Color {
         switch style {
-        case .solid: return tint
-        case .tinted: return tint.opacity(0.14)
+        case .solid: return .yqFill
+        case .tinted: return tint.opacity(0.08)
         case .outline: return .yqSurface
         }
     }
 
     private var glyph: Color {
         switch style {
-        case .solid: return .white
+        case .solid: return .yqInk
         case .tinted, .outline: return tint
         }
     }
@@ -135,17 +133,19 @@ struct BadgeRow<Trailing: View>: View {
     var tint: Color = .yqAccent
     let title: String
     var subtitle: String? = nil
+    var artwork: CompanionArtwork? = nil
     var badgeStyle: IconBadge.Style = .solid
     var subtitleLines: Int? = nil
     @ViewBuilder var trailing: () -> Trailing
 
     init(symbol: String, tint: Color = .yqAccent, title: String, subtitle: String? = nil,
-         badgeStyle: IconBadge.Style = .solid, subtitleLines: Int? = nil,
+         artwork: CompanionArtwork? = nil, badgeStyle: IconBadge.Style = .solid, subtitleLines: Int? = nil,
          @ViewBuilder trailing: @escaping () -> Trailing = { Chevron() }) {
         self.symbol = symbol
         self.tint = tint
         self.title = title
         self.subtitle = subtitle
+        self.artwork = artwork
         self.badgeStyle = badgeStyle
         self.subtitleLines = subtitleLines
         self.trailing = trailing
@@ -153,7 +153,11 @@ struct BadgeRow<Trailing: View>: View {
 
     var body: some View {
         HStack(spacing: 14) {
-            IconBadge(symbol: symbol, tint: tint, size: 36, style: badgeStyle)
+            if let artwork {
+                CompanionIllustration(artwork: artwork, size: 44)
+            } else {
+                IconBadge(symbol: symbol, tint: tint, size: 36, style: badgeStyle)
+            }
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
                     .font(.yqBodyMedium)
@@ -211,11 +215,16 @@ struct BadgeTile: View {
     let title: String
     var detail: String? = nil
     var progress: Double? = nil
+    var artwork: CompanionArtwork? = nil
 
     var body: some View {
         HStack(spacing: 12) {
             ZStack {
-                IconBadge(symbol: symbol, tint: tint, size: 40)
+                if let artwork {
+                    CompanionIllustration(artwork: artwork, size: 50)
+                } else {
+                    IconBadge(symbol: symbol, tint: tint, size: 40)
+                }
                 if let progress, progress > 0 {
                     Circle()
                         .trim(from: 0, to: progress)
@@ -409,10 +418,15 @@ struct EmptyGuidanceState: View {
     let title: String
     let detail: String
     let symbol: String
+    var artwork: CompanionArtwork? = nil
 
     var body: some View {
         VStack(spacing: 12) {
-            IconBadge(symbol: symbol, tint: .yqAccent, size: 48, style: .tinted)
+            if let artwork {
+                CompanionIllustration(artwork: artwork, size: 112)
+            } else {
+                IconBadge(symbol: symbol, tint: .yqAccent, size: 48, style: .tinted)
+            }
             Text(title).font(.yqHeadline).foregroundStyle(Color.yqInk)
             Text(detail)
                 .font(.yqSubhead)

@@ -57,6 +57,7 @@
 		AD738641AE3454FF9383E46B /* DuaReaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90FD9BF64F072510814F514F /* DuaReaderView.swift */; };
 		BDF6F3021D497B78102FB283 /* ExploreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B41F0AE307F238DAE7968EB /* ExploreView.swift */; };
 		C062B0C6C0C5CE56004D2E2F /* PrayerCalculationSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3060B4B44BD6373F6EFD9309 /* PrayerCalculationSettings.swift */; };
+		C167BC0F0469D906B1C79F2A /* CompanionArtwork.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FC586DF29A97BFC8E1D269A /* CompanionArtwork.swift */; };
 		C384438352BFFCFCC2C38EB3 /* CompanionContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = C973658D4D60E07B81BABDEA /* CompanionContent.swift */; };
 		C6B197E993237A5EDB41F6A3 /* QiblaDirection.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3D2AA171C71838421481B0E /* QiblaDirection.swift */; };
 		C859161F9ABFE845E8F2E8F6 /* QiblaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DCBC0B6FE330B25F3B29ED /* QiblaView.swift */; };
@@ -147,6 +148,7 @@
 		9162A56A57E5DC9D205C411C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		9A0A3ED82BE80822A5DD6F30 /* OttomanGeometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OttomanGeometry.swift; sourceTree = "<group>"; };
 		9FB5CC68230639107231C077 /* ScholarProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScholarProfileView.swift; sourceTree = "<group>"; };
+		9FC586DF29A97BFC8E1D269A /* CompanionArtwork.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompanionArtwork.swift; sourceTree = "<group>"; };
 		AB2DE4D23275B34EC57D3143 /* PersistenceModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceModels.swift; sourceTree = "<group>"; };
 		ACC5C30EB3E6A329189ACDEA /* ScholarInsightCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScholarInsightCard.swift; sourceTree = "<group>"; };
 		B413F95EBD77CF107DB7E169 /* SakinaWidget.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = SakinaWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -212,6 +214,7 @@
 		19812B5D9562EE1E59EDEA0C /* Theme */ = {
 			isa = PBXGroup;
 			children = (
+				9FC586DF29A97BFC8E1D269A /* CompanionArtwork.swift */,
 				FAC722F8CCF85D78978CE0E4 /* Components.swift */,
 				9A0A3ED82BE80822A5DD6F30 /* OttomanGeometry.swift */,
 				812F742F72217F0819013056 /* Theme.swift */,
@@ -568,6 +571,7 @@
 				1E9208D4490881F96B16D13D /* AppSettings.swift in Sources */,
 				83D618E0890F94D7DB94867F /* ArabicReflections.swift in Sources */,
 				471C79CC21262DCFA4962856 /* BreathingView.swift in Sources */,
+				C167BC0F0469D906B1C79F2A /* CompanionArtwork.swift in Sources */,
 				C384438352BFFCFCC2C38EB3 /* CompanionContent.swift in Sources */,
 				7DD514C94AA2A362C6DE0731 /* Components.swift in Sources */,
 				379837A0AA2806F70FD91E22 /* DailyDuaCatalog.swift in Sources */,

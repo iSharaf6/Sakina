@@ -33,7 +33,7 @@ The notes are orientation, not tafsir, a fatwa, or professional counselling. Sen
 - A one-screen Home: next prayer in a dark hero card, six feeling chips that open a du’a in one tap, a seven-day heart strip, and today’s collection, ayah, last reading and Qibla as badge tiles
 - A Du’a & dhikr tab with 15 collections (146 source-verified readings across morning, evening, before sleep, tahajjud, in salah, after salah, ummah, ruqyah & illness, praise, salawat, Qur’anic, Sunnah, istighfar, dhikr and the 99 names), a 31-feeling chip cloud, and search across feelings, titles, Arabic, sources and names
 - A paged reader that shows Arabic, pronunciation and meaning together, a tap-to-count recitation ring wherever the source states a count, source-and-context sheets, and a completion mark that remembers what you finished today
-- White canvas with a single green accent, solid SF Symbol icon badges, hairline cards, springy press feedback, graded haptics, and an eight-point star-and-cross field drawn behind every screen at ten percent
+- White canvas with a green accent, original pencil-style collection artwork and a cream-and-charcoal cat, quiet utility icons, hairline cards, springy press feedback, graded haptics, and an eight-point star-and-cross field drawn behind every screen at ten percent
 - An optional 30-second nature breathing pause, available offline; it is not presented as a prescribed religious practice
 - Branded Yaqeen interface in forest green and warm ivory, built with native SwiftUI navigation, Dynamic Type, dark mode, reduced-motion support, and Arabic-aware layout
 - English and Arabic app modes, including right-to-left navigation in Arabic

@@ -78,16 +78,16 @@ struct DuasView: View {
         NavigationLink(value: suggested) {
             HStack(spacing: 16) {
                 ZStack {
-                    IconBadge(symbol: suggested.symbol, tint: suggested.tint, size: 56)
+                    CompanionIllustration(artwork: suggested.artwork, size: 80)
                     if let progress = progress(for: suggested), progress > 0 {
                         Circle()
                             .trim(from: 0, to: progress)
                             .stroke(suggested.tint, style: StrokeStyle(lineWidth: 3, lineCap: .round))
                             .rotationEffect(.degrees(-90))
-                            .frame(width: 68, height: 68)
+                            .frame(width: 88, height: 88)
                     }
                 }
-                .frame(width: 68, height: 68)
+                .frame(width: 88, height: 88)
                 VStack(alignment: .leading, spacing: 4) {
                     CapsLabel(text: copy("Right now", "الآن"), color: suggested.tint)
                     Text(suggested.title(language))
@@ -214,14 +214,14 @@ struct DuasView: View {
                 RowGroup {
                     ForEach(Array(matchingPractices.enumerated()), id: \.element.id) { i, practice in
                         NavigationLink(value: practice) {
-                            BadgeRow(symbol: practice.symbol, tint: practice.tint, title: practice.title(language), subtitle: practice.countLabel(language))
+                            BadgeRow(symbol: practice.symbol, tint: practice.tint, title: practice.title(language), subtitle: practice.countLabel(language), artwork: practice.artwork)
                         }
                         .buttonStyle(.yqPressSoft)
                         if i < matchingPractices.count - 1 || !matchingNames.isEmpty { RowDivider() }
                     }
                     ForEach(Array(matchingNames.prefix(6).enumerated()), id: \.element.id) { i, name in
                         NavigationLink { NamesOfAllahView(language: language, initialNameID: name.id) } label: {
-                            BadgeRow(symbol: DuaPractice.names.symbol, tint: DuaPractice.names.tint, title: name.transliteration, subtitle: name.meaning(language))
+                            BadgeRow(symbol: DuaPractice.names.symbol, tint: DuaPractice.names.tint, title: name.transliteration, subtitle: name.meaning(language), artwork: .names)
                         }
                         .buttonStyle(.yqPressSoft)
                         if i < min(6, matchingNames.count) - 1 { RowDivider() }
@@ -256,14 +256,14 @@ struct PracticeTile: View {
     var done = false
 
     var body: some View {
-        VStack(spacing: 10) {
+        VStack(spacing: 6) {
             ZStack(alignment: .topTrailing) {
-                IconBadge(symbol: practice.symbol, tint: practice.tint, size: 46)
+                CompanionIllustration(artwork: practice.artwork, size: 68)
                 if done {
                     Image(systemName: "checkmark.circle.fill")
                         .font(.system(size: 15, weight: .bold))
                         .foregroundStyle(Color.yqAccent, Color.yqSurface)
-                        .offset(x: 6, y: -6)
+                        .offset(x: 2, y: -2)
                 }
             }
             VStack(spacing: 2) {
@@ -280,8 +280,8 @@ struct PracticeTile: View {
         }
         .multilineTextAlignment(.center)
         .padding(.horizontal, 8)
-        .padding(.vertical, 14)
-        .frame(maxWidth: .infinity, minHeight: 116)
+        .padding(.vertical, 10)
+        .frame(maxWidth: .infinity, minHeight: 128)
         .yqCard(cornerRadius: 18)
         .contentShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
         .accessibilityElement(children: .combine)
@@ -512,7 +512,8 @@ struct DuaEmptyState: View {
             detail: savedOnly
                 ? language.pick("Save a du’a as you read. It will be here whenever you need it.", "احفظ دعاءً أثناء القراءة، وستجده هنا كلما احتجت إليه.")
                 : language.pick("Try a feeling, a title, or a reference such as 28:24.", "جرّب شعورًا أو عنوانًا أو مرجعًا مثل 28:24."),
-            symbol: savedOnly ? "bookmark" : "magnifyingglass"
+            symbol: savedOnly ? "bookmark" : "magnifyingglass",
+            artwork: savedOnly ? .sleep : .evening
         )
     }
 }

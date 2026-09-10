@@ -127,7 +127,7 @@ struct LibraryView: View {
                     title: copy("Nothing saved yet", "لا توجد محفوظات بعد"),
                     detail: copy("Save a moment from any guidance screen and it will wait here for you.",
                                  "احفظ أي موقف من شاشة الهداية وستجده هنا عند عودتك."),
-                    symbol: "bookmark"
+                    symbol: "bookmark", artwork: .sleep
                 )
                 NavigationLink { QuickGuidanceView() } label: {
                     SecondaryButton(title: copy("Find a moment", "اختر موقفًا"), symbol: language == .arabic ? "arrow.left" : "arrow.right")
@@ -156,7 +156,7 @@ struct LibraryView: View {
                     title: copy("A quiet place for your words", "مكان هادئ لكلماتك"),
                     detail: copy("Your private reflections stay on this iPhone. If you connect a backup, Yaqeen explains what is shared first.",
                                  "تبقى تأملاتك الخاصة على هذا الهاتف. وإذا ربطت نسخة احتياطية، فسيشرح يقين ما تتم مشاركته أولًا."),
-                    symbol: "square.and.pencil"
+                    symbol: "square.and.pencil", artwork: .praise
                 )
             } else {
                 LazyVStack(spacing: 10) {

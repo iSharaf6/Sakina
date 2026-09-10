@@ -226,14 +226,14 @@ struct HomeView: View {
                     BadgeTile(symbol: suggested.symbol, tint: suggested.tint,
                               title: suggested.shortTitle(language),
                               detail: suggestedDetail,
-                              progress: suggestedProgress)
+                              progress: suggestedProgress, artwork: suggested.artwork)
                 }
                 .buttonStyle(.yqPress)
 
                 NavigationLink(value: today) {
                     BadgeTile(symbol: "quote.opening", tint: BadgeTint.green.color,
                               title: copy("Ayah today", "آية اليوم"),
-                              detail: today.localizedTitle(language))
+                              detail: today.localizedTitle(language), artwork: .quran)
                 }
                 .buttonStyle(.yqPress)
 
@@ -241,14 +241,14 @@ struct HomeView: View {
                     NavigationLink(value: last) {
                         BadgeTile(symbol: "book.pages.fill", tint: BadgeTint.teal.color,
                                   title: copy("Continue", "أكمل"),
-                                  detail: last.title(language))
+                                  detail: last.title(language), artwork: .sunnah)
                     }
                     .buttonStyle(.yqPress)
                 } else {
                     NavigationLink(value: DuaPractice.istighfar) {
                         BadgeTile(symbol: DuaPractice.istighfar.symbol, tint: DuaPractice.istighfar.tint,
                                   title: DuaPractice.istighfar.title(language),
-                                  detail: DuaPractice.istighfar.countLabel(language))
+                                  detail: DuaPractice.istighfar.countLabel(language), artwork: .istighfar)
                     }
                     .buttonStyle(.yqPress)
                 }
