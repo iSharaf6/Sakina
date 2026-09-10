@@ -21,10 +21,15 @@ struct SakinaApp: App {
     }
 }
 
+/// Value routes inside the Qur'an tab.
+enum MushafRoute: Hashable {
+    case library
+}
+
 // MARK: Root
 
 struct RootView: View {
-    enum Tab: Hashable { case home, explore, duas, saved }
+    enum Tab: Hashable { case home, explore, quran, duas, saved }
 
     @Environment(\.scenePhase) private var scenePhase
     @AppStorage(SettingsKeys.appLanguage) private var languageRaw = AppLanguage.english.rawValue
@@ -32,6 +37,9 @@ struct RootView: View {
     @State private var homePath = NavigationPath()
     @State private var explorePath = NavigationPath()
     @State private var duaPath = NavigationPath()
+    @State private var quranPath = NavigationPath()
+    @State private var quranKey: String?
+    @State private var debugAyah: QuranAyah?
     @State private var exploreQuery = ""
     @State private var showQibla = false
     @State private var prayerRequest = 0
@@ -57,6 +65,18 @@ struct RootView: View {
                 .tabItem { tabLabel(copy("Explore", "استكشف"), symbol: "square.grid.2x2", tab: .explore) }
                 .tag(Tab.explore)
 
+            NavigationStack(path: $quranPath) {
+                MushafView(language: language, initialKey: quranKey)
+                    .id(quranKey ?? "")
+                    .navigationDestination(for: MushafRoute.self) { route in
+                        switch route {
+                        case .library: AyahLibraryView(language: language)
+                        }
+                    }
+            }
+            .tabItem { tabLabel(copy("Qur’an", "القرآن"), symbol: "book.closed", tab: .quran) }
+            .tag(Tab.quran)
+
             NavigationStack(path: $duaPath) {
                 DuasView()
             }
@@ -71,6 +91,11 @@ struct RootView: View {
         .yaqeenLanguage(language)
         .environmentObject(scholarStore)
         .sensoryFeedback(.selection, trigger: selection)
+        .sheet(item: $debugAyah) { ayah in
+            AyahActionSheet(ayah: ayah, language: language)
+                .presentationDetents([.medium, .large])
+                .presentationDragIndicator(.visible)
+        }
         .sheet(isPresented: $showQibla) {
             NavigationStack {
                 QiblaView()
@@ -87,6 +112,7 @@ struct RootView: View {
         }
         .onAppear {
             Haptics.prepare()
+            QuranStore.warmUp()
             router.activate()
             ReminderScheduler.refresh()
             account.restorePreviousSignIn()
@@ -166,7 +192,7 @@ struct RootView: View {
     // Native tab bars use a UIImage's point size, rather than a SwiftUI frame.
     private static let tabArtwork: [Tab: UIImage] = [
         Tab.home: CompanionArtwork.morning, .explore: .ummah,
-        .duas: .quran, .saved: .sunnah,
+        .quran: .quran, .duas: .sunnah, .saved: .saved,
     ].compactMapValues { artwork in
         guard let image = UIImage(named: artwork.assetName) else { return nil }
         return UIGraphicsImageRenderer(size: CGSize(width: 29, height: 29)).image { _ in
@@ -213,6 +239,15 @@ struct RootView: View {
                 let routes: [String: DuaRoute] = ["counter": .counter, "ruqyah": .ruqyah, "benefits": .benefits, "goals": .goals]
                 if let route = routes[parts[0]] { duaPath.append(route) }
                 if parts[0] == "counter", let item = DhikrCatalog.item(id: argument) { duaPath.append(item) }
+            case "mushaf":
+                selection = .quran
+                if !argument.isEmpty { quranKey = argument }
+            case "ayah":
+                selection = .quran
+                debugAyah = QuranStore.shared.ayah(argument)
+            case "myayat":
+                selection = .quran
+                quranPath.append(MushafRoute.library)
             case "mosques", "halal":
                 selection = .explore
                 explorePath.append(parts[0] == "mosques" ? NearbyPlaceKind.mosques : NearbyPlaceKind.halal)

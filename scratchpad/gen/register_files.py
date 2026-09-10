@@ -10,6 +10,8 @@ SAKINA_GROUP = "E7765FE3C400A4D239818254"      # /* Sakina */
 SHARED_RES_GROUP = "4437C01E203EBF9D07991845"  # Shared/Resources
 APP_SOURCES = "FAA20BA8A79231457ADE6F50"       # Sakina target Sources phase
 APP_RESOURCES = "DD6231B5458C8E9918794B0A"     # Sakina target Resources phase
+TEST_SOURCES = "0BBF67A7735B105B6930A271"      # SakinaTests target Sources phase
+TEST_GROUP = None  # resolved below
 src = open(PBX).read()
 def uid():
     return secrets.token_hex(12).upper()
@@ -55,6 +57,8 @@ for path in sys.argv[1:]:
         gid = SHARED_RES_GROUP
     elif parts[0] == "Sakina" and len(parts) == 3:
         gid = ensure_group(parts[1])
+    elif parts[0] == "SakinaTests" and len(parts) == 2:
+        gid = group_id("SakinaTests"); phase_id, phase = TEST_SOURCES, "Sources"
     else:
         sys.exit("unsupported location: " + path)
     add_child(gid, ref, name)

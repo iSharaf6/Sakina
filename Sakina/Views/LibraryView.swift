@@ -27,6 +27,13 @@ struct LibraryView: View {
                 VStack(alignment: .leading, spacing: 20) {
                     PageHeader(title: copy("Saved", "المحفوظات"),
                                subtitle: copy("Keep what speaks to you.", "احتفظ بما يلامس قلبك."))
+                    NavigationLink { AyahLibraryView(language: language) } label: {
+                        BadgeRow(symbol: "bookmark.fill", title: copy("My ayat", "آياتي"),
+                                 subtitle: copy("Highlights, bookmarks, notes and categories from the mushaf",
+                                                "تظليلات وعلامات وملاحظات وتصنيفات من المصحف"), artwork: .quran)
+                            .yqCard()
+                    }
+                    .buttonStyle(.yqPress)
                     modeSelector
                     content
                 }

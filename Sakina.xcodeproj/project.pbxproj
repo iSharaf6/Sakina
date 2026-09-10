@@ -94,6 +94,17 @@
 		11CA701C23621A1A10CF2229 /* RuqyahCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFE880EDD0E477B6F2D9A3FC /* RuqyahCatalog.swift */; };
 		FCA3976C1D60CD8BF51624F6 /* RuqyahView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C0A6E8367F2F884BD618BBB /* RuqyahView.swift */; };
 		890C7E4721106661A6EB936F /* ruqyah.json in Resources */ = {isa = PBXBuildFile; fileRef = F870CB07E982A87E9972E481 /* ruqyah.json */; };
+		B9C516499E64BE945A37E869 /* QuranModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BE9CCA47EF9A7C3EB588B57 /* QuranModels.swift */; };
+		51BB59887D0758C00875AF7B /* AyahLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF04821EF8B3382CF2F5EA98 /* AyahLibrary.swift */; };
+		71EE25DE0D75B8A2D2742A8D /* MushafPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A1A224957D4C17E78D1F552 /* MushafPlayer.swift */; };
+		00C1B04865499106CC46C88D /* QuranIntegrityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 82F84BCF3F7E637F47B6F439 /* QuranIntegrityTests.swift */; };
+		43266564C9CA1903B29F74A3 /* quran.json in Resources */ = {isa = PBXBuildFile; fileRef = 3C3C97390268DDC1904DBA9B /* quran.json */; };
+		56EF5410FA9539789F4DD54E /* AyahActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = BEADCE17D39A67AFB283949C /* AyahActionSheet.swift */; };
+		C4EEA5250C79EC6A11850444 /* TafsirService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E62E1D9F98FA0D816E3C89E /* TafsirService.swift */; };
+		A0328A51341B8FC01F653611 /* AyahLibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4464BE2FC45BE9CD9C8316E1 /* AyahLibraryView.swift */; };
+		CF1E7D8BCFB64185B37F86E7 /* MushafPickers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92CE446FED3AE9E46C6FD6FE /* MushafPickers.swift */; };
+		A5CBD6C7D74AB107427643F8 /* MushafTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4659B4256377723D9C17CE5C /* MushafTextView.swift */; };
+		40C51B53C5B95E1166E8C876 /* MushafView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B80BB4CA6983A2907A49C9DD /* MushafView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -210,6 +221,17 @@
 		EFE880EDD0E477B6F2D9A3FC /* RuqyahCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuqyahCatalog.swift; sourceTree = "<group>"; };
 		5C0A6E8367F2F884BD618BBB /* RuqyahView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuqyahView.swift; sourceTree = "<group>"; };
 		F870CB07E982A87E9972E481 /* ruqyah.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = ruqyah.json; sourceTree = "<group>"; };
+		3BE9CCA47EF9A7C3EB588B57 /* QuranModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuranModels.swift; sourceTree = "<group>"; };
+		DF04821EF8B3382CF2F5EA98 /* AyahLibrary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AyahLibrary.swift; sourceTree = "<group>"; };
+		5A1A224957D4C17E78D1F552 /* MushafPlayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MushafPlayer.swift; sourceTree = "<group>"; };
+		82F84BCF3F7E637F47B6F439 /* QuranIntegrityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuranIntegrityTests.swift; sourceTree = "<group>"; };
+		3C3C97390268DDC1904DBA9B /* quran.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = quran.json; sourceTree = "<group>"; };
+		BEADCE17D39A67AFB283949C /* AyahActionSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AyahActionSheet.swift; sourceTree = "<group>"; };
+		2E62E1D9F98FA0D816E3C89E /* TafsirService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TafsirService.swift; sourceTree = "<group>"; };
+		4464BE2FC45BE9CD9C8316E1 /* AyahLibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AyahLibraryView.swift; sourceTree = "<group>"; };
+		92CE446FED3AE9E46C6FD6FE /* MushafPickers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MushafPickers.swift; sourceTree = "<group>"; };
+		4659B4256377723D9C17CE5C /* MushafTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MushafTextView.swift; sourceTree = "<group>"; };
+		B80BB4CA6983A2907A49C9DD /* MushafView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MushafView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -230,6 +252,7 @@
 		0B0686EE7B77AE81B240CB33 /* SakinaTests */ = {
 			isa = PBXGroup;
 			children = (
+				82F84BCF3F7E637F47B6F439 /* QuranIntegrityTests.swift */,
 				08BCB593D183591E26DE5FB7 /* ContentIntegrityTests.swift */,
 				091EF70E03B8E1FAE35CF613 /* DuaCollectionTests.swift */,
 				1CA2E48F5FAFD413ECB039FF /* QiblaDirectionTests.swift */,
@@ -281,6 +304,7 @@
 		4437C01E203EBF9D07991845 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				3C3C97390268DDC1904DBA9B /* quran.json */,
 				F870CB07E982A87E9972E481 /* ruqyah.json */,
 				73BDB5597C502DF9620D4EB9 /* verses.json */,
 			);
@@ -400,6 +424,7 @@
 		E7765FE3C400A4D239818254 /* Sakina */ = {
 			isa = PBXGroup;
 			children = (
+				CCC192A1FE43290E5E673141 /* Mushaf */,
 				639A88F7E8B51C2FA83BF1DE /* Places */,
 				872E58719536D39601DD555E /* Goals */,
 				FDC7C33EE9BD89763D8B6372 /* Assets.xcassets */,
@@ -465,6 +490,22 @@
 				7193F35EB028C006F850B94A /* NearbyPlacesService.swift */,
 			);
 			path = Places;
+			sourceTree = "<group>";
+		};
+		CCC192A1FE43290E5E673141 /* Mushaf */ = {
+			isa = PBXGroup;
+			children = (
+				B80BB4CA6983A2907A49C9DD /* MushafView.swift */,
+				4659B4256377723D9C17CE5C /* MushafTextView.swift */,
+				92CE446FED3AE9E46C6FD6FE /* MushafPickers.swift */,
+				4464BE2FC45BE9CD9C8316E1 /* AyahLibraryView.swift */,
+				2E62E1D9F98FA0D816E3C89E /* TafsirService.swift */,
+				BEADCE17D39A67AFB283949C /* AyahActionSheet.swift */,
+				5A1A224957D4C17E78D1F552 /* MushafPlayer.swift */,
+				DF04821EF8B3382CF2F5EA98 /* AyahLibrary.swift */,
+				3BE9CCA47EF9A7C3EB588B57 /* QuranModels.swift */,
+			);
+			path = Mushaf;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -596,6 +637,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				43266564C9CA1903B29F74A3 /* quran.json in Resources */,
 				890C7E4721106661A6EB936F /* ruqyah.json in Resources */,
 				CA714A7FBE9A2C7C722B70C5 /* AppIcon60x60@2x.png in Resources */,
 				70DC51EA2A8BCFC5ECB8AD92 /* AppIcon60x60@3x.png in Resources */,
@@ -615,6 +657,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				00C1B04865499106CC46C88D /* QuranIntegrityTests.swift in Sources */,
 				2B2C96A6903E9C8219325E58 /* ContentIntegrityTests.swift in Sources */,
 				F80D8D20BAECC03475FEA5C4 /* DuaCollectionTests.swift in Sources */,
 				16D59498864A90DB031B8E7E /* QiblaDirectionTests.swift in Sources */,
@@ -639,6 +682,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				40C51B53C5B95E1166E8C876 /* MushafView.swift in Sources */,
+				A5CBD6C7D74AB107427643F8 /* MushafTextView.swift in Sources */,
+				CF1E7D8BCFB64185B37F86E7 /* MushafPickers.swift in Sources */,
+				A0328A51341B8FC01F653611 /* AyahLibraryView.swift in Sources */,
+				C4EEA5250C79EC6A11850444 /* TafsirService.swift in Sources */,
+				56EF5410FA9539789F4DD54E /* AyahActionSheet.swift in Sources */,
+				71EE25DE0D75B8A2D2742A8D /* MushafPlayer.swift in Sources */,
+				51BB59887D0758C00875AF7B /* AyahLibrary.swift in Sources */,
+				B9C516499E64BE945A37E869 /* QuranModels.swift in Sources */,
 				FCA3976C1D60CD8BF51624F6 /* RuqyahView.swift in Sources */,
 				11CA701C23621A1A10CF2229 /* RuqyahCatalog.swift in Sources */,
 				81096E8FC0B3255A906CFAA9 /* NearbyPlacesView.swift in Sources */,

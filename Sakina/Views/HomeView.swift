@@ -743,6 +743,19 @@ private struct HomePracticeSection: View {
                           detail: copy("The benefits of adhkar", "فوائد الأذكار"), artwork: .praise)
             }
             .buttonStyle(.yqPress)
+            NavigationLink { MushafView(language: language) } label: {
+                BadgeTile(symbol: "book.closed.fill", tint: .yqAccent,
+                          title: copy("Mushaf", "المصحف"),
+                          detail: AyahLibrary.shared.lastReadKey.flatMap { QuranStore.shared.ayah($0)?.reference(language) }
+                              ?? copy("Read the Qur’an", "اقرأ القرآن"), artwork: .quran)
+            }
+            .buttonStyle(.yqPress)
+            NavigationLink { AyahLibraryView(language: language) } label: {
+                BadgeTile(symbol: "bookmark.fill", tint: .yqAccent,
+                          title: copy("My ayat", "آياتي"),
+                          detail: copy("Highlights and notes", "تظليلات وملاحظات"), artwork: .saved)
+            }
+            .buttonStyle(.yqPress)
         }
     }
 
