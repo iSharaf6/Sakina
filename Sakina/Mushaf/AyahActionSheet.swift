@@ -13,6 +13,8 @@ struct AyahActionSheet: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @AppStorage(SettingsKeys.arabicScale) private var arabicScale = 1.0
+    @AppStorage(MushafPreferences.scriptKey) private var scriptRaw = QuranScript.uthmani.rawValue
+    @AppStorage(MushafPreferences.translationKey) private var translationID = QuranTranslationEdition.saheehInternational.id
 
     @State private var note = ""
     @State private var noteLoaded = false
@@ -21,7 +23,7 @@ struct AyahActionSheet: View {
 
     @State private var showTranslation = false
     @State private var showTafsir = false
-    @State private var edition: TafsirService.Edition
+    @State private var tafsirEdition: TafsirService.Edition
     @State private var tafsir: TafsirState = .idle
     @State private var tafsirTask: Task<Void, Never>?
 
@@ -39,11 +41,20 @@ struct AyahActionSheet: View {
     init(ayah: QuranAyah, language: AppLanguage) {
         self.ayah = ayah
         self.language = language
-        _edition = State(initialValue: .preferred(for: language))
+        _tafsirEdition = State(initialValue: .preferred(for: language))
     }
 
     private var copy: AppCopy { AppCopy(language: language) }
     private var key: String { ayah.key }
+    private var script: QuranScript { QuranScript(rawValue: scriptRaw) ?? .uthmani }
+    private var edition: QuranTranslationEdition {
+        QuranTranslationStore.shared.edition(translationID) ?? .saheehInternational
+    }
+    private var translationText: String { QuranTranslationStore.shared.text(for: ayah, edition: translationID) }
+    /// Whether the chosen translation reads right to left.
+    private var translationIsRTL: Bool {
+        ["arabic", "urdu", "persian", "farsi", "hebrew", "pashto", "sindhi", "kurdish", "dari", "uyghur"].contains(edition.language.lowercased())
+    }
     private var sharedText: String { AyahLibraryCopy.shareText(for: ayah, language: language) }
     private var isThisPlaying: Bool { player.playingKey == key && player.isPlaying }
     private var isThisBuffering: Bool { player.playingKey == key && player.isBuffering }
@@ -119,7 +130,7 @@ struct AyahActionSheet: View {
             if !inCategories.isEmpty {
                 FlowLayout(spacing: 6, lineSpacing: 6) {
                     ForEach(inCategories) { category in
-                        Tag(text: category.name, tint: category.color.color)
+                        Tag(text: category.title(language), tint: category.color.color)
                     }
                 }
             }
@@ -130,26 +141,26 @@ struct AyahActionSheet: View {
 
     private var ayahCard: some View {
         VStack(alignment: .leading, spacing: 18) {
-            Text("\(ayah.displayArabic) \(ayah.marker)")
-                .font(.arabic(28 * arabicScale))
+            // The renderer picks the script's font, colours tajweed and
+            // draws the marks the KFGQPC font gets wrong in the system font.
+            Text(QuranTextRenderer.swiftUI(ayah, script: script, size: 28 * arabicScale))
                 .lineSpacing(14)
-                .foregroundStyle(Color.yqInk)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .multilineTextAlignment(.leading)
                 .environment(\.layoutDirection, .rightToLeft)
                 .textSelection(.enabled)
-            Text(ayah.translation)
-                .font(.yqBody)
+            Text(translationText)
+                .font(translationIsRTL ? .arabicProse(18) : .yqBody)
                 .lineSpacing(6)
                 .foregroundStyle(Color.yqInk)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .multilineTextAlignment(.leading)
-                .environment(\.layoutDirection, .leftToRight)
+                .environment(\.layoutDirection, translationIsRTL ? .rightToLeft : .leftToRight)
                 .textSelection(.enabled)
             if let url = URL(string: ayah.canonicalURL) {
                 Link(destination: url) {
                     HStack(spacing: 4) {
-                        Text("Saheeh International · Quran.com")
+                        Text("\(edition.name) · Quran.com")
                         Image(systemName: "arrow.up.right").font(.system(size: 9, weight: .bold))
                     }
                     .font(.yqCaption)
@@ -258,15 +269,17 @@ struct AyahActionSheet: View {
                 .accessibilityLabel(copy("Hide translation", "إخفاء الترجمة"))
             }
             VStack(alignment: .leading, spacing: 14) {
-                Text(ayah.translation)
-                    .font(.system(.title3))
-                    .lineSpacing(7)
+                editionMenu
+                Text(translationText)
+                    .font(translationIsRTL ? .arabicProse(21) : .system(.title3))
+                    .lineSpacing(translationIsRTL ? 9 : 7)
                     .foregroundStyle(Color.yqInk)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .multilineTextAlignment(.leading)
-                    .environment(\.layoutDirection, .leftToRight)
+                    .environment(\.layoutDirection, translationIsRTL ? .rightToLeft : .leftToRight)
                     .textSelection(.enabled)
-                Text(copy("Saheeh International", "صحيح إنترناشونال"))
+                    .id(translationID)
+                Text(copy("\(edition.name) · via Quran.com", "\(edition.name) · عبر Quran.com"))
                     .font(.yqCaption)
                     .foregroundStyle(Color.yqTertiary)
                 if let url = URL(string: ayah.canonicalURL) {
@@ -283,6 +296,39 @@ struct AyahActionSheet: View {
             .padding(20)
             .yqCard(cornerRadius: 22)
         }
+    }
+
+    /// Edition name with a chevron; a menu of every bundled translation.
+    private var editionMenu: some View {
+        Menu {
+            ForEach(QuranTranslationStore.shared.editions) { candidate in
+                Button {
+                    guard candidate.id != translationID else { return }
+                    Haptics.selection()
+                    withAnimation(motion) { translationID = candidate.id }
+                } label: {
+                    if candidate.id == translationID {
+                        Label(candidate.name, systemImage: "checkmark")
+                    } else {
+                        Text(candidate.name)
+                    }
+                }
+            }
+        } label: {
+            HStack(spacing: 5) {
+                Text(edition.name)
+                    .font(.yqSubheadBold)
+                    .lineLimit(1)
+                Image(systemName: "chevron.up.chevron.down")
+                    .font(.system(size: 10, weight: .bold))
+            }
+            .foregroundStyle(Color.yqAccentDeep)
+            .padding(.horizontal, 12)
+            .frame(minHeight: 34)
+            .background(Color.yqAccentTint, in: Capsule(style: .continuous))
+        }
+        .accessibilityLabel(copy("Translation edition", "إصدار الترجمة"))
+        .accessibilityValue(edition.name)
     }
 
     // MARK: Highlight
@@ -332,7 +378,7 @@ struct AyahActionSheet: View {
         VStack(alignment: .leading, spacing: 12) {
             SectionHeader(copy("Save to", "احفظ في"))
             FlowLayout(spacing: 8, lineSpacing: 8) {
-                if library.categories.isEmpty {
+                if library.customCategories.isEmpty {
                     ForEach(CategorySuggestion.all) { suggestion in
                         Button {
                             Haptics.press()
@@ -344,13 +390,13 @@ struct AyahActionSheet: View {
                         .buttonStyle(.plain)
                     }
                 } else {
-                    ForEach(library.categories) { category in
+                    ForEach(library.customCategories) { category in
                         let selected = library.isInCategory(category, key: key)
                         Button {
                             Haptics.press()
                             library.toggle(category: category, for: key)
                         } label: {
-                            CategoryChip(symbol: category.symbol, title: category.name, tint: category.color.color, selected: selected)
+                            CategoryChip(symbol: category.symbol, title: category.title(language), tint: category.color.color, selected: selected)
                         }
                         .buttonStyle(.plain)
                         .accessibilityAddTraits(selected ? .isSelected : [])
@@ -365,11 +411,49 @@ struct AyahActionSheet: View {
                 .buttonStyle(.plain)
                 .accessibilityLabel(copy("New category", "تصنيف جديد"))
             }
-            if library.categories.isEmpty {
+            if library.customCategories.isEmpty {
                 Text(copy("Start with one of these, or make your own.", "ابدأ بأحدها، أو أنشئ تصنيفك."))
                     .font(.yqCaption)
                     .foregroundStyle(Color.yqTertiary)
             }
+            feelingsSection
+        }
+    }
+
+    // MARK: Feelings
+
+    /// The feelings this ayah already belongs to come first, then the rest
+    /// in their usual order.
+    private var orderedMoods: [DuaMood] {
+        let all = DuaMood.allCases
+        return all.filter { library.isInMood($0, key: key) } + all.filter { !library.isInMood($0, key: key) }
+    }
+
+    private var feelingsSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            SectionHeader(copy("Add to a feeling", "أضف إلى شعور"))
+                .padding(.top, 8)
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) {
+                    ForEach(orderedMoods) { mood in
+                        let selected = library.isInMood(mood, key: key)
+                        Button {
+                            Haptics.press()
+                            withAnimation(motion) { library.toggle(mood: mood, for: key) }
+                        } label: {
+                            FeelingChip(symbol: mood.symbol, title: mood.title(language), selected: selected, artwork: mood.artwork)
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityAddTraits(selected ? .isSelected : [])
+                    }
+                }
+                .padding(.horizontal, 20)
+            }
+            .padding(.horizontal, -20)
+            .animation(motion, value: orderedMoods)
+            Text(copy("Your ayat show up on that feeling's screen.", "تظهر آياتك في شاشة ذلك الشعور."))
+                .font(.yqCaption)
+                .foregroundStyle(Color.yqTertiary)
         }
     }
 
@@ -427,16 +511,16 @@ struct AyahActionSheet: View {
             HStack(spacing: 8) {
                 ForEach(TafsirService.Edition.allCases) { candidate in
                     Button {
-                        guard candidate != edition else { return }
+                        guard candidate != tafsirEdition else { return }
                         Haptics.selection()
-                        edition = candidate
+                        tafsirEdition = candidate
                         loadTafsir()
                     } label: {
-                        Tag(text: candidate.title(language), filled: candidate == edition)
+                        Tag(text: candidate.title(language), filled: candidate == tafsirEdition)
                             .frame(minHeight: 32)
                     }
                     .buttonStyle(.plain)
-                    .accessibilityAddTraits(candidate == edition ? .isSelected : [])
+                    .accessibilityAddTraits(candidate == tafsirEdition ? .isSelected : [])
                 }
                 Spacer(minLength: 0)
             }
@@ -483,17 +567,17 @@ struct AyahActionSheet: View {
         case .loaded(let text):
             VStack(alignment: .leading, spacing: 14) {
                 Text(text)
-                    .font(edition.isArabic ? .arabicProse(18) : .yqBody)
-                    .lineSpacing(edition.isArabic ? 8 : 6)
+                    .font(tafsirEdition.isArabic ? .arabicProse(18) : .yqBody)
+                    .lineSpacing(tafsirEdition.isArabic ? 8 : 6)
                     .foregroundStyle(Color.yqInk)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .multilineTextAlignment(.leading)
-                    .environment(\.layoutDirection, edition.isArabic ? .rightToLeft : .leftToRight)
+                    .environment(\.layoutDirection, tafsirEdition.isArabic ? .rightToLeft : .leftToRight)
                     .textSelection(.enabled)
-                if let url = URL(string: "\(ayah.canonicalURL)/tafsirs/\(edition.slug)") {
+                if let url = URL(string: "\(ayah.canonicalURL)/tafsirs/\(tafsirEdition.slug)") {
                     Link(destination: url) {
                         HStack(spacing: 4) {
-                            Text(copy("From Quran.com · \(edition.resourceName)", "من Quran.com · \(edition.resourceName)"))
+                            Text(copy("From Quran.com · \(tafsirEdition.resourceName)", "من Quran.com · \(tafsirEdition.resourceName)"))
                             Image(systemName: "arrow.up.right").font(.system(size: 9, weight: .bold))
                         }
                         .font(.yqCaption)
@@ -506,7 +590,7 @@ struct AyahActionSheet: View {
 
     private func loadTafsir() {
         tafsirTask?.cancel()
-        let edition = edition
+        let edition = tafsirEdition
         if let cached = TafsirService.shared.cached(for: key, edition: edition) {
             tafsir = .loaded(cached)
             return
@@ -515,13 +599,13 @@ struct AyahActionSheet: View {
         tafsirTask = Task {
             do {
                 let text = try await TafsirService.shared.tafsir(for: key, edition: edition)
-                guard !Task.isCancelled, self.edition == edition else { return }
+                guard !Task.isCancelled, self.tafsirEdition == edition else { return }
                 withAnimation(motion) { tafsir = .loaded(text) }
             } catch let failure as TafsirService.Failure {
-                guard !Task.isCancelled, self.edition == edition else { return }
+                guard !Task.isCancelled, self.tafsirEdition == edition else { return }
                 tafsir = .failed(failure.message(language))
             } catch {
-                guard !Task.isCancelled, self.edition == edition else { return }
+                guard !Task.isCancelled, self.tafsirEdition == edition else { return }
                 tafsir = .failed(copy("Couldn't load the tafsir right now.", "تعذّر تحميل التفسير الآن."))
             }
         }

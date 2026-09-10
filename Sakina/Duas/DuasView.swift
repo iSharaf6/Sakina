@@ -331,17 +331,111 @@ enum FeelingLibrary {
 struct MoodDetailView: View {
     let mood: DuaMood
     let language: AppLanguage
+    @ObservedObject private var library = AyahLibrary.shared
     private var copy: AppCopy { AppCopy(language: language) }
     private var entries: [GuidanceSupplication] { DuaCollection.entries(mood: mood) }
     private var title: String { copy("For when you feel \(mood.title(language).lowercased())", "حين تشعر أنك \(mood.title(language))") }
+    private var ownKeys: [String] { library.keys(for: mood) }
 
     var body: some View {
-        if let first = entries.first {
+        if !ownKeys.isEmpty {
+            // The reader has attached ayat from the mushaf to this feeling:
+            // show those first, then the du'as.
+            ScrollView(showsIndicators: false) {
+                VStack(alignment: .leading, spacing: 20) {
+                    HStack(alignment: .top, spacing: 12) {
+                        CompanionIllustration(artwork: mood.artwork, size: 56)
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(title).font(.yqTitle2).foregroundStyle(Color.yqInk)
+                            Text(mood.opening(language)).font(.yqSubhead).foregroundStyle(Color.yqSecondary)
+                        }
+                    }
+                    MoodAyatSection(mood: mood, keys: ownKeys, language: language)
+                    if let first = entries.first {
+                        NavigationLink {
+                            DuaReaderView(dua: first, sequence: entries, collectionTitle: title, mood: mood)
+                        } label: {
+                            HStack(spacing: 14) {
+                                CompanionIllustration(artwork: .sunnah, size: 44)
+                                VStack(alignment: .leading, spacing: 3) {
+                                    Text(copy("Du’as for this feeling", "أدعية لهذا الشعور"))
+                                        .font(.yqHeadline).foregroundStyle(Color.yqInk)
+                                    Text(copy("\(entries.count) from the Qur’an and Sunnah", "\(entries.count) من القرآن والسنة"))
+                                        .font(.yqSubhead).foregroundStyle(Color.yqSecondary)
+                                }
+                                Spacer(minLength: 0)
+                                Chevron()
+                            }
+                            .padding(14)
+                            .yqCard(cornerRadius: 20)
+                        }
+                        .buttonStyle(.yqPress)
+                    }
+                }
+                .padding(.horizontal, 20)
+                .padding(.top, 8)
+                .padding(.bottom, 28)
+            }
+            .yqScreen()
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar(.visible, for: .navigationBar)
+            .toolbar(.hidden, for: .tabBar)
+        } else if let first = entries.first {
             DuaReaderView(dua: first, sequence: entries, collectionTitle: title, mood: mood)
         } else {
             EmptyGuidanceState(title: copy("Nothing here yet", "لا يوجد شيء بعد"),
                                detail: copy("Try another feeling.", "جرّب شعورًا آخر."), symbol: "heart", artwork: mood.artwork)
                 .yqScreen()
+        }
+    }
+}
+
+/// The ayat a reader saved to a feeling from the mushaf.
+struct MoodAyatSection: View {
+    let mood: DuaMood
+    let keys: [String]
+    let language: AppLanguage
+    @AppStorage(MushafPreferences.scriptKey) private var scriptRaw = QuranScript.uthmani.rawValue
+    private var copy: AppCopy { AppCopy(language: language) }
+    private var script: QuranScript { QuranScript(rawValue: scriptRaw) ?? .uthmani }
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            SectionHeader(copy("Your ayat", "آياتك")) {
+                Text(copy("\(keys.count) saved", "\(keys.count) محفوظة"))
+                    .font(.yqCaption).foregroundStyle(Color.yqSecondary)
+            }
+            RowGroup {
+                ForEach(Array(keys.enumerated()), id: \.element) { index, key in
+                    if let ayah = QuranStore.shared.ayah(key) {
+                        NavigationLink {
+                            MushafView(language: language, initialKey: key, showsTabBar: false)
+                        } label: {
+                            VStack(alignment: .trailing, spacing: 8) {
+                                Text(QuranTextRenderer.swiftUI(ayah, script: script, size: 22))
+                                    .lineSpacing(10)
+                                    .lineLimit(3)
+                                    .multilineTextAlignment(.trailing)
+                                    .frame(maxWidth: .infinity, alignment: .trailing)
+                                    .environment(\.layoutDirection, .rightToLeft)
+                                HStack {
+                                    Text(ayah.reference(language)).font(.yqCaptionBold).foregroundStyle(Color.yqAccentDeep)
+                                    Spacer()
+                                    let note = AyahLibrary.shared.note(key)
+                                    if !note.isEmpty {
+                                        Text(note).font(.yqCaption).foregroundStyle(Color.yqSecondary).lineLimit(1)
+                                    }
+                                    Chevron()
+                                }
+                            }
+                            .padding(14)
+                            .contentShape(Rectangle())
+                        }
+                        .buttonStyle(.yqPressSoft)
+                        if index < keys.count - 1 { RowDivider(inset: 14) }
+                    }
+                }
+            }
         }
     }
 }

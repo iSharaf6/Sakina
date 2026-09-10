@@ -105,6 +105,15 @@
 		CF1E7D8BCFB64185B37F86E7 /* MushafPickers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 92CE446FED3AE9E46C6FD6FE /* MushafPickers.swift */; };
 		A5CBD6C7D74AB107427643F8 /* MushafTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4659B4256377723D9C17CE5C /* MushafTextView.swift */; };
 		40C51B53C5B95E1166E8C876 /* MushafView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B80BB4CA6983A2907A49C9DD /* MushafView.swift */; };
+		55B21165F84AEF1B79494518 /* QuranScripts.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3D99C0BB44888678A8DF4A1 /* QuranScripts.swift */; };
+		8873A6CCEFD85C0FAFB7C52E /* QuranTextRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 490E1ACFD38E4F1B31230BEA /* QuranTextRenderer.swift */; };
+		CA2535C12249C04C2F6314F6 /* MushafPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EC7D29F4A70DEB3684B68EDF /* MushafPageView.swift */; };
+		521493E876A4018BCD811569 /* MushafDisplaySheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1F45D409FA4B40B61F19DA7 /* MushafDisplaySheet.swift */; };
+		5B1851A8DDFCAFE1212F8AA0 /* quran-scripts.json in Resources */ = {isa = PBXBuildFile; fileRef = 258D6589D06A563131497857 /* quran-scripts.json */; };
+		AB75D9E1FD123715FA8ABA9A /* translations.json in Resources */ = {isa = PBXBuildFile; fileRef = 00648A75458007DE4BD30B9B /* translations.json */; };
+		1A3A1E2BCC595117EB4175C9 /* RecitationCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C26C3CEB626274B206EDD09 /* RecitationCache.swift */; };
+		C655E5B2C9CB1521F267F414 /* MushafPlayerBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 991EF765A1F3D42572A9D8F1 /* MushafPlayerBar.swift */; };
+		064D1D381DF5D12BDD30691D /* QuranEditionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 216A21AA5ADF3DA43BFA4624 /* QuranEditionsTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -232,6 +241,15 @@
 		92CE446FED3AE9E46C6FD6FE /* MushafPickers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MushafPickers.swift; sourceTree = "<group>"; };
 		4659B4256377723D9C17CE5C /* MushafTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MushafTextView.swift; sourceTree = "<group>"; };
 		B80BB4CA6983A2907A49C9DD /* MushafView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MushafView.swift; sourceTree = "<group>"; };
+		E3D99C0BB44888678A8DF4A1 /* QuranScripts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuranScripts.swift; sourceTree = "<group>"; };
+		490E1ACFD38E4F1B31230BEA /* QuranTextRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuranTextRenderer.swift; sourceTree = "<group>"; };
+		EC7D29F4A70DEB3684B68EDF /* MushafPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MushafPageView.swift; sourceTree = "<group>"; };
+		D1F45D409FA4B40B61F19DA7 /* MushafDisplaySheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MushafDisplaySheet.swift; sourceTree = "<group>"; };
+		258D6589D06A563131497857 /* quran-scripts.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = quran-scripts.json; sourceTree = "<group>"; };
+		00648A75458007DE4BD30B9B /* translations.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = translations.json; sourceTree = "<group>"; };
+		1C26C3CEB626274B206EDD09 /* RecitationCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecitationCache.swift; sourceTree = "<group>"; };
+		991EF765A1F3D42572A9D8F1 /* MushafPlayerBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MushafPlayerBar.swift; sourceTree = "<group>"; };
+		216A21AA5ADF3DA43BFA4624 /* QuranEditionsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuranEditionsTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -252,6 +270,7 @@
 		0B0686EE7B77AE81B240CB33 /* SakinaTests */ = {
 			isa = PBXGroup;
 			children = (
+				216A21AA5ADF3DA43BFA4624 /* QuranEditionsTests.swift */,
 				82F84BCF3F7E637F47B6F439 /* QuranIntegrityTests.swift */,
 				08BCB593D183591E26DE5FB7 /* ContentIntegrityTests.swift */,
 				091EF70E03B8E1FAE35CF613 /* DuaCollectionTests.swift */,
@@ -296,6 +315,7 @@
 		38A2A38FC8AA0501536C7A44 /* Audio */ = {
 			isa = PBXGroup;
 			children = (
+				1C26C3CEB626274B206EDD09 /* RecitationCache.swift */,
 				D1EFDB8F8C78374354ED876F /* RecitationPlayer.swift */,
 			);
 			path = Audio;
@@ -304,6 +324,8 @@
 		4437C01E203EBF9D07991845 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				00648A75458007DE4BD30B9B /* translations.json */,
+				258D6589D06A563131497857 /* quran-scripts.json */,
 				3C3C97390268DDC1904DBA9B /* quran.json */,
 				F870CB07E982A87E9972E481 /* ruqyah.json */,
 				73BDB5597C502DF9620D4EB9 /* verses.json */,
@@ -495,6 +517,11 @@
 		CCC192A1FE43290E5E673141 /* Mushaf */ = {
 			isa = PBXGroup;
 			children = (
+				991EF765A1F3D42572A9D8F1 /* MushafPlayerBar.swift */,
+				D1F45D409FA4B40B61F19DA7 /* MushafDisplaySheet.swift */,
+				EC7D29F4A70DEB3684B68EDF /* MushafPageView.swift */,
+				490E1ACFD38E4F1B31230BEA /* QuranTextRenderer.swift */,
+				E3D99C0BB44888678A8DF4A1 /* QuranScripts.swift */,
 				B80BB4CA6983A2907A49C9DD /* MushafView.swift */,
 				4659B4256377723D9C17CE5C /* MushafTextView.swift */,
 				92CE446FED3AE9E46C6FD6FE /* MushafPickers.swift */,
@@ -637,6 +664,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AB75D9E1FD123715FA8ABA9A /* translations.json in Resources */,
+				5B1851A8DDFCAFE1212F8AA0 /* quran-scripts.json in Resources */,
 				43266564C9CA1903B29F74A3 /* quran.json in Resources */,
 				890C7E4721106661A6EB936F /* ruqyah.json in Resources */,
 				CA714A7FBE9A2C7C722B70C5 /* AppIcon60x60@2x.png in Resources */,
@@ -657,6 +686,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				064D1D381DF5D12BDD30691D /* QuranEditionsTests.swift in Sources */,
 				00C1B04865499106CC46C88D /* QuranIntegrityTests.swift in Sources */,
 				2B2C96A6903E9C8219325E58 /* ContentIntegrityTests.swift in Sources */,
 				F80D8D20BAECC03475FEA5C4 /* DuaCollectionTests.swift in Sources */,
@@ -682,6 +712,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C655E5B2C9CB1521F267F414 /* MushafPlayerBar.swift in Sources */,
+				1A3A1E2BCC595117EB4175C9 /* RecitationCache.swift in Sources */,
+				521493E876A4018BCD811569 /* MushafDisplaySheet.swift in Sources */,
+				CA2535C12249C04C2F6314F6 /* MushafPageView.swift in Sources */,
+				8873A6CCEFD85C0FAFB7C52E /* QuranTextRenderer.swift in Sources */,
+				55B21165F84AEF1B79494518 /* QuranScripts.swift in Sources */,
 				40C51B53C5B95E1166E8C876 /* MushafView.swift in Sources */,
 				A5CBD6C7D74AB107427643F8 /* MushafTextView.swift in Sources */,
 				CF1E7D8BCFB64185B37F86E7 /* MushafPickers.swift in Sources */,

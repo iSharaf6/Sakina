@@ -149,25 +149,29 @@ struct SurahPickerSheet: View {
             .replacingOccurrences(of: "ٱ", with: "ا")
     }
 
-    /// Accepts Western or Arabic-Indic digits.
     private static func number(from text: String) -> Int? {
-        let western = text.map { character -> Character in
-            switch character {
-            case "٠": return "0"
-            case "١": return "1"
-            case "٢": return "2"
-            case "٣": return "3"
-            case "٤": return "4"
-            case "٥": return "5"
-            case "٦": return "6"
-            case "٧": return "7"
-            case "٨": return "8"
-            case "٩": return "9"
-            default: return character
-            }
-        }
-        return Int(String(western))
+        pickerNumber(from: text)
     }
+}
+
+/// Reads a whole number typed in Western or Arabic-Indic digits.
+private func pickerNumber(from text: String) -> Int? {
+    let western = text.trimmingCharacters(in: .whitespacesAndNewlines).map { character -> Character in
+        switch character {
+        case "٠": return "0"
+        case "١": return "1"
+        case "٢": return "2"
+        case "٣": return "3"
+        case "٤": return "4"
+        case "٥": return "5"
+        case "٦": return "6"
+        case "٧": return "7"
+        case "٨": return "8"
+        case "٩": return "9"
+        default: return character
+        }
+    }
+    return Int(String(western))
 }
 
 // MARK: - Juz picker
@@ -268,5 +272,176 @@ struct JuzPickerSheet: View {
         .lineLimit(1)
         .frame(minHeight: 44)
         .contentShape(Rectangle())
+    }
+}
+
+// MARK: - Page picker
+
+/// Type a page number (1…604, Western or Arabic-Indic digits) or pick the
+/// first page of a juz. Hands back the page number.
+struct PagePickerSheet: View {
+    let language: AppLanguage
+    let current: Int
+    let onPick: (Int) -> Void
+
+    @Environment(\.dismiss) private var dismiss
+    @State private var input = ""
+    @State private var invalidAttempt = false
+    @FocusState private var fieldFocused: Bool
+
+    private var copy: AppCopy { AppCopy(language: language) }
+
+    /// The typed page when it is a real Madani page number.
+    private var typedPage: Int? {
+        guard let number = pickerNumber(from: input), (1...QuranStore.pageCount).contains(number) else { return nil }
+        return number
+    }
+
+    private var currentLabel: String {
+        language == .arabic
+            ? "أنت الآن في صفحة \(QuranAyah.arabicDigits(current))"
+            : "You are on page \(current)"
+    }
+
+    var body: some View {
+        NavigationStack {
+            List {
+                Section {
+                    VStack(alignment: .leading, spacing: 8) {
+                        HStack(spacing: 10) {
+                            TextField(language == .arabic ? "١ – ٦٠٤" : "1 – 604", text: $input)
+                                .font(.yqBody)
+                                .keyboardType(.numberPad)
+                                .focused($fieldFocused)
+                                .submitLabel(.go)
+                                .onSubmit(go)
+                                .padding(.horizontal, 12)
+                                .frame(minHeight: 46)
+                                .background(Color.yqFill, in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 14, style: .continuous)
+                                        .strokeBorder(invalidAttempt ? Color.yqAccent : Color.clear, lineWidth: 1)
+                                )
+                                .accessibilityLabel(copy("Page number", "رقم الصفحة"))
+                            Button(action: go) {
+                                Text(copy("Go", "انتقال"))
+                                    .font(.yqSubheadBold)
+                                    .foregroundStyle(Color.yqOnAccent)
+                                    .padding(.horizontal, 18)
+                                    .frame(minHeight: 46)
+                                    .background(Color.yqAccent, in: Capsule(style: .continuous))
+                                    .contentShape(Capsule())
+                            }
+                            .buttonStyle(.yqPress)
+                            .disabled(typedPage == nil)
+                            .opacity(typedPage == nil ? 0.5 : 1)
+                            .accessibilityLabel(copy("Go to page", "الانتقال إلى الصفحة"))
+                        }
+                        Text(invalidAttempt ? copy("Enter a page from 1 to 604.", "أدخل رقم صفحة من ١ إلى ٦٠٤.") : currentLabel)
+                            .font(.yqCaption)
+                            .foregroundStyle(Color.yqSecondary)
+                    }
+                    .padding(.vertical, 4)
+                    .listRowBackground(Color.clear)
+                    .listRowSeparator(.hidden)
+                    .listRowInsets(EdgeInsets(top: 8, leading: 20, bottom: 8, trailing: 20))
+                }
+
+                Section {
+                    ForEach(1...QuranStore.juzCount, id: \.self) { juz in
+                        let first = QuranStore.shared.firstAyah(ofJuz: juz)
+                        Button {
+                            guard let first else { return }
+                            Haptics.selection()
+                            onPick(first.page)
+                            dismiss()
+                        } label: {
+                            row(juz: juz, first: first)
+                        }
+                        .buttonStyle(.plain)
+                        .disabled(first == nil)
+                        .listRowBackground(Color.clear)
+                        .listRowSeparatorTint(Color.yqHairline)
+                        .listRowInsets(EdgeInsets(top: 10, leading: 20, bottom: 10, trailing: 20))
+                        .accessibilityAddTraits(isCurrent(juz: juz, first: first) ? .isSelected : [])
+                    }
+                } header: {
+                    CapsLabel(text: copy("Juz", "الأجزاء"))
+                        .padding(.horizontal, 4)
+                }
+            }
+            .listStyle(.plain)
+            .scrollContentBackground(.hidden)
+            .scrollDismissesKeyboard(.immediately)
+            .yqScreen()
+            .navigationTitle(copy("Go to page", "الانتقال إلى صفحة"))
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .confirmationAction) {
+                    Button(copy("Done", "تم")) { dismiss() }
+                }
+            }
+            .onChange(of: input) { _, _ in invalidAttempt = false }
+        }
+        .yaqeenLanguage(language)
+    }
+
+    private func go() {
+        guard let page = typedPage else {
+            invalidAttempt = !input.isEmpty
+            Haptics.warning()
+            return
+        }
+        Haptics.selection()
+        onPick(page)
+        dismiss()
+    }
+
+    /// The juz whose page span holds the current page.
+    private func isCurrent(juz: Int, first: QuranAyah?) -> Bool {
+        guard let first else { return false }
+        let nextStart = QuranStore.shared.firstAyah(ofJuz: juz + 1)?.page ?? QuranStore.pageCount + 1
+        return current >= first.page && current < nextStart
+    }
+
+    private func row(juz: Int, first: QuranAyah?) -> some View {
+        let isCurrent = isCurrent(juz: juz, first: first)
+        let title = language == .arabic ? JuzPickerSheet.arabicName(juz) : "Juz \(juz)"
+        let subtitle: String = {
+            guard let first else { return "" }
+            let surahName = QuranStore.shared.surah(first.surah)?.name(language) ?? ""
+            return language == .arabic
+                ? "صفحة \(QuranAyah.arabicDigits(first.page)) · \(surahName)"
+                : "Page \(first.page) · \(surahName)"
+        }()
+        return HStack(spacing: 14) {
+            ZStack {
+                Circle().fill(isCurrent ? Color.yqAccent : Color.yqFill)
+                Text(language == .arabic ? QuranAyah.arabicDigits(juz) : "\(juz)")
+                    .font(.yqCaptionBold)
+                    .foregroundStyle(isCurrent ? Color.yqOnAccent : Color.yqInk)
+            }
+            .frame(width: 36, height: 36)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(title)
+                    .font(.yqBodyMedium)
+                    .foregroundStyle(Color.yqInk)
+                if !subtitle.isEmpty {
+                    Text(subtitle)
+                        .font(.yqCaption)
+                        .foregroundStyle(Color.yqSecondary)
+                }
+            }
+            Spacer(minLength: 8)
+            if isCurrent {
+                Image(systemName: "checkmark")
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundStyle(Color.yqAccent)
+            }
+        }
+        .lineLimit(1)
+        .frame(minHeight: 44)
+        .contentShape(Rectangle())
+        .accessibilityElement(children: .combine)
     }
 }

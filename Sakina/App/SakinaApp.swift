@@ -113,6 +113,8 @@ struct RootView: View {
         .onAppear {
             Haptics.prepare()
             QuranStore.warmUp()
+            QuranScriptStore.warmUp()
+            QuranTranslationStore.warmUp()
             router.activate()
             ReminderScheduler.refresh()
             account.restorePreviousSignIn()

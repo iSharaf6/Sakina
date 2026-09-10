@@ -26,6 +26,7 @@ struct AyahLibraryView: View {
                            subtitle: copy("Highlights, bookmarks, notes and your own categories.",
                                           "تظليلاتك وعلاماتك وملاحظاتك وتصنيفاتك الخاصة."))
                 collections
+                feelings
                 categories
             }
             .padding(.horizontal, 20)
@@ -43,7 +44,7 @@ struct AyahLibraryView: View {
             CategoryEditorSheet(language: language, editing: category)
         }
         .confirmationDialog(
-            deletingCategory.map { copy("Delete “\($0.name)”?", "حذف «\($0.name)»؟") } ?? "",
+            deletingCategory.map { copy("Delete “\($0.title(language))”?", "حذف «\($0.title(language))»؟") } ?? "",
             isPresented: Binding(get: { deletingCategory != nil }, set: { if !$0 { deletingCategory = nil } }),
             titleVisibility: .visible,
             presenting: deletingCategory
@@ -54,8 +55,8 @@ struct AyahLibraryView: View {
             }
             Button(copy("Cancel", "إلغاء"), role: .cancel) {}
         } message: { category in
-            Text(copy("The ayat stay in the mushaf with their highlights and notes; only the “\(category.name)” label is removed.",
-                      "تبقى الآيات في المصحف مع تظليلاتها وملاحظاتها؛ يُزال فقط تصنيف «\(category.name)»."))
+            Text(copy("The ayat stay in the mushaf with their highlights and notes; only the “\(category.title(language))” label is removed.",
+                      "تبقى الآيات في المصحف مع تظليلاتها وملاحظاتها؛ يُزال فقط تصنيف «\(category.title(language))»."))
         }
     }
 
@@ -84,16 +85,47 @@ struct AyahLibraryView: View {
         .buttonStyle(.yqPress)
     }
 
+    // MARK: Feelings
+
+    /// The feelings the reader has filed ayat under from the mushaf. These
+    /// categories are made by `AyahLibrary.toggle(mood:for:)` and are only
+    /// listed while they hold something; the same ayat appear on that
+    /// feeling's screen.
+    @ViewBuilder
+    private var feelings: some View {
+        let moods = library.moodCategories
+        if !moods.isEmpty {
+            VStack(alignment: .leading, spacing: 12) {
+                SectionHeader(copy("Feelings", "المشاعر"))
+                RowGroup {
+                    ForEach(Array(moods.enumerated()), id: \.element.id) { position, category in
+                        NavigationLink {
+                            AyahListView(title: category.title(language), keys: library.keys(in: category), language: language, removal: .category(category))
+                        } label: {
+                            BadgeRow(symbol: category.symbol, tint: category.color.color,
+                                     title: category.title(language),
+                                     subtitle: AyahLibraryCopy.ayatCount(library.count(in: category), language),
+                                     artwork: category.mood?.artwork)
+                        }
+                        .buttonStyle(.yqPressSoft)
+                        if position < moods.count - 1 { RowDivider() }
+                    }
+                }
+            }
+        }
+    }
+
     // MARK: Categories
 
     private var categories: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        let custom = library.customCategories
+        return VStack(alignment: .leading, spacing: 12) {
             SectionHeader(copy("Categories", "التصنيفات")) {
                 Button { showNewCategory = true } label: { TextAction(title: copy("New", "جديد")) }
                     .buttonStyle(.yqPressSoft)
                     .accessibilityLabel(copy("New category", "تصنيف جديد"))
             }
-            if library.categories.isEmpty {
+            if custom.isEmpty {
                 EmptyGuidanceState(
                     title: copy("Make a category for what you're going through", "أنشئ تصنيفًا لما تمرّ به"),
                     detail: copy("Sad, hopeful, grateful. Save ayat under it from the mushaf.",
@@ -104,11 +136,11 @@ struct AyahLibraryView: View {
                 .yqCard()
             } else {
                 RowGroup {
-                    ForEach(Array(library.categories.enumerated()), id: \.element.id) { position, category in
+                    ForEach(Array(custom.enumerated()), id: \.element.id) { position, category in
                         NavigationLink {
-                            AyahListView(title: category.name, keys: library.keys(in: category), language: language, removal: .category(category))
+                            AyahListView(title: category.title(language), keys: library.keys(in: category), language: language, removal: .category(category))
                         } label: {
-                            CategoryRow(category: category, subtitle: AyahLibraryCopy.ayatCount(library.count(in: category), language))
+                            CategoryRow(category: category, language: language, subtitle: AyahLibraryCopy.ayatCount(library.count(in: category), language))
                         }
                         .buttonStyle(.yqPressSoft)
                         .contextMenu {
@@ -119,7 +151,7 @@ struct AyahLibraryView: View {
                                 Label(copy("Delete", "حذف"), systemImage: "trash")
                             }
                         }
-                        if position < library.categories.count - 1 { RowDivider() }
+                        if position < custom.count - 1 { RowDivider() }
                     }
                 }
             }
@@ -131,13 +163,14 @@ struct AyahLibraryView: View {
 /// instead of swapping in companion artwork.
 private struct CategoryRow: View {
     let category: AyahCategory
+    let language: AppLanguage
     let subtitle: String
 
     var body: some View {
         HStack(spacing: 14) {
             CategoryBadge(symbol: category.symbol, tint: category.color.color, size: 36)
             VStack(alignment: .leading, spacing: 2) {
-                Text(category.name)
+                Text(category.title(language))
                     .font(.yqBodyMedium)
                     .foregroundStyle(Color.yqInk)
                     .lineLimit(2)
@@ -228,7 +261,7 @@ struct AyahListView: View {
                         ForEach(Array(visibleKeys.enumerated()), id: \.element) { position, key in
                             if let ayah = QuranStore.shared.ayah(key) {
                                 NavigationLink {
-                                    MushafView(language: language, initialKey: key)
+                                    MushafView(language: language, initialKey: key, showsTabBar: false)
                                 } label: {
                                     AyahLibraryRow(ayah: ayah, mark: library.mark(key), language: language)
                                 }
@@ -277,15 +310,18 @@ private struct AyahLibraryRow: View {
     let mark: AyahMark?
     let language: AppLanguage
 
+    @AppStorage(MushafPreferences.scriptKey) private var scriptRaw = QuranScript.uthmani.rawValue
+
     private var note: String { mark?.note.trimmingCharacters(in: .whitespacesAndNewlines) ?? "" }
+    private var script: QuranScript { QuranScript(rawValue: scriptRaw) ?? .uthmani }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("\(ayah.displayArabic) \(ayah.marker)")
-                .font(.arabic(20))
+            // The renderer picks the script's font, colours tajweed and draws
+            // the marks the KFGQPC font gets wrong in the system font.
+            Text(QuranTextRenderer.swiftUI(ayah, script: script, size: 20))
                 .lineSpacing(8)
                 .lineLimit(2)
-                .foregroundStyle(Color.yqInk)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .multilineTextAlignment(.leading)
                 .environment(\.layoutDirection, .rightToLeft)

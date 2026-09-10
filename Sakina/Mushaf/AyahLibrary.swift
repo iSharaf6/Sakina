@@ -42,13 +42,26 @@ struct AyahCategory: Identifiable, Codable, Hashable {
     var symbol: String
     var color: HighlightColor
     var createdAt: Date
+    /// When set, this category is one of the app's feelings (a `DuaMood`
+    /// raw value) and shows up on that feeling's screen.
+    var moodID: String?
 
-    init(id: String = UUID().uuidString, name: String, symbol: String = "folder.fill", color: HighlightColor = .green, createdAt: Date = .now) {
+    init(id: String = UUID().uuidString, name: String, symbol: String = "folder.fill", color: HighlightColor = .green,
+         createdAt: Date = .now, moodID: String? = nil) {
         self.id = id
         self.name = name
         self.symbol = symbol
         self.color = color
         self.createdAt = createdAt
+        self.moodID = moodID
+    }
+
+    var mood: DuaMood? { moodID.flatMap(DuaMood.init(rawValue:)) }
+
+    /// Feeling categories take their title from the feeling, so they follow
+    /// the app language.
+    func title(_ language: AppLanguage) -> String {
+        mood?.title(language) ?? name
     }
 }
 
@@ -145,6 +158,36 @@ final class AyahLibrary: ObservableObject {
     }
     func count(in category: AyahCategory) -> Int {
         marks.values.filter { $0.categoryIDs.contains(category.id) }.count
+    }
+
+    /// Categories the reader made themselves, without the feeling ones.
+    var customCategories: [AyahCategory] { categories.filter { $0.moodID == nil } }
+
+    /// Feeling categories that hold at least one ayah.
+    var moodCategories: [AyahCategory] { categories.filter { $0.moodID != nil && count(in: $0) > 0 } }
+
+    func category(for mood: DuaMood) -> AyahCategory? {
+        categories.first { $0.moodID == mood.rawValue }
+    }
+
+    /// The ayat the reader has attached to a feeling, in mushaf order.
+    func keys(for mood: DuaMood) -> [String] {
+        category(for: mood).map(keys(in:)) ?? []
+    }
+
+    func isInMood(_ mood: DuaMood, key: String) -> Bool {
+        category(for: mood).map { isInCategory($0, key: key) } ?? false
+    }
+
+    /// Adds or removes the ayah from a feeling, creating the hidden feeling
+    /// category on first use.
+    func toggle(mood: DuaMood, for key: String) {
+        let category = self.category(for: mood) ?? {
+            let made = AyahCategory(name: mood.title(.english), symbol: mood.symbol, color: .green, moodID: mood.rawValue)
+            categories.append(made)
+            return made
+        }()
+        toggle(category: category, for: key)
     }
 
     // MARK: Writing

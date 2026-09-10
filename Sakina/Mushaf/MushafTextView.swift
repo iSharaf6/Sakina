@@ -22,13 +22,13 @@ final class MushafTextProxy {
 
 // MARK: - Text view
 
-/// One continuous Uthmani text block for a surah, rendered by a TextKit 1
+/// One continuous text block for a surah in the chosen script, rendered by a TextKit 1
 /// `UITextView`. Ayah markers sit inline; highlights and the playing ayah
 /// are paragraph background attributes. The view never scrolls itself: the
 /// surrounding SwiftUI `ScrollView` does, so `sizeThatFits` reports the full
 /// laid-out height for the proposed width.
 struct MushafTextView: UIViewRepresentable {
-    static let fontName = "KFGQPC HAFS Uthmanic Script"
+    static let fontName = QuranTextRenderer.uthmaniFontName
     static let inset: CGFloat = 16
 
     var ayat: [QuranAyah]
@@ -39,6 +39,10 @@ struct MushafTextView: UIViewRepresentable {
     var colorMarkers: Bool
     var playingKey: String?
     var showTranslation: Bool
+    /// Which orthography to draw; see `QuranTextRenderer`.
+    var script: QuranScript = .uthmani
+    /// Quran.com translation resource id, 20 = Saheeh International.
+    var translationEdition: Int = QuranTranslationEdition.saheehInternational.id
     var proxy: MushafTextProxy? = nil
     var onTap: (QuranAyah) -> Void
     /// Called (asynchronously, after layout) with the bounding rect of every
@@ -53,11 +57,14 @@ struct MushafTextView: UIViewRepresentable {
         var colorMarkers: Bool
         var playingKey: String?
         var showTranslation: Bool
+        var script: QuranScript
+        var translationEdition: Int
     }
 
     private var inputs: Inputs {
         Inputs(keys: ayat.map(\.key), fontSize: fontSize, highlights: highlights,
-               colorMarkers: colorMarkers, playingKey: playingKey, showTranslation: showTranslation)
+               colorMarkers: colorMarkers, playingKey: playingKey, showTranslation: showTranslation,
+               script: script, translationEdition: translationEdition)
     }
 
     func makeCoordinator() -> Coordinator { Coordinator() }
@@ -155,8 +162,7 @@ struct MushafTextView: UIViewRepresentable {
         // MARK: Building the string
 
         fileprivate func rebuild(ayat: [QuranAyah], inputs: Inputs) {
-            let font = UIFont(name: MushafTextView.fontName, size: inputs.fontSize)
-                ?? UIFont.systemFont(ofSize: inputs.fontSize)
+            let font = QuranTextRenderer.font(for: inputs.script, size: inputs.fontSize)
             let ink = UIColor(Color.yqInk)
             let accent = UIColor(Color.yqAccentDeep)
             let playingTint = UIColor(Color.yqAccentTint)
@@ -169,14 +175,15 @@ struct MushafTextView: UIViewRepresentable {
             arabicStyle.paragraphSpacing = inputs.showTranslation ? 4 : 0
 
             let translationStyle = NSMutableParagraphStyle()
-            translationStyle.baseWritingDirection = .leftToRight
+            let edition = QuranTranslationStore.shared.edition(inputs.translationEdition)
+            let translationIsRTL = Self.rightToLeftLanguages.contains(edition?.language.lowercased() ?? "")
+            translationStyle.baseWritingDirection = translationIsRTL ? .rightToLeft : .leftToRight
             translationStyle.alignment = .natural
-            translationStyle.lineSpacing = 3
+            translationStyle.lineSpacing = translationIsRTL ? 5 : 3
             translationStyle.paragraphSpacing = 18
             let translationFont = UIFont.preferredFont(forTextStyle: .subheadline)
-                .withSize(15)
+                .withSize(translationIsRTL ? 17 : 15)
             let secondary = UIColor(Color.yqSecondary)
-            let smallZeroFont = UIFont.systemFont(ofSize: inputs.fontSize)
 
             let result = NSMutableAttributedString()
             var entries: [Entry] = []
@@ -184,29 +191,7 @@ struct MushafTextView: UIViewRepresentable {
 
             for ayah in ayat {
                 let start = result.length
-                let body = ayah.displayArabic + " " + ayah.marker
-                let bodyString = NSAttributedString(string: body, attributes: [
-                    .font: font,
-                    .foregroundColor: ink,
-                    .paragraphStyle: arabicStyle,
-                ])
-                result.append(bodyString)
-                let range = NSRange(location: start, length: result.length - start)
-                let markerLength = (ayah.marker as NSString).length
-                let markerRange = NSRange(location: result.length - markerLength, length: markerLength)
-                result.append(NSAttributedString(string: " ", attributes: [
-                    .font: font,
-                    .foregroundColor: ink,
-                    .paragraphStyle: arabicStyle,
-                ]))
-
                 let highlight = inputs.highlights[ayah.key]
-                if let highlight {
-                    result.addAttribute(.backgroundColor, value: highlight.uiColor.withAlphaComponent(0.22), range: range)
-                }
-                if inputs.playingKey == ayah.key {
-                    result.addAttribute(.backgroundColor, value: playingTint, range: range)
-                }
 
                 let markerColor: UIColor
                 if inputs.colorMarkers, let highlight {
@@ -216,27 +201,41 @@ struct MushafTextView: UIViewRepresentable {
                 } else {
                     markerColor = ink
                 }
-                result.addAttribute(.foregroundColor, value: markerColor, range: markerRange)
 
-                // The bundled font's U+06DF (small high rounded zero) is an
-                // oversized composite that draws as a black dot; the system
-                // Arabic font draws the correct small mark above the letter.
-                let bodyNS = body as NSString
-                var search = NSRange(location: 0, length: bodyNS.length)
-                while true {
-                    let found = bodyNS.range(of: "\u{06DF}", options: [], range: search)
-                    guard found.location != NSNotFound else { break }
-                    result.addAttribute(.font, value: smallZeroFont, range: NSRange(location: start + found.location, length: found.length))
-                    let next = found.location + found.length
-                    search = NSRange(location: next, length: bodyNS.length - next)
+                var background: UIColor?
+                if let highlight { background = highlight.uiColor.withAlphaComponent(0.22) }
+                if inputs.playingKey == ayah.key { background = playingTint }
+
+                // The renderer picks the font per script, colours tajweed
+                // runs and moves the marks the KFGQPC font draws wrongly
+                // onto the system font. Paragraph style is ours.
+                let style = QuranTextRenderer.Style(script: inputs.script, fontSize: inputs.fontSize,
+                                                    ink: ink, markerColor: markerColor, background: background)
+                let body = NSMutableAttributedString(attributedString: QuranTextRenderer.attributed(ayah, style: style))
+                let bodyRange = NSRange(location: 0, length: body.length)
+                body.addAttribute(.paragraphStyle, value: arabicStyle, range: bodyRange)
+                if let background {
+                    // The mushaf highlights the marker along with its ayah.
+                    body.addAttribute(.backgroundColor, value: background, range: bodyRange)
                 }
+                let markerInBody = QuranTextRenderer.markerRange(in: body, ayah: ayah)
+                result.append(body)
+
+                let range = NSRange(location: start, length: result.length - start)
+                let markerRange = NSRange(location: start + markerInBody.location, length: markerInBody.length)
+                result.append(NSAttributedString(string: " ", attributes: [
+                    .font: font,
+                    .foregroundColor: ink,
+                    .paragraphStyle: arabicStyle,
+                ]))
 
                 if inputs.showTranslation {
                     result.append(NSAttributedString(string: "\n", attributes: [
                         .font: font,
                         .paragraphStyle: arabicStyle,
                     ]))
-                    result.append(NSAttributedString(string: ayah.translation + "\n", attributes: [
+                    let translation = QuranTranslationStore.shared.text(for: ayah, edition: inputs.translationEdition)
+                    result.append(NSAttributedString(string: translation + "\n", attributes: [
                         .font: translationFont,
                         .foregroundColor: secondary,
                         .paragraphStyle: translationStyle,
@@ -257,6 +256,9 @@ struct MushafTextView: UIViewRepresentable {
                 textView?.attributedText = result
             }
         }
+
+        /// Quran.com language names whose translations read right to left.
+        private static let rightToLeftLanguages: Set<String> = ["arabic", "urdu", "persian", "farsi", "hebrew", "pashto", "sindhi", "kurdish", "dari", "uyghur"]
 
         // MARK: Hit testing
 
