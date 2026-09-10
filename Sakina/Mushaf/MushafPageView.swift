@@ -7,14 +7,30 @@ import SwiftUI
 // banner and, where the mushaf prints it, the basmalah. The text itself is
 // still `MushafTextView`, one per surah segment, so a page that ends one
 // surah and opens the next shows the banner between two text blocks.
+//
+// With a `Fit`, the page fills one screen exactly, as a printed page does:
+// the text is set at the largest size at which the whole page fits (see
+// `fittedFontSize`), so a memoriser sees every page as one shape.
 
 struct MushafPageView: View {
+    /// How a page is fitted to one screen.
+    struct Fit: Equatable {
+        /// The area the page, outer padding included, fills exactly.
+        let size: CGSize
+        /// The largest font size at which the page's text fits, from
+        /// `MushafPageView.fittedFontSize`.
+        let fontSize: CGFloat
+    }
+
     let page: Int
     let language: AppLanguage
     let fontSize: CGFloat
     let script: QuranScript
     let translationEdition: Int
     let showTranslation: Bool
+    /// When set, the page is fitted to one screen and never scrolls;
+    /// the translation is not shown.
+    var fit: Fit? = nil
     var onTap: (QuranAyah) -> Void
     var onPageTap: () -> Void = {}
 
@@ -32,7 +48,9 @@ struct MushafPageView: View {
 
     private var store: QuranStore { QuranStore.shared }
 
-    private var segments: [Segment] {
+    /// The page's ayat grouped by surah, in mushaf order.
+    static func segments(for page: Int) -> [Segment] {
+        let store = QuranStore.shared
         var result: [Segment] = []
         for ayah in store.ayat(onPage: page) {
             if let last = result.last, last.surah.number == ayah.surah {
@@ -57,9 +75,106 @@ struct MushafPageView: View {
         return result
     }
 
+    // MARK: Fitting
+
+    /// Every dimension that goes into fitting a page, so the measurement in
+    /// `fittedFontSize` and the fitted body agree to the point.
+    enum Metrics {
+        /// Around the frame: the outer padding of every page view.
+        static let outerHorizontal: CGFloat = 10
+        static let outerVertical: CGFloat = 8
+        /// Between the frame and each text block.
+        static let textHorizontal: CGFloat = 6
+
+        static let headerHeight: CGFloat = 22
+        static let headerTop: CGFloat = 10
+        static let headerBottom: CGFloat = 2
+        static let bannerHeight: CGFloat = 42
+        static let openingTop: CGFloat = 4
+        static let openingSpacing: CGFloat = 4
+        static let badgeHeight: CGFloat = 26
+        static let badgeTop: CGFloat = 4
+        static let badgeBottom: CGFloat = 10
+
+        /// Tighter than the reading layout's 0.55: a page is a block.
+        static let lineSpacingFactor: CGFloat = 0.42
+        static let minimumFontSize: CGFloat = 13
+
+        static func basmalahSize(for fontSize: CGFloat) -> CGFloat { min(26, fontSize + 4) }
+        /// KFGQPC HAFS sets its line at 1.75 × the point size.
+        static func basmalahHeight(for fontSize: CGFloat) -> CGFloat { ceil(basmalahSize(for: fontSize) * 1.75) }
+
+        static func textWidth(for size: CGSize) -> CGFloat { size.width - 2 * (outerHorizontal + textHorizontal) }
+        static func frameHeight(for size: CGSize) -> CGFloat { size.height - 2 * outerVertical }
+    }
+
+    /// The largest font size in `minimumFontSize...maxFontSize` at which the
+    /// whole page fits inside `size`: header, banners, basmalah, every text
+    /// block and the page badge. A binary search over six steps, measured
+    /// with `MushafTextView.measureHeight`; the answer is on a half-point.
+    /// Deterministic for (page, size, maxFontSize, script), so callers cache it.
+    static func fittedFontSize(page: Int, size: CGSize, maxFontSize: CGFloat, script: QuranScript) -> CGFloat {
+        let segments = segments(for: page)
+        let width = Metrics.textWidth(for: size)
+        let available = Metrics.frameHeight(for: size)
+        let minimum = Metrics.minimumFontSize
+        let maximum = max(minimum, maxFontSize)
+
+        func height(at fontSize: CGFloat) -> CGFloat {
+            var total = Metrics.headerTop + Metrics.headerHeight + Metrics.headerBottom
+                + Metrics.badgeTop + Metrics.badgeHeight + Metrics.badgeBottom
+            for segment in segments {
+                if segment.opensSurah {
+                    total += Metrics.openingTop + Metrics.bannerHeight
+                    if segment.surah.bismillahPre {
+                        total += Metrics.openingSpacing + Metrics.basmalahHeight(for: fontSize)
+                    }
+                }
+                total += MushafTextView.measureHeight(
+                    ayat: segment.ayat, width: width, fontSize: fontSize, script: script,
+                    colorMarkers: false, lineSpacingFactor: Metrics.lineSpacingFactor
+                )
+            }
+            return total
+        }
+        func fits(_ fontSize: CGFloat) -> Bool { height(at: fontSize) <= available }
+
+        guard width > 0, available > 0, !segments.isEmpty else { return maximum }
+        if fits(maximum) { return maximum }
+        guard fits(minimum) else { return minimum }
+        var low = minimum
+        var high = maximum
+        for _ in 0..<6 {
+            let mid = ((low + high) / 2 * 2).rounded() / 2
+            guard mid > low, mid < high else { break }
+            if fits(mid) { low = mid } else { high = mid }
+        }
+        return low
+    }
+
+    // MARK: Body
+
     var body: some View {
         // Grouping the page's ayat walks the whole Qur'an once; do it once per body.
-        let segments = self.segments
+        let segments = Self.segments(for: page)
+        Group {
+            if let fit {
+                fittedBody(segments, fit: fit)
+            } else {
+                flowingBody(segments)
+            }
+        }
+        .background(PageFrame(fit: fit != nil))
+        .padding(.horizontal, Metrics.outerHorizontal)
+        .padding(.vertical, Metrics.outerVertical)
+        .environment(\.layoutDirection, language.layoutDirection)
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel(language == .arabic ? "صفحة \(QuranAyah.arabicDigits(page))" : "Page \(page)")
+    }
+
+    /// The reading layout: the page takes the height its text needs and
+    /// the enclosing scroll view does the rest.
+    private func flowingBody(_ segments: [Segment]) -> some View {
         VStack(spacing: 0) {
             header(surahName: segments.first?.surah.name(language) ?? "")
                 .padding(.horizontal, 22)
@@ -72,7 +187,8 @@ struct MushafPageView: View {
                         .padding(.top, 10)
                         .padding(.bottom, 2)
                 }
-                textBlock(segment)
+                textBlock(segment, fontSize: fontSize, showTranslation: showTranslation,
+                          lineSpacingFactor: MushafTextView.defaultLineSpacingFactor)
             }
 
             Spacer(minLength: 12)
@@ -81,12 +197,38 @@ struct MushafPageView: View {
                 .padding(.bottom, 14)
         }
         .frame(maxWidth: .infinity)
-        .background(PageFrame())
-        .padding(.horizontal, 10)
-        .padding(.vertical, 8)
-        .environment(\.layoutDirection, language.layoutDirection)
-        .accessibilityElement(children: .contain)
-        .accessibilityLabel(language == .arabic ? "صفحة \(QuranAyah.arabicDigits(page))" : "Page \(page)")
+    }
+
+    /// One screen, as a printed page: every height here is a `Metrics`
+    /// value so the fitted font size measured in advance holds.
+    private func fittedBody(_ segments: [Segment], fit: Fit) -> some View {
+        VStack(spacing: 0) {
+            fittedHeader(surahName: segments.first?.surah.name(language) ?? "")
+                .frame(height: Metrics.headerHeight)
+                .padding(.horizontal, 22)
+                .padding(.top, Metrics.headerTop)
+                .padding(.bottom, Metrics.headerBottom)
+
+            ForEach(segments) { segment in
+                if segment.opensSurah {
+                    SurahOpening(surah: segment.surah, language: language,
+                                 compact: true, basmalahSize: Metrics.basmalahSize(for: fit.fontSize))
+                        .padding(.top, Metrics.openingTop)
+                }
+                textBlock(segment, fontSize: fit.fontSize, showTranslation: false,
+                          lineSpacingFactor: Metrics.lineSpacingFactor)
+            }
+
+            Spacer(minLength: 0)
+
+            PageNumberBadge(page: page, language: language, action: onPageTap)
+                .frame(height: Metrics.badgeHeight)
+                .padding(.top, Metrics.badgeTop)
+                .padding(.bottom, Metrics.badgeBottom)
+        }
+        .frame(maxWidth: .infinity)
+        .frame(height: Metrics.frameHeight(for: fit.size))
+        .clipped()
     }
 
     private func header(surahName: String) -> some View {
@@ -101,7 +243,25 @@ struct MushafPageView: View {
         .accessibilityElement(children: .combine)
     }
 
-    private func textBlock(_ segment: Segment) -> some View {
+    /// As the Madani page prints it: the surah on the leading side, the
+    /// juz on the trailing side. Fixed sizes, so the row's height is known.
+    private func fittedHeader(surahName: String) -> some View {
+        HStack(alignment: .center) {
+            Text(surahName)
+                .font(language == .arabic ? Font.custom(MushafTextView.fontName, fixedSize: 15) : .system(size: 12, weight: .semibold))
+                .foregroundStyle(Color.yqInk)
+            Spacer(minLength: 8)
+            Text(juzTitle)
+                .font(.system(size: 12, weight: .semibold))
+                .foregroundStyle(Color.yqSecondary)
+        }
+        .lineLimit(1)
+        .minimumScaleFactor(0.8)
+        .accessibilityElement(children: .combine)
+    }
+
+    private func textBlock(_ segment: Segment, fontSize: CGFloat, showTranslation: Bool,
+                           lineSpacingFactor: CGFloat) -> some View {
         MushafTextView(
             ayat: segment.ayat,
             surahName: segment.surah.name(language),
@@ -113,28 +273,36 @@ struct MushafPageView: View {
             showTranslation: showTranslation,
             script: script,
             translationEdition: translationEdition,
+            lineSpacingFactor: lineSpacingFactor,
             onTap: onTap
         )
         .environment(\.layoutDirection, .leftToRight)
-        .padding(.horizontal, 6)
+        .padding(.horizontal, Metrics.textHorizontal)
     }
 }
 
 // MARK: - Book chrome
 
 /// The page border: a hairline rounded rectangle, a second inset line, and
-/// a small star at each corner. White paper over the patterned canvas.
+/// a small star at each corner. White paper over the patterned canvas. A
+/// fitted page adds a third line inside, as the printed border's inner rule.
 struct PageFrame: View {
     var cornerRadius: CGFloat = 16
+    var fit = false
 
     var body: some View {
         let outer = RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
         let inner = RoundedRectangle(cornerRadius: cornerRadius - 5, style: .continuous)
+        let innermost = RoundedRectangle(cornerRadius: max(2, cornerRadius - 9), style: .continuous)
         ZStack {
             outer.fill(Color.yqSurface)
             outer.strokeBorder(Color.yqHairline, lineWidth: 1)
             inner.strokeBorder(Color.yqHairline, lineWidth: 1)
                 .padding(5)
+            if fit {
+                innermost.strokeBorder(Color.yqAccent.opacity(0.35), lineWidth: 1)
+                    .padding(9)
+            }
         }
         .overlay(alignment: .topLeading) { cornerStar }
         .overlay(alignment: .topTrailing) { cornerStar }
@@ -191,9 +359,13 @@ struct PageNumberBadge: View {
 /// The Madani cartouche: a rounded band with a hairline, a second line
 /// inside it, and a small circle overlapping each end, with the surah name
 /// in the middle. Green is the only colour; there is no gold and no shadow.
+/// `compact` is the fitted page's shorter band with a fixed-size name.
 struct SurahBanner: View {
     let surah: QuranSurah
     let language: AppLanguage
+    var compact = false
+
+    private var height: CGFloat { compact ? MushafPageView.Metrics.bannerHeight : 50 }
 
     var body: some View {
         ZStack {
@@ -205,13 +377,13 @@ struct SurahBanner: View {
                 .strokeBorder(Color.yqHairline, lineWidth: 1)
                 .padding(4)
             Text(surah.nameArabic)
-                .font(.arabic(24))
+                .font(compact ? Font.custom(MushafTextView.fontName, fixedSize: 20) : .arabic(24))
                 .foregroundStyle(Color.yqInk)
                 .lineLimit(1)
                 .minimumScaleFactor(0.7)
                 .padding(.horizontal, 40)
         }
-        .frame(height: 50)
+        .frame(height: height)
         .overlay(alignment: .leading) { endCircle.offset(x: -13) }
         .overlay(alignment: .trailing) { endCircle.offset(x: 13) }
         .padding(.horizontal, 13)
@@ -232,13 +404,20 @@ struct SurahBanner: View {
     }
 }
 
-/// The basmalah as the mushaf prints it under a surah banner.
+/// The basmalah as the mushaf prints it under a surah banner. With
+/// `fixedSize` the line ignores Dynamic Type and takes a known height, so
+/// a fitted page can account for it.
 struct BasmalahLine: View {
+    var fixedSize: CGFloat? = nil
+
     var body: some View {
         Text("بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ")
-            .font(.arabic(26))
+            .font(fixedSize.map { Font.custom(MushafTextView.fontName, fixedSize: $0) } ?? .arabic(26))
             .foregroundStyle(Color.yqInk)
+            .lineLimit(fixedSize == nil ? nil : 1)
+            .minimumScaleFactor(fixedSize == nil ? 1 : 0.6)
             .multilineTextAlignment(.center)
+            .frame(height: fixedSize.map { ceil($0 * 1.75) })
             .accessibilityLabel("Bismillah ir-Rahman ir-Rahim")
     }
 }
@@ -248,12 +427,14 @@ struct BasmalahLine: View {
 struct SurahOpening: View {
     let surah: QuranSurah
     let language: AppLanguage
+    var compact = false
+    var basmalahSize: CGFloat = 26
 
     var body: some View {
-        VStack(spacing: 12) {
-            SurahBanner(surah: surah, language: language)
+        VStack(spacing: compact ? MushafPageView.Metrics.openingSpacing : 12) {
+            SurahBanner(surah: surah, language: language, compact: compact)
             if surah.bismillahPre {
-                BasmalahLine()
+                BasmalahLine(fixedSize: compact ? basmalahSize : nil)
             }
         }
         .frame(maxWidth: .infinity)

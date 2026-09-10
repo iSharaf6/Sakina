@@ -96,6 +96,7 @@ final class MushafPlayer: ObservableObject {
             guard !Task.isCancelled, self.generation == generation else { return }
             self.enqueue(url, for: ayah.key)
             self.queue.play()
+            self.startTask = nil
         }
     }
 
@@ -257,8 +258,12 @@ final class MushafPlayer: ObservableObject {
         if let item {
             itemStarted(item)
         } else if playingKey != nil {
-            // The queue ran dry before the next ayah was ready: carry on by
-            // streaming it, or finish.
+            // KVO hands us the change on a later run-loop turn, so a "queue
+            // emptied" event from a restart (next/previous/reciter change)
+            // can arrive after the new ayah is already queued. Only treat an
+            // empty queue as the end of the ayah when nothing is being
+            // restarted and the queue is really empty right now.
+            guard startTask == nil, queue.currentItem == nil, queue.items().isEmpty else { return }
             advanceAfterQueueEmptied()
         }
     }

@@ -1,5 +1,10 @@
 import SwiftUI
 
+extension MushafPreferences {
+    /// Page layout only: fit the whole page onto one screen, as printed.
+    static let fitKey = "yaqeen.mushaf.fitPage"
+}
+
 /// The Qur'an reader. Two layouts: Madani pages (604 of them, each holding
 /// exactly the ayat of the printed page) or one surah as flowing text.
 /// Pages turn sideways or scroll down according to the Direction setting.
@@ -25,8 +30,10 @@ struct MushafView: View {
     @State private var showPagePicker = false
     @State private var showDisplay = false
     @State private var showReciter = false
+    @State private var showSettings = false
     @State private var textProxy = MushafTextProxy()
     @State private var tracker = ScrollTracker()
+    @State private var fitCache = FitCache()
 
     @ObservedObject private var library = AyahLibrary.shared
     @ObservedObject private var player = MushafPlayer.shared
@@ -37,6 +44,7 @@ struct MushafView: View {
     @AppStorage(MushafPreferences.translationKey) private var translationEdition = QuranTranslationEdition.saheehInternational.id
     @AppStorage(MushafPreferences.showTranslationKey) private var showTranslation = false
     @AppStorage(MushafPreferences.fontScaleKey) private var fontScale = 1.0
+    @AppStorage(MushafPreferences.fitKey) private var fitPage = true
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @ScaledMetric(relativeTo: .title2) private var baseArabicSize = 24.0
@@ -56,6 +64,30 @@ struct MushafView: View {
     final class ScrollTracker {
         var textTop: CGFloat = 0
         var visibleTask: Task<Void, Never>?
+    }
+
+    /// Fitted font sizes by page and screen, so a page turn never measures
+    /// twice. A reference type: it is filled while the body is evaluated,
+    /// and the answer for a key never changes.
+    final class FitCache {
+        struct Key: Hashable {
+            let page: Int
+            let width: CGFloat
+            let height: CGFloat
+            let maxFontSize: CGFloat
+            let script: QuranScript
+        }
+        var sizes: [Key: CGFloat] = [:]
+    }
+
+    /// Snaps page by page when the pages are one screen tall; otherwise
+    /// scrolls freely. One type, so the modifier needs no `AnyView`.
+    private struct PageSnapping: ScrollTargetBehavior {
+        var enabled: Bool
+        func updateTarget(_ target: inout ScrollTarget, context: TargetContext) {
+            guard enabled else { return }
+            PagingScrollTargetBehavior().updateTarget(&target, context: context)
+        }
     }
 
     private struct TextTopKey: PreferenceKey {
@@ -163,6 +195,9 @@ struct MushafView: View {
                 .presentationDetents([.medium, .large])
                 .presentationDragIndicator(.visible)
         }
+        .sheet(isPresented: $showSettings) {
+            SettingsView(showsDismissButton: true)
+        }
         .task { await load() }
         .onChange(of: player.playingKey) { _, key in
             guard let key, let ayah = store.ayah(key) else { return }
@@ -265,6 +300,12 @@ struct MushafView: View {
             } label: {
                 Label(copy("Reciter…", "القارئ…"), systemImage: "waveform")
             }
+            Divider()
+            Button {
+                showSettings = true
+            } label: {
+                Label(copy("Settings", "الإعدادات"), systemImage: "gearshape")
+            }
         } label: {
             Image(systemName: "ellipsis.circle")
         }
@@ -292,12 +333,19 @@ struct MushafView: View {
             TabView(selection: pageTag) {
                 ForEach(1...QuranStore.pageCount, id: \.self) { tag in
                     let number = Self.page(forTag: tag)
-                    ScrollView {
-                        pageView(number, windowed: true)
-                            .frame(minHeight: geometry.size.height)
+                    if fitPage {
+                        // One screen, no scrolling: the page is fitted to it.
+                        pageView(number, windowed: true, size: geometry.size)
+                            .frame(width: geometry.size.width, height: geometry.size.height)
+                            .tag(tag)
+                    } else {
+                        ScrollView {
+                            pageView(number, windowed: true, size: geometry.size)
+                                .frame(minHeight: geometry.size.height)
+                        }
+                        .scrollIndicators(.hidden)
+                        .tag(tag)
                     }
-                    .scrollIndicators(.hidden)
-                    .tag(tag)
                 }
             }
             .tabViewStyle(.page(indexDisplayMode: .never))
@@ -320,8 +368,9 @@ struct MushafView: View {
         )
     }
 
-    /// Pages stacked top to bottom and scrolled continuously: a Madani page
-    /// is usually taller than a phone screen, so snapping to page edges
+    /// Pages stacked top to bottom. Fitted pages are each one screen tall
+    /// and the scroll snaps page by page; otherwise a Madani page is usually
+    /// taller than a phone screen, so the scroll is continuous and snapping
     /// would hide the bottom of every page. `scrolledPage` follows the page
     /// at the top of the visible region and drives jumps.
     private var verticalPages: some View {
@@ -329,13 +378,20 @@ struct MushafView: View {
             ScrollView {
                 LazyVStack(spacing: 0) {
                     ForEach(1...QuranStore.pageCount, id: \.self) { number in
-                        pageView(number, windowed: false)
-                            .frame(minHeight: geometry.size.height)
-                            .id(number)
+                        if fitPage {
+                            pageView(number, windowed: false, size: geometry.size)
+                                .frame(height: geometry.size.height)
+                                .id(number)
+                        } else {
+                            pageView(number, windowed: false, size: geometry.size)
+                                .frame(minHeight: geometry.size.height)
+                                .id(number)
+                        }
                     }
                 }
                 .scrollTargetLayout()
             }
+            .scrollTargetBehavior(PageSnapping(enabled: fitPage))
             .scrollPosition(id: $scrolledPage)
             .scrollIndicators(.hidden)
             .onAppear { scrolledPage = page }
@@ -353,11 +409,11 @@ struct MushafView: View {
     /// in the horizontal layout only the current page and its neighbours
     /// carry text; the rest are blank frames of the same shape.
     @ViewBuilder
-    private func pageView(_ number: Int, windowed: Bool) -> some View {
+    private func pageView(_ number: Int, windowed: Bool, size: CGSize) -> some View {
         if windowed, abs(number - page) > 1 {
-            PageFrame()
-                .padding(.horizontal, 10)
-                .padding(.vertical, 8)
+            PageFrame(fit: fitPage)
+                .padding(.horizontal, MushafPageView.Metrics.outerHorizontal)
+                .padding(.vertical, MushafPageView.Metrics.outerVertical)
                 .accessibilityHidden(true)
         } else {
             MushafPageView(
@@ -367,6 +423,7 @@ struct MushafView: View {
                 script: script,
                 translationEdition: translationEdition,
                 showTranslation: showTranslation,
+                fit: fit(for: number, in: size),
                 onTap: { ayah in
                     Haptics.tap()
                     selectedAyah = ayah
@@ -374,6 +431,21 @@ struct MushafView: View {
                 onPageTap: { showPagePicker = true }
             )
         }
+    }
+
+    /// The fit for a page on this screen, measured once per (page, screen,
+    /// font scale, script) and remembered. The font-size slider is the
+    /// ceiling; the page shrinks below it only as far as it must.
+    private func fit(for number: Int, in size: CGSize) -> MushafPageView.Fit? {
+        guard fitPage, size.width > 0, size.height > 0 else { return nil }
+        let key = FitCache.Key(page: number, width: size.width, height: size.height,
+                               maxFontSize: fontSize, script: script)
+        if let cached = fitCache.sizes[key] {
+            return MushafPageView.Fit(size: size, fontSize: cached)
+        }
+        let fitted = MushafPageView.fittedFontSize(page: number, size: size, maxFontSize: fontSize, script: script)
+        fitCache.sizes[key] = fitted
+        return MushafPageView.Fit(size: size, fontSize: fitted)
     }
 
     // MARK: Surah layout

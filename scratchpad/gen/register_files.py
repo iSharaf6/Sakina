@@ -46,6 +46,10 @@ for path in sys.argv[1:]:
         ftype, phase_id, phase = "sourcecode.swift", APP_SOURCES, "Sources"
     elif name.endswith(".json"):
         ftype, phase_id, phase = "text.json", APP_RESOURCES, "Resources"
+    elif name.endswith(".ttf"):
+        ftype, phase_id, phase = "file", APP_RESOURCES, "Resources"
+    elif name.endswith(".txt"):
+        ftype, phase_id, phase = "text", APP_RESOURCES, "Resources"
     else:
         sys.exit("unsupported file type: " + path)
     src = src.replace("/* End PBXFileReference section */",
@@ -55,6 +59,8 @@ for path in sys.argv[1:]:
     parts = path.split("/")
     if parts[0] == "Shared" and parts[1] == "Resources":
         gid = SHARED_RES_GROUP
+    elif parts[0] == "Sakina" and parts[1] == "Resources" and len(parts) == 3:
+        gid = "C05A71F312F6DAB97685A9B7"  # Sakina/Resources
     elif parts[0] == "Sakina" and len(parts) == 3:
         gid = ensure_group(parts[1])
     elif parts[0] == "SakinaTests" and len(parts) == 2:

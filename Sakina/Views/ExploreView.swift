@@ -7,6 +7,7 @@ struct ExploreView: View {
     @AppStorage(SettingsKeys.appLanguage) private var languageRaw = AppLanguage.english.rawValue
     @FocusState private var searchFocused: Bool
     @State private var appeared = false
+    @State private var showSettings = false
 
     private var language: AppLanguage { AppLanguage(rawValue: languageRaw) ?? .english }
     private var copy: AppCopy { AppCopy(language: language) }
@@ -17,9 +18,12 @@ struct ExploreView: View {
         NavigationStack(path: $path) {
             ScrollView(showsIndicators: false) {
                 VStack(alignment: .leading, spacing: 22) {
-                    PageHeader(title: copy("Explore", "استكشف"),
-                               subtitle: copy("Qur’an and Sunnah for the season you’re in.", "قرآن وسنة للمرحلة التي تعيشها."))
-                        .revealed(0, appeared: appeared, reduceMotion: reduceMotion)
+                    HStack(alignment: .top, spacing: 12) {
+                        PageHeader(title: copy("Explore", "استكشف"),
+                                   subtitle: copy("Qur’an and Sunnah for the season you’re in.", "قرآن وسنة للمرحلة التي تعيشها."))
+                        SettingsButton(language: language) { showSettings = true }
+                    }
+                    .revealed(0, appeared: appeared, reduceMotion: reduceMotion)
                     SearchField(prompt: copy("A feeling or a situation", "شعور أو موقف"), text: $searchText, focus: $searchFocused)
                         .revealed(1, appeared: appeared, reduceMotion: reduceMotion)
                     if isSearching {
@@ -42,6 +46,7 @@ struct ExploreView: View {
             .navigationDestination(for: DuaMood.self) { MoodDetailView(mood: $0, language: language) }
             .navigationDestination(for: NearbyPlaceKind.self) { NearbyPlacesView(kind: $0, language: language) }
             .toolbar(.hidden, for: .navigationBar)
+            .sheet(isPresented: $showSettings) { SettingsView(showsDismissButton: true) }
             .onAppear { appeared = true }
         }
     }

@@ -330,6 +330,20 @@ struct HomeView: View {
     }
 }
 
+// MARK: - Settings button (every tab)
+
+/// The companion gear that opens Settings, shared by every tab's header.
+struct SettingsButton: View {
+    let language: AppLanguage
+    let action: () -> Void
+    var body: some View {
+        Button(action: action) { CompanionIllustration(artwork: .settings, size: 44) }
+            .buttonStyle(.yqPress)
+            .accessibilityLabel(language.pick("Settings", "الإعدادات"))
+            .padding(.top, 2)
+    }
+}
+
 // MARK: - Heart log (the return loop)
 
 /// Remembers which feeling was opened on which day, on this device only.

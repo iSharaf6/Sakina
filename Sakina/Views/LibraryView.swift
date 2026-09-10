@@ -16,6 +16,7 @@ struct LibraryView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @ObservedObject private var account = GoogleAccountManager.shared
     @Namespace private var selector
+    @State private var showSettings = false
 
     private var language: AppLanguage { AppLanguage(rawValue: languageRaw) ?? .english }
     private var copy: AppCopy { AppCopy(language: language) }
@@ -25,8 +26,11 @@ struct LibraryView: View {
         NavigationStack {
             ScrollView(showsIndicators: false) {
                 VStack(alignment: .leading, spacing: 20) {
-                    PageHeader(title: copy("Saved", "المحفوظات"),
-                               subtitle: copy("Keep what speaks to you.", "احتفظ بما يلامس قلبك."))
+                    HStack(alignment: .top, spacing: 12) {
+                        PageHeader(title: copy("Saved", "المحفوظات"),
+                                   subtitle: copy("Keep what speaks to you.", "احتفظ بما يلامس قلبك."))
+                        SettingsButton(language: language) { showSettings = true }
+                    }
                     NavigationLink { AyahLibraryView(language: language) } label: {
                         BadgeRow(symbol: "bookmark.fill", title: copy("My ayat", "آياتي"),
                                  subtitle: copy("Highlights, bookmarks, notes and categories from the mushaf",
@@ -45,6 +49,7 @@ struct LibraryView: View {
             .navigationDestination(for: Situation.self) { SituationDetailView(situation: $0) }
             .navigationDestination(for: GuidanceSupplication.self) { DuaReaderView(dua: $0) }
             .toolbar(.hidden, for: .navigationBar)
+            .sheet(isPresented: $showSettings) { SettingsView(showsDismissButton: true) }
             .sensoryFeedback(.selection, trigger: mode)
         }
     }

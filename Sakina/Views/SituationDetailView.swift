@@ -929,7 +929,7 @@ struct VerseShareCard: View {
             ForEach(situation.verses) { verse in
                 VStack(spacing: 15) {
                     Text(verse.arabic)
-                        .font(.custom("KFGQPC HAFS Uthmanic Script", size: 25))
+                        .font(.custom(QuranTextRenderer.uthmaniFontName, size: 25))
                         .lineSpacing(13)
                         .foregroundStyle(forest)
                         .multilineTextAlignment(.center)

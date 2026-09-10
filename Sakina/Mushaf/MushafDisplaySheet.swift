@@ -13,12 +13,16 @@ struct MushafDisplaySheet: View {
     @AppStorage(MushafPreferences.translationKey) private var translationEdition = QuranTranslationEdition.saheehInternational.id
     @AppStorage(MushafPreferences.showTranslationKey) private var showTranslation = false
     @AppStorage(MushafPreferences.fontScaleKey) private var fontScale = 1.0
+    @AppStorage(MushafPreferences.fitKey) private var fitPage = true
 
     @ObservedObject private var library = AyahLibrary.shared
     @Environment(\.dismiss) private var dismiss
 
     private var copy: AppCopy { AppCopy(language: language) }
     private var editions: [QuranTranslationEdition] { QuranTranslationStore.shared.editions }
+    /// Pages fitted to the screen: the slider is a ceiling and the
+    /// translation stays out of the page.
+    private var fitting: Bool { layout == .page && fitPage }
 
     init(language: AppLanguage) {
         self.language = language
@@ -28,11 +32,14 @@ struct MushafDisplaySheet: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
-                    section(copy("Layout", "التخطيط")) { layoutChips }
+                    section(copy("Layout", "التخطيط")) {
+                        layoutChips
+                        if layout == .page { fitCard }
+                    }
                     section(copy("Direction", "اتجاه التصفح")) { directionChips }
                     section(copy("Script", "الرسم")) { scriptCards }
                     section(copy("Translation", "الترجمة")) { translationCard }
-                    section(copy("Font size", "حجم الخط")) { fontCard }
+                    section(fitting ? copy("Maximum font size", "الحد الأقصى لحجم الخط") : copy("Font size", "حجم الخط")) { fontCard }
                     section(copy("Markers", "علامات الآيات")) { markersCard }
                 }
                 .padding(.horizontal, 20)
@@ -50,6 +57,7 @@ struct MushafDisplaySheet: View {
         }
         .yaqeenLanguage(language)
         .onChange(of: layout) { _, _ in Haptics.selection() }
+        .onChange(of: fitPage) { _, _ in Haptics.press() }
         .onChange(of: direction) { _, _ in Haptics.selection() }
         .onChange(of: script) { _, _ in Haptics.selection() }
         .onChange(of: translationEdition) { _, _ in Haptics.selection() }
@@ -78,6 +86,25 @@ struct MushafDisplaySheet: View {
                 }
             }
         }
+    }
+
+    /// Fit the whole page to the screen, as a printed mushaf page.
+    private var fitCard: some View {
+        Toggle(isOn: $fitPage) {
+            VStack(alignment: .leading, spacing: 2) {
+                Text(copy("Fit page to screen", "ملاءمة الصفحة للشاشة"))
+                    .font(.yqBodyMedium)
+                    .foregroundStyle(Color.yqInk)
+                Text(copy("The whole page on one screen, as in a printed mushaf.", "الصفحة كاملة على شاشة واحدة، كما في المصحف المطبوع."))
+                    .font(.yqCaption)
+                    .foregroundStyle(Color.yqSecondary)
+            }
+        }
+        .tint(.yqAccent)
+        .padding(.horizontal, 14)
+        .padding(.vertical, 10)
+        .frame(minHeight: 58)
+        .yqCard(cornerRadius: 16)
     }
 
     private var directionChips: some View {
@@ -161,12 +188,21 @@ struct MushafDisplaySheet: View {
     private var translationCard: some View {
         VStack(spacing: 0) {
             Toggle(isOn: $showTranslation) {
-                Text(copy("Show translation", "إظهار الترجمة"))
-                    .font(.yqBodyMedium)
-                    .foregroundStyle(Color.yqInk)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(copy("Show translation", "إظهار الترجمة"))
+                        .font(.yqBodyMedium)
+                        .foregroundStyle(Color.yqInk)
+                    if fitting {
+                        Text(copy("Not shown on fitted pages; turn off Fit page to screen or use the Surah layout.",
+                                  "لا تظهر في الصفحات الملاءمة للشاشة؛ أوقف ملاءمة الصفحة أو استخدم تخطيط السورة."))
+                            .font(.yqCaption)
+                            .foregroundStyle(Color.yqSecondary)
+                    }
+                }
             }
             .tint(.yqAccent)
             .padding(.horizontal, 14)
+            .padding(.vertical, 10)
             .frame(minHeight: 54)
 
             ForEach(editions) { edition in
@@ -248,6 +284,14 @@ struct MushafDisplaySheet: View {
             }
             .tint(.yqAccent)
             .accessibilityValue("\(Int((fontScale * 100).rounded()))%")
+
+            if fitting {
+                Text(copy("Fitted pages use this as a ceiling and shrink only as far as the page needs.",
+                          "تستخدم الصفحات الملاءمة هذا الحجم حدًا أقصى وتصغر بقدر ما تحتاج الصفحة فقط."))
+                    .font(.yqCaption)
+                    .foregroundStyle(Color.yqSecondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 14)

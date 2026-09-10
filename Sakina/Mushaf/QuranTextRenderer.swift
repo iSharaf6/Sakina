@@ -27,7 +27,10 @@ enum QuranTextRenderer {
 
     // MARK: Fonts
 
-    static let uthmaniFontName = "KFGQPC HAFS Uthmanic Script"
+    /// Amiri Quran (SIL OFL 1.1, bundled with its licence). It draws every
+    /// code point of the Uthmani text natively, including the sifr mustadir,
+    /// which the old KFGQPC build maps to a placeholder.
+    static let uthmaniFontName = "Amiri Quran"
 
     /// The base font for a script. IndoPak falls back to the system font
     /// (see the type comment); the others use KFGQPC when it is installed.
@@ -70,13 +73,10 @@ enum QuranTextRenderer {
     /// Stored as `Character`s as the public shape; matching happens on
     /// unicode scalars because a combining mark never stands alone as a
     /// `Character` once it follows a letter.
-    static let fallbackMarks: Set<Character> = {
-        var scalars: [UInt32] = []
-        scalars += Array(0x0610...0x061A)
-        scalars += Array(0x0658...0x065D)
-        scalars += [0x065F, 0x06DF, 0x06E3, 0x06EB, 0x06EE, 0x06EF]
-        return Set(scalars.compactMap { Unicode.Scalar($0).map(Character.init) })
-    }()
+    /// Marks the Qur'an font cannot draw and must borrow from the system
+    /// font. Empty for Amiri Quran, which covers the whole text; kept so a
+    /// future font swap can list its gaps here.
+    static let fallbackMarks: Set<Character> = []
 
     private static let fallbackScalars: Set<Unicode.Scalar> = Set(fallbackMarks.flatMap { $0.unicodeScalars })
 

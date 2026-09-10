@@ -30,6 +30,7 @@ final class MushafTextProxy {
 struct MushafTextView: UIViewRepresentable {
     static let fontName = QuranTextRenderer.uthmaniFontName
     static let inset: CGFloat = 16
+    static let defaultLineSpacingFactor: CGFloat = 0.55
 
     var ayat: [QuranAyah]
     var surahName: String
@@ -43,6 +44,9 @@ struct MushafTextView: UIViewRepresentable {
     var script: QuranScript = .uthmani
     /// Quran.com translation resource id, 20 = Saheeh International.
     var translationEdition: Int = QuranTranslationEdition.saheehInternational.id
+    /// Line spacing as a fraction of the font size. The default is the
+    /// reading layout; fitted pages pass a tighter value.
+    var lineSpacingFactor: CGFloat = defaultLineSpacingFactor
     var proxy: MushafTextProxy? = nil
     var onTap: (QuranAyah) -> Void
     /// Called (asynchronously, after layout) with the bounding rect of every
@@ -59,12 +63,13 @@ struct MushafTextView: UIViewRepresentable {
         var showTranslation: Bool
         var script: QuranScript
         var translationEdition: Int
+        var lineSpacingFactor: CGFloat
     }
 
     private var inputs: Inputs {
         Inputs(keys: ayat.map(\.key), fontSize: fontSize, highlights: highlights,
                colorMarkers: colorMarkers, playingKey: playingKey, showTranslation: showTranslation,
-               script: script, translationEdition: translationEdition)
+               script: script, translationEdition: translationEdition, lineSpacingFactor: lineSpacingFactor)
     }
 
     func makeCoordinator() -> Coordinator { Coordinator() }
@@ -135,6 +140,33 @@ struct MushafTextView: UIViewRepresentable {
         return CGSize(width: width, height: ceil(size.height))
     }
 
+    // MARK: Measuring
+
+    /// The height this view would take for `ayat` at `fontSize` in a column
+    /// `width` points wide, without translation: the same attributed string
+    /// the coordinator builds, laid out in an offscreen TextKit 1 stack
+    /// with the same insets and paragraph style. Used to fit a whole page
+    /// onto one screen.
+    static func measureHeight(ayat: [QuranAyah], width: CGFloat, fontSize: CGFloat, script: QuranScript,
+                              colorMarkers: Bool, lineSpacingFactor: CGFloat = defaultLineSpacingFactor) -> CGFloat {
+        guard width > inset * 2, !ayat.isEmpty else { return inset * 2 }
+        let inputs = Inputs(keys: ayat.map(\.key), fontSize: fontSize, highlights: [:],
+                            colorMarkers: colorMarkers, playingKey: nil, showTranslation: false,
+                            script: script, translationEdition: QuranTranslationEdition.saheehInternational.id,
+                            lineSpacingFactor: lineSpacingFactor)
+        let built = Coordinator.build(ayat: ayat, inputs: inputs)
+        let storage = NSTextStorage(attributedString: built.string)
+        let layoutManager = NSLayoutManager()
+        layoutManager.allowsNonContiguousLayout = false
+        storage.addLayoutManager(layoutManager)
+        let container = NSTextContainer(size: CGSize(width: width - inset * 2, height: CGFloat.greatestFiniteMagnitude))
+        container.lineFragmentPadding = 0
+        layoutManager.addTextContainer(container)
+        layoutManager.ensureLayout(for: container)
+        let used = layoutManager.usedRect(for: container)
+        return ceil(used.height) + inset * 2
+    }
+
     // MARK: Coordinator
 
     final class Coordinator: NSObject {
@@ -162,6 +194,22 @@ struct MushafTextView: UIViewRepresentable {
         // MARK: Building the string
 
         fileprivate func rebuild(ayat: [QuranAyah], inputs: Inputs) {
+            let built = Self.build(ayat: ayat, inputs: inputs)
+            entries = built.entries
+            entryByKey = Dictionary(uniqueKeysWithValues: entries.enumerated().map { ($1.ayah.key, $0) })
+            lastRects = [:]
+
+            if let storage {
+                storage.setAttributedString(built.string)
+            } else {
+                textView?.attributedText = built.string
+            }
+        }
+
+        /// The whole text block as one attributed string plus the entry
+        /// ranges. Shared by the live view and `measureHeight`, so what is
+        /// measured is exactly what is drawn.
+        fileprivate static func build(ayat: [QuranAyah], inputs: Inputs) -> (string: NSAttributedString, entries: [Entry]) {
             let font = QuranTextRenderer.font(for: inputs.script, size: inputs.fontSize)
             let ink = UIColor(Color.yqInk)
             let accent = UIColor(Color.yqAccentDeep)
@@ -170,13 +218,13 @@ struct MushafTextView: UIViewRepresentable {
             let arabicStyle = NSMutableParagraphStyle()
             arabicStyle.baseWritingDirection = .rightToLeft
             arabicStyle.alignment = .justified
-            arabicStyle.lineSpacing = (inputs.fontSize * 0.55).rounded()
+            arabicStyle.lineSpacing = (inputs.fontSize * inputs.lineSpacingFactor).rounded()
             arabicStyle.lineHeightMultiple = 1.0
             arabicStyle.paragraphSpacing = inputs.showTranslation ? 4 : 0
 
             let translationStyle = NSMutableParagraphStyle()
             let edition = QuranTranslationStore.shared.edition(inputs.translationEdition)
-            let translationIsRTL = Self.rightToLeftLanguages.contains(edition?.language.lowercased() ?? "")
+            let translationIsRTL = rightToLeftLanguages.contains(edition?.language.lowercased() ?? "")
             translationStyle.baseWritingDirection = translationIsRTL ? .rightToLeft : .leftToRight
             translationStyle.alignment = .natural
             translationStyle.lineSpacing = translationIsRTL ? 5 : 3
@@ -246,15 +294,7 @@ struct MushafTextView: UIViewRepresentable {
                 entries.append(Entry(ayah: ayah, range: range, hitRange: hitRange, markerRange: markerRange))
             }
 
-            self.entries = entries
-            entryByKey = Dictionary(uniqueKeysWithValues: entries.enumerated().map { ($1.ayah.key, $0) })
-            lastRects = [:]
-
-            if let storage {
-                storage.setAttributedString(result)
-            } else {
-                textView?.attributedText = result
-            }
+            return (result, entries)
         }
 
         /// Quran.com language names whose translations read right to left.

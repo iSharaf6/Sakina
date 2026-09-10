@@ -18,6 +18,7 @@ struct DuasView: View {
     @AppStorage(HeartLog.key) private var heartLogRaw = ""
     @State private var query = ""
     @State private var appeared = false
+    @State private var showSettings = false
     private let showsNavigationBar: Bool
 
     private var language: AppLanguage { AppLanguage(rawValue: languageRaw) ?? .english }
@@ -40,9 +41,12 @@ struct DuasView: View {
     var body: some View {
         ScrollView(showsIndicators: false) {
             VStack(alignment: .leading, spacing: 22) {
-                PageHeader(title: copy("Du’a & dhikr", "الدعاء والذكر"),
-                           subtitle: copy("For your day, and for what’s in your heart.", "ليومك، ولما في قلبك."))
-                    .revealed(0, appeared: appeared, reduceMotion: reduceMotion)
+                HStack(alignment: .top, spacing: 12) {
+                    PageHeader(title: copy("Du’a & dhikr", "الدعاء والذكر"),
+                               subtitle: copy("For your day, and for what’s in your heart.", "ليومك، ولما في قلبك."))
+                    if !showsNavigationBar { SettingsButton(language: language) { showSettings = true } }
+                }
+                .revealed(0, appeared: appeared, reduceMotion: reduceMotion)
                 SearchField(prompt: copy("A feeling, a du’a, a name…", "شعور، دعاء، اسم…"), text: $query, focus: $searchFocused)
                     .revealed(1, appeared: appeared, reduceMotion: reduceMotion)
                 if isSearching {
@@ -72,6 +76,7 @@ struct DuasView: View {
         }
         .navigationDestination(for: DhikrItem.self) { DhikrCounterView(item: $0, language: language) }
         .toolbar(showsNavigationBar ? .visible : .hidden, for: .navigationBar)
+        .sheet(isPresented: $showSettings) { SettingsView(showsDismissButton: true) }
         .onAppear { appeared = true }
     }
 
@@ -268,7 +273,8 @@ struct FeelingsView: View {
             .padding(.bottom, 28)
         }
         .yqScreen()
-        .navigationDestination(for: DuaMood.self) { MoodDetailView(mood: $0, language: language) }
+        // The mood destination is declared once by the enclosing stack (Home,
+        // Explore, Du'as); declaring it again here made pushes bounce back.
         .navigationBarTitleDisplayMode(.inline)
         .toolbar(.visible, for: .navigationBar)
         .toolbar(.hidden, for: .tabBar)

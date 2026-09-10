@@ -137,7 +137,7 @@ extension Font {
     /// KFGQPC HAFS Uthmanic Script, scaled with Dynamic Type. Reserved for
     /// Qur'anic Arabic; prophetic du'a uses the system Arabic face.
     static func arabic(_ size: CGFloat) -> Font {
-        .custom("KFGQPC HAFS Uthmanic Script", size: size, relativeTo: arabicStyle(for: size))
+        .custom(QuranTextRenderer.uthmaniFontName, size: size, relativeTo: arabicStyle(for: size))
     }
 
     /// System Arabic for hadith and du'a text.

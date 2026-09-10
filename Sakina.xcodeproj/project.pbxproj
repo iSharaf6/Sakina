@@ -114,6 +114,8 @@
 		1A3A1E2BCC595117EB4175C9 /* RecitationCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C26C3CEB626274B206EDD09 /* RecitationCache.swift */; };
 		C655E5B2C9CB1521F267F414 /* MushafPlayerBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 991EF765A1F3D42572A9D8F1 /* MushafPlayerBar.swift */; };
 		064D1D381DF5D12BDD30691D /* QuranEditionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 216A21AA5ADF3DA43BFA4624 /* QuranEditionsTests.swift */; };
+		3808BFE7F1EB661AA2FC5A2F /* AmiriQuran.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 688ABF855CDEBB33DB6A3DA6 /* AmiriQuran.ttf */; };
+		A02A02F26A0B53D664F40E26 /* AmiriQuran-OFL.txt in Resources */ = {isa = PBXBuildFile; fileRef = 354D586B3505A01F4E5408BD /* AmiriQuran-OFL.txt */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -250,6 +252,8 @@
 		1C26C3CEB626274B206EDD09 /* RecitationCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecitationCache.swift; sourceTree = "<group>"; };
 		991EF765A1F3D42572A9D8F1 /* MushafPlayerBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MushafPlayerBar.swift; sourceTree = "<group>"; };
 		216A21AA5ADF3DA43BFA4624 /* QuranEditionsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuranEditionsTests.swift; sourceTree = "<group>"; };
+		688ABF855CDEBB33DB6A3DA6 /* AmiriQuran.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = AmiriQuran.ttf; sourceTree = "<group>"; };
+		354D586B3505A01F4E5408BD /* AmiriQuran-OFL.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = AmiriQuran-OFL.txt; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -435,6 +439,8 @@
 		C05A71F312F6DAB97685A9B7 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				354D586B3505A01F4E5408BD /* AmiriQuran-OFL.txt */,
+				688ABF855CDEBB33DB6A3DA6 /* AmiriQuran.ttf */,
 				FAA11D5F405A2BF91BEDF0F0 /* AppIcon60x60@2x.png */,
 				DFCBD69B0913648D27A8A02D /* AppIcon60x60@3x.png */,
 				8778E3432F3F2902279E9FC3 /* AppIcon76x76@2x.png */,
@@ -664,6 +670,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A02A02F26A0B53D664F40E26 /* AmiriQuran-OFL.txt in Resources */,
+				3808BFE7F1EB661AA2FC5A2F /* AmiriQuran.ttf in Resources */,
 				AB75D9E1FD123715FA8ABA9A /* translations.json in Resources */,
 				5B1851A8DDFCAFE1212F8AA0 /* quran-scripts.json in Resources */,
 				43266564C9CA1903B29F74A3 /* quran.json in Resources */,

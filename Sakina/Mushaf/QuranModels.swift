@@ -60,10 +60,9 @@ struct QuranAyah: Identifiable, Hashable, Codable {
     /// The ayah number in Arabic-Indic digits.
     var arabicNumber: String { QuranAyah.arabicDigits(ayah) }
 
-    /// The end-of-ayah marker. The bundled KFGQPC HAFS font already draws
-    /// Arabic-Indic digits inside the ornate ayah frame, so the digits alone
-    /// are the marker; adding U+06DD would draw a second, empty frame.
-    var marker: String { arabicNumber }
+    /// The end-of-ayah marker: U+06DD followed by the number. Amiri Quran
+    /// sets the digits inside the ayah ornament.
+    var marker: String { "\u{06DD}" + arabicNumber }
 
     func reference(_ language: AppLanguage) -> String {
         let name = QuranStore.shared.surah(surah)?.name(language) ?? "\(surah)"
