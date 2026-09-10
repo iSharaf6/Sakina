@@ -33,7 +33,7 @@ struct BreathingView: View {
                         .frame(width: 190, height: 190)
                         .scaleEffect(reduceMotion ? 1 : phase == 1 ? 1.27 : 0.84)
                         .animation(reduceMotion ? nil : .easeInOut(duration: phase == 1 ? 4 : 6), value: phase)
-                    YaqeenMark().fill(paper).frame(width: 30, height: 44)
+                    CompanionIllustration(artwork: .breathe, size: 108, onDarkSurface: true)
                 }
                 .accessibilityHidden(true)
                 VStack(spacing: 12) {

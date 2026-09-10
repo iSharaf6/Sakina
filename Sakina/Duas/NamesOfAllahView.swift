@@ -110,7 +110,7 @@ struct NamesOfAllahView: View {
                     if matching.isEmpty {
                         EmptyGuidanceState(title: copy("No names found", "لا توجد نتائج"),
                                            detail: copy("Try a meaning, like mercy or peace.", "جرّب معنى مثل الرحمة أو السلام."),
-                                           symbol: "magnifyingglass")
+                                           symbol: "magnifyingglass", artwork: .names)
                     }
                     if let note = DivineNameLibrary.note(language) {
                         Text(note).font(.yqCaption).foregroundStyle(Color.yqTertiary)

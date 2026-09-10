@@ -176,7 +176,7 @@ struct DuaReaderView: View {
         VStack(alignment: .leading, spacing: 14) {
             if let mood, position == 0 {
                 HStack(alignment: .top, spacing: 10) {
-                    IconBadge(symbol: mood.symbol, tint: mood.tint, size: 28, style: .tinted)
+                    CompanionIllustration(artwork: mood.artwork, size: 42)
                     Text(mood.opening(language))
                         .font(.yqSubheadMedium)
                         .foregroundStyle(Color.yqSecondary)
@@ -266,7 +266,7 @@ struct DuaReaderView: View {
 
     private var anchorRow: some View {
         HStack(spacing: 10) {
-            Image(systemName: "wind").font(.system(size: 14, weight: .semibold)).foregroundStyle(BadgeTint.cyan.color)
+            CompanionIllustration(artwork: .breathe, size: 32)
             Text(copy("Breathe first if you need to. Then read.", "تنفس أولًا إن احتجت، ثم اقرأ."))
                 .font(.yqCaption).foregroundStyle(Color.yqSecondary)
             Spacer(minLength: 0)

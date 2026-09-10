@@ -5,7 +5,17 @@ import SwiftData
 struct SakinaApp: App {
     var body: some Scene {
         WindowGroup {
+            #if DEBUG
+            if ProcessInfo.processInfo.arguments.contains("-yqWidgetGallery") {
+                CompanionWidgetGallery()
+            } else if ProcessInfo.processInfo.arguments.contains("-yqPrayerCards") {
+                CompanionPrayerCardGallery()
+            } else {
+                RootView()
+            }
+            #else
             RootView()
+            #endif
         }
         .modelContainer(for: [Bookmark.self, JournalEntry.self])
     }
@@ -140,7 +150,26 @@ struct RootView: View {
     }
 
     private func tabLabel(_ title: String, symbol: String, tab: Tab) -> some View {
-        Label(title, systemImage: selection == tab ? "\(symbol).fill" : symbol)
+        Label {
+            Text(title)
+        } icon: {
+            if let image = Self.tabArtwork[tab] {
+                Image(uiImage: image).renderingMode(.original)
+            } else {
+                Image(systemName: symbol)
+            }
+        }
+    }
+
+    // Native tab bars use a UIImage's point size, rather than a SwiftUI frame.
+    private static let tabArtwork: [Tab: UIImage] = [
+        Tab.home: CompanionArtwork.morning, .explore: .ummah,
+        .duas: .quran, .saved: .sunnah,
+    ].compactMapValues { artwork in
+        guard let image = UIImage(named: artwork.assetName) else { return nil }
+        return UIGraphicsImageRenderer(size: CGSize(width: 29, height: 29)).image { _ in
+            image.draw(in: CGRect(x: 0, y: 0, width: 29, height: 29))
+        }.withRenderingMode(.alwaysOriginal)
     }
 
     /// Debug builds accept `-yqScreen <route>` so any screen can be opened

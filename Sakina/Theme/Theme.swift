@@ -4,8 +4,8 @@ import SwiftUI
 // MARK: - Palette
 //
 // White canvas, one saturated green, one cool-neutral grey family. Every other
-// colour in the app is a badge tint drawn from the iOS system palette so it
-// adapts to dark mode and reads as native.
+// illustration uses the shared cream, charcoal, moss, and ochre palette.
+// Semantic UI colors adapt to light and dark appearances.
 
 private extension UIColor {
     convenience init(hex: UInt32) {

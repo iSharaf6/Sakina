@@ -1,16 +1,6 @@
 import WidgetKit
 import SwiftUI
 
-// MARK: - Widget palette (self-contained; the widget target does not compile the app theme)
-
-private extension Color {
-    static let widgetInk = Color(red: 0.97, green: 0.94, blue: 0.88)
-    static let widgetMuted = Color(red: 0.72, green: 0.79, blue: 0.75)
-    static let widgetGold = Color(red: 0.84, green: 0.72, blue: 0.48)
-    static let widgetCanvasTop = Color(red: 0.08, green: 0.25, blue: 0.21)
-    static let widgetCanvasBottom = Color(red: 0.035, green: 0.14, blue: 0.12)
-}
-
 // MARK: - Timeline
 
 struct VerseEntry: TimelineEntry {
@@ -122,90 +112,14 @@ private enum PrayerWidgetSide {
 struct VerseWidgetView: View {
     let entry: VerseEntry
     let caption: String
-
+    var artwork: CompanionArtwork = .quran
     @Environment(\.widgetFamily) private var family
 
-    private var verse: Verse? { entry.situation.primaryVerse }
-
     var body: some View {
-        content
-            .containerBackground(for: .widget) {
-                LinearGradient(
-                    colors: [.widgetCanvasTop, .widgetCanvasBottom],
-                    startPoint: .top, endPoint: .bottom
-                )
-                .overlay(
-                    RadialGradient(
-                        colors: [Color.widgetGold.opacity(0.16), .clear],
-                        center: UnitPoint(x: 0.9, y: -0.1),
-                        startRadius: 4, endRadius: 180
-                    )
-                )
-            }
+        VerseCompanionCard(situation: entry.situation, caption: caption,
+                           compact: family == .systemSmall, artwork: artwork)
+            .containerBackground(CompanionWidgetPalette.canvas, for: .widget)
             .widgetURL(URL(string: "sakina://situation/\(entry.situation.id)"))
-    }
-
-    @ViewBuilder
-    private var content: some View {
-        switch family {
-        case .systemSmall:
-            VStack(alignment: .leading, spacing: 8) {
-                header
-                Spacer(minLength: 0)
-                Text(entry.situation.title)
-                    .font(.system(size: 14, weight: .semibold, design: .serif))
-                    .foregroundStyle(Color.widgetInk)
-                    .lineLimit(3)
-                    .minimumScaleFactor(0.85)
-                reference
-            }
-        default:
-            VStack(alignment: .leading, spacing: 10) {
-                header
-                if let verse {
-                    Text(verse.arabic)
-                        .font(.custom("KFGQPC HAFS Uthmanic Script", size: 17))
-                        .foregroundStyle(Color.widgetInk)
-                        .lineLimit(2)
-                        .truncationMode(.tail)
-                        .lineSpacing(5)
-                        .multilineTextAlignment(.trailing)
-                        .frame(maxWidth: .infinity, alignment: .trailing)
-                        .environment(\.layoutDirection, .rightToLeft)
-                }
-                Spacer(minLength: 0)
-                HStack(alignment: .bottom) {
-                    Text(entry.situation.title)
-                        .font(.system(size: 13, weight: .semibold, design: .serif))
-                        .foregroundStyle(Color.widgetInk)
-                        .lineLimit(2)
-                    Spacer()
-                    reference
-                }
-            }
-        }
-    }
-
-    private var header: some View {
-        HStack(spacing: 6) {
-            Text(caption.uppercased())
-                .font(.system(size: 8.5, weight: .semibold))
-                .tracking(1.8)
-                .foregroundStyle(Color.widgetGold)
-            Spacer()
-            SmallStar()
-                .fill(Color.widgetGold.opacity(0.85))
-                .frame(width: 8, height: 8)
-        }
-    }
-
-    private var reference: some View {
-        Text(entry.situation.referenceLabel.uppercased())
-            .font(.system(size: 8.5, weight: .semibold))
-            .tracking(1.4)
-            .foregroundStyle(Color.widgetMuted)
-            .lineLimit(1)
-            .minimumScaleFactor(0.8)
     }
 }
 
@@ -244,19 +158,7 @@ struct PrayerWidgetView: View {
         }
         .containerBackground(for: .widget) {
             if family == .systemMedium {
-                LinearGradient(
-                    colors: [.widgetCanvasTop, .widgetCanvasBottom],
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-                .overlay(
-                    RadialGradient(
-                        colors: [Color.widgetGold.opacity(0.18), .clear],
-                        center: UnitPoint(x: 0.92, y: 0.02),
-                        startRadius: 2,
-                        endRadius: 190
-                    )
-                )
+                CompanionWidgetPalette.canvas
             } else {
                 Color.clear
             }
@@ -288,7 +190,7 @@ struct PrayerWidgetView: View {
                         .font(.system(size: 9, weight: .semibold))
                         .lineLimit(1)
                     Text(timeLabel(nextEvent.time, schedule: schedule))
-                        .font(.system(size: 10, weight: .bold, design: .rounded))
+                        .font(.system(size: 10, weight: .bold))
                         .minimumScaleFactor(0.72)
                         .monospacedDigit()
                 }
@@ -314,10 +216,10 @@ struct PrayerWidgetView: View {
             if let nextEvent {
                 HStack(alignment: .firstTextBaseline) {
                     Text(nextEvent.kind.displayName(locale: locale))
-                        .font(.system(size: 16, weight: .bold, design: .rounded))
+                        .font(.system(size: 16, weight: .bold))
                     Spacer(minLength: 6)
                     Text(timeLabel(nextEvent.time, schedule: schedule))
-                        .font(.system(size: 15, weight: .bold, design: .rounded))
+                        .font(.system(size: 15, weight: .bold))
                         .monospacedDigit()
                 }
                 if let followingEvent {
@@ -331,77 +233,7 @@ struct PrayerWidgetView: View {
     }
 
     private func medium(_ schedule: PrayerSchedule) -> some View {
-        let events = schedule.events(on: nextEvent?.time ?? entry.date)
-        return VStack(alignment: .leading, spacing: 11) {
-            HStack(alignment: .firstTextBaseline) {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("YAQEEN")
-                        .font(.system(size: 9, weight: .bold))
-                        .tracking(2.2)
-                        .foregroundStyle(Color.widgetGold)
-                    Text(schedule.locationLabel)
-                        .font(.system(size: 11, weight: .medium))
-                        .foregroundStyle(Color.widgetMuted)
-                        .lineLimit(1)
-                }
-                Spacer()
-                if let nextEvent {
-                    HStack(spacing: 6) {
-                        Image(systemName: nextEvent.kind.symbolName)
-                            .font(.system(size: 11, weight: .semibold))
-                        Text(nextEvent.kind.displayName(locale: locale))
-                            .font(.system(size: 12, weight: .semibold))
-                        Text(timeLabel(nextEvent.time, schedule: schedule))
-                            .font(.system(size: 13, weight: .bold, design: .rounded))
-                            .monospacedDigit()
-                    }
-                    .foregroundStyle(Color.widgetInk)
-                }
-            }
-
-            Grid(horizontalSpacing: 8, verticalSpacing: 7) {
-                ForEach(0..<2, id: \.self) { row in
-                    GridRow {
-                        ForEach(0..<3, id: \.self) { column in
-                            let index = row * 3 + column
-                            if events.indices.contains(index) {
-                                prayerCell(events[index], schedule: schedule)
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        .foregroundStyle(Color.widgetInk)
-    }
-
-    private func prayerCell(_ event: PrayerEvent, schedule: PrayerSchedule) -> some View {
-        let isNext = event.id == nextEvent?.id
-        return HStack(spacing: 5) {
-            Image(systemName: event.kind.symbolName)
-                .font(.system(size: 9, weight: .semibold))
-                .foregroundStyle(isNext ? Color.widgetGold : Color.widgetMuted)
-            VStack(alignment: .leading, spacing: 1) {
-                Text(event.kind.displayName(locale: locale))
-                    .font(.system(size: 9, weight: .semibold))
-                    .foregroundStyle(isNext ? Color.widgetInk : Color.widgetMuted)
-                    .lineLimit(1)
-                Text(timeLabel(event.time, schedule: schedule))
-                    .font(.system(size: 10, weight: .bold, design: .rounded))
-                    .foregroundStyle(Color.widgetInk)
-                    .monospacedDigit()
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.8)
-            }
-            Spacer(minLength: 0)
-        }
-        .padding(.horizontal, 7)
-        .padding(.vertical, 5)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(
-            RoundedRectangle(cornerRadius: 9, style: .continuous)
-                .fill(isNext ? Color.widgetGold.opacity(0.13) : Color.white.opacity(0.035))
-        )
+        PrayerCompanionCard(schedule: schedule, date: entry.date)
     }
 
     private var unavailable: some View {
@@ -423,19 +255,7 @@ struct PrayerWidgetView: View {
                         .foregroundStyle(.secondary)
                 }
             default:
-                HStack(spacing: 14) {
-                    Image(systemName: "location.circle.fill")
-                        .font(.system(size: 30))
-                        .foregroundStyle(Color.widgetGold)
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("Prayer times")
-                            .font(.system(size: 16, weight: .bold, design: .rounded))
-                            .foregroundStyle(Color.widgetInk)
-                        Text("Open Yaqeen to choose your location")
-                            .font(.system(size: 12, weight: .medium))
-                            .foregroundStyle(Color.widgetMuted)
-                    }
-                }
+                PrayerCompanionCard(schedule: nil, date: entry.date)
             }
         }
     }
@@ -485,14 +305,14 @@ private struct PrayerScheduleHalfView: View {
                     prayerMarker(isNext: event.id == nextEvent?.id)
 
                     Text(event.kind.displayName(locale: locale))
-                        .font(.system(size: 11, weight: .medium, design: .rounded))
+                        .font(.system(size: 11, weight: .medium))
                         .lineLimit(1)
                         .minimumScaleFactor(0.78)
 
                     Spacer(minLength: 3)
 
                     Text(timeLabel(event.time, schedule: schedule))
-                        .font(.system(size: 11, weight: .semibold, design: .rounded))
+                        .font(.system(size: 11, weight: .semibold))
                         .monospacedDigit()
                         .lineLimit(1)
                         .minimumScaleFactor(0.72)
@@ -531,7 +351,7 @@ private struct PrayerScheduleHalfView: View {
                 .font(.system(size: 20, weight: .medium))
             VStack(alignment: .leading, spacing: 2) {
                 Text("Prayer times")
-                    .font(.system(size: 12, weight: .semibold, design: .rounded))
+                    .font(.system(size: 12, weight: .semibold))
                 Text("Open Yaqeen to set your location")
                     .font(.system(size: 9.5, weight: .medium))
                     .foregroundStyle(.secondary)
@@ -546,28 +366,6 @@ private struct PrayerScheduleHalfView: View {
         formatter.timeZone = schedule.timeZone
         formatter.setLocalizedDateFormatFromTemplate("jm")
         return formatter.string(from: date)
-    }
-}
-
-/// Khatam star, duplicated locally so the widget stays independent of the app theme.
-struct SmallStar: Shape {
-    func path(in rect: CGRect) -> Path {
-        var path = Path()
-        let center = CGPoint(x: rect.midX, y: rect.midY)
-        let radius = min(rect.width, rect.height) / 2
-        for i in 0..<2 {
-            let rotation = CGFloat(i) * .pi / 4
-            var square = Path()
-            for j in 0..<4 {
-                let angle = rotation + CGFloat(j) * .pi / 2
-                let point = CGPoint(x: center.x + radius * cos(angle),
-                                    y: center.y + radius * sin(angle))
-                if j == 0 { square.move(to: point) } else { square.addLine(to: point) }
-            }
-            square.closeSubpath()
-            path.addPath(square)
-        }
-        return path
     }
 }
 
@@ -587,7 +385,7 @@ struct VerseOfDayWidget: Widget {
 struct PinnedVerseWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: "SakinaPinned", provider: PinnedProvider()) { entry in
-            VerseWidgetView(entry: entry, caption: "Reflecting on")
+            VerseWidgetView(entry: entry, caption: "Reflecting on", artwork: .praise)
         }
         .configurationDisplayName("Pinned Situation")
         .description("Keep a saved ayah on your Home Screen. Pin one from any guidance page in Yaqeen.")

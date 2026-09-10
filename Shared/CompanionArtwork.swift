@@ -6,6 +6,12 @@ enum CompanionArtwork: String, CaseIterable {
     case morning, evening, sleep, tahajjud, salah, afterSalah
     case istighfar, praise, salawat, anytime, ummah, healing
     case quran, sunnah, names
+    case angry, anxious, confident, confused, grateful, greedy, guilty, happy
+    case hurt, indecisive, hypocritical, jealous, lazy, lonely, lost, overwhelmed
+    case sad, scared, unloved, impatient, hopeful, grieving, breathe
+    case family, shelter, work, qibla, support
+    case fajr, sunrise, dhuhr, asr, maghrib, isha
+    case journal, privacy, settings, saved
 
     var assetName: String { "Companion-\(rawValue)" }
 }
@@ -13,6 +19,7 @@ enum CompanionArtwork: String, CaseIterable {
 struct CompanionIllustration: View {
     let artwork: CompanionArtwork
     var size: CGFloat = 80
+    var onDarkSurface = false
     @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
@@ -23,7 +30,7 @@ struct CompanionIllustration: View {
             .frame(width: size, height: size)
             // A paper backing keeps the charcoal marks legible in dark mode.
             .background {
-                if colorScheme == .dark {
+                if colorScheme == .dark || onDarkSurface {
                     RoundedRectangle(cornerRadius: size * 0.23, style: .continuous)
                         .fill(.white)
                 }
@@ -33,24 +40,15 @@ struct CompanionIllustration: View {
     }
 }
 
-extension DuaPractice {
+extension PrayerKind {
     var artwork: CompanionArtwork {
         switch self {
-        case .morning: return .morning
-        case .evening: return .evening
-        case .sleep: return .sleep
-        case .tahajjud: return .tahajjud
-        case .salah: return .salah
-        case .afterSalah: return .afterSalah
-        case .istighfar: return .istighfar
-        case .praise: return .praise
-        case .salawat: return .salawat
-        case .anytime: return .anytime
-        case .ummah: return .ummah
-        case .healing: return .healing
-        case .quran: return .quran
-        case .sunnah: return .sunnah
-        case .names: return .names
+        case .fajr: return .fajr
+        case .sunrise: return .sunrise
+        case .dhuhr: return .dhuhr
+        case .asr: return .asr
+        case .maghrib: return .maghrib
+        case .isha: return .isha
         }
     }
 }

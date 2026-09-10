@@ -24,14 +24,14 @@ struct QuickGuidanceView: View {
                 if matches.isEmpty {
                     EmptyGuidanceState(title: copy("Nothing matched", "لا توجد نتائج"),
                                        detail: copy("Try a feeling, like worry or hope.", "جرّب شعورًا مثل القلق أو الأمل."),
-                                       symbol: "text.magnifyingglass")
+                                       symbol: "text.magnifyingglass", artwork: .lost)
                 } else {
                     RowGroup {
                         ForEach(Array(matches.enumerated()), id: \.element.id) { index, prompt in
                             if let situation = prompt.situation {
                                 NavigationLink { SituationDetailView(situation: situation) } label: {
                                     HStack(spacing: 12) {
-                                        IconBadge(symbol: "quote.opening", tint: GuidanceCatalog.group(containing: situation).tint, size: 34, style: .tinted)
+                                        CompanionIllustration(artwork: GuidanceCatalog.group(containing: situation).artwork, size: 42)
                                         VStack(alignment: .leading, spacing: 3) {
                                             Text(title(prompt)).font(.yqBodyMedium).foregroundStyle(Color.yqInk)
                                             Text(situation.referenceLabel).font(.yqCaption).foregroundStyle(Color.yqSecondary)

@@ -137,7 +137,7 @@ struct DuasView: View {
         VStack(alignment: .leading, spacing: 12) {
             SectionHeader(copy("How’s your heart?", "كيف حال قلبك؟")) {
                 NavigationLink { FeelingsView(language: language) } label: {
-                    TextAction(title: copy("All 31", "الكل"))
+                    TextAction(title: copy("All \(DuaMood.allCases.count)", "الكل"))
                 }
                 .buttonStyle(.yqPressSoft)
             }
@@ -145,7 +145,7 @@ struct DuasView: View {
                 HStack(spacing: 8) {
                     ForEach(HeartLog.suggestions(from: heartLogRaw)) { mood in
                         NavigationLink(value: mood) {
-                            FeelingChip(symbol: mood.symbol, title: mood.title(language), tint: mood.tint)
+                            FeelingChip(symbol: mood.symbol, title: mood.title(language), artwork: mood.artwork)
                         }
                         .buttonStyle(.yqPress)
                     }
@@ -204,7 +204,7 @@ struct DuasView: View {
                 FlowLayout(spacing: 8, lineSpacing: 8) {
                     ForEach(matchingMoods) { mood in
                         NavigationLink(value: mood) {
-                            FeelingChip(symbol: mood.symbol, title: mood.title(language), tint: mood.tint)
+                            FeelingChip(symbol: mood.symbol, title: mood.title(language), artwork: mood.artwork)
                         }
                         .buttonStyle(.yqPress)
                     }
@@ -292,6 +292,7 @@ struct PracticeTile: View {
 
 struct FeelingsView: View {
     let language: AppLanguage
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @AppStorage(HeartLog.key) private var heartLogRaw = ""
     @State private var appeared = false
@@ -332,7 +333,10 @@ struct FeelingsView: View {
 
     private func band(title: String, subtitle: String? = nil, tint: Color, moods: [DuaMood], order: Int) -> some View {
         VStack(alignment: .leading, spacing: 10) {
-            HStack(alignment: .firstTextBaseline, spacing: 8) {
+            let headingLayout = dynamicTypeSize.isAccessibilitySize
+                ? AnyLayout(VStackLayout(alignment: .leading, spacing: 4))
+                : AnyLayout(HStackLayout(alignment: .firstTextBaseline, spacing: 8))
+            headingLayout {
                 Text(title).font(.yqHeadline).foregroundStyle(tint)
                 if let subtitle {
                     Text(subtitle).font(.yqCaption).foregroundStyle(Color.yqTertiary)
@@ -341,7 +345,7 @@ struct FeelingsView: View {
             FlowLayout(spacing: 8, lineSpacing: 8) {
                 ForEach(moods) { mood in
                     NavigationLink(value: mood) {
-                        FeelingChip(symbol: mood.symbol, title: mood.title(language), tint: mood.tint)
+                        FeelingChip(symbol: mood.symbol, title: mood.title(language), artwork: mood.artwork)
                     }
                     .buttonStyle(.yqPress)
                 }
@@ -413,7 +417,7 @@ struct MoodDetailView: View {
             DuaReaderView(dua: first, sequence: entries, collectionTitle: title, mood: mood)
         } else {
             EmptyGuidanceState(title: copy("Nothing here yet", "لا يوجد شيء بعد"),
-                               detail: copy("Try another feeling.", "جرّب شعورًا آخر."), symbol: "heart")
+                               detail: copy("Try another feeling.", "جرّب شعورًا آخر."), symbol: "heart", artwork: mood.artwork)
                 .yqScreen()
         }
     }
@@ -424,7 +428,7 @@ struct ImmediateSupportCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 14) {
             HStack(spacing: 12) {
-                IconBadge(symbol: "lifepreserver", tint: BadgeTint.red.color, size: 40)
+                CompanionIllustration(artwork: .support, size: 48)
                 Text(language.pick("You deserve support right now.", "أنت تستحق الدعم الآن."))
                     .font(.yqHeadline)
                     .foregroundStyle(Color.yqInk)
@@ -456,7 +460,7 @@ struct PracticeDestination: View {
         } else if let first = practice.entries.first {
             DuaReaderView(dua: first, sequence: practice.entries, collectionTitle: practice.title(language), practice: practice)
         } else {
-            EmptyGuidanceState(title: language.pick("Coming soon", "قريبًا"), detail: practice.invitation(language), symbol: practice.symbol)
+            EmptyGuidanceState(title: language.pick("Coming soon", "قريبًا"), detail: practice.invitation(language), symbol: practice.symbol, artwork: practice.artwork)
                 .yqScreen()
         }
     }
@@ -513,7 +517,7 @@ struct DuaEmptyState: View {
                 ? language.pick("Save a du’a as you read. It will be here whenever you need it.", "احفظ دعاءً أثناء القراءة، وستجده هنا كلما احتجت إليه.")
                 : language.pick("Try a feeling, a title, or a reference such as 28:24.", "جرّب شعورًا أو عنوانًا أو مرجعًا مثل 28:24."),
             symbol: savedOnly ? "bookmark" : "magnifyingglass",
-            artwork: savedOnly ? .sleep : .evening
+            artwork: savedOnly ? .saved : .lost
         )
     }
 }

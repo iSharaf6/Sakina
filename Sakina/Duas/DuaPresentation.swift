@@ -2,20 +2,10 @@ import SwiftUI
 
 // MARK: - Feelings
 //
-// Each family carries one tint; each feeling carries one symbol. The symbol
-// is a quiet cue, never an illustration of the emotion.
+// Feelings share the green palette; their companion illustrations carry expression.
 
 extension FeelingFamily {
-    var tint: Color {
-        switch self {
-        case .heavy: return BadgeTint.indigo.color
-        case .restless: return BadgeTint.orange.color
-        case .direction: return BadgeTint.teal.color
-        case .returning: return BadgeTint.purple.color
-        case .peace: return BadgeTint.green.color
-        case .energy: return BadgeTint.blue.color
-        }
-    }
+    var tint: Color { .yqAccentDeep }
 
     var symbol: String {
         switch self {

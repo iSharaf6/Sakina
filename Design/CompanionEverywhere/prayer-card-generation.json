@@ -1,0 +1,36 @@
+{
+  "tool": "image_gen.imagegen",
+  "purpose": "Dark prayer card variants, composited with SwiftUI screen blending; no white badge.",
+  "assets": [
+    {
+      "name": "fajr",
+      "prompt": "Use case: style-transfer. Adapt this exact original pencil illustration for a dark forest-green prayer card. Preserve the same celestial subject and time-of-day meaning, simple shapes and dry colored-pencil texture. Replace the white paper background with perfectly flat opaque pure BLACK (#000000), edge to edge, with no border, no tile, no paper texture outside the drawing. Draw the subject in warm cream, quiet ochre and lighter sage-green pencil so it reads on a dark surface; replace dark outlines with subtle colored-pencil edges. Keep the drawing compact and centered, filling about 80% of a square canvas. No text, no lettering, no glow, no gradients, no extra symbols. The black matte will be screened over the card by the app, so every surrounding pixel must be pure black. Output a single illustration.",
+      "source": "/Users/IslamSharaf_1/.codex/generated_images/01a086a3-1168-77c2-94d6-fbc29ab8cbe7/exec-be358654-5429-4335-8dab-d38851849335.png"
+    },
+    {
+      "name": "sunrise",
+      "prompt": "Use case: style-transfer. Adapt this exact original pencil illustration for a dark forest-green prayer card. Preserve the same celestial subject and time-of-day meaning, simple shapes and dry colored-pencil texture. Replace the white paper background with perfectly flat opaque pure BLACK (#000000), edge to edge, with no border, no tile, no paper texture outside the drawing. Draw the subject in warm cream, quiet ochre and lighter sage-green pencil so it reads on a dark surface; replace dark outlines with subtle colored-pencil edges. Keep the drawing compact and centered, filling about 80% of a square canvas. No text, no lettering, no glow, no gradients, no extra symbols. The black matte will be screened over the card by the app, so every surrounding pixel must be pure black. Output a single illustration.",
+      "source": "/Users/IslamSharaf_1/.codex/generated_images/01a086a3-1168-77c2-94d6-fbc29ab8cbe7/exec-eb23db5a-f1bc-48e7-b215-428aace68c1c.png"
+    },
+    {
+      "name": "dhuhr",
+      "prompt": "Use case: style-transfer. Adapt this exact original pencil illustration for a dark forest-green prayer card. Preserve the same celestial subject and time-of-day meaning, simple shapes and dry colored-pencil texture. Replace the white paper background with perfectly flat opaque pure BLACK (#000000), edge to edge, with no border, no tile, no paper texture outside the drawing. Draw the subject in warm cream, quiet ochre and lighter sage-green pencil so it reads on a dark surface; replace dark outlines with subtle colored-pencil edges. Keep the drawing compact and centered, filling about 80% of a square canvas. No text, no lettering, no glow, no gradients, no extra symbols. The black matte will be screened over the card by the app, so every surrounding pixel must be pure black. Output a single illustration.",
+      "source": "/Users/IslamSharaf_1/.codex/generated_images/01a086a3-1168-77c2-94d6-fbc29ab8cbe7/exec-302b9b6d-d6f8-45fa-bcff-2a09b54ae764.png"
+    },
+    {
+      "name": "asr",
+      "prompt": "Use case: style-transfer. Adapt this exact original pencil illustration for a dark forest-green prayer card. Preserve the same celestial subject and time-of-day meaning, simple shapes and dry colored-pencil texture. Replace the white paper background with perfectly flat opaque pure BLACK (#000000), edge to edge, with no border, no tile, no paper texture outside the drawing. Draw the subject in warm cream, quiet ochre and lighter sage-green pencil so it reads on a dark surface; replace dark outlines with subtle colored-pencil edges. Keep the drawing compact and centered, filling about 80% of a square canvas. No text, no lettering, no glow, no gradients, no extra symbols. The black matte will be screened over the card by the app, so every surrounding pixel must be pure black. Output a single illustration.",
+      "source": "/Users/IslamSharaf_1/.codex/generated_images/01a086a3-1168-77c2-94d6-fbc29ab8cbe7/exec-5af4c4ae-0240-4860-bab3-2f925f7218b4.png"
+    },
+    {
+      "name": "maghrib",
+      "prompt": "Use case: style-transfer. Adapt this exact original pencil illustration for a dark forest-green prayer card. Preserve the same celestial subject and time-of-day meaning, simple shapes and dry colored-pencil texture. Replace the white paper background with perfectly flat opaque pure BLACK (#000000), edge to edge, with no border, no tile, no paper texture outside the drawing. Draw the subject in warm cream, quiet ochre and lighter sage-green pencil so it reads on a dark surface; replace dark outlines with subtle colored-pencil edges. Keep the drawing compact and centered, filling about 80% of a square canvas. No text, no lettering, no glow, no gradients, no extra symbols. The black matte will be screened over the card by the app, so every surrounding pixel must be pure black. Output a single illustration.",
+      "source": "/Users/IslamSharaf_1/.codex/generated_images/01a086a3-1168-77c2-94d6-fbc29ab8cbe7/exec-90e48bdf-7132-4a83-8833-454d797b7ea4.png"
+    },
+    {
+      "name": "isha",
+      "prompt": "Use case: style-transfer. Adapt this exact original pencil illustration for a dark forest-green prayer card. Preserve the same celestial subject and time-of-day meaning, simple shapes and dry colored-pencil texture. Replace the white paper background with perfectly flat opaque pure BLACK (#000000), edge to edge, with no border, no tile, no paper texture outside the drawing. Draw the subject in warm cream, quiet ochre and lighter sage-green pencil so it reads on a dark surface; replace dark outlines with subtle colored-pencil edges. Keep the drawing compact and centered, filling about 80% of a square canvas. No text, no lettering, no glow, no gradients, no extra symbols. The black matte will be screened over the card by the app, so every surrounding pixel must be pure black. Output a single illustration.",
+      "source": "/Users/IslamSharaf_1/.codex/generated_images/01a086a3-1168-77c2-94d6-fbc29ab8cbe7/exec-9699c5bb-2e32-4c08-895b-55fbfac66694.png"
+    }
+  ]
+}

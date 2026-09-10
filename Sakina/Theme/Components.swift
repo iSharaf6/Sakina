@@ -259,26 +259,32 @@ struct BadgeTile: View {
     }
 }
 
-/// A feeling chip: pill, tinted, small symbol, one word.
+/// A quiet paper pill with an expressive companion and a readable label.
 struct FeelingChip: View {
     let symbol: String
     let title: String
     var tint: Color = .yqAccent
     var selected = false
+    var artwork: CompanionArtwork? = nil
 
     var body: some View {
         HStack(spacing: 6) {
-            Image(systemName: symbol)
-                .font(.system(size: 13, weight: .semibold))
+            if let artwork {
+                CompanionIllustration(artwork: artwork, size: 34)
+            } else {
+                Image(systemName: symbol)
+                    .font(.system(size: 13, weight: .semibold))
+            }
             Text(title)
                 .font(.yqSubheadMedium)
                 .lineLimit(1)
         }
-        .foregroundStyle(selected ? Color.white : tint)
-        .padding(.leading, 11)
+        .foregroundStyle(selected ? Color.white : Color.yqInk)
+        .padding(.leading, artwork == nil ? 13 : 5)
         .padding(.trailing, 13)
-        .frame(minHeight: 38)
-        .background(selected ? tint : tint.opacity(0.12), in: Capsule(style: .continuous))
+        .frame(minHeight: 44)
+        .background(selected ? Color.yqAccentDeep : Color.yqSurface, in: Capsule(style: .continuous))
+        .overlay(Capsule().strokeBorder(Color.yqHairline, lineWidth: 0.75))
         .contentShape(Capsule())
     }
 }

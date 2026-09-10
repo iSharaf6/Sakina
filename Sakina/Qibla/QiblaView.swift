@@ -298,13 +298,7 @@ struct QiblaShortcutCard: View {
 
     var body: some View {
         HStack(spacing: 14) {
-            Image(systemName: "location.north.circle.fill")
-                .font(.system(size: 27, weight: .medium))
-                .symbolRenderingMode(.hierarchical)
-                .foregroundStyle(Color.yaqeenForest)
-                .frame(width: 46, height: 46)
-                .background(Color.yaqeenSage.opacity(0.65), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-                .accessibilityHidden(true)
+            CompanionIllustration(artwork: .qibla, size: 56)
 
             VStack(alignment: .leading, spacing: 3) {
                 Text(copy("Find Qibla", "حدد القبلة"))

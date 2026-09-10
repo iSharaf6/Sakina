@@ -77,7 +77,7 @@ struct ExploreView: View {
                     NavigationLink(value: group) {
                         BadgeRow(symbol: group.badgeSymbol, tint: group.tint, title: group.title(language),
                                  subtitle: group.stages.prefix(2).map { $0.title(language) }.joined(separator: " · "),
-                                 subtitleLines: 1) {
+                                 artwork: group.artwork, subtitleLines: 1) {
                             HStack(spacing: 8) {
                                 Text("\(group.situations.count)")
                                     .font(.system(.caption, weight: .semibold).monospacedDigit())
@@ -96,12 +96,12 @@ struct ExploreView: View {
     private var feelingRow: some View {
         NavigationLink { FeelingsView(language: language) } label: {
             HStack(spacing: 14) {
-                IconBadge(symbol: "heart.fill", tint: BadgeTint.pink.color, size: 40, style: .tinted)
+                CompanionIllustration(artwork: .breathe, size: 48)
                 VStack(alignment: .leading, spacing: 2) {
                     Text(copy("Start with a feeling", "ابدأ بشعور"))
                         .font(.yqSubheadBold)
                         .foregroundStyle(Color.yqInk)
-                    Text(copy("31 feelings, one tap to a du’a.", "٣١ شعورًا، وضغطة واحدة إلى دعاء."))
+                    Text(copy("\(DuaMood.allCases.count) feelings, one tap to a du’a.", "\(DuaMood.allCases.count) شعورًا، وضغطة واحدة إلى دعاء."))
                         .font(.yqCaption)
                         .foregroundStyle(Color.yqSecondary)
                 }
@@ -126,7 +126,7 @@ struct ExploreView: View {
                 FlowLayout(spacing: 8, lineSpacing: 8) {
                     ForEach(moods) { mood in
                         NavigationLink(value: mood) {
-                            FeelingChip(symbol: mood.symbol, title: mood.title(language), tint: mood.tint)
+                            FeelingChip(symbol: mood.symbol, title: mood.title(language), artwork: mood.artwork)
                         }
                         .buttonStyle(.yqPress)
                     }
@@ -173,7 +173,7 @@ struct LifeGroupView: View {
         ScrollView(showsIndicators: false) {
             VStack(alignment: .leading, spacing: 22) {
                 HStack(alignment: .top, spacing: 14) {
-                    IconBadge(symbol: group.badgeSymbol, tint: group.tint, size: 56)
+                    CompanionIllustration(artwork: group.artwork, size: 72)
                     VStack(alignment: .leading, spacing: 4) {
                         Text(group.title(language))
                             .font(.yqLargeTitle)
@@ -246,7 +246,7 @@ struct SituationRow: View {
     var body: some View {
         HStack(spacing: 12) {
             if showsBadge {
-                IconBadge(symbol: group.badgeSymbol, tint: tint ?? group.tint, size: 34, style: .tinted)
+                CompanionIllustration(artwork: group.artwork, size: 42)
             }
             VStack(alignment: .leading, spacing: 3) {
                 Text(situation.localizedTitle(language))

@@ -79,9 +79,7 @@ struct PrivacyPolicyView: View {
 
     private var policyHeader: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Image(systemName: "lock.shield.fill")
-                .font(.system(size: 30, weight: .semibold))
-                .foregroundStyle(Color.sakinaInk)
+            CompanionIllustration(artwork: .privacy, size: 80)
             Text(copy("Privacy, in plain language", "الخصوصية بلغة واضحة"))
                 .font(.title2.weight(.semibold))
                 .foregroundStyle(Color.sakinaInk)

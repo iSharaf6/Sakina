@@ -130,7 +130,7 @@ struct HomeView: View {
                     .foregroundStyle(Color.yqSecondary)
             }
             Spacer(minLength: 0)
-            Button { sheet = .settings } label: { CircleButton(symbol: "gearshape.fill") }
+            Button { sheet = .settings } label: { CompanionIllustration(artwork: .settings, size: 44) }
                 .buttonStyle(.yqPress)
                 .accessibilityLabel(copy("Settings", "الإعدادات"))
                 .padding(.top, 2)
@@ -190,7 +190,7 @@ struct HomeView: View {
                 HStack(spacing: 8) {
                     ForEach(HeartLog.suggestions(from: heartLogRaw)) { mood in
                         NavigationLink(value: mood) {
-                            FeelingChip(symbol: mood.symbol, title: mood.title(language), tint: mood.tint)
+                            FeelingChip(symbol: mood.symbol, title: mood.title(language), artwork: mood.artwork)
                         }
                         .buttonStyle(.yqPress)
                     }
@@ -211,7 +211,7 @@ struct HomeView: View {
             SectionHeader(copy("Today", "اليوم")) {
                 Button { showBreathing = true } label: {
                     HStack(spacing: 5) {
-                        Image(systemName: "wind").font(.system(size: 12, weight: .bold))
+                        CompanionIllustration(artwork: .breathe, size: 32)
                         Text(copy("Breathe", "تنفّس"))
                     }
                     .font(.yqSubheadBold)
@@ -256,7 +256,7 @@ struct HomeView: View {
                 NavigationLink { QiblaView() } label: {
                     BadgeTile(symbol: "location.north.circle.fill", tint: BadgeTint.blue.color,
                               title: copy("Qibla", "القبلة"),
-                              detail: copy("Find the direction", "اعرف الاتجاه"))
+                              detail: copy("Find the direction", "اعرف الاتجاه"), artwork: .qibla)
                 }
                 .buttonStyle(.yqPress)
             }
@@ -337,10 +337,7 @@ private struct HeartStrip: View {
                 VStack(spacing: 5) {
                     ZStack {
                         if let mood = day.mood {
-                            Circle().fill(mood.tint.opacity(0.16))
-                            Image(systemName: mood.symbol)
-                                .font(.system(size: 11, weight: .semibold))
-                                .foregroundStyle(mood.tint)
+                            CompanionIllustration(artwork: mood.artwork, size: 30)
                         } else {
                             Circle().strokeBorder(isToday ? Color.yqAccent : Color.yqHairline,
                                                   style: StrokeStyle(lineWidth: 1.2, dash: isToday ? [] : [2, 2]))
@@ -364,40 +361,51 @@ private struct HeartStrip: View {
 
 // MARK: - Next prayer (dark card)
 
-private struct NextPrayerCard: View {
+struct NextPrayerCard: View {
     let schedule: PrayerSchedule
     let now: Date
     let language: AppLanguage
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     private var copy: AppCopy { AppCopy(language: language) }
 
     var body: some View {
-        let events = schedule.events(on: now)
         let next = schedule.nextEvent(after: now)
+        let events = schedule.events(on: next?.time ?? now)
         VStack(alignment: .leading, spacing: 16) {
             HStack(alignment: .top) {
                 VStack(alignment: .leading, spacing: 4) {
                     CapsLabel(text: copy("Next prayer", "الصلاة القادمة"), color: .yqNightMuted)
                     if let next {
-                        HStack(alignment: .firstTextBaseline, spacing: 8) {
+                        let headlineLayout = dynamicTypeSize.isAccessibilitySize
+                            ? AnyLayout(VStackLayout(alignment: .leading, spacing: 4))
+                            : AnyLayout(HStackLayout(alignment: .firstTextBaseline, spacing: 8))
+                        headlineLayout {
                             Text(next.kind.displayName(locale: language.locale))
                                 .font(.yqTitle)
                             Text(time(next.time))
                                 .font(.yqHeadline)
                                 .foregroundStyle(Color.yqNightMuted)
+                                .lineLimit(1)
+                                .minimumScaleFactor(0.75)
                         }
                         Text(countdown(to: next.time))
                             .font(.yqSubheadMedium)
                             .foregroundStyle(Color.yqNightMuted)
                     }
                 }
-                Spacer()
-                Image(systemName: next?.kind.symbolName ?? "moon.stars.fill")
-                    .font(.system(size: 22, weight: .semibold))
-                    .foregroundStyle(Color.yqOnNight)
-                    .frame(width: 44, height: 44)
-                    .background(Color.white.opacity(0.10), in: Circle())
+                Spacer(minLength: 8)
+                if !dynamicTypeSize.isAccessibilitySize {
+                    Image("PrayerScene-\((next?.kind ?? .isha).rawValue)")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 86, height: 86)
+                        // The generated black matte disappears into the card.
+                        .blendMode(.screen)
+                        .accessibilityHidden(true)
+                }
             }
-            HStack(spacing: 0) {
+            LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8),
+                                     count: dynamicTypeSize.isAccessibilitySize ? 2 : 3), spacing: 8) {
                 ForEach(events) { event in
                     VStack(spacing: 3) {
                         Text(event.kind.displayName(locale: language.locale))
@@ -406,6 +414,8 @@ private struct NextPrayerCard: View {
                             .minimumScaleFactor(0.8)
                         Text(time(event.time))
                             .font(.system(.caption, weight: event.kind == next?.kind ? .bold : .medium).monospacedDigit())
+                            .lineLimit(1)
+                            .minimumScaleFactor(0.75)
                     }
                     .foregroundStyle(event.kind == next?.kind ? Color.yqOnNight : Color.yqNightMuted)
                     .frame(maxWidth: .infinity)
@@ -419,15 +429,19 @@ private struct NextPrayerCard: View {
         .padding(18)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Color.yqNight, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
-        .overlay(alignment: .topTrailing) {
-            KhatamRosette()
-                .stroke(Color.white.opacity(0.07), lineWidth: 1)
-                .frame(width: 180, height: 180)
-                .offset(x: 50, y: -70)
-                .accessibilityHidden(true)
-        }
         .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
-        .accessibilityElement(children: .combine)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(accessibilitySummary(events: events, next: next))
+    }
+
+    private func accessibilitySummary(events: [PrayerEvent], next: PrayerEvent?) -> String {
+        let heading = next.map {
+            "\(copy("Next prayer", "الصلاة القادمة")), \($0.kind.displayName(locale: language.locale)), \(time($0.time)), \(countdown(to: $0.time)). "
+        } ?? ""
+        let schedule = events.map {
+            "\($0.kind.displayName(locale: language.locale)), \(time($0.time))"
+        }.joined(separator: ". ")
+        return heading + schedule
     }
 
     private func time(_ date: Date) -> String {
@@ -454,11 +468,7 @@ private struct PrayerSetupCard: View {
 
     var body: some View {
         HStack(spacing: 14) {
-            Image(systemName: "location.fill")
-                .font(.system(size: 19, weight: .semibold))
-                .foregroundStyle(Color.yqOnNight)
-                .frame(width: 44, height: 44)
-                .background(Color.white.opacity(0.12), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+            CompanionIllustration(artwork: .lost, size: 64, onDarkSurface: true)
             VStack(alignment: .leading, spacing: 3) {
                 Text(copy("Prayer times, where you are", "مواقيت الصلاة حيث أنت"))
                     .font(.yqHeadline)
@@ -496,8 +506,7 @@ struct PrayerHeroCard: View {
             VStack(alignment: .leading, spacing: 0) {
                 ForEach(Array(events.enumerated()), id: \.element.id) { index, event in
                     HStack(spacing: 14) {
-                        IconBadge(symbol: event.kind.symbolName, tint: event.kind == next?.kind ? .yqAccent : BadgeTint.slate.color, size: 36,
-                                  style: event.kind == next?.kind ? .solid : .tinted)
+                        CompanionIllustration(artwork: event.kind.artwork, size: 42)
                         Text(event.kind.displayName(locale: language.locale))
                             .font(event.kind == next?.kind ? .yqBodyMedium : .yqBody)
                             .foregroundStyle(Color.yqInk)
@@ -517,7 +526,7 @@ struct PrayerHeroCard: View {
             .yqCard()
             Button(action: refresh) {
                 HStack(spacing: 8) {
-                    if isRefreshing { ProgressView().controlSize(.small) } else { Image(systemName: "location.fill") }
+                    if isRefreshing { ProgressView().controlSize(.small) } else { CompanionIllustration(artwork: .lost, size: 30) }
                     Text(schedule.locationLabel).lineLimit(1)
                     Spacer()
                     Text(copy("Update", "تحديث")).foregroundStyle(Color.yqAccentDeep)
@@ -550,7 +559,7 @@ struct PrayerPermissionCard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            IconBadge(symbol: "location.fill", tint: .yqAccent, size: 44)
+            CompanionIllustration(artwork: .lost, size: 84)
             VStack(alignment: .leading, spacing: 6) {
                 Text(copy("Prayer times, where you are", "مواقيت الصلاة حيث أنت"))
                     .font(.yqTitle2)
