@@ -330,9 +330,7 @@ struct SettingsView: View {
                         if case .success(let image) = phase {
                             image.resizable().scaledToFill()
                         } else {
-                            Image(systemName: "person.crop.circle.fill")
-                                .resizable()
-                                .foregroundStyle(Color.yqTertiary)
+                            CompanionIllustration(artwork: .confident, size: 36)
                         }
                     }
                     .frame(width: 36, height: 36)

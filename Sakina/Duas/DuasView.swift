@@ -23,7 +23,6 @@ struct DuasView: View {
     private var language: AppLanguage { AppLanguage(rawValue: languageRaw) ?? .english }
     private var copy: AppCopy { AppCopy(language: language) }
     private var isSearching: Bool { !query.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
-    private var suggested: DuaPractice { DuaPractice.suggested() }
 
     init(showsNavigationBar: Bool = false) {
         self.showsNavigationBar = showsNavigationBar
@@ -49,10 +48,8 @@ struct DuasView: View {
                 if isSearching {
                     searchResults
                 } else {
-                    rightNow.revealed(2, appeared: appeared, reduceMotion: reduceMotion)
-                    tools.revealed(3, appeared: appeared, reduceMotion: reduceMotion)
-                    heart.revealed(4, appeared: appeared, reduceMotion: reduceMotion)
-                    collections.revealed(5, appeared: appeared, reduceMotion: reduceMotion)
+                    heart.revealed(2, appeared: appeared, reduceMotion: reduceMotion)
+                    collections.revealed(3, appeared: appeared, reduceMotion: reduceMotion)
                 }
             }
             .padding(.horizontal, 20)
@@ -76,96 +73,6 @@ struct DuasView: View {
         .navigationDestination(for: DhikrItem.self) { DhikrCounterView(item: $0, language: language) }
         .toolbar(showsNavigationBar ? .visible : .hidden, for: .navigationBar)
         .onAppear { appeared = true }
-    }
-
-    // MARK: Right now
-
-    private var rightNow: some View {
-        NavigationLink(value: suggested) {
-            HStack(spacing: 16) {
-                ZStack {
-                    CompanionIllustration(artwork: suggested.artwork, size: 80)
-                    if let progress = progress(for: suggested), progress > 0 {
-                        Circle()
-                            .trim(from: 0, to: progress)
-                            .stroke(suggested.tint, style: StrokeStyle(lineWidth: 3, lineCap: .round))
-                            .rotationEffect(.degrees(-90))
-                            .frame(width: 88, height: 88)
-                    }
-                }
-                .frame(width: 88, height: 88)
-                VStack(alignment: .leading, spacing: 4) {
-                    CapsLabel(text: copy("Right now", "الآن"), color: suggested.tint)
-                    Text(suggested.title(language))
-                        .font(.yqTitle2)
-                        .foregroundStyle(Color.yqInk)
-                    Text(rightNowDetail)
-                        .font(.yqSubhead)
-                        .foregroundStyle(Color.yqSecondary)
-                        .lineLimit(2)
-                }
-                Spacer(minLength: 0)
-                Image(systemName: language == .arabic ? "arrow.left" : "arrow.right")
-                    .font(.system(size: 15, weight: .bold))
-                    .foregroundStyle(Color.yqOnAccent)
-                    .frame(width: 36, height: 36)
-                    .background(Color.yqAccent, in: Circle())
-            }
-            .multilineTextAlignment(.leading)
-            .padding(16)
-            .yqCard(cornerRadius: 22)
-        }
-        .buttonStyle(.yqPress)
-    }
-
-    private var rightNowDetail: String {
-        if PracticeLog.isDone(suggested, in: practiceLogRaw) {
-            return copy("Done for today. Read again any time.", "أُنجزت اليوم. اقرأها مجددًا متى شئت.")
-        }
-        if let entryID = ReadingPlace.entry(for: suggested, in: placesRaw),
-           let position = suggested.entryIDs.firstIndex(of: entryID) {
-            return copy("Continue · \(position + 1) of \(suggested.entries.count)", "تابع · \(position + 1) من \(suggested.entries.count)")
-        }
-        return suggested.invitation(language)
-    }
-
-    private func progress(for practice: DuaPractice) -> Double? {
-        if PracticeLog.isDone(practice, in: practiceLogRaw) { return 1 }
-        guard let entryID = ReadingPlace.entry(for: practice, in: placesRaw),
-              let position = practice.entryIDs.firstIndex(of: entryID),
-              !practice.entries.isEmpty else { return nil }
-        return Double(position) / Double(practice.entries.count)
-    }
-
-    // MARK: Tools
-
-    private var tools: some View {
-        LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 10), count: typeSize.isAccessibilitySize ? 1 : 2), spacing: 10) {
-            NavigationLink(value: DuaRoute.counter) {
-                BadgeTile(symbol: "hand.tap.fill", tint: .yqAccent,
-                          title: copy("Tasbih", "التسبيح"),
-                          detail: copy("Tap to count dhikr", "اضغط لعدّ الذكر"), artwork: .anytime)
-            }
-            .buttonStyle(.yqPress)
-            NavigationLink(value: DuaRoute.goals) {
-                BadgeTile(symbol: "checkmark.circle.fill", tint: .yqAccent,
-                          title: copy("Daily goals", "أهداف اليوم"),
-                          detail: copy("Small, daily, yours", "صغيرة، يومية، لك"), artwork: .salah)
-            }
-            .buttonStyle(.yqPress)
-            NavigationLink(value: DuaRoute.ruqyah) {
-                BadgeTile(symbol: "cross.case.fill", tint: .yqAccent,
-                          title: copy("Ruqyah", "الرقية"),
-                          detail: copy("Qur’an and Sunnah", "من القرآن والسنة"), artwork: .healing)
-            }
-            .buttonStyle(.yqPress)
-            NavigationLink(value: DuaRoute.benefits) {
-                BadgeTile(symbol: "sparkles", tint: .yqAccent,
-                          title: copy("Why dhikr?", "لماذا الذكر؟"),
-                          detail: copy("The benefits of adhkar", "فوائد الأذكار"), artwork: .praise)
-            }
-            .buttonStyle(.yqPress)
-        }
     }
 
     // MARK: Heart

@@ -189,8 +189,7 @@ struct QiblaView: View {
             }
 
             HStack(spacing: 8) {
-                Image(systemName: "iphone.gen3")
-                    .accessibilityHidden(true)
+                CompanionIllustration(artwork: .haptics, size: 32)
                 Text(copy(
                     "Keep away from magnets, speakers, and magnetic cases.",
                     "ابتعد عن المغناطيس ومكبرات الصوت والأغطية المغناطيسية."
@@ -232,8 +231,7 @@ struct QiblaView: View {
                 "تُستخدم إحداثياتك وقراءات البوصلة فقط أثناء فتح هذه الشاشة ولا يتم حفظها."
             ))
         } icon: {
-            Image(systemName: "hand.raised.fill")
-                .accessibilityHidden(true)
+            CompanionIllustration(artwork: .privacy, size: 32)
         }
         .font(.caption)
         .foregroundStyle(Color.sakinaMuted)
@@ -333,10 +331,7 @@ private struct QiblaStatusCard: View {
 
     var body: some View {
         VStack(spacing: 18) {
-            Image(systemName: symbol)
-                .font(.system(size: 32, weight: .light))
-                .foregroundStyle(Color.yaqeenForest)
-                .accessibilityHidden(true)
+            CompanionIllustration(artwork: CompanionArtwork.badge(for: symbol) ?? .qibla, size: 80)
 
             VStack(spacing: 7) {
                 Text(title)

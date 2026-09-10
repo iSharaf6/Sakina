@@ -13,6 +13,11 @@ enum CompanionArtwork: String, CaseIterable {
     case fajr, sunrise, dhuhr, asr, maghrib, isha
     case journal, privacy, settings, saved
 
+    case mosque, food, verified, calculator, globe, language, reciter
+    case translation, transliteration, textSize, reminder, clock, haptics, help
+    case share, rating, backup, download, signout, deleteAccount
+    case bug, idea, camera, social, water
+
     var assetName: String { "Companion-\(rawValue)" }
 }
 

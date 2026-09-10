@@ -68,7 +68,7 @@ struct DhikrListView: View {
 
     private var summary: some View {
         HStack(spacing: 14) {
-            IconBadge(symbol: "hand.tap.fill", tint: .yqAccent, size: 44, style: .tinted)
+            CompanionIllustration(artwork: .anytime, size: 52)
             VStack(alignment: .leading, spacing: 2) {
                 CapsLabel(text: copy("Today", "اليوم"))
                 HStack(alignment: .firstTextBaseline, spacing: 6) {

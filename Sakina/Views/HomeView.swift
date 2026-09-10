@@ -15,7 +15,6 @@ struct HomeView: View {
     @AppStorage(SettingsKeys.prayerAsrMethod) private var prayerAsrRaw = PrayerAsrMethod.standard.rawValue
     @AppStorage(SettingsKeys.prayerHighLatitude) private var highLatitudeRaw = PrayerHighLatitudePreference.automatic.rawValue
     @AppStorage(DuaCollection.lastReadKey) private var lastReadID = ""
-    @AppStorage(ReadingPlace.key) private var placesRaw = ""
     @AppStorage(HeartLog.key) private var heartLogRaw = ""
     @ObservedObject private var prayerService = PrayerTimesService.shared
     @State private var query = ""
@@ -33,7 +32,6 @@ struct HomeView: View {
 
     private var language: AppLanguage { AppLanguage(rawValue: languageRaw) ?? .english }
     private var copy: AppCopy { AppCopy(language: language) }
-    private var suggested: DuaPractice { DuaPractice.suggested() }
     private var prayerSettings: PrayerCalculationSettings {
         var settings = PrayerCalculationSettings.default
         settings.method = PrayerCalculationMethod(rawValue: prayerMethodRaw) ?? .muslimWorldLeague
@@ -49,10 +47,12 @@ struct HomeView: View {
                     header.revealed(0, appeared: appeared, reduceMotion: reduceMotion)
                     searchField.revealed(1, appeared: appeared, reduceMotion: reduceMotion)
                     prayerCard.revealed(2, appeared: appeared, reduceMotion: reduceMotion)
-                    duaTodayCard.revealed(3, appeared: appeared, reduceMotion: reduceMotion)
-                    goalsCard.revealed(4, appeared: appeared, reduceMotion: reduceMotion)
-                    heart.revealed(5, appeared: appeared, reduceMotion: reduceMotion)
-                    todayGrid.revealed(6, appeared: appeared, reduceMotion: reduceMotion)
+                    HomePracticeSection(language: language)
+                        .revealed(3, appeared: appeared, reduceMotion: reduceMotion)
+                    duaTodayCard.revealed(4, appeared: appeared, reduceMotion: reduceMotion)
+                    goalsCard.revealed(5, appeared: appeared, reduceMotion: reduceMotion)
+                    heart.revealed(6, appeared: appeared, reduceMotion: reduceMotion)
+                    todayGrid.revealed(7, appeared: appeared, reduceMotion: reduceMotion)
                 }
                 .padding(.horizontal, 20)
                 .padding(.top, 8)
@@ -63,6 +63,16 @@ struct HomeView: View {
             .navigationDestination(for: GuidanceSupplication.self) { DuaReaderView(dua: $0) }
             .navigationDestination(for: DuaMood.self) { MoodDetailView(mood: $0, language: language) }
             .navigationDestination(for: DuaPractice.self) { PracticeDestination(practice: $0, language: language) }
+            .navigationDestination(for: DuaRoute.self) { route in
+                switch route {
+                case .feelings: FeelingsView(language: language)
+                case .counter: DhikrListView(language: language)
+                case .ruqyah: RuqyahView(language: language)
+                case .benefits: AdhkarBenefitsView(language: language)
+                case .goals: DailyGoalsView(language: language)
+                }
+            }
+            .navigationDestination(for: DhikrItem.self) { DhikrCounterView(item: $0, language: language) }
             .navigationDestination(for: Situation.self) { SituationDetailView(situation: $0) }
             .navigationDestination(for: LifeGroup.self) { LifeGroupView(group: $0) }
             .toolbar(.hidden, for: .navigationBar)
@@ -279,11 +289,10 @@ struct HomeView: View {
                 .accessibilityLabel(copy("A moment to breathe", "لحظة تتنفس فيها"))
             }
             LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 10), count: typeSize.isAccessibilitySize ? 1 : 2), spacing: 10) {
-                NavigationLink(value: suggested) {
-                    BadgeTile(symbol: suggested.symbol, tint: suggested.tint,
-                              title: suggested.shortTitle(language),
-                              detail: suggestedDetail,
-                              progress: suggestedProgress, artwork: suggested.artwork)
+                NavigationLink { DuasView(showsNavigationBar: true) } label: {
+                    BadgeTile(symbol: "book.closed.fill", tint: .yqAccent,
+                              title: copy("Du’a collections", "مجموعات الأدعية"),
+                              detail: copy("For every part of your day", "لكل أوقات يومك"), artwork: .sunnah)
                 }
                 .buttonStyle(.yqPress)
 
@@ -318,21 +327,6 @@ struct HomeView: View {
                 .buttonStyle(.yqPress)
             }
         }
-    }
-
-    private var suggestedDetail: String {
-        if let entryID = ReadingPlace.entry(for: suggested, in: placesRaw),
-           let position = suggested.entryIDs.firstIndex(of: entryID) {
-            return copy("\(position + 1) of \(suggested.entries.count) · continue", "\(position + 1) من \(suggested.entries.count) · تابع")
-        }
-        return suggested.countLabel(language)
-    }
-
-    private var suggestedProgress: Double? {
-        guard let entryID = ReadingPlace.entry(for: suggested, in: placesRaw),
-              let position = suggested.entryIDs.firstIndex(of: entryID),
-              suggested.entries.count > 0 else { return nil }
-        return Double(position) / Double(suggested.entries.count)
     }
 }
 
@@ -431,7 +425,7 @@ struct NextPrayerCard: View {
         VStack(alignment: .leading, spacing: 16) {
             HStack(alignment: .top) {
                 VStack(alignment: .leading, spacing: 4) {
-                    CapsLabel(text: copy("Next prayer", "الصلاة القادمة"), color: .yqNightMuted)
+                    CapsLabel(text: copy("Next prayer", "الصلاة القادمة"), color: .yqAccentDeep)
                     if let next {
                         let headlineLayout = dynamicTypeSize.isAccessibilitySize
                             ? AnyLayout(VStackLayout(alignment: .leading, spacing: 4))
@@ -441,24 +435,18 @@ struct NextPrayerCard: View {
                                 .font(.yqTitle)
                             Text(time(next.time))
                                 .font(.yqHeadline)
-                                .foregroundStyle(Color.yqNightMuted)
+                                .foregroundStyle(Color.yqSecondary)
                                 .lineLimit(1)
                                 .minimumScaleFactor(0.75)
                         }
                         Text(countdown(to: next.time))
                             .font(.yqSubheadMedium)
-                            .foregroundStyle(Color.yqNightMuted)
+                            .foregroundStyle(Color.yqSecondary)
                     }
                 }
                 Spacer(minLength: 8)
                 if !dynamicTypeSize.isAccessibilitySize {
-                    Image("PrayerScene-\((next?.kind ?? .isha).rawValue)")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(width: 86, height: 86)
-                        // The generated black matte disappears into the card.
-                        .blendMode(.screen)
-                        .accessibilityHidden(true)
+                    CompanionIllustration(artwork: (next?.kind ?? .isha).artwork, size: 86)
                 }
             }
             LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 8),
@@ -474,18 +462,18 @@ struct NextPrayerCard: View {
                             .lineLimit(1)
                             .minimumScaleFactor(0.75)
                     }
-                    .foregroundStyle(event.kind == next?.kind ? Color.yqOnNight : Color.yqNightMuted)
+                    .foregroundStyle(event.kind == next?.kind ? Color.yqAccentDeep : Color.yqSecondary)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 8)
-                    .background(event.kind == next?.kind ? Color.white.opacity(0.10) : .clear,
+                    .background(event.kind == next?.kind ? Color.yqAccent.opacity(0.08) : .clear,
                                 in: RoundedRectangle(cornerRadius: 10, style: .continuous))
                 }
             }
         }
-        .foregroundStyle(Color.yqOnNight)
+        .foregroundStyle(Color.yqInk)
         .padding(18)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color.yqNight, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+        .yqCard(cornerRadius: 20)
         .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(accessibilitySummary(events: events, next: next))
@@ -525,24 +513,24 @@ private struct PrayerSetupCard: View {
 
     var body: some View {
         HStack(spacing: 14) {
-            CompanionIllustration(artwork: .lost, size: 64, onDarkSurface: true)
+            CompanionIllustration(artwork: .lost, size: 64)
             VStack(alignment: .leading, spacing: 3) {
                 Text(copy("Prayer times, where you are", "مواقيت الصلاة حيث أنت"))
                     .font(.yqHeadline)
                 Text(isRefreshing ? copy("Finding your city…", "جارٍ تحديد مدينتك…")
                                   : copy("Set once. Calculated on your iPhone.", "تُضبط مرة واحدة وتُحسب على جهازك."))
                     .font(.yqSubhead)
-                    .foregroundStyle(Color.yqNightMuted)
+                    .foregroundStyle(Color.yqSecondary)
             }
             Spacer(minLength: 0)
             Image(systemName: language == .arabic ? "chevron.left" : "chevron.right")
                 .font(.system(size: 13, weight: .semibold))
-                .foregroundStyle(Color.yqNightMuted)
+                .foregroundStyle(Color.yqSecondary)
         }
-        .foregroundStyle(Color.yqOnNight)
+        .foregroundStyle(Color.yqInk)
         .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color.yqNight, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+        .yqCard(cornerRadius: 20)
         .accessibilityElement(children: .combine)
     }
 }
@@ -643,4 +631,119 @@ struct PrayerPermissionCard: View {
         .padding(20)
         .yqCard()
     }
+}
+
+// MARK: - Daily practice on Home
+
+private struct HomePracticeSection: View {
+    let language: AppLanguage
+    @Environment(\.dynamicTypeSize) private var typeSize
+    @AppStorage(ReadingPlace.key) private var placesRaw = ""
+    @AppStorage(PracticeLog.key) private var practiceLogRaw = ""
+    private var copy: AppCopy { AppCopy(language: language) }
+
+    var body: some View {
+        TimelineView(.periodic(from: .now, by: 60)) { _ in
+            VStack(alignment: .leading, spacing: 20) {
+                rightNow
+                tools
+            }
+        }
+    }
+
+    private var suggested: DuaPractice { DuaPractice.suggested() }
+
+    // MARK: Right now
+
+    private var rightNow: some View {
+        NavigationLink(value: suggested) {
+            let layout = typeSize.isAccessibilitySize
+                ? AnyLayout(VStackLayout(alignment: .leading, spacing: 12))
+                : AnyLayout(HStackLayout(spacing: 16))
+            layout {
+                ZStack {
+                    CompanionIllustration(artwork: suggested.artwork, size: 80)
+                    if let progress = progress(for: suggested), progress > 0 {
+                        Circle()
+                            .trim(from: 0, to: progress)
+                            .stroke(suggested.tint, style: StrokeStyle(lineWidth: 3, lineCap: .round))
+                            .rotationEffect(.degrees(-90))
+                            .frame(width: 88, height: 88)
+                    }
+                }
+                .frame(width: 88, height: 88)
+                VStack(alignment: .leading, spacing: 4) {
+                    CapsLabel(text: copy("Right now", "الآن"), color: suggested.tint)
+                    Text(suggested.title(language))
+                        .font(.yqTitle2)
+                        .foregroundStyle(Color.yqInk)
+                    Text(rightNowDetail)
+                        .font(.yqSubhead)
+                        .foregroundStyle(Color.yqSecondary)
+                        .fixedSize(horizontal: false, vertical: true)
+                }
+                Spacer(minLength: 0)
+                Image(systemName: language == .arabic ? "arrow.left" : "arrow.right")
+                    .font(.system(size: 15, weight: .bold))
+                    .foregroundStyle(Color.yqOnAccent)
+                    .frame(width: 36, height: 36)
+                    .background(Color.yqAccent, in: Circle())
+            }
+            .multilineTextAlignment(.leading)
+            .padding(16)
+            .yqCard(cornerRadius: 22)
+        }
+        .buttonStyle(.yqPress)
+    }
+
+    private var rightNowDetail: String {
+        if PracticeLog.isDone(suggested, in: practiceLogRaw) {
+            return copy("Done for today. Read again any time.", "أُنجزت اليوم. اقرأها مجددًا متى شئت.")
+        }
+        if let entryID = ReadingPlace.entry(for: suggested, in: placesRaw),
+           let position = suggested.entryIDs.firstIndex(of: entryID) {
+            return copy("Continue · \(position + 1) of \(suggested.entries.count)", "تابع · \(position + 1) من \(suggested.entries.count)")
+        }
+        return suggested.invitation(language)
+    }
+
+    private func progress(for practice: DuaPractice) -> Double? {
+        if PracticeLog.isDone(practice, in: practiceLogRaw) { return 1 }
+        guard let entryID = ReadingPlace.entry(for: practice, in: placesRaw),
+              let position = practice.entryIDs.firstIndex(of: entryID),
+              !practice.entries.isEmpty else { return nil }
+        return Double(position) / Double(practice.entries.count)
+    }
+
+    // MARK: Tools
+
+    private var tools: some View {
+        LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 10), count: typeSize.isAccessibilitySize ? 1 : 2), spacing: 10) {
+            NavigationLink(value: DuaRoute.counter) {
+                BadgeTile(symbol: "hand.tap.fill", tint: .yqAccent,
+                          title: copy("Tasbih", "التسبيح"),
+                          detail: copy("Tap to count dhikr", "اضغط لعدّ الذكر"), artwork: .anytime)
+            }
+            .buttonStyle(.yqPress)
+            NavigationLink(value: DuaRoute.goals) {
+                BadgeTile(symbol: "checkmark.circle.fill", tint: .yqAccent,
+                          title: copy("Daily goals", "أهداف اليوم"),
+                          detail: copy("Small, daily, yours", "صغيرة، يومية، لك"), artwork: .salah)
+            }
+            .buttonStyle(.yqPress)
+            NavigationLink(value: DuaRoute.ruqyah) {
+                BadgeTile(symbol: "cross.case.fill", tint: .yqAccent,
+                          title: copy("Ruqyah", "الرقية"),
+                          detail: copy("Qur’an and Sunnah", "من القرآن والسنة"), artwork: .healing)
+            }
+            .buttonStyle(.yqPress)
+            NavigationLink(value: DuaRoute.benefits) {
+                BadgeTile(symbol: "sparkles", tint: .yqAccent,
+                          title: copy("Why dhikr?", "لماذا الذكر؟"),
+                          detail: copy("The benefits of adhkar", "فوائد الأذكار"), artwork: .praise)
+            }
+            .buttonStyle(.yqPress)
+        }
+    }
+
 }

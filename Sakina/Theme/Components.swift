@@ -2,7 +2,7 @@ import SwiftUI
 
 // MARK: - Icon badge
 //
-// Utility symbols stay quiet; content collections use original illustrations.
+// Content and settings badges use the shared pencil illustration family.
 
 struct IconBadge: View {
     enum Style { case solid, tinted, outline }
@@ -15,16 +15,22 @@ struct IconBadge: View {
     private var radius: CGFloat { size * 0.27 }
 
     var body: some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: radius, style: .continuous)
-                .fill(fill)
-            if style == .outline {
-                RoundedRectangle(cornerRadius: radius, style: .continuous)
-                    .strokeBorder(Color.yqHairline, lineWidth: 1)
+        Group {
+            if let artwork = CompanionArtwork.badge(for: symbol) {
+                CompanionIllustration(artwork: artwork, size: size)
+            } else {
+                ZStack {
+                    RoundedRectangle(cornerRadius: radius, style: .continuous)
+                        .fill(fill)
+                    if style == .outline {
+                        RoundedRectangle(cornerRadius: radius, style: .continuous)
+                            .strokeBorder(Color.yqHairline, lineWidth: 1)
+                    }
+                    Image(systemName: symbol)
+                        .font(.system(size: size * 0.46, weight: .semibold))
+                        .foregroundStyle(glyph)
+                }
             }
-            Image(systemName: symbol)
-                .font(.system(size: size * 0.46, weight: .semibold))
-                .foregroundStyle(glyph)
         }
         .frame(width: size, height: size)
         .accessibilityHidden(true)
@@ -129,6 +135,7 @@ struct SectionEyebrow: View {
 
 /// A Settings-style row: badge, title, optional subtitle, trailing content.
 struct BadgeRow<Trailing: View>: View {
+    @Environment(\.dynamicTypeSize) private var typeSize
     let symbol: String
     var tint: Color = .yqAccent
     let title: String
@@ -152,8 +159,11 @@ struct BadgeRow<Trailing: View>: View {
     }
 
     var body: some View {
-        HStack(spacing: 14) {
-            if let artwork {
+        let layout = typeSize.isAccessibilitySize
+            ? AnyLayout(VStackLayout(alignment: .leading, spacing: 10))
+            : AnyLayout(HStackLayout(spacing: 14))
+        layout {
+            if let artwork = artwork ?? CompanionArtwork.badge(for: symbol) {
                 CompanionIllustration(artwork: artwork, size: 44)
             } else {
                 IconBadge(symbol: symbol, tint: tint, size: 36, style: badgeStyle)
@@ -167,15 +177,17 @@ struct BadgeRow<Trailing: View>: View {
                     Text(subtitle)
                         .font(.yqSubhead)
                         .foregroundStyle(Color.yqSecondary)
-                        .lineLimit(subtitleLines)
-                        .fixedSize(horizontal: false, vertical: subtitleLines == nil)
+                        .lineLimit(typeSize.isAccessibilitySize ? nil : subtitleLines)
+                        .fixedSize(horizontal: false, vertical: typeSize.isAccessibilitySize || subtitleLines == nil)
                 }
             }
-            Spacer(minLength: 8)
+            if !typeSize.isAccessibilitySize { Spacer(minLength: 8) }
             trailing()
         }
         .multilineTextAlignment(.leading)
         .padding(.horizontal, 14)
+        .padding(.vertical, typeSize.isAccessibilitySize ? 12 : 0)
+        .frame(maxWidth: .infinity, alignment: .leading)
         .frame(minHeight: 58)
         .contentShape(Rectangle())
     }

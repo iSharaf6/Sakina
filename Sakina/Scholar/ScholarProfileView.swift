@@ -152,11 +152,7 @@ struct ScholarProfileView: View {
     private func socialRow(title: String, url: URL, symbol: String) -> some View {
         Link(destination: url) {
             HStack(spacing: 13) {
-                Image(systemName: symbol)
-                    .font(.system(size: 17, weight: .semibold))
-                    .foregroundStyle(Color.sakinaCanvas)
-                    .frame(width: 34, height: 34)
-                    .background(Color.sakinaInk, in: Circle())
+                CompanionIllustration(artwork: CompanionArtwork.badge(for: symbol) ?? .social, size: 40)
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(title)
@@ -355,8 +351,7 @@ struct ScholarProfileView: View {
         offersRetry: Bool
     ) -> some View {
         VStack(spacing: 11) {
-            Image(systemName: symbol)
-                .font(.title3.weight(.semibold))
+            CompanionIllustration(artwork: CompanionArtwork.badge(for: symbol) ?? .help, size: 64)
             Text(title)
                 .font(.headline)
                 .multilineTextAlignment(.center)
