@@ -145,6 +145,60 @@ final class QuranScriptStore {
     }
 }
 
+// MARK: - Hafs Smart (KFGQPC)
+
+/// The King Fahd Complex's own "Hafs Smart" rendering of every ayah:
+/// pre-shaped glyph codes for the KFGQPC Hafs Smart font, so the Madani
+/// mushaf's letters, marks and ayah numbers appear exactly as printed. It is
+/// display data only; search, copy, share and tajweed keep using the
+/// verified Uthmani text in `QuranAyah.arabic`.
+final class HafsSmartStore {
+    static let shared = HafsSmartStore()
+
+    struct Ayah: Codable {
+        let k: String
+        /// Right-to-left mark + glyph code pairs, spaces, trailing number glyph.
+        let t: String
+        let p: Int
+        let ls: Int
+        let le: Int
+    }
+
+    private struct File: Codable {
+        let source: String
+        let fetched: String
+        let ayat: [Ayah]
+    }
+
+    let source: String
+    private let byKey: [String: Ayah]
+
+    private init() {
+        guard let url = Bundle.main.url(forResource: "hafs-smart", withExtension: "json"),
+              let data = try? Data(contentsOf: url),
+              let file = try? JSONDecoder().decode(File.self, from: data) else {
+            source = ""; byKey = [:]
+            return
+        }
+        source = file.source
+        byKey = Dictionary(uniqueKeysWithValues: file.ayat.map { ($0.k, $0) })
+    }
+
+    var isLoaded: Bool { !byKey.isEmpty }
+
+    /// The glyph string including the trailing ayah number.
+    func text(for key: String) -> String? { byKey[key]?.t }
+
+    /// Madani page and the lines the ayah occupies on it.
+    func placement(for key: String) -> (page: Int, lineStart: Int, lineEnd: Int)? {
+        byKey[key].map { ($0.p, $0.ls, $0.le) }
+    }
+
+    static func warmUp() {
+        Task.detached(priority: .utility) { _ = HafsSmartStore.shared }
+    }
+}
+
 // MARK: - Reader preferences
 
 /// Everything the Display sheet controls, persisted in UserDefaults.

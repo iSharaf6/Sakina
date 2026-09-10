@@ -114,6 +114,7 @@ struct RootView: View {
             Haptics.prepare()
             QuranStore.warmUp()
             QuranScriptStore.warmUp()
+            HafsSmartStore.warmUp()
             QuranTranslationStore.warmUp()
             router.activate()
             ReminderScheduler.refresh()

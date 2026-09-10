@@ -75,6 +75,31 @@ final class QuranEditionsTests: XCTestCase {
         XCTAssertEqual(translations.text(for: kursi, edition: 999_999), kursi.translation, "unknown edition falls back to Saheeh")
     }
 
+    func testHafsSmartCoversEveryAyah() {
+        let smart = HafsSmartStore.shared
+        XCTAssertTrue(smart.isLoaded, "hafs-smart.json failed to load")
+        var numberGlyph: [Int: Character] = [:]
+        for ayah in store.ayat {
+            guard let text = smart.text(for: ayah.key) else { XCTFail("\(ayah.key) has no Hafs Smart text"); continue }
+            let parts = QuranTextRenderer.smartParts(text)
+            XCTAssertFalse(parts.body.isEmpty, "\(ayah.key) empty smart body")
+            XCTAssertEqual(parts.marker.unicodeScalars.count, 2, "\(ayah.key) marker should be RLM + one glyph")
+            // Only private-use glyphs, spaces and right-to-left marks may appear.
+            for scalar in text.unicodeScalars where !(0xE000...0xF8FF).contains(scalar.value) && scalar.value != 0x20 && scalar.value != 0x200F {
+                XCTFail("\(ayah.key) unexpected scalar \(scalar) in smart text")
+            }
+            if let glyph = parts.marker.last {
+                if let seen = numberGlyph[ayah.ayah] {
+                    XCTAssertEqual(seen, glyph, "\(ayah.key) ayah-number glyph differs from other ayat numbered \(ayah.ayah)")
+                } else {
+                    numberGlyph[ayah.ayah] = glyph
+                }
+            }
+            XCTAssertNotNil(smart.placement(for: ayah.key))
+        }
+        XCTAssertEqual(numberGlyph.count, 286)
+    }
+
     func testNoHTMLInTranslations() {
         for (index, ayah) in store.ayat.enumerated() where index % 50 == 0 {
             for edition in translations.editions {

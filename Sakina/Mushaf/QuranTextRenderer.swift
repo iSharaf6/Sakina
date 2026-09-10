@@ -27,10 +27,29 @@ enum QuranTextRenderer {
 
     // MARK: Fonts
 
-    /// Amiri Quran (SIL OFL 1.1, bundled with its licence). It draws every
-    /// code point of the Uthmani text natively, including the sifr mustadir,
-    /// which the old KFGQPC build maps to a placeholder.
-    static let uthmaniFontName = "Amiri Quran"
+    /// The Madani mushaf face. The bundled build maps three marks to a
+    /// placeholder (see `fallbackMarks`); a newer KFGQPC build fixes them.
+    static let uthmaniFontName = "KFGQPC HAFS Uthmanic Script"
+
+    /// The Complex's pre-shaped Madani font, driven by `HafsSmartStore`.
+    static let smartFontName = "KFGQPC Hafs Smart"
+
+    static func smartFont(size: CGFloat) -> UIFont {
+        UIFont(name: smartFontName, size: size) ?? uthmaniFont(size: size)
+    }
+
+    /// Whether this script draws the Complex's pre-shaped glyphs.
+    static func usesSmartGlyphs(_ script: QuranScript) -> Bool {
+        script == .uthmani && HafsSmartStore.shared.isLoaded
+    }
+
+    /// The smart glyph string split into the Arabic and its trailing ayah
+    /// number (a right-to-left mark plus one glyph, preceded by a space).
+    static func smartParts(_ text: String) -> (body: String, marker: String) {
+        let trimmed = text.trimmingCharacters(in: .whitespaces)
+        guard let space = trimmed.lastIndex(of: " ") else { return (trimmed, "") }
+        return (String(trimmed[..<space]), String(trimmed[trimmed.index(after: space)...]))
+    }
 
     /// The base font for a script. IndoPak falls back to the system font
     /// (see the type comment); the others use KFGQPC when it is installed.
@@ -73,10 +92,11 @@ enum QuranTextRenderer {
     /// Stored as `Character`s as the public shape; matching happens on
     /// unicode scalars because a combining mark never stands alone as a
     /// `Character` once it follows a letter.
-    /// Marks the Qur'an font cannot draw and must borrow from the system
-    /// font. Empty for Amiri Quran, which covers the whole text; kept so a
-    /// future font swap can list its gaps here.
-    static let fallbackMarks: Set<Character> = []
+    /// Marks the bundled KFGQPC build cannot draw (it maps them to the
+    /// U+0600 placeholder), borrowed from the system font instead: the sifr
+    /// mustadir, the small low seen and the empty centre high stop. These are
+    /// the only three code points in the whole text it lacks.
+    static let fallbackMarks: Set<Character> = ["\u{06DF}", "\u{06E3}", "\u{06EB}"]
 
     private static let fallbackScalars: Set<Unicode.Scalar> = Set(fallbackMarks.flatMap { $0.unicodeScalars })
 
@@ -406,6 +426,22 @@ enum QuranTextRenderer {
     /// optionally " " plus the ayah number. Paragraph styles are left to
     /// the caller.
     static func attributed(_ ayah: QuranAyah, style: Style, includeMarker: Bool = true) -> NSAttributedString {
+        if usesSmartGlyphs(style.script), let smart = HafsSmartStore.shared.text(for: ayah.key) {
+            let parts = smartParts(smart)
+            let font = smartFont(size: style.fontSize)
+            let result = NSMutableAttributedString(string: parts.body, attributes: [.font: font, .foregroundColor: style.ink])
+            if let background = style.background, result.length > 0 {
+                result.addAttribute(.backgroundColor, value: background, range: NSRange(location: 0, length: result.length))
+            }
+            if includeMarker, !parts.marker.isEmpty {
+                result.append(NSAttributedString(string: " ", attributes: [.font: font, .foregroundColor: style.ink]))
+                result.append(NSAttributedString(string: parts.marker, attributes: [
+                    .font: font,
+                    .foregroundColor: style.markerColor ?? style.ink,
+                ]))
+            }
+            return result
+        }
         let resolved = runs(for: ayah, script: style.script)
         let baseFont = font(for: resolved.script, size: style.fontSize)
         let fallbackFont = markFont(size: style.fontSize)
@@ -438,7 +474,13 @@ enum QuranTextRenderer {
     /// The UTF-16 range of the ayah number inside `attributed(…)` output
     /// built with `includeMarker: true`.
     static func markerRange(in attributed: NSAttributedString, ayah: QuranAyah) -> NSRange {
-        let length = (ayah.marker as NSString).length
+        var length = (ayah.marker as NSString).length
+        if attributed.length > 0,
+           let font = attributed.attribute(.font, at: attributed.length - 1, effectiveRange: nil) as? UIFont,
+           font.familyName == smartFontName,
+           let smart = HafsSmartStore.shared.text(for: ayah.key) {
+            length = (smartParts(smart).marker as NSString).length
+        }
         return NSRange(location: max(0, attributed.length - length), length: min(length, attributed.length))
     }
 
@@ -452,8 +494,26 @@ enum QuranTextRenderer {
     static func swiftUI(_ ayah: QuranAyah, script: QuranScript, size: CGFloat,
                         ink: Color = .yqInk, markerColor: Color = .yqAccentDeep,
                         includeMarker: Bool = true) -> AttributedString {
-        let resolved = runs(for: ayah, script: script)
         let scaled = UIFontMetrics(forTextStyle: textStyle(for: size)).scaledValue(for: size)
+        if usesSmartGlyphs(script), let smart = HafsSmartStore.shared.text(for: ayah.key) {
+            let parts = smartParts(smart)
+            let font: Font = .custom(smartFontName, fixedSize: scaled)
+            // The glyph codes are private-use (bidi class L). SwiftUI's Text
+            // resolves the paragraph direction differently from TextKit, so
+            // force right-to-left with an override that ends after the marker.
+            var result = AttributedString("\u{202E}" + parts.body)
+            result.font = font
+            result.foregroundColor = ink
+            if includeMarker, !parts.marker.isEmpty {
+                var space = AttributedString(" "); space.font = font; space.foregroundColor = ink
+                var marker = AttributedString(parts.marker); marker.font = font; marker.foregroundColor = markerColor
+                result.append(space); result.append(marker)
+            }
+            var end = AttributedString("\u{202C}"); end.font = font
+            result.append(end)
+            return result
+        }
+        let resolved = runs(for: ayah, script: script)
         let baseFont: Font = resolved.script == .indopak
             ? .system(size: scaled)
             : .custom(uthmaniFontName, fixedSize: scaled)
