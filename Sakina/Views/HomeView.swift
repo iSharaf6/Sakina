@@ -7,6 +7,7 @@ struct HomeView: View {
     @Environment(\.scenePhase) private var scenePhase
     @Binding var path: NavigationPath
     var prayerRequest = 0
+    var settingsRequest = 0
     var openSearch: (String) -> Void
 
     @AppStorage(SettingsKeys.appLanguage) private var languageRaw = AppLanguage.english.rawValue
@@ -80,6 +81,7 @@ struct HomeView: View {
             }
             .fullScreenCover(isPresented: $showBreathing) { BreathingView(language: language) }
             .onChange(of: prayerRequest) { _, _ in sheet = .prayers }
+            .onChange(of: settingsRequest) { _, _ in sheet = .settings }
             .onChange(of: scenePhase) { _, phase in
                 if phase == .active { today = SharedStore.situationOfTheDay() }
             }

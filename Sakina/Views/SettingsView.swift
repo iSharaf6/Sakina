@@ -2,10 +2,14 @@ import GoogleSignInSwift
 import SwiftData
 import SwiftUI
 
+/// Settings is five short groups in the order people reach for them:
+/// prayer, reading, reminders, backup, about. Every row is a `BadgeRow`
+/// inside a `RowGroup`, so the screen reads like Explore and Home.
 struct SettingsView: View {
     var showsDismissButton = false
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var context
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Query(sort: \Bookmark.createdAt, order: .reverse) private var bookmarks: [Bookmark]
     @Query(sort: \JournalEntry.updatedAt, order: .reverse) private var entries: [JournalEntry]
 
@@ -25,34 +29,36 @@ struct SettingsView: View {
 
     @State private var showAbout = false
     @State private var showDisconnectConfirmation = false
+    @State private var appeared = false
 
     private var language: AppLanguage { AppLanguage(rawValue: languageRaw) ?? .english }
     private var copy: AppCopy { AppCopy(language: language) }
 
     var body: some View {
         NavigationStack {
-            ZStack {
-                AtmosphereBackground()
-
-                List {
-                    accountSection
-                    languageSection
-                    prayerSection
-                    readingSection
-                    remindersSection
-                    trustSection
+            ScrollView(showsIndicators: false) {
+                VStack(alignment: .leading, spacing: 28) {
+                    PageHeader(title: copy("Settings", "الإعدادات"))
+                        .revealed(0, appeared: appeared, reduceMotion: reduceMotion)
+                    prayerSection.revealed(1, appeared: appeared, reduceMotion: reduceMotion)
+                    readingSection.revealed(2, appeared: appeared, reduceMotion: reduceMotion)
+                    remindersSection.revealed(3, appeared: appeared, reduceMotion: reduceMotion)
+                    backupSection.revealed(4, appeared: appeared, reduceMotion: reduceMotion)
+                    aboutSection.revealed(5, appeared: appeared, reduceMotion: reduceMotion)
                 }
-                .listStyle(.insetGrouped)
-                .scrollContentBackground(.hidden)
-                .contentMargins(.top, 6, for: .scrollContent)
+                .padding(.horizontal, 20)
+                .padding(.top, 8)
+                .padding(.bottom, 36)
             }
-            .navigationTitle(copy("Settings", "الإعدادات"))
-            .navigationBarTitleDisplayMode(.large)
+            .yqScreen()
+            .navigationBarTitleDisplayMode(.inline)
             .toolbarBackground(.hidden, for: .navigationBar)
             .toolbar {
                 if showsDismissButton {
                     ToolbarItem(placement: .confirmationAction) {
                         Button(copy("Done", "تم")) { dismiss() }
+                            .font(.yqSubheadBold)
+                            .tint(.yqAccentDeep)
                     }
                 }
             }
@@ -75,6 +81,7 @@ struct SettingsView: View {
                     "ستبقى ملاحظاتك على هذا الهاتف، ولن تُحذف النسخة الخاصة من Google Drive."
                 ))
             }
+            .onAppear { appeared = true }
             .onChange(of: reminderEnabled) { _, _ in ReminderScheduler.refresh() }
             .onChange(of: reminderHour) { _, _ in ReminderScheduler.refresh() }
             .onChange(of: reminderMinute) { _, _ in ReminderScheduler.refresh() }
@@ -82,133 +89,255 @@ struct SettingsView: View {
         }
     }
 
-    // MARK: Account
+    // MARK: Prayer
 
-    private var accountSection: some View {
-        Section {
-            if !account.isConfigured {
-                VStack(alignment: .leading, spacing: 10) {
-                    Label(
-                        copy("Private on this iPhone", "خاص على هذا الهاتف"),
-                        systemImage: "iphone.gen3.badge.checkmark"
-                    )
-                    .font(.headline)
-                    .foregroundStyle(Color.sakinaInk)
-
-                    Text(copy(
-                        "Saved moments and reflections stay in Yaqeen’s private app storage. No account is required.",
-                        "تبقى المواقف المحفوظة والتأملات في مساحة يقين الخاصة، ولا يلزم إنشاء حساب."
-                    ))
-                    .font(.subheadline)
-                    .foregroundStyle(Color.sakinaMuted)
-                    .fixedSize(horizontal: false, vertical: true)
+    private var prayerSection: some View {
+        SettingsGroup(
+            title: copy("Prayer times", "مواقيت الصلاة"),
+            footnote: copy(
+                "Calculated offline. Add the Yaqeen widget to your Home or Lock Screen once a location is set.",
+                "تُحسب دون اتصال. أضف أداة يقين إلى الشاشة الرئيسية أو شاشة القفل بعد تحديد الموقع."
+            )
+        ) {
+            BadgeRow(
+                symbol: "location.fill",
+                title: copy("Location", "الموقع"),
+                subtitle: prayerService.schedule?.locationLabel ?? copy("Not set yet", "لم يُحدَّد بعد")
+            ) {
+                Button(action: updatePrayerTimes) {
+                    Group {
+                        if prayerService.isRefreshing {
+                            ProgressView().controlSize(.small).tint(.yqAccentDeep)
+                        } else {
+                            Text(prayerService.schedule == nil
+                                 ? copy("Set", "اضبط")
+                                 : copy("Update", "تحديث"))
+                        }
+                    }
+                    .font(.yqSubheadBold)
+                    .foregroundStyle(Color.yqAccentDeep)
+                    .frame(minWidth: 62, minHeight: 32)
+                    .background(Color.yqAccentTint, in: Capsule(style: .continuous))
                 }
-                .padding(.vertical, 5)
-            } else if account.isSignedIn {
-                HStack(spacing: 13) {
+                .buttonStyle(.yqPress)
+                .disabled(prayerService.isRefreshing)
+            }
+
+            if let error = prayerService.errorMessage {
+                Text(error)
+                    .font(.yqCaption)
+                    .foregroundStyle(.red)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .padding(.horizontal, 14)
+                    .padding(.bottom, 12)
+            }
+
+            RowDivider()
+            MenuRow(symbol: "function", title: copy("Calculation method", "طريقة الحساب"),
+                    value: prayerMethod.displayName, selection: $prayerMethodRaw) {
+                ForEach(PrayerCalculationMethod.allCases) { Text($0.displayName).tag($0.rawValue) }
+            }
+            RowDivider()
+            MenuRow(symbol: "sun.max.fill", title: copy("Asr", "العصر"),
+                    value: prayerAsr.displayName, selection: $prayerAsrRaw) {
+                ForEach(PrayerAsrMethod.allCases) { Text($0.displayName).tag($0.rawValue) }
+            }
+            RowDivider()
+            MenuRow(symbol: "globe.europe.africa.fill", title: copy("High latitudes", "خطوط العرض العليا"),
+                    value: highLatitude.displayName, selection: $highLatitudeRaw) {
+                ForEach(PrayerHighLatitudePreference.allCases) { Text($0.displayName).tag($0.rawValue) }
+            }
+        }
+    }
+
+    private var prayerMethod: PrayerCalculationMethod {
+        PrayerCalculationMethod(rawValue: prayerMethodRaw) ?? .muslimWorldLeague
+    }
+
+    private var prayerAsr: PrayerAsrMethod {
+        PrayerAsrMethod(rawValue: prayerAsrRaw) ?? .standard
+    }
+
+    private var highLatitude: PrayerHighLatitudePreference {
+        PrayerHighLatitudePreference(rawValue: highLatitudeRaw) ?? .automatic
+    }
+
+    private func updatePrayerTimes() {
+        var settings = PrayerCalculationSettings.default
+        settings.method = prayerMethod
+        settings.asrMethod = prayerAsr
+        settings.highLatitudePreference = highLatitude
+        Task { await prayerService.refreshUsingCurrentLocation(settings: settings) }
+    }
+
+    // MARK: Reading
+
+    private var readingSection: some View {
+        SettingsGroup(title: copy("Reading", "القراءة")) {
+            MenuRow(symbol: "character.bubble.fill", title: copy("App language", "لغة التطبيق"),
+                    value: language.nativeName, selection: $languageRaw) {
+                ForEach(AppLanguage.allCases) { Text($0.nativeName).tag($0.rawValue) }
+            }
+            RowDivider()
+            MenuRow(symbol: "waveform", title: copy("Reciter", "القارئ"),
+                    value: reciter.displayName, selection: $reciterRaw) {
+                ForEach(Reciter.allCases) { Text($0.displayName).tag($0.rawValue) }
+            }
+            RowDivider()
+            ToggleRow(symbol: "text.quote", title: copy("English meaning", "المعنى بالإنجليزية"),
+                      isOn: $translationVisible)
+            RowDivider()
+            ToggleRow(symbol: "textformat.abc", title: copy("Transliteration", "الكتابة بحروف لاتينية"),
+                      isOn: $transliterationVisible)
+            RowDivider()
+            VStack(spacing: 0) {
+                BadgeRow(symbol: "textformat.size", title: copy("Qur’an text size", "حجم خط القرآن")) {
+                    Text("بِسْمِ ٱللَّهِ")
+                        .font(.arabic(18 * arabicScale))
+                        .foregroundStyle(Color.yqInk)
+                        .lineLimit(1)
+                        .frame(height: 30)
+                }
+                HStack(spacing: 12) {
+                    Image(systemName: "textformat.size.smaller")
+                        .font(.system(size: 13, weight: .semibold))
+                    Slider(value: $arabicScale, in: 0.85...1.45, step: 0.05)
+                        .tint(.yqAccentDeep)
+                    Image(systemName: "textformat.size.larger")
+                        .font(.system(size: 17, weight: .semibold))
+                }
+                .foregroundStyle(Color.yqSecondary)
+                .padding(.horizontal, 14)
+                .padding(.bottom, 14)
+            }
+        }
+    }
+
+    private var reciter: Reciter { Reciter(rawValue: reciterRaw) ?? .alafasy }
+
+    // MARK: Reminders
+
+    private var remindersSection: some View {
+        SettingsGroup(
+            title: copy("Reminders", "التذكيرات"),
+            footnote: copy("A gentle daily invitation, never a streak or score.", "دعوة يومية لطيفة، بلا سلاسل أو نقاط.")
+        ) {
+            ToggleRow(symbol: "bell.fill", title: copy("Daily guidance", "هداية يومية"), isOn: $reminderEnabled)
+            if reminderEnabled {
+                RowDivider()
+                BadgeRow(symbol: "clock.fill", title: copy("Time", "الوقت")) {
+                    DatePicker("", selection: reminderTime, displayedComponents: .hourAndMinute)
+                        .labelsHidden()
+                        .tint(.yqAccentDeep)
+                }
+            }
+        }
+        .animation(reduceMotion ? nil : .spring(response: 0.32, dampingFraction: 0.82), value: reminderEnabled)
+    }
+
+    private var reminderTime: Binding<Date> {
+        Binding {
+            Calendar.current.date(from: DateComponents(hour: reminderHour, minute: reminderMinute)) ?? .now
+        } set: { value in
+            let parts = Calendar.current.dateComponents([.hour, .minute], from: value)
+            reminderHour = parts.hour ?? 9
+            reminderMinute = parts.minute ?? 0
+        }
+    }
+
+    // MARK: Backup
+
+    @ViewBuilder
+    private var backupSection: some View {
+        if !account.isConfigured {
+            SettingsGroup(title: copy("Your data", "بياناتك")) {
+                BadgeRow(
+                    symbol: "iphone.gen3",
+                    title: copy("Stored on this iPhone", "محفوظة على هذا الهاتف"),
+                    subtitle: copy(
+                        "Saved moments and reflections never leave the app’s private storage.",
+                        "تبقى المواقف المحفوظة والتأملات في مساحة التطبيق الخاصة ولا تُرفع أبدًا."
+                    )
+                ) { EmptyView() }
+            }
+        } else if account.isSignedIn {
+            SettingsGroup(title: copy("Backup", "النسخ الاحتياطي"), footnote: syncMessage) {
+                HStack(spacing: 14) {
                     AsyncImage(url: account.imageURL) { phase in
                         if case .success(let image) = phase {
                             image.resizable().scaledToFill()
                         } else {
                             Image(systemName: "person.crop.circle.fill")
                                 .resizable()
-                                .foregroundStyle(Color.sakinaMuted.opacity(0.45))
+                                .foregroundStyle(Color.yqTertiary)
                         }
                     }
-                    .frame(width: 48, height: 48)
+                    .frame(width: 36, height: 36)
                     .clipShape(Circle())
 
-                    VStack(alignment: .leading, spacing: 3) {
+                    VStack(alignment: .leading, spacing: 2) {
                         Text(account.displayName)
-                            .font(.headline)
-                            .foregroundStyle(Color.sakinaInk)
+                            .font(.yqBodyMedium)
+                            .foregroundStyle(Color.yqInk)
                         Text(account.email)
-                            .font(.caption)
-                            .foregroundStyle(Color.sakinaMuted)
+                            .font(.yqSubhead)
+                            .foregroundStyle(Color.yqSecondary)
+                            .lineLimit(1)
                     }
+                    Spacer(minLength: 0)
                 }
-                .padding(.vertical, 4)
+                .padding(.horizontal, 14)
+                .frame(minHeight: 58)
 
-                Button {
-                    backUpNow()
-                } label: {
-                    Label(copy("Back up now", "نسخ احتياطي الآن"), systemImage: "arrow.triangle.2.circlepath.icloud")
-                }
-                .disabled(isSyncing)
+                RowDivider()
+                ActionRow(symbol: "arrow.triangle.2.circlepath",
+                          title: copy("Back up now", "نسخ احتياطي الآن"),
+                          busy: isSyncing, action: backUpNow)
+                RowDivider()
+                ActionRow(symbol: "arrow.down.doc.fill",
+                          title: copy("Restore & merge", "استعادة ودمج"),
+                          busy: isSyncing, action: restoreBackup)
+                RowDivider()
+                ActionRow(symbol: "rectangle.portrait.and.arrow.right",
+                          title: copy("Sign out", "تسجيل الخروج"),
+                          action: account.signOut)
+                RowDivider()
+                ActionRow(symbol: "xmark.circle.fill", tint: .red,
+                          title: copy("Disconnect Google", "قطع الاتصال بحساب Google"),
+                          destructive: true) { showDisconnectConfirmation = true }
+            }
+        } else {
+            SettingsGroup(
+                title: copy("Backup", "النسخ الاحتياطي"),
+                footnote: copy(
+                    "Yaqeen is local-first. A private copy of Saved goes to your Google Drive app-data space, which only Yaqeen can read.",
+                    "يقين يحفظ بياناتك على جهازك أولًا. تُحفظ نسخة خاصة من المحفوظات في مساحة بيانات التطبيق على Google Drive ولا يقرؤها إلا يقين."
+                )
+            ) {
+                BadgeRow(
+                    symbol: "lock.shield.fill",
+                    title: copy("Keep your reflections with you", "احتفظ بتأملاتك معك"),
+                    subtitle: copy("Optional. Nothing is uploaded until you connect.", "اختياري. لا يُرفع شيء قبل الربط.")
+                ) { EmptyView() }
 
-                Button {
-                    restoreBackup()
-                } label: {
-                    Label(copy("Restore & merge", "استعادة ودمج"), systemImage: "arrow.down.doc")
-                }
-                .disabled(isSyncing)
-
-                if let syncMessage {
-                    Label(syncMessage, systemImage: syncSymbol)
-                        .font(.caption)
-                        .foregroundStyle(syncColor)
-                        .fixedSize(horizontal: false, vertical: true)
-                }
-
-                Button(copy("Sign out", "تسجيل الخروج")) {
-                    account.signOut()
-                }
-
-                Button(copy("Disconnect Google", "قطع الاتصال بحساب Google"), role: .destructive) {
-                    showDisconnectConfirmation = true
-                }
-            } else {
-                VStack(alignment: .leading, spacing: 8) {
-                    Label(copy("Keep your reflections with you", "احتفظ بتأملاتك معك"), systemImage: "lock.shield")
-                        .font(.headline)
-                        .foregroundStyle(Color.sakinaInk)
-                    Text(copy(
-                        "Yaqeen is local-first. Connect Google to keep an encrypted-in-transit private backup in your Google Drive app-data space.",
-                        "يقين يحفظ بياناتك على جهازك أولًا. اربط حساب Google لحفظ نسخة خاصة في مساحة بيانات التطبيق على Google Drive."
-                    ))
-                    .font(.subheadline)
-                    .foregroundStyle(Color.sakinaMuted)
-                    .fixedSize(horizontal: false, vertical: true)
-                }
-                .padding(.vertical, 4)
-
-                GoogleSignInButton(viewModel: googleButtonModel) {
-                    account.signIn()
-                }
-                .frame(minHeight: 50)
+                GoogleSignInButton(viewModel: googleButtonModel) { account.signIn() }
+                    .frame(minHeight: 48)
+                    .padding(.horizontal, 14)
+                    .padding(.bottom, 14)
 
                 if case .failure(let message) = account.syncState {
-                    Label(message, systemImage: "exclamationmark.circle")
-                        .font(.caption)
+                    Text(message)
+                        .font(.yqCaption)
                         .foregroundStyle(.red)
+                        .padding(.horizontal, 14)
+                        .padding(.bottom, 12)
                 }
             }
-        } header: {
-            Text(account.isConfigured
-                 ? copy("Account & backup", "الحساب والنسخ الاحتياطي")
-                 : copy("Privacy & storage", "الخصوصية والتخزين"))
-        } footer: {
-            if account.isConfigured {
-                Text(copy(
-                    "While connected, changes to Saved are backed up after you make them. The backup lives in a hidden app-data folder that only Yaqeen can access after you grant permission.",
-                    "أثناء الاتصال، تُنسخ تغييرات المحفوظات احتياطيًا بعد إجرائها. وتُحفظ النسخة في مساحة مخفية لا يصل إليها إلا تطبيق يقين بعد موافقتك."
-                ))
-            } else {
-                Text(copy(
-                    "Your private writing is not uploaded by Yaqeen.",
-                    "لا يرفع يقين كتاباتك الخاصة إلى أي خادم."
-                ))
-            }
         }
-        .listRowBackground(Color.sakinaElevated)
     }
 
     private var googleButtonModel: GoogleSignInButtonViewModel {
-        GoogleSignInButtonViewModel(
-            scheme: .light,
-            style: .wide,
-            state: .normal
-        )
+        GoogleSignInButtonViewModel(scheme: .light, style: .wide, state: .normal)
     }
 
     private var isSyncing: Bool {
@@ -220,29 +349,14 @@ struct SettingsView: View {
         switch account.syncState {
         case .idle:
             if let date = UserDefaults.standard.object(forKey: "googleBackupLastSync") as? Date {
-                return copy(
-                    "Last synced \(date.formatted(date: .abbreviated, time: .shortened))",
-                    "آخر مزامنة \(date.formatted(date: .abbreviated, time: .shortened))"
-                )
+                let stamp = date.formatted(date: .abbreviated, time: .shortened)
+                return copy("Last backed up \(stamp).", "آخر نسخة احتياطية \(stamp).")
             }
-            return nil
+            return copy("Saved is backed up after every change while connected.",
+                        "تُنسخ المحفوظات احتياطيًا بعد كل تغيير أثناء الاتصال.")
         case .working(let message), .success(let message), .failure(let message):
             return message
         }
-    }
-
-    private var syncSymbol: String {
-        switch account.syncState {
-        case .working: return "arrow.triangle.2.circlepath"
-        case .failure: return "exclamationmark.circle"
-        case .success: return "checkmark.circle.fill"
-        case .idle: return "checkmark.icloud"
-        }
-    }
-
-    private var syncColor: Color {
-        if case .failure = account.syncState { return .red }
-        return .sakinaMuted
     }
 
     private func backUpNow() {
@@ -286,171 +400,131 @@ struct SettingsView: View {
         try? context.save()
     }
 
-    // MARK: Preferences
+    // MARK: About
 
-    private var languageSection: some View {
-        Section {
-            Picker(copy("App language", "لغة التطبيق"), selection: $languageRaw) {
-                ForEach(AppLanguage.allCases) { item in
-                    Text(item.nativeName).tag(item.rawValue)
-                }
-            }
-            .pickerStyle(.segmented)
-
-            Toggle(copy("Show English meaning", "إظهار المعنى بالإنجليزية"), isOn: $translationVisible)
-            Toggle(copy("Show du’a transliteration", "إظهار كتابة الدعاء بحروف لاتينية"), isOn: $transliterationVisible)
-        } header: {
-            Text(copy("Language", "اللغة"))
-        }
-        .listRowBackground(Color.sakinaElevated)
-    }
-
-    private var readingSection: some View {
-        Section {
-            Picker(copy("Reciter", "القارئ"), selection: $reciterRaw) {
-                ForEach(Reciter.allCases) { reciter in
-                    Text(reciter.displayName).tag(reciter.rawValue)
-                }
-            }
-
-            VStack(alignment: .leading, spacing: 10) {
-                HStack {
-                    Text(copy("Qur’an text size", "حجم خط القرآن"))
-                    Spacer()
-                    Text("بِسْمِ ٱللَّهِ")
-                        .font(.arabic(18 * arabicScale))
-                        .foregroundStyle(Color.sakinaInk)
-                }
-                Slider(value: $arabicScale, in: 0.85...1.45, step: 0.05)
-                    .tint(.sakinaInk)
-            }
-        } header: {
-            Text(copy("Reading & recitation", "القراءة والتلاوة"))
-        }
-        .listRowBackground(Color.sakinaElevated)
-    }
-
-    private var prayerSection: some View {
-        Section {
-            if let schedule = prayerService.schedule {
-                LabeledContent {
-                    Text(schedule.locationLabel)
-                        .foregroundStyle(Color.sakinaMuted)
-                } label: {
-                    Label(copy("Location", "الموقع"), systemImage: "location.fill")
-                }
-            }
-
-            Picker(copy("Calculation method", "طريقة الحساب"), selection: $prayerMethodRaw) {
-                ForEach(PrayerCalculationMethod.allCases) { method in
-                    Text(method.displayName).tag(method.rawValue)
-                }
-            }
-
-            Picker(copy("Asr method", "طريقة العصر"), selection: $prayerAsrRaw) {
-                ForEach(PrayerAsrMethod.allCases) { method in
-                    Text(method.displayName).tag(method.rawValue)
-                }
-            }
-
-            Picker(copy("High latitudes", "خطوط العرض العليا"), selection: $highLatitudeRaw) {
-                ForEach(PrayerHighLatitudePreference.allCases) { preference in
-                    Text(preference.displayName).tag(preference.rawValue)
-                }
-            }
-
-            Button {
-                updatePrayerTimes()
-            } label: {
-                HStack {
-                    Label(
-                        prayerService.schedule == nil
-                            ? copy("Set from my location", "اضبط حسب موقعي")
-                            : copy("Update prayer times", "تحديث مواقيت الصلاة"),
-                        systemImage: "location.viewfinder"
-                    )
-                    Spacer()
-                    if prayerService.isRefreshing { ProgressView().controlSize(.small) }
-                }
-            }
-            .disabled(prayerService.isRefreshing)
-
-            if let error = prayerService.errorMessage {
-                Label(error, systemImage: "exclamationmark.circle")
-                    .font(.caption)
-                    .foregroundStyle(.red)
-                    .fixedSize(horizontal: false, vertical: true)
-            }
-        } header: {
-            Text(copy("Prayer times & widgets", "مواقيت الصلاة والأدوات"))
-        } footer: {
-            Text(copy(
-                "Times are calculated offline. Add the Yaqeen Prayer Times widget to your Home Screen or Lock Screen after setting a location.",
-                "تُحسب المواقيت دون اتصال. أضف أداة مواقيت يقين إلى الشاشة الرئيسية أو شاشة القفل بعد تحديد الموقع."
-            ))
-        }
-        .listRowBackground(Color.sakinaElevated)
-    }
-
-    private func updatePrayerTimes() {
-        var settings = PrayerCalculationSettings.default
-        settings.method = PrayerCalculationMethod(rawValue: prayerMethodRaw) ?? .muslimWorldLeague
-        settings.asrMethod = PrayerAsrMethod(rawValue: prayerAsrRaw) ?? .standard
-        settings.highLatitudePreference = PrayerHighLatitudePreference(rawValue: highLatitudeRaw) ?? .automatic
-        Task { await prayerService.refreshUsingCurrentLocation(settings: settings) }
-    }
-
-    private var remindersSection: some View {
-        Section {
-            Toggle(copy("Daily guidance reminder", "تذكير يومي بالهداية"), isOn: $reminderEnabled)
-            if reminderEnabled {
-                DatePicker(
-                    copy("Reminder time", "وقت التذكير"),
-                    selection: reminderTime,
-                    displayedComponents: .hourAndMinute
-                )
-            }
-        } header: {
-            Text(copy("Reminders", "التذكيرات"))
-        } footer: {
-            Text(copy(
-                "A gentle daily invitation, never a streak or score.",
-                "دعوة يومية لطيفة، بلا سلاسل أو نقاط."
-            ))
-        }
-        .listRowBackground(Color.sakinaElevated)
-    }
-
-    private var reminderTime: Binding<Date> {
-        Binding {
-            Calendar.current.date(from: DateComponents(hour: reminderHour, minute: reminderMinute)) ?? .now
-        } set: { value in
-            let parts = Calendar.current.dateComponents([.hour, .minute], from: value)
-            reminderHour = parts.hour ?? 9
-            reminderMinute = parts.minute ?? 0
-        }
-    }
-
-    private var trustSection: some View {
-        Section {
-            Button {
-                showAbout = true
-            } label: {
-                Label(copy("Sources, privacy & about", "المصادر والخصوصية وحول التطبيق"), systemImage: "checkmark.shield")
-            }
-
-            Link(destination: URL(string: "https://quran.com")!) {
-                Label(copy("Qur’an source: Quran.com", "مصدر القرآن: Quran.com"), systemImage: "arrow.up.right.square")
-            }
-        } header: {
-            Text(copy("Trust", "الأمانة"))
-        } footer: {
-            Text(copy(
+    private var aboutSection: some View {
+        SettingsGroup(
+            title: copy("About", "حول التطبيق"),
+            footnote: copy(
                 "Qur’anic guidance supports reflection; it does not replace qualified scholarship, pastoral care, or professional help.",
                 "الهداية القرآنية تعين على التدبر، ولا تغني عن سؤال أهل العلم أو الدعم الأسري أو المساعدة المتخصصة."
-            ))
+            )
+        ) {
+            Button { showAbout = true } label: {
+                BadgeRow(symbol: "checkmark.shield.fill",
+                         title: copy("Sources, privacy & about", "المصادر والخصوصية وحول التطبيق"))
+            }
+            .buttonStyle(.yqPress)
+
+            RowDivider()
+            Link(destination: URL(string: "https://quran.com")!) {
+                BadgeRow(symbol: "book.closed.fill", title: copy("Qur’an source", "مصدر القرآن"), subtitle: "Quran.com") {
+                    Image(systemName: "arrow.up.right")
+                        .font(.system(size: 13, weight: .semibold))
+                        .foregroundStyle(Color.yqTertiary)
+                }
+            }
+            .buttonStyle(.yqPress)
+
+            RowDivider()
+            BadgeRow(symbol: "info.circle.fill", title: copy("Version", "الإصدار")) {
+                Text(versionLabel)
+                    .font(.yqSubhead)
+                    .foregroundStyle(Color.yqSecondary)
+                    .monospacedDigit()
+            }
         }
-        .listRowBackground(Color.sakinaElevated)
+    }
+
+    private var versionLabel: String {
+        let info = Bundle.main.infoDictionary
+        let version = info?["CFBundleShortVersionString"] as? String ?? "1.0"
+        let build = info?["CFBundleVersion"] as? String
+        return build.map { "\(version) (\($0))" } ?? version
+    }
+}
+
+// MARK: - Settings building blocks
+
+/// A titled card of rows with an optional one-line footnote beneath it.
+private struct SettingsGroup<Content: View>: View {
+    let title: String
+    var footnote: String? = nil
+    @ViewBuilder var content: () -> Content
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            SectionHeader(title)
+            RowGroup { content() }
+            if let footnote {
+                Text(footnote)
+                    .font(.yqCaption)
+                    .foregroundStyle(Color.yqSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .padding(.horizontal, 14)
+            }
+        }
+    }
+}
+
+/// A row whose trailing switch is the whole point.
+private struct ToggleRow: View {
+    let symbol: String
+    let title: String
+    @Binding var isOn: Bool
+
+    var body: some View {
+        BadgeRow(symbol: symbol, title: title) {
+            Toggle("", isOn: $isOn)
+                .labelsHidden()
+                .tint(.yqAccentDeep)
+        }
+        .accessibilityElement(children: .combine)
+    }
+}
+
+/// A row that opens a menu of choices; the current choice sits under the title.
+private struct MenuRow<Options: View, Value: Hashable>: View {
+    let symbol: String
+    let title: String
+    let value: String
+    @Binding var selection: Value
+    @ViewBuilder var options: () -> Options
+
+    var body: some View {
+        Menu {
+            Picker(title, selection: $selection) { options() }
+        } label: {
+            BadgeRow(symbol: symbol, title: title, subtitle: value, subtitleLines: 1) {
+                Image(systemName: "chevron.up.chevron.down")
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(Color.yqTertiary)
+            }
+        }
+        .tint(.yqInk)
+        .accessibilityLabel(title)
+        .accessibilityValue(value)
+    }
+}
+
+/// A tappable row that performs an action instead of navigating.
+private struct ActionRow: View {
+    let symbol: String
+    var tint: Color = .yqAccent
+    let title: String
+    var busy = false
+    var destructive = false
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            BadgeRow(symbol: symbol, tint: tint, title: title) {
+                if busy { ProgressView().controlSize(.small).tint(.yqSecondary) }
+            }
+            .foregroundStyle(destructive ? Color.red : Color.yqInk)
+        }
+        .buttonStyle(.yqPress)
+        .disabled(busy)
     }
 }
 
@@ -464,20 +538,18 @@ private struct GoogleConfigurationHelp: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: 22) {
-                    Image(systemName: "wrench.and.screwdriver")
-                        .font(.system(size: 34, weight: .light))
-                        .foregroundStyle(Color.sakinaInk)
+                    IconBadge(symbol: "wrench.and.screwdriver.fill", size: 48)
 
                     Text(copy("One developer step remains", "تبقت خطوة للمطور"))
-                        .font(.display(30))
-                        .foregroundStyle(Color.sakinaInk)
+                        .font(.yqTitle)
+                        .foregroundStyle(Color.yqInk)
 
                     Text(copy(
                         "Google requires an OAuth client tied to this app’s bundle ID. Add your iOS client ID and reversed URL scheme in project.yml, enable the Google Drive API, then regenerate the Xcode project.",
                         "يتطلب Google معرّف OAuth مرتبطًا بحزمة التطبيق. أضف معرّف iOS ومخطط الرابط المعكوس في project.yml، وفعّل Google Drive API، ثم أعد توليد مشروع Xcode."
                     ))
-                    .font(.body)
-                    .foregroundStyle(Color.sakinaMuted)
+                    .font(.yqBody)
+                    .foregroundStyle(Color.yqSecondary)
                     .lineSpacing(5)
 
                     VStack(alignment: .leading, spacing: 10) {
@@ -485,21 +557,21 @@ private struct GoogleConfigurationHelp: View {
                         Text("GOOGLE_REVERSED_CLIENT_ID")
                     }
                     .font(.system(.callout, design: .monospaced, weight: .semibold))
-                    .foregroundStyle(Color.sakinaInk)
+                    .foregroundStyle(Color.yqInk)
                     .padding(16)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(Color.sakinaElevated, in: RoundedRectangle(cornerRadius: 16))
+                    .yqCard()
 
                     Text(copy(
                         "The app intentionally refuses to fake a login when those credentials are absent. Local notes and bookmarks remain fully usable.",
                         "يرفض التطبيق عمدًا محاكاة تسجيل الدخول عند غياب بيانات الاعتماد. وتبقى الملاحظات والمحفوظات المحلية متاحة بالكامل."
                     ))
-                    .font(.footnote)
-                    .foregroundStyle(Color.sakinaMuted)
+                    .font(.yqCaption)
+                    .foregroundStyle(Color.yqSecondary)
                 }
                 .padding(22)
             }
-            .background(Color.sakinaCanvas)
+            .yqScreen()
             .toolbar {
                 ToolbarItem(placement: .confirmationAction) {
                     Button(copy("Done", "تم")) { dismiss() }

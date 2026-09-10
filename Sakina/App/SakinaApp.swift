@@ -35,6 +35,7 @@ struct RootView: View {
     @State private var exploreQuery = ""
     @State private var showQibla = false
     @State private var prayerRequest = 0
+    @State private var settingsRequest = 0
     @StateObject private var router = NotificationRouter.shared
     @StateObject private var scholarStore = ScholarContentStore()
     @ObservedObject private var account = GoogleAccountManager.shared
@@ -44,7 +45,7 @@ struct RootView: View {
 
     var body: some View {
         TabView(selection: $selection) {
-            HomeView(path: $homePath, prayerRequest: prayerRequest, openSearch: { query in
+            HomeView(path: $homePath, prayerRequest: prayerRequest, settingsRequest: settingsRequest, openSearch: { query in
                 exploreQuery = query
                 explorePath = NavigationPath()
                 selection = .explore
@@ -174,7 +175,7 @@ struct RootView: View {
 
     /// Debug builds accept `-yqScreen <route>` so any screen can be opened
     /// directly for screenshots: explore, group:<id>, situation:<id>, duas,
-    /// feelings, mood:<id>, practice:<id>, saved, prayers.
+    /// feelings, mood:<id>, practice:<id>, saved, prayers, settings.
     private func applyDebugRoute() {
         #if DEBUG
         let args = ProcessInfo.processInfo.arguments
@@ -204,6 +205,8 @@ struct RootView: View {
                 if let practice = DuaPractice(rawValue: argument) { duaPath.append(practice) }
             case "saved":
                 selection = .saved
+            case "settings":
+                settingsRequest += 1
             case "prayers":
                 prayerRequest += 1
             default:
