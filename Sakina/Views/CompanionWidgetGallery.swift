@@ -12,6 +12,12 @@ struct CompanionWidgetGallery: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
                 Text("Yaqeen widgets").font(.largeTitle.bold())
+                Text("Lock Screen · Prayer Companion").font(.headline)
+                HStack(spacing: 12) {
+                    lockCard(date: schedule.days[0].events[0].time.addingTimeInterval(-1800))
+                    lockCard(date: schedule.days[0].events[4].time.addingTimeInterval(-1800))
+                }
+                lockCard(date: previewDate, hasLocation: false)
                 HStack(spacing: 16) {
                     card(width: 170) {
                         VerseCompanionCard(situation: situation, caption: "Ayah of the day", compact: true)
@@ -29,6 +35,16 @@ struct CompanionWidgetGallery: View {
             .padding(20)
         }
         .background(Color(uiColor: .systemGroupedBackground))
+    }
+
+    private func lockCard(date: Date, hasLocation: Bool = true) -> some View {
+        CompanionCollectionCard(choice: .prayerCat, date: date,
+                                schedule: hasLocation ? schedule : nil, lockScreen: true, preview: true)
+            .foregroundStyle(.white)
+            .environment(\.colorScheme, .dark)
+            .padding(12)
+            .frame(width: 180, height: 86)
+            .background(Color(white: 0.26), in: RoundedRectangle(cornerRadius: 18))
     }
 
     private func card<Content: View>(width: CGFloat = 356, @ViewBuilder content: () -> Content) -> some View {

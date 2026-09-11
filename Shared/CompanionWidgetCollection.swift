@@ -74,13 +74,16 @@ struct CompanionCollectionCard: View {
             if lockScreen {
                 HStack(spacing: 8) {
                     Image(uiImage: CompanionImage.inkMask(choice.artwork)).resizable().renderingMode(.template)
-                        .scaledToFit().frame(width: 38, height: 48).widgetAccentable()
+                        .scaledToFit().frame(width: 58, height: 58).widgetAccentable()
+                        .accessibilityHidden(true)
                     VStack(alignment: .leading, spacing: 3) {
-                        Text(next?.kind.displayName(locale: .current) ?? "Prayer companion").font(.headline).lineLimit(1)
-                        if let next { Text(time(next.time)).font(.subheadline.monospacedDigit()) }
+                        Text(next?.kind.displayName(locale: .current) ?? "Prayer times").font(.headline).lineLimit(1).minimumScaleFactor(0.8)
+                        if let next { Text(time(next.time)).font(.subheadline.monospacedDigit()).lineLimit(1).minimumScaleFactor(0.8) }
                         else { Text("Set your location in Yaqeen").font(.caption2).lineLimit(2) }
                     }
+                    .frame(maxWidth: .infinity, alignment: .leading)
                 }
+                .accessibilityElement(children: .combine)
             } else if choice == .timetable {
                 PrayerCompanionCard(schedule: schedule, date: date)
             } else if choice == .daily || choice == .pinned {
