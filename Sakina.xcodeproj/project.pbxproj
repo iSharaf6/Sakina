@@ -46,6 +46,7 @@
 		40B7AFEE220FCE3C7A84CCDB /* RecitationPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D1EFDB8F8C78374354ED876F /* RecitationPlayer.swift */; };
 		4158F4B0523F0D854FDE5F26 /* quran-scripts.json in Resources */ = {isa = PBXBuildFile; fileRef = DA0D5F5C4B4975BD1AE67F3C /* quran-scripts.json */; };
 		471C79CC21262DCFA4962856 /* BreathingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 557A901947C3D7EC37E32441 /* BreathingView.swift */; };
+		4ABBEB7AA4E0FAACC661D695 /* dua-rewards.json in Resources */ = {isa = PBXBuildFile; fileRef = EC9746D7D1E2D0B74D8B6312 /* dua-rewards.json */; };
 		4D70BE50D9B47BF3AB5843AF /* Localization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8388D70A1ECA4A577E39C7 /* Localization.swift */; };
 		4E8C30F6F671A365AFCA22A9 /* SharedStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D724EF115C34278B04465229 /* SharedStore.swift */; };
 		4EB66C91A5D3E7238FE723D6 /* SharedStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = D724EF115C34278B04465229 /* SharedStore.swift */; };
@@ -86,6 +87,7 @@
 		A40AB7F0CEDB194B59F381E6 /* CompanionWidgetCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43EA20E68A6A4C193D44108A /* CompanionWidgetCollection.swift */; };
 		A44FE29C785FF1A9E28099B8 /* QuranCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC07A9B481218431697FE1FB /* QuranCatalog.swift */; };
 		A4C30D238D4CBA8FEBB8CDF4 /* MushafPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ECB5E2EF7CA4516C16784B48 /* MushafPageView.swift */; };
+		A97EDA58FE04CC28435E2248 /* DuaReward.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5D3B5CD1B4E45A487C6E8014 /* DuaReward.swift */; };
 		AC57A6AE0A39B76AF320E2D8 /* TafsirService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 87D7B7557BEF681679D29E1C /* TafsirService.swift */; };
 		AC79D8A65E6500B89A0D3772 /* AdhkarBenefitsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A59B3928F6DF7DE45F54EFA /* AdhkarBenefitsView.swift */; };
 		AD738641AE3454FF9383E46B /* DuaReaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90FD9BF64F072510814F514F /* DuaReaderView.swift */; };
@@ -93,6 +95,7 @@
 		B0BAC370820CBB3EFBD6708E /* WidgetCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA82190C9CFDC6D6E8CA9C4C /* WidgetCollectionView.swift */; };
 		B301F8E0C12014A55226A101 /* CompanionAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A50076D5F21B54562528153 /* CompanionAccount.swift */; };
 		B73A70BA4BF29D6A9210C1A8 /* DailyGoalsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDE860229139DCEE3B2771D1 /* DailyGoalsView.swift */; };
+		B942B999D99227829DAEBF99 /* dua-rewards.json in Resources */ = {isa = PBXBuildFile; fileRef = EC9746D7D1E2D0B74D8B6312 /* dua-rewards.json */; };
 		B9771BE3F347189F12E339FA /* QuranModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6FCAB981D29D9896D9DC7FC /* QuranModels.swift */; };
 		BB50F90F0FD143E7BBC06F13 /* CompanionOnboarding.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE99798E292DFE8075A0E82A /* CompanionOnboarding.swift */; };
 		BD511CF0AC2E359324B67CDB /* CompanionWidgetGallery.swift in Sources */ = {isa = PBXBuildFile; fileRef = A3CE619CAE16BAEE05A6B2E7 /* CompanionWidgetGallery.swift */; };
@@ -107,6 +110,7 @@
 		C859161F9ABFE845E8F2E8F6 /* QiblaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09DCBC0B6FE330B25F3B29ED /* QiblaView.swift */; };
 		C87E95402C73A0A983249514 /* MushafView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E35321B30A6984B2874F0D8 /* MushafView.swift */; };
 		CA714A7FBE9A2C7C722B70C5 /* AppIcon60x60@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = FAA11D5F405A2BF91BEDF0F0 /* AppIcon60x60@2x.png */; };
+		CB8AC1108647AE5EC9239D90 /* DuaRewardTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3BDB57A7F93AB91ADED54B77 /* DuaRewardTests.swift */; };
 		CB93F143A65EAF05B9EDBEB9 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8FF1EF6DFE596B4EFA06E760 /* SettingsView.swift */; };
 		CBFEE1EC2F7993F6967C2AF0 /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = B83F0981032609DC4C4FFCD8 /* GoogleSignInSwift */; };
 		CD867DF0AB8B4477C9E07412 /* YaqeenAppIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = D193C36D2030BC5749F9F3DF /* YaqeenAppIntents.swift */; };
@@ -189,6 +193,7 @@
 		349FECB8CEDBA04B288591DB /* PrayerLocationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerLocationService.swift; sourceTree = "<group>"; };
 		35A7453DBF8D8E09E7E9D456 /* SituationDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SituationDetailView.swift; sourceTree = "<group>"; };
 		3950AABC3C42DC9F093596C0 /* AyahActionSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AyahActionSheet.swift; sourceTree = "<group>"; };
+		3BDB57A7F93AB91ADED54B77 /* DuaRewardTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DuaRewardTests.swift; sourceTree = "<group>"; };
 		3C923DD523105A8594B87A6E /* DuaLibrary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DuaLibrary.swift; sourceTree = "<group>"; };
 		3E1ED09D1892E6C7656773C0 /* CompanionArtwork.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompanionArtwork.swift; sourceTree = "<group>"; };
 		3FAC198863F571E051A039FD /* NamesOfAllahView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NamesOfAllahView.swift; sourceTree = "<group>"; };
@@ -207,6 +212,7 @@
 		5841023F992C3CE227A0FED5 /* UthmanicHafs.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = UthmanicHafs.ttf; sourceTree = "<group>"; };
 		598052A7A83ECE51A10B7B19 /* QuranEditionsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuranEditionsTests.swift; sourceTree = "<group>"; };
 		5B41F0AE307F238DAE7968EB /* ExploreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreView.swift; sourceTree = "<group>"; };
+		5D3B5CD1B4E45A487C6E8014 /* DuaReward.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DuaReward.swift; sourceTree = "<group>"; };
 		5F355B102620352B67622D3F /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		66F99077B44E08519556B221 /* ScholarContentTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScholarContentTests.swift; sourceTree = "<group>"; };
 		68E0ECA3AD2CC1C8F009D2F5 /* SupportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupportView.swift; sourceTree = "<group>"; };
@@ -264,6 +270,7 @@
 		DEC9F6C408185CF48CA7F1AE /* translations.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = translations.json; sourceTree = "<group>"; };
 		DFCBD69B0913648D27A8A02D /* AppIcon60x60@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "AppIcon60x60@3x.png"; sourceTree = "<group>"; };
 		E3D2AA171C71838421481B0E /* QiblaDirection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QiblaDirection.swift; sourceTree = "<group>"; };
+		EC9746D7D1E2D0B74D8B6312 /* dua-rewards.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "dua-rewards.json"; sourceTree = "<group>"; };
 		ECB5E2EF7CA4516C16784B48 /* MushafPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MushafPageView.swift; sourceTree = "<group>"; };
 		ED29127BA467D63045423033 /* HafsSmart.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = HafsSmart.ttf; sourceTree = "<group>"; };
 		EE11737D69D6C70B0031887F /* Sakina.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Sakina.entitlements; sourceTree = "<group>"; };
@@ -303,6 +310,7 @@
 				6C729585E6BCB69CF1C53D80 /* CompanionExperienceTests.swift */,
 				08BCB593D183591E26DE5FB7 /* ContentIntegrityTests.swift */,
 				091EF70E03B8E1FAE35CF613 /* DuaCollectionTests.swift */,
+				3BDB57A7F93AB91ADED54B77 /* DuaRewardTests.swift */,
 				1CA2E48F5FAFD413ECB039FF /* QiblaDirectionTests.swift */,
 				598052A7A83ECE51A10B7B19 /* QuranEditionsTests.swift */,
 				1B74A482AD1781F0EA256BB8 /* QuranIntegrityTests.swift */,
@@ -387,6 +395,7 @@
 		4437C01E203EBF9D07991845 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				EC9746D7D1E2D0B74D8B6312 /* dua-rewards.json */,
 				B189FE66B0EC9A2C4590ABAF /* hafs-smart.json */,
 				DA0D5F5C4B4975BD1AE67F3C /* quran-scripts.json */,
 				30A875D16582EC9FD93ACD18 /* quran.json */,
@@ -489,6 +498,7 @@
 				3C923DD523105A8594B87A6E /* DuaLibrary.swift */,
 				8619FCE2F235166D59888042 /* DuaPresentation.swift */,
 				90FD9BF64F072510814F514F /* DuaReaderView.swift */,
+				5D3B5CD1B4E45A487C6E8014 /* DuaReward.swift */,
 				6D8E9F7534AF8651BA82EB9A /* DuasView.swift */,
 				3FAC198863F571E051A039FD /* NamesOfAllahView.swift */,
 				1F59E9D70AEC782B6FFB5A42 /* RuqyahCatalog.swift */,
@@ -698,6 +708,7 @@
 				8C11CCF6BDB0B07CEAD67CDD /* CompanionAssets.xcassets in Resources */,
 				7E8760BCABA877D3F3AE7EB9 /* PrivacyInfo.xcprivacy in Resources */,
 				16D963BDEF9A32A7B3F33C6A /* UthmanicHafs.ttf in Resources */,
+				4ABBEB7AA4E0FAACC661D695 /* dua-rewards.json in Resources */,
 				DAF8B8B204B5B163C10D159D /* hafs-smart.json in Resources */,
 				97C04524CF19F59077DE1C60 /* quran-scripts.json in Resources */,
 				E8F2F3A2E172D54AC92A5575 /* quran.json in Resources */,
@@ -720,6 +731,7 @@
 				71B828076577D5181168CFC4 /* IndoPak.ttf in Resources */,
 				59C265587864E6B12F96815F /* PrivacyInfo.xcprivacy in Resources */,
 				5406EED7179563DE79A5EC33 /* UthmanicHafs.ttf in Resources */,
+				B942B999D99227829DAEBF99 /* dua-rewards.json in Resources */,
 				FCFC9AB6CE0EB62E569C45D9 /* hafs-smart.json in Resources */,
 				E0A602F1776B14505A911865 /* mushaf-lines.json in Resources */,
 				4158F4B0523F0D854FDE5F26 /* quran-scripts.json in Resources */,
@@ -741,6 +753,7 @@
 				C5FD390540CCA5C7ECFD5B44 /* CompanionExperienceTests.swift in Sources */,
 				2B2C96A6903E9C8219325E58 /* ContentIntegrityTests.swift in Sources */,
 				F80D8D20BAECC03475FEA5C4 /* DuaCollectionTests.swift in Sources */,
+				CB8AC1108647AE5EC9239D90 /* DuaRewardTests.swift in Sources */,
 				16D59498864A90DB031B8E7E /* QiblaDirectionTests.swift in Sources */,
 				1595CDF7563464BF4C07511F /* QuranEditionsTests.swift in Sources */,
 				23907591AE08CA0034018149 /* QuranIntegrityTests.swift in Sources */,
@@ -793,6 +806,7 @@
 				5CAB6A5F33D61E18312979C2 /* DuaLibrary.swift in Sources */,
 				9BA840A2747C4EAC1F7B805A /* DuaPresentation.swift in Sources */,
 				AD738641AE3454FF9383E46B /* DuaReaderView.swift in Sources */,
+				A97EDA58FE04CC28435E2248 /* DuaReward.swift in Sources */,
 				E2BC353A88E69833E434C15B /* DuasView.swift in Sources */,
 				BDF6F3021D497B78102FB283 /* ExploreView.swift in Sources */,
 				DA77BC635BEA8E048D1DDC66 /* GoogleBackupService.swift in Sources */,

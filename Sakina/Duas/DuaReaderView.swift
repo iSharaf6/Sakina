@@ -233,6 +233,10 @@ struct DuaReaderView: View {
             .padding(20)
             .yqCard(cornerRadius: 22)
 
+            if let reward = DuaRewardCatalog.reward(for: entry.id) {
+                DuaRewardCard(reward: reward, language: language)
+            }
+
             Button { showSource = true } label: {
                 HStack(spacing: 10) {
                     Image(systemName: "info.circle")

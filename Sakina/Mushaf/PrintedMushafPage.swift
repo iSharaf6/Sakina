@@ -178,15 +178,22 @@ final class PrintedMushafCanvas: UIView {
     func configure(page: Int, highlights: [String: HighlightColor], playingKey: String?, colorMarkers: Bool, dark: Bool, selectedKey: String? = nil) {
         guard self.page != page || self.highlights != highlights || self.playingKey != playingKey
                 || self.colorMarkers != colorMarkers || self.dark != dark || self.selectedKey != selectedKey else { return }
+        let needsTypesetting = self.page != page || self.colorMarkers != colorMarkers || self.dark != dark
         self.page = page
-        self.words = MushafLineStore.shared.words(on: page)
+        if needsTypesetting { self.words = MushafLineStore.shared.words(on: page) }
         self.highlights = highlights
         self.playingKey = playingKey
         self.colorMarkers = colorMarkers
         self.dark = dark
         self.selectedKey = selectedKey
-        previousSize = .zero
-        setNeedsLayout()
+        if needsTypesetting {
+            previousSize = .zero
+            setNeedsLayout()
+        } else {
+            // Selection and playback only repaint the highlight. Re-shaping every
+            // Arabic word on each tap caused avoidable work during the transition.
+            setNeedsDisplay()
+        }
     }
 
     override func layoutSubviews() {
@@ -326,8 +333,19 @@ final class PrintedMushafCanvas: UIView {
     }
 
     func ayah(at point: CGPoint) -> QuranAyah? {
-        positioned.first { $0.rect.insetBy(dx: -3, dy: -5).contains(point) }
-            .flatMap { QuranStore.shared.ayah($0.word.k) }
+        guard bounds.contains(point) else { return nil }
+        if let hit = positioned.first(where: { $0.rect.insetBy(dx: -3, dy: -5).contains(point) }) {
+            return QuranStore.shared.ayah(hit.word.k)
+        }
+        // Justified word spacing and gaps between baselines should not swallow taps.
+        // Keep the tolerance local so blank opening-page space does not select a verse.
+        let candidates = positioned.compactMap { item -> (String, CGFloat)? in
+            let dx = max(item.rect.minX - point.x, 0, point.x - item.rect.maxX)
+            let dy = max(item.rect.minY - point.y, 0, point.y - item.rect.maxY)
+            guard dx <= 10, dy <= 10 else { return nil }
+            return (item.word.k, dx * dx + dy * dy)
+        }
+        return candidates.min(by: { $0.1 < $1.1 }).flatMap { QuranStore.shared.ayah($0.0) }
     }
     @objc private func tapped(_ recognizer: UITapGestureRecognizer) {
         if let ayah = ayah(at: recognizer.location(in: self)) { onTap?(ayah) }

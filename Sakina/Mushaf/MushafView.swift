@@ -168,32 +168,7 @@ struct MushafView: View {
                 moreMenu
             }
         }
-        .safeAreaInset(edge: .top, spacing: 0) {
-            if !didSelectAyah {
-                HStack(spacing: 8) {
-                    Image(systemName: "hand.tap")
-                    Text(copy("Tap an ayah to listen, save or read more", "اضغط على آية للاستماع أو الحفظ أو القراءة"))
-                    Spacer(minLength: 0)
-                    Button { didSelectAyah = true } label: { Image(systemName: "xmark").padding(8) }
-                        .accessibilityLabel(copy("Dismiss tip", "إخفاء التلميح"))
-                }
-                .font(.system(size: 12))
-                .foregroundStyle(Color.yqSecondary)
-                .padding(.horizontal, 20)
-                .padding(.vertical, 2)
-                .background(readerBackground)
-            }
-        }
-        .safeAreaInset(edge: .bottom, spacing: 0) {
-            if let activeAyah {
-                AyahSelectionBar(ayah: activeAyah, language: language,
-                                 onMore: { selectedAyah = activeAyah }, onClose: { self.activeAyah = nil })
-            } else if player.playingKey != nil {
-                MushafPlayerBar(language: language) { key in
-                    open(key: key, pulse: true)
-                }
-            }
-        }
+        .safeAreaInset(edge: .bottom, spacing: 0) { selectionDock }
         .sheet(item: $selectedAyah) { ayah in
             AyahActionSheet(ayah: ayah, language: language)
                 .presentationDetents([.medium, .large])
@@ -474,8 +449,51 @@ struct MushafView: View {
     private func selectAyah(_ ayah: QuranAyah) {
         Haptics.tap()
         library.lastReadKey = ayah.key
-        activeAyah = ayah
+        if activeAyah?.key == ayah.key {
+            selectedAyah = ayah
+            return
+        }
+        withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.22)) {
+            activeAyah = ayah
+        }
         didSelectAyah = true
+    }
+
+    // A fixed dock keeps printed pages and Arabic line layout still during selection.
+    // Only the controls animate; selecting an ayah never resizes the Qur’an text.
+    @ScaledMetric(relativeTo: .subheadline) private var selectionDockHeight = 108.0
+
+    private var selectionDock: some View {
+        ZStack {
+            if let activeAyah {
+                AyahSelectionBar(ayah: activeAyah, language: language,
+                                 onMore: { selectedAyah = activeAyah },
+                                 onClose: {
+                    withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.2)) { self.activeAyah = nil }
+                })
+                .transition(reduceMotion ? .opacity : .opacity.combined(with: .offset(y: 8)))
+            } else if player.playingKey != nil {
+                MushafPlayerBar(language: language) { key in open(key: key, pulse: true) }
+                    .transition(.opacity)
+            } else {
+                HStack(spacing: 12) {
+                    Image(systemName: "hand.tap").font(.title3).foregroundStyle(readerAccent)
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(copy("Tap an ayah", "اضغط على آية")).font(.yqSubheadBold)
+                        Text(copy("Listen, save, or explore its meaning", "استمع أو احفظ أو اكتشف المعنى"))
+                            .font(.yqCaption).foregroundStyle(Color.yqSecondary)
+                    }
+                    Spacer(minLength: 0)
+                }
+                .padding(.horizontal, 24)
+                .foregroundStyle(Color.yqInk)
+                .transition(.opacity)
+            }
+        }
+        .frame(height: selectionDockHeight)
+        .frame(maxWidth: .infinity)
+        .background(.regularMaterial)
+        .overlay(alignment: .top) { Divider() }
     }
 
     // MARK: Surah layout

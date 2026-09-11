@@ -67,8 +67,8 @@ struct AyahActionSheet: View {
             ScrollView(showsIndicators: false) {
                 VStack(alignment: .leading, spacing: 24) {
                     header
-                    ayahCard
                     actionGrid
+                    ayahCard
                     if showTranslation {
                         translationSection
                             .id("translation")
@@ -743,11 +743,20 @@ struct AyahSelectionBar: View {
     @ObservedObject private var player = MushafPlayer.shared
     private var isPlaying: Bool { player.playingKey == ayah.key && player.isPlaying }
     var body: some View {
-        VStack(spacing: 10) {
+        VStack(spacing: 4) {
             HStack {
-                Text(ayah.reference(language)).font(.yqSubheadBold)
+                Button(action: onMore) {
+                    HStack(spacing: 5) {
+                        Text(ayah.reference(language)).font(.yqSubheadBold)
+                        Image(systemName: "chevron.up").font(.system(size: 10, weight: .semibold))
+                    }
+                    .frame(minHeight: 30)
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                .accessibilityHint(language.pick("Opens all ayah actions", "يفتح جميع خيارات الآية"))
                 Spacer()
-                Button(action: onClose) { Image(systemName: "xmark").padding(8) }
+                Button(action: onClose) { Image(systemName: "xmark").frame(width: 44, height: 44).contentShape(Rectangle()) }
                     .accessibilityLabel(language.pick("Clear selection", "إلغاء التحديد"))
             }
             HStack(spacing: 12) {
@@ -757,19 +766,22 @@ struct AyahSelectionBar: View {
                 action(library.isBookmarked(ayah.key) ? language.pick("Saved", "محفوظة") : language.pick("Save", "حفظ"), icon: library.isBookmarked(ayah.key) ? "bookmark.fill" : "bookmark") {
                     library.toggleBookmark(ayah.key)
                 }
-                action(language.pick("More", "المزيد"), icon: "ellipsis", perform: onMore)
+                action(language.pick("More", "المزيد"), icon: "ellipsis", prominent: true, perform: onMore)
+                    .accessibilityHint(language.pick("Translation, tafsir, highlights and notes", "الترجمة والتفسير والتظليل والملاحظات"))
             }
         }
-        .padding(.horizontal, 20).padding(.top, 8).padding(.bottom, 14)
+        .padding(.horizontal, 16).padding(.vertical, 8)
         .background(.regularMaterial)
         .overlay(alignment: .top) { Divider() }
         .foregroundStyle(Color.yqInk)
     }
-    private func action(_ title: String, icon: String, perform: @escaping () -> Void) -> some View {
+    private func action(_ title: String, icon: String, prominent: Bool = false, perform: @escaping () -> Void) -> some View {
         Button { Haptics.press(); perform() } label: {
             Label(title, systemImage: icon).font(.yqSubheadBold)
                 .frame(maxWidth: .infinity).frame(minHeight: 44)
-                .background(Color.yqAccentTint, in: RoundedRectangle(cornerRadius: 12))
-        }.buttonStyle(.plain).foregroundStyle(Color.yqAccentDeep)
+                .background(prominent ? Color.yqAccentDeep : Color.yqAccentTint, in: RoundedRectangle(cornerRadius: 14))
+                .foregroundStyle(prominent ? Color.yqOnAccent : Color.yqAccentDeep)
+                .contentShape(RoundedRectangle(cornerRadius: 14))
+        }.buttonStyle(.yqPressSoft)
     }
 }

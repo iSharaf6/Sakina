@@ -128,7 +128,7 @@ struct HomeView: View {
         HStack(alignment: .top, spacing: 12) {
             VStack(alignment: .leading, spacing: 6) {
                 HStack(spacing: 8) {
-                    YaqeenBrandIcon(size: 28)
+                    YaqeenBrandIcon(size: 36)
                     Text("Haneen")
                         .font(.yqCaptionBold)
                         .foregroundStyle(Color.yqAccentDeep)
@@ -148,7 +148,10 @@ struct HomeView: View {
                     .foregroundStyle(Color.yqSecondary)
             }
             Spacer(minLength: 0)
-            Button { sheet = .settings } label: { CompanionIllustration(artwork: .settings, size: 44) }
+            Button { sheet = .settings } label: { CompanionIllustration(artwork: .settings, size: 48)
+                .padding(3)
+                .background(Color(red: 0.97, green: 0.95, blue: 0.89), in: RoundedRectangle(cornerRadius: 17))
+                .overlay { RoundedRectangle(cornerRadius: 17).strokeBorder(Color.yqHairline, lineWidth: 1) } }
                 .buttonStyle(.yqPress)
                 .accessibilityLabel(copy("Settings", "الإعدادات"))
                 .padding(.top, 2)
@@ -337,7 +340,10 @@ struct SettingsButton: View {
     let language: AppLanguage
     let action: () -> Void
     var body: some View {
-        Button(action: action) { CompanionIllustration(artwork: .settings, size: 44) }
+        Button(action: action) { CompanionIllustration(artwork: .settings, size: 48)
+                .padding(3)
+                .background(Color(red: 0.97, green: 0.95, blue: 0.89), in: RoundedRectangle(cornerRadius: 17))
+                .overlay { RoundedRectangle(cornerRadius: 17).strokeBorder(Color.yqHairline, lineWidth: 1) } }
             .buttonStyle(.yqPress)
             .accessibilityLabel(language.pick("Settings", "الإعدادات"))
             .padding(.top, 2)
