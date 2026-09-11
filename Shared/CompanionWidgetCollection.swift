@@ -56,7 +56,7 @@ enum CompanionWidgetChoice: String, CaseIterable, Identifiable {
         case .evening: route = "collection/evening"
         default: route = "prayer-times"
         }
-        return URL(string: "yaqeen://\(route)")!
+        return URL(string: "haneen://\(route)")!
     }
 }
 
@@ -79,7 +79,7 @@ struct CompanionCollectionCard: View {
                     VStack(alignment: .leading, spacing: 3) {
                         Text(next?.kind.displayName(locale: .current) ?? "Prayer times").font(.headline).lineLimit(1).minimumScaleFactor(0.8)
                         if let next { Text(time(next.time)).font(.subheadline.monospacedDigit()).lineLimit(1).minimumScaleFactor(0.8) }
-                        else { Text("Set your location in Yaqeen").font(.caption2).lineLimit(2) }
+                        else { Text("Set your location in Haneen").font(.caption2).lineLimit(2) }
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                 }
@@ -119,7 +119,7 @@ struct CompanionCollectionCard: View {
                                 } else { Text(time(next.time)).font(.title3.monospacedDigit()) }
                             } else {
                                 Text("Find your prayer times").font(.headline)
-                                Text("Set your location in Yaqeen").font(.caption).foregroundStyle(CompanionWidgetPalette.secondary)
+                                Text("Set your location in Haneen").font(.caption).foregroundStyle(CompanionWidgetPalette.secondary)
                             }
                         } else {
                             Text(choice == .morning ? "Begin with remembrance." : choice == .evening ? "Let the day soften." : "A breath. An ayah. A little peace.")

@@ -152,8 +152,8 @@ struct NearbyPlacesView: View {
         VStack(spacing: 4) {
             EmptyGuidanceState(
                 title: copy("Location is off", "الموقع متوقف"),
-                detail: copy("Allow location for Yaqeen in Settings so we can search around you. Your location stays on this device.",
-                             "اسمح بالوصول إلى الموقع لتطبيق يقين من الإعدادات لنبحث حولك. موقعك يبقى على هذا الجهاز."),
+                detail: copy("Allow location for Haneen in Settings so we can search around you. Your location stays on this device.",
+                             "اسمح بالوصول إلى الموقع لتطبيق حنين من الإعدادات لنبحث حولك. موقعك يبقى على هذا الجهاز."),
                 symbol: "location.slash.fill"
             )
             Button {

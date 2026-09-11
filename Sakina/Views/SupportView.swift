@@ -34,8 +34,8 @@ enum AppLinks {
 
     static func shareText(_ language: AppLanguage) -> String {
         let line = language.pick(
-            "Yaqeen: du’a, dhikr and Qur’an for how you feel. Prayer times, ruqyah, a dhikr counter and nothing tracked.",
-            "يقين: دعاء وذكر وقرآن لما تشعر به. مواقيت الصلاة والرقية وعداد الذكر، بلا تتبع."
+            "Haneen: du’a, dhikr and Qur’an for how you feel. Prayer times, ruqyah, a dhikr counter and nothing tracked.",
+            "حنين: دعاء وذكر وقرآن لما تشعر به. مواقيت الصلاة والرقية وعداد الذكر، بلا تتبع."
         )
         if let appStore { return line + "\n" + appStore.absoluteString }
         return line
@@ -53,7 +53,7 @@ struct FAQView: View {
 
     private var questions: [(q: String, a: String)] {
         [
-            (copy("Is Yaqeen free?", "هل يقين مجاني؟"),
+            (copy("Is Haneen free?", "هل حنين مجاني؟"),
              copy("Yes. There are no ads, subscriptions or tracking.", "نعم. لا إعلانات ولا اشتراكات ولا تتبع.")),
             (copy("Where does the Qur’an text come from?", "من أين يأتي نص القرآن؟"),
              copy("Every ayah is fetched from Quran.com in Uthmani script with the Saheeh International translation, then frozen so it cannot drift.",
@@ -71,8 +71,8 @@ struct FAQView: View {
              copy("Du’as, Qur’an, prayer times and the dhikr counter all work offline. Recitation audio and nearby places need a connection.",
                   "الأدعية والقرآن ومواقيت الصلاة وعداد الذكر تعمل دون اتصال. أما التلاوة الصوتية والأماكن القريبة فتحتاج إلى اتصال.")),
             (copy("How do I add the widget?", "كيف أضيف الأداة؟"),
-             copy("Set a location in Settings, then long-press your Home or Lock Screen, tap +, and search for Yaqeen.",
-                  "حدد الموقع في الإعدادات، ثم اضغط مطولًا على الشاشة الرئيسية أو شاشة القفل، واضغط + وابحث عن يقين.")),
+             copy("Set a location in Settings, then long-press your Home or Lock Screen, tap +, and search for Haneen.",
+                  "حدد الموقع في الإعدادات، ثم اضغط مطولًا على الشاشة الرئيسية أو شاشة القفل، واضغط + وابحث عن حنين.")),
             (copy("Is my data backed up?", "هل تُنسخ بياناتي احتياطيًا؟"),
              copy("Not unless you choose to. Saved du’as and reflections stay on this iPhone. Google Drive backup is optional and private to the app.",
                   "لا، إلا إذا اخترت ذلك. تبقى الأدعية المحفوظة والتأملات على هذا الهاتف. والنسخ إلى Google Drive اختياري وخاص بالتطبيق.")),
@@ -179,7 +179,7 @@ struct ContactSupportView: View {
         }
     }
 
-    private var subject: String { "Yaqeen · \(topic.title(.english))" }
+    private var subject: String { "Haneen · \(topic.title(.english))" }
     private var trimmed: String { message.trimmingCharacters(in: .whitespacesAndNewlines) }
 
     private var messageBody: String {
@@ -188,7 +188,7 @@ struct ContactSupportView: View {
         \(message)
 
         —
-        Yaqeen \(AppLinks.version) · iOS \(device.systemVersion) · \(device.model) · \(language.rawValue)
+        Haneen \(AppLinks.version) · iOS \(device.systemVersion) · \(device.model) · \(language.rawValue)
         """
     }
 
@@ -342,11 +342,11 @@ struct AboutUsView: View {
                     YaqeenBrandIcon(size: 92)
                     VStack(spacing: 4) {
                         HStack(alignment: .firstTextBaseline, spacing: 10) {
-                            Text("يقين").font(.arabicProse(30))
-                            Text("Yaqeen").font(.yqTitle)
+                            Text("حنين").font(.arabicProse(30))
+                            Text("Haneen").font(.yqTitle)
                         }
                         .foregroundStyle(Color.yqInk)
-                        Text(copy("Certainty in every step", "يقين في كل خطوة"))
+                        Text(copy("Qur’an and du’a for how you feel", "قرآن ودعاء لما تشعر به"))
                             .font(.yqSubheadMedium)
                             .foregroundStyle(Color.yqSecondary)
                     }
@@ -358,8 +358,8 @@ struct AboutUsView: View {
                     symbol: "heart.fill",
                     title: copy("Why we made it", "لماذا صنعناه"),
                     body: copy(
-                        "Most of us don’t open a du’a book when the day gets heavy. We open our phone. Yaqeen meets you there: a feeling, one tap, and words from the Qur’an and the Sunnah that were made for that moment.",
-                        "أكثرنا لا يفتح كتاب أدعية حين يثقل اليوم، بل يفتح هاتفه. يقين يلقاك هناك: شعور، ضغطة واحدة، وكلمات من القرآن والسنة صيغت لتلك اللحظة."
+                        "Most of us don’t open a du’a book when the day gets heavy. We open our phone. Haneen meets you there: a feeling, one tap, and words from the Qur’an and the Sunnah that were made for that moment.",
+                        "أكثرنا لا يفتح كتاب أدعية حين يثقل اليوم، بل يفتح هاتفه. حنين يلقاك هناك: شعور، ضغطة واحدة، وكلمات من القرآن والسنة صيغت لتلك اللحظة."
                     )
                 )
                 .revealed(1, appeared: appeared, reduceMotion: reduceMotion)
@@ -378,15 +378,15 @@ struct AboutUsView: View {
                     symbol: "person.fill",
                     title: copy("Who we are", "من نحن"),
                     body: copy(
-                        "Yaqeen is built by a small independent team of Muslims, reviewed by a scholar, and shaped by the people who write to us. It has no investors and no advertising. If it helps you, tell a friend.",
-                        "يقين يبنيه فريق مستقل صغير من المسلمين، ويراجعه عالم، ويشكله من يراسلوننا. لا مستثمرين ولا إعلانات. إن نفعك، فأخبر صديقًا."
+                        "Haneen is built by a small independent team of Muslims, reviewed by a scholar, and shaped by the people who write to us. It has no investors and no advertising. If it helps you, tell a friend.",
+                        "حنين يبنيه فريق مستقل صغير من المسلمين، ويراجعه عالم، ويشكله من يراسلوننا. لا مستثمرين ولا إعلانات. إن نفعك، فأخبر صديقًا."
                     )
                 )
                 .revealed(3, appeared: appeared, reduceMotion: reduceMotion)
 
                 RowGroup {
                     ShareLink(item: AppLinks.shareText(language)) {
-                        BadgeRow(symbol: "square.and.arrow.up.fill", title: copy("Share Yaqeen", "شارك يقين"))
+                        BadgeRow(symbol: "square.and.arrow.up.fill", title: copy("Share Haneen", "شارك حنين"))
                     }
                     .buttonStyle(.yqPressSoft)
                     RowDivider()
@@ -402,7 +402,7 @@ struct AboutUsView: View {
                 }
                 .revealed(4, appeared: appeared, reduceMotion: reduceMotion)
 
-                Text("Yaqeen · \(AppLinks.version)")
+                Text("Haneen · \(AppLinks.version)")
                     .font(.yqCaption)
                     .foregroundStyle(Color.yqTertiary)
                     .frame(maxWidth: .infinity)
@@ -463,7 +463,7 @@ struct FollowUsView: View {
                     .buttonStyle(.yqPressSoft)
                 }
                 ShareLink(item: AppLinks.shareText(language)) {
-                    PrimaryButton(title: copy("Share Yaqeen with a friend", "شارك يقين مع صديق"), symbol: "square.and.arrow.up.fill")
+                    PrimaryButton(title: copy("Share Haneen with a friend", "شارك حنين مع صديق"), symbol: "square.and.arrow.up.fill")
                 }
                 .buttonStyle(.yqPress)
             }

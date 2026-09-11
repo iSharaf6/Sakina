@@ -63,8 +63,8 @@ struct QiblaView: View {
                 symbol: "location.circle",
                 title: copy("Use your location", "استخدم موقعك"),
                 message: copy(
-                    "Yaqeen needs your approximate location to calculate the Qibla direction. It stays on this device.",
-                    "يحتاج يقين إلى موقعك التقريبي لحساب اتجاه القبلة، ويبقى موقعك على هذا الجهاز."
+                    "Haneen needs your approximate location to calculate the Qibla direction. It stays on this device.",
+                    "يحتاج حنين إلى موقعك التقريبي لحساب اتجاه القبلة، ويبقى موقعك على هذا الجهاز."
                 ),
                 buttonTitle: copy("Find Qibla", "حدد القبلة"),
                 action: compass.requestPermission

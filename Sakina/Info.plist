@@ -5,7 +5,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
-	<string>Yaqeen</string>
+	<string>Haneen</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -13,7 +13,7 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
-	<string>Yaqeen</string>
+	<string>Haneen</string>
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
@@ -25,6 +25,7 @@
 			<string>com.islamsharaf.yaqeen</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
+				<string>haneen</string>
 				<string>sakina</string>
 				<string>yaqeen</string>
 			</array>
@@ -39,7 +40,7 @@
 		<string>comgooglemaps</string>
 	</array>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Yaqeen uses your location to calculate local prayer times, the Qibla direction, and to find mosques and halal food near you. Your coordinates stay on this device.</string>
+	<string>Haneen uses your location to calculate local prayer times, the Qibla direction, and to find mosques and halal food near you. Your coordinates stay on this device.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>UthmanicHafs.ttf</string>

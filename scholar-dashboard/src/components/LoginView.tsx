@@ -124,7 +124,7 @@ export function LoginView({ status, onSendMagicLink, onVerifyCode }: LoginViewPr
           <a
             aria-label={t('app.openAppHint')}
             className="login-open-app"
-            href="yaqeen://"
+            href="haneen://"
             title={t('app.openAppHint')}
           >
             <DeviceMobile aria-hidden="true" size={18} weight="bold" />

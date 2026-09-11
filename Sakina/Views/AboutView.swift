@@ -43,14 +43,14 @@ struct AboutView: View {
 
             VStack(spacing: 4) {
                 HStack(alignment: .firstTextBaseline, spacing: 10) {
-                    Text("يقين")
+                    Text("حنين")
                         .font(.system(.largeTitle, design: .rounded, weight: .semibold))
-                    Text("Yaqeen")
+                    Text("Haneen")
                         .font(.largeTitle.weight(.semibold))
                 }
                 .foregroundStyle(Color.sakinaInk)
 
-                Text(copy("Certainty in every step", "يقين في كل خطوة"))
+                Text(copy("Qur’an and du’a for how you feel", "قرآن ودعاء لما تشعر به"))
                     .font(.subheadline.weight(.medium))
                     .foregroundStyle(Color.sakinaMuted)
             }
@@ -74,8 +74,8 @@ struct AboutView: View {
             symbol: "lock",
             title: copy("Private by default", "الخصوصية أولًا"),
             body: copy(
-                "Bookmarks, reflections, and prayer preferences stay on this iPhone unless you deliberately connect a backup option shown in Settings. Prayer coordinates never enter the widget payload. Yaqeen has no advertising, analytics, or tracking.",
-                "تبقى المحفوظات والتأملات وتفضيلات الصلاة على هذا الهاتف ما لم تربط بنفسك خيار نسخ احتياطي يظهر في الإعدادات. ولا تدخل إحداثيات الصلاة في بيانات الأداة. ولا يستخدم يقين الإعلانات أو التحليلات أو التتبع."
+                "Bookmarks, reflections, and prayer preferences stay on this iPhone unless you deliberately connect a backup option shown in Settings. Prayer coordinates never enter the widget payload. Haneen has no advertising, analytics, or tracking.",
+                "تبقى المحفوظات والتأملات وتفضيلات الصلاة على هذا الهاتف ما لم تربط بنفسك خيار نسخ احتياطي يظهر في الإعدادات. ولا تدخل إحداثيات الصلاة في بيانات الأداة. ولا يستخدم حنين الإعلانات أو التحليلات أو التتبع."
             )
         )
     }
@@ -85,8 +85,8 @@ struct AboutView: View {
             symbol: "heart.text.square",
             title: copy("Guidance, with context", "هداية مع حفظ السياق"),
             body: copy(
-                "Yaqeen distinguishes direct source context from a general principle. It never treats forgiveness as permission for harm, or patience as a reason to remain unsafe. Reflections are not tafsir or a substitute for qualified scholarship, safeguarding, or professional care.",
-                "يميّز يقين بين سياق النص المباشر والمبدأ العام. ولا يجعل العفو إذنًا بالضرر، ولا الصبر سببًا للبقاء في الخطر. والتأملات ليست تفسيرًا ولا بديلًا عن أهل العلم أو الحماية أو الرعاية المتخصصة."
+                "Haneen distinguishes direct source context from a general principle. It never treats forgiveness as permission for harm, or patience as a reason to remain unsafe. Reflections are not tafsir or a substitute for qualified scholarship, safeguarding, or professional care.",
+                "يميّز حنين بين سياق النص المباشر والمبدأ العام. ولا يجعل العفو إذنًا بالضرر، ولا الصبر سببًا للبقاء في الخطر. والتأملات ليست تفسيرًا ولا بديلًا عن أهل العلم أو الحماية أو الرعاية المتخصصة."
             )
         )
     }
@@ -180,7 +180,7 @@ struct AboutView: View {
             NavigationLink {
                 PrivacyPolicyView()
             } label: {
-                sourceRow(copy("Privacy policy", "سياسة الخصوصية"), detail: copy("Read in Yaqeen", "اقرأها في يقين"))
+                sourceRow(copy("Privacy policy", "سياسة الخصوصية"), detail: copy("Read in Haneen", "اقرأها في حنين"))
             }
             Divider().padding(.leading, 46)
             Link(destination: URL(string: "https://quran.com")!) {
@@ -215,7 +215,7 @@ struct AboutView: View {
     }
 
     private var version: some View {
-        Text("Yaqeen · 1.0")
+        Text("Haneen · 1.0")
             .font(.caption2)
             .foregroundStyle(Color.sakinaMuted)
             .frame(maxWidth: .infinity, alignment: .center)

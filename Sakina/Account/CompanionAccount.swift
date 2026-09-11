@@ -119,7 +119,7 @@ struct CompanionAccountView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
                 CompanionIllustration(artwork: .privacy, size: 110).frame(maxWidth: .infinity)
-                Text(account.signedIn ? "Your Yaqeen account" : creating ? "Make yourself at home." : "Welcome back.")
+                Text(account.signedIn ? "Your Haneen account" : creating ? "Make yourself at home." : "Welcome back.")
                     .font(.system(.largeTitle, design: .serif, weight: .medium))
                 Text("Reading, prayer times and your local library are always available without an account.").font(.yqBody).foregroundStyle(Color.yqSecondary)
                 if account.signedIn {
@@ -159,7 +159,7 @@ struct CompanionAccountView: View {
         }.yqScreen().navigationTitle("Account").navigationBarTitleDisplayMode(.inline)
             .onChange(of: email) { _, _ in sent = false; code = "" }
             .onChange(of: creating) { _, _ in sent = false; code = "" }
-            .confirmationDialog("Delete your Yaqeen account?", isPresented: $confirmDelete, titleVisibility: .visible) {
+            .confirmationDialog("Delete your Haneen account?", isPresented: $confirmDelete, titleVisibility: .visible) {
                 Button("Delete account", role: .destructive) { Task { await account.deleteAccount() } }
             } message: { Text("Your sign-in account will be permanently deleted. Local notes and bookmarks stay on this iPhone.") }
     }

@@ -27,7 +27,7 @@ struct CompanionOnboarding: View {
                 VStack(spacing: 0) {
                     HStack {
                         YaqeenBrandIcon(size: 34)
-                        Text("yaqeen").font(.system(size: 26, weight: .semibold, design: .rounded)).tracking(-0.8)
+                        Text("haneen").font(.system(size: 26, weight: .semibold, design: .rounded)).tracking(-0.8)
                         Spacer()
                         if account.signedIn || allowsDismiss {
                             Button("Done") { if allowsDismiss { onFinish() } else { finish() } }.font(.subheadline.weight(.semibold))
@@ -62,7 +62,7 @@ struct CompanionOnboarding: View {
 
                     VStack(spacing: 12) {
                         if account.signedIn {
-                            Button("Continue to Yaqeen", action: finish).font(.headline)
+                            Button("Continue to Haneen", action: finish).font(.headline)
                                 .frame(maxWidth: .infinity).frame(height: 54)
                                 .foregroundStyle(paper).background(ink, in: Capsule())
                         } else {

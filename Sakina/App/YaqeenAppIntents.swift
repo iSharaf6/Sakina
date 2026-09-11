@@ -24,8 +24,8 @@ enum YaqeenIntentDestination: String, Sendable {
 }
 
 struct OpenTodayInYaqeenIntent: AppIntent {
-    static let title: LocalizedStringResource = "Open Today in Yaqeen"
-    static let description = IntentDescription("Open today’s Qur’anic guidance in Yaqeen.")
+    static let title: LocalizedStringResource = "Open Today in Haneen"
+    static let description = IntentDescription("Open today’s Qur’anic guidance in Haneen.")
     static let openAppWhenRun = true
 
     @MainActor
@@ -36,8 +36,8 @@ struct OpenTodayInYaqeenIntent: AppIntent {
 }
 
 struct OpenQiblaInYaqeenIntent: AppIntent {
-    static let title: LocalizedStringResource = "Open Qibla in Yaqeen"
-    static let description = IntentDescription("Open Yaqeen’s private Qibla compass.")
+    static let title: LocalizedStringResource = "Open Qibla in Haneen"
+    static let description = IntentDescription("Open Haneen’s private Qibla compass.")
     static let openAppWhenRun = true
 
     @MainActor
@@ -48,7 +48,7 @@ struct OpenQiblaInYaqeenIntent: AppIntent {
 }
 
 struct NextPrayerInYaqeenIntent: AppIntent {
-    static let title: LocalizedStringResource = "Next Prayer in Yaqeen"
+    static let title: LocalizedStringResource = "Next Prayer in Haneen"
     static let description = IntentDescription("Hear the next calculated prayer and its local time.")
     static let openAppWhenRun = false
 
@@ -57,7 +57,7 @@ struct NextPrayerInYaqeenIntent: AppIntent {
         guard let schedule = SharedStore.prayerSchedule,
               !schedule.isStale(at: now),
               let event = schedule.nextEvent(after: now) else {
-            return .result(dialog: "Open Yaqeen and set your prayer location first.")
+            return .result(dialog: "Open Haneen and set your prayer location first.")
         }
 
         let formatter = DateFormatter()

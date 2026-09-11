@@ -40,15 +40,15 @@ enum CompanionReminderPlan {
             let minute = defaults.integer(forKey: SettingsKeys.reminderMinute)
             for day in 1...7 {
                 items.append(Item(id: "yaqeen.guidance.\(day)", title: text(titles[day - 1], "لحظة هادئة مع القرآن"),
-                                  body: text("An ayah and a small reflection are waiting in Yaqeen.", "آية وتأمل قصير بانتظارك في يقين."),
-                                  destination: "yaqeen://daily", components: DateComponents(hour: hour, minute: minute, weekday: day), repeats: true, prayer: false))
+                                  body: text("An ayah and a small reflection are waiting in Haneen.", "آية وتأمل قصير بانتظارك في حنين."),
+                                  destination: "haneen://daily", components: DateComponents(hour: hour, minute: minute, weekday: day), repeats: true, prayer: false))
             }
         }
         for (key, hour, collection, title, body) in [
             (morningKey, 8, "morning", text("Meet the morning with dhikr", "ابدأ صباحك بالذكر"), text("A few quiet minutes for your morning adhkar.", "دقائق هادئة لأذكار الصباح.")),
             (eveningKey, 18, "evening", text("Let the day soften", "مساء يطمئن فيه القلب"), text("Your evening adhkar are here when you’re ready.", "أذكار المساء بانتظارك متى كنت مستعدًا."))
         ] where defaults.bool(forKey: key) {
-            items.append(Item(id: "yaqeen.\(collection)", title: title, body: body, destination: "yaqeen://collection/\(collection)",
+            items.append(Item(id: "yaqeen.\(collection)", title: title, body: body, destination: "haneen://collection/\(collection)",
                               components: DateComponents(hour: allowedHour(hour), minute: 0), repeats: true, prayer: false))
         }
         if defaults.bool(forKey: prayerKey), let schedule {
@@ -59,7 +59,7 @@ enum CompanionReminderPlan {
                 var components = calendar.dateComponents([.year, .month, .day, .hour, .minute, .second], from: event.time)
                 components.timeZone = calendar.timeZone
                 items.append(Item(id: "yaqeen.prayer.\(Int(event.time.timeIntervalSince1970))", title: text("It’s time for \(name)", "حان وقت \(name)"),
-                                  body: schedule.locationLabel, destination: "yaqeen://prayer-times", components: components, repeats: false, prayer: true))
+                                  body: schedule.locationLabel, destination: "haneen://prayer-times", components: components, repeats: false, prayer: true))
             }
         }
         return Array(items.prefix(60)) // Reserve room below iOS's pending-request limit for snoozes.
@@ -96,7 +96,7 @@ final class ReminderCenter: ObservableObject {
             }
             center.removePendingNotificationRequests(withIdentifiers: owned)
             guard status == .authorized || status == .provisional else { return }
-            let open = UNNotificationAction(identifier: "open", title: "Open Yaqeen", options: .foreground)
+            let open = UNNotificationAction(identifier: "open", title: "Open Haneen", options: .foreground)
             let later = UNNotificationAction(identifier: "later", title: "In 10 minutes", options: [])
             center.setNotificationCategories([UNNotificationCategory(identifier: "companion", actions: [open, later], intentIdentifiers: [])])
             for item in plan {
@@ -158,7 +158,7 @@ struct ReminderSettingsView: View {
                     RowDivider(inset: 16)
                     Toggle("The five daily prayers", isOn: $prayers).padding(16)
                 }
-                Text("Prayer alerts follow your saved location and calculation method, including Fajr. Open Yaqeen at least weekly to refresh the coming days. Sunrise is shown in widgets but doesn’t send an adhan alert.")
+                Text("Prayer alerts follow your saved location and calculation method, including Fajr. Open Haneen at least weekly to refresh the coming days. Sunrise is shown in widgets but doesn’t send an adhan alert.")
                     .font(.yqCaption).foregroundStyle(Color.yqSecondary)
                 if prayers && SharedStore.prayerSchedule == nil { Text("Set your prayer location in Settings to schedule prayer alerts.").foregroundStyle(Color.yqAccentDeep) }
                 RowGroup {

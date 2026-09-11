@@ -44,7 +44,7 @@ struct VerseCompanionCard: View {
                 HStack(spacing: 14) {
                     VStack(spacing: 6) {
                         CompanionIllustration(artwork: artwork, size: 78)
-                        Text("Yaqeen")
+                        Text("Haneen")
                             .font(.system(size: 10, weight: .semibold))
                             .foregroundStyle(CompanionWidgetPalette.accent)
                     }
@@ -141,7 +141,7 @@ struct PrayerCompanionCard: View {
                     VStack(alignment: .leading, spacing: 7) {
                         Text(isArabic ? "مواقيت الصلاة" : "Prayer times")
                             .font(.system(size: 17, weight: .semibold))
-                        Text(isArabic ? "افتح يقين لاختيار موقعك" : "Open Yaqeen to choose your location.")
+                        Text(isArabic ? "افتح حنين لاختيار موقعك" : "Open Haneen to choose your location.")
                             .font(.system(size: 12))
                             .foregroundStyle(CompanionWidgetPalette.secondary)
                             .fixedSize(horizontal: false, vertical: true)

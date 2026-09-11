@@ -31,7 +31,7 @@ final class CompanionExperienceTests: XCTestCase {
         XCTAssertFalse(items.isEmpty)
         XCTAssertTrue(items.allSatisfy { !$0.repeats && $0.components.year != nil && $0.components.timeZone?.secondsFromGMT() == 0 })
         XCTAssertEqual(Set(items.map(\.id)).count, items.count)
-        XCTAssertTrue(items.allSatisfy { $0.destination == "yaqeen://prayer-times" })
+        XCTAssertTrue(items.allSatisfy { $0.destination == "haneen://prayer-times" })
     }
 
     func testQuietHoursHandleMidnightAndDisabledInterval() {
@@ -75,7 +75,7 @@ final class CompanionExperienceTests: XCTestCase {
         XCTAssertEqual(CompanionWidgetChoice.allCases.count, 10)
         XCTAssertEqual(Set(CompanionWidgetChoice.allCases.map(\.title)).count, 10)
         for choice in CompanionWidgetChoice.allCases {
-            XCTAssertEqual(choice.destination.scheme, "yaqeen")
+            XCTAssertEqual(choice.destination.scheme, "haneen")
             XCTAssertNotNil(UIImage(named: choice.artwork.assetName), choice.rawValue)
         }
     }

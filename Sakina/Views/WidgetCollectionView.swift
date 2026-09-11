@@ -7,7 +7,7 @@ struct WidgetCollectionView: View {
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
-                Text("A little Yaqeen,\nwhere you’ll see it.").font(.system(.largeTitle, design: .serif, weight: .medium))
+                Text("A little Haneen,\nwhere you’ll see it.").font(.system(.largeTitle, design: .serif, weight: .medium))
                 Text("Ten companions for your Home and Lock Screens. Tap a design to see how to add it. Previews show example prayer times.").font(.yqBody).foregroundStyle(Color.yqSecondary)
                 ForEach(CompanionWidgetChoice.allCases) { choice in
                     Button { selected = choice; favorite = choice.rawValue } label: {
@@ -37,10 +37,10 @@ struct WidgetCollectionView: View {
                     }
                     Text(choice.isLock || choice == .prayerCat ? "For your Lock Screen" : "For your Home Screen").font(.yqHeadline)
                     Text(choice.isLock || choice == .prayerCat
-                         ? "1. Touch and hold your Lock Screen.\n2. Tap Customize, then Lock Screen.\n3. Tap the widget area and find Yaqeen.\n4. Choose \(choice.title)."
-                         : "1. Touch and hold your Home Screen.\n2. Tap Edit, then Add Widget.\n3. Search for Yaqeen.\n4. Choose \(choice.title) and tap Add Widget.")
+                         ? "1. Touch and hold your Lock Screen.\n2. Tap Customize, then Lock Screen.\n3. Tap the widget area and find Haneen.\n4. Choose \(choice.title)."
+                         : "1. Touch and hold your Home Screen.\n2. Tap Edit, then Add Widget.\n3. Search for Haneen.\n4. Choose \(choice.title) and tap Add Widget.")
                         .font(.yqBody).lineSpacing(8).fixedSize(horizontal: false, vertical: true)
-                    Text("The preview uses example prayer times. Your widget uses the location saved in Yaqeen.").font(.yqCaption).foregroundStyle(Color.yqSecondary)
+                    Text("The preview uses example prayer times. Your widget uses the location saved in Haneen.").font(.yqCaption).foregroundStyle(Color.yqSecondary)
                 }.padding(24)
                 }.presentationDetents([.medium, .large]).presentationDragIndicator(.visible)
             }

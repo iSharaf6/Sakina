@@ -174,7 +174,7 @@ struct PrayerWidgetView: View {
                     systemImage: nextEvent.kind.symbolName
                 )
             } else {
-                Label("Open Yaqeen for prayer times", systemImage: "location")
+                Label("Open Haneen for prayer times", systemImage: "location")
             }
         }
     }
@@ -240,7 +240,7 @@ struct PrayerWidgetView: View {
         Group {
             switch family {
             case .accessoryInline:
-                Label("Open Yaqeen to set prayer times", systemImage: "location")
+                Label("Open Haneen to set prayer times", systemImage: "location")
             case .accessoryCircular:
                 ZStack {
                     AccessoryWidgetBackground()
@@ -250,7 +250,7 @@ struct PrayerWidgetView: View {
                 VStack(alignment: .leading, spacing: 3) {
                     Text("Prayer times")
                         .font(.headline)
-                    Text("Open Yaqeen to choose your location")
+                    Text("Open Haneen to choose your location")
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
@@ -352,7 +352,7 @@ private struct PrayerScheduleHalfView: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text("Prayer times")
                     .font(.system(size: 12, weight: .semibold))
-                Text("Open Yaqeen to set your location")
+                Text("Open Haneen to set your location")
                     .font(.system(size: 9.5, weight: .medium))
                     .foregroundStyle(.secondary)
                     .lineLimit(2)
@@ -377,7 +377,7 @@ struct VerseOfDayWidget: Widget {
             VerseWidgetView(entry: entry, caption: "Ayah of the day")
         }
         .configurationDisplayName("Ayah of the Day")
-        .description("A daily ayah from Yaqeen, refreshed each morning.")
+        .description("A daily ayah from Haneen, refreshed each morning.")
         .supportedFamilies([.systemSmall, .systemMedium])
     }
 }
@@ -388,7 +388,7 @@ struct PinnedVerseWidget: Widget {
             VerseWidgetView(entry: entry, caption: "Reflecting on", artwork: .praise)
         }
         .configurationDisplayName("Pinned Situation")
-        .description("Keep a saved ayah on your Home Screen. Pin one from any guidance page in Yaqeen.")
+        .description("Keep a saved ayah on your Home Screen. Pin one from any guidance page in Haneen.")
         .supportedFamilies([.systemSmall, .systemMedium])
     }
 }

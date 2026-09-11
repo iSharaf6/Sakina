@@ -186,9 +186,9 @@ struct CapsLabel: View {
     }
 }
 
-// MARK: - Yaqeen symbol
+// MARK: - Haneen symbol
 
-/// The Yaqeen open-book and upward-path mark. A pure vector `Shape`, so it
+/// The Haneen open-book and upward-path mark. A pure vector `Shape`, so it
 /// remains crisp in navigation, widgets and the app icon at any size.
 struct YaqeenMark: Shape {
     func path(in rect: CGRect) -> Path {

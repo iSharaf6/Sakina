@@ -1,6 +1,6 @@
-# Yaqeen · يقين
+# Haneen · حنين
 
-**Certainty in every step.** Yaqeen is a bilingual iOS companion for finding Qur’anic guidance, carefully sourced hadith, and du’a in a specific season of life.
+**Qur’an and du’a for how you feel.** Haneen is a bilingual iOS companion for finding Qur’anic guidance, carefully sourced hadith, and du’a in a specific season of life.
 
 The app is organised around the question a person is actually carrying. Instead of browsing abstract chapters, the flow is:
 
@@ -35,7 +35,7 @@ The notes are orientation, not tafsir, a fatwa, or professional counselling. Sen
 - A paged reader that shows Arabic, pronunciation and meaning together, a tap-to-count recitation ring wherever the source states a count, source-and-context sheets, and a completion mark that remembers what you finished today
 - White canvas with a green accent, original pencil-style collection artwork and a cream-and-charcoal cat, quiet utility icons, hairline cards, springy press feedback, graded haptics, and an eight-point star-and-cross field drawn behind every screen at ten percent
 - An optional 30-second nature breathing pause, available offline; it is not presented as a prescribed religious practice
-- Branded Yaqeen interface in forest green and warm ivory, built with native SwiftUI navigation, Dynamic Type, dark mode, reduced-motion support, and Arabic-aware layout
+- Branded Haneen interface in forest green and warm ivory, built with native SwiftUI navigation, Dynamic Type, dark mode, reduced-motion support, and Arabic-aware layout
 - English and Arabic app modes, including right-to-left navigation in Arabic
 - Home screen with the next prayer, countdown, and today’s Fajr, sunrise, Dhuhr, Asr, Maghrib, and Isha times
 - Location-based prayer calculations using Adhan, with calculation-method, Asr-method, and high-latitude preferences
@@ -78,7 +78,7 @@ xcodegen generate
 open Sakina.xcodeproj
 ```
 
-Choose the **Sakina** scheme, select an iPhone simulator or signed device, and run. The target retains the internal Sakina name and bundle identifier for migration compatibility; the installed app is displayed as **Yaqeen**.
+Choose the **Sakina** scheme, select an iPhone simulator or signed device, and run. The target retains the internal Sakina name and bundle identifier for migration compatibility; the installed app is displayed as **Haneen**.
 
 Whenever targets, packages, entitlements, build settings, or generated plist values change, regenerate the Xcode project:
 
@@ -143,7 +143,7 @@ The repository intentionally contains no OAuth client values. Google backup UI r
 
 6. Run `xcodegen generate` again, then rebuild the app.
 
-At sign-in, Yaqeen requests the narrow `https://www.googleapis.com/auth/drive.appdata` scope. A backup is stored as `yaqeen-private-backup.json` in Google Drive’s hidden `appDataFolder`; it does not appear among the user’s normal Drive files.
+At sign-in, Haneen requests the narrow `https://www.googleapis.com/auth/drive.appdata` scope. A backup is stored as `yaqeen-private-backup.json` in Google Drive’s hidden `appDataFolder`; it does not appear among the user’s normal Drive files.
 
 Backup remains local-first and is not a multi-device real-time sync engine:
 
@@ -169,7 +169,7 @@ The App Group carries only widget-facing state: the pinned situation and a coord
 
 - Reflections and saved situations are local-first and stored in the app’s SwiftData store.
 - Google Drive is contacted only after the user signs in; library changes then trigger backup, and restore remains explicit.
-- Location permission is requested contextually when the user asks Yaqeen to set or refresh prayer times.
+- Location permission is requested contextually when the user asks Haneen to set or refresh prayer times.
 - Coordinates are used on-device to calculate prayer times and are not included in the shared widget schedule or Google backup.
 - Qur’an recitation streams from EveryAyah; audio files are not bundled.
 - When configured, the public app fetches only a verified scholar profile and published insight content from Supabase. Bookmarks, reflections, searches, prayer location, and Google backup data are not sent to the scholar service.
@@ -210,7 +210,7 @@ Hadith and du’a live in a separate curated catalog with canonical source URLs,
 | `supabase/` | Database migrations, RLS policies, Edge Functions, manifests, and backend deployment notes |
 | `scripts/generate-guidance-manifest.mjs` | Deterministic app-catalog to review-queue manifest generator |
 | `Design/Scholar/` | Accepted dashboard concepts and implementation design specification |
-| `Design/YaqeenAppIcon-1024.png` | Master Yaqeen icon artwork |
+| `Design/YaqeenAppIcon-1024.png` | Master Haneen icon artwork |
 | `project.yml` | XcodeGen source of truth for targets, packages, plist values, and entitlements |
 
 ## Current interface

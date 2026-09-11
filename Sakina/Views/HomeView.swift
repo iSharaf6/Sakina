@@ -129,7 +129,7 @@ struct HomeView: View {
             VStack(alignment: .leading, spacing: 6) {
                 HStack(spacing: 8) {
                     YaqeenBrandIcon(size: 28)
-                    Text("Yaqeen")
+                    Text("Haneen")
                         .font(.yqCaptionBold)
                         .foregroundStyle(Color.yqAccentDeep)
                         .tracking(0.4)

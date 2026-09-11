@@ -137,8 +137,8 @@ struct SettingsView: View {
         SettingsGroup(
             title: copy("Prayer times", "مواقيت الصلاة"),
             footnote: copy(
-                "Calculated offline. Add the Yaqeen widget to your Home or Lock Screen once a location is set.",
-                "تُحسب دون اتصال. أضف أداة يقين إلى الشاشة الرئيسية أو شاشة القفل بعد تحديد الموقع."
+                "Calculated offline. Add the Haneen widget to your Home or Lock Screen once a location is set.",
+                "تُحسب دون اتصال. أضف أداة حنين إلى الشاشة الرئيسية أو شاشة القفل بعد تحديد الموقع."
             )
         ) {
             BadgeRow(
@@ -328,13 +328,13 @@ struct SettingsView: View {
     private var communitySection: some View {
         SettingsGroup(title: copy("Spread the word", "انشر الخير")) {
             ShareLink(item: AppLinks.shareText(language)) {
-                BadgeRow(symbol: "square.and.arrow.up.fill", title: copy("Share Yaqeen", "شارك يقين"),
+                BadgeRow(symbol: "square.and.arrow.up.fill", title: copy("Share Haneen", "شارك حنين"),
                          subtitle: copy("Send it to someone who’d use it", "أرسله لمن ينتفع به"))
             }
             .buttonStyle(.yqPressSoft)
             RowDivider()
             Button { AppRating.request(fallback: openURL) } label: {
-                BadgeRow(symbol: "star.fill", title: copy("Rate Yaqeen", "قيّم يقين"),
+                BadgeRow(symbol: "star.fill", title: copy("Rate Haneen", "قيّم حنين"),
                          subtitle: copy("A review helps others find it", "تقييمك يساعد غيرك على إيجاده"))
             }
             .buttonStyle(.yqPressSoft)
@@ -409,8 +409,8 @@ struct SettingsView: View {
             SettingsGroup(
                 title: copy("Backup", "النسخ الاحتياطي"),
                 footnote: copy(
-                    "Yaqeen is local-first. A private copy of Saved goes to your Google Drive app-data space, which only Yaqeen can read.",
-                    "يقين يحفظ بياناتك على جهازك أولًا. تُحفظ نسخة خاصة من المحفوظات في مساحة بيانات التطبيق على Google Drive ولا يقرؤها إلا يقين."
+                    "Haneen is local-first. A private copy of Saved goes to your Google Drive app-data space, which only Haneen can read.",
+                    "حنين يحفظ بياناتك على جهازك أولًا. تُحفظ نسخة خاصة من المحفوظات في مساحة بيانات التطبيق على Google Drive ولا يقرؤها إلا حنين."
                 )
             ) {
                 BadgeRow(

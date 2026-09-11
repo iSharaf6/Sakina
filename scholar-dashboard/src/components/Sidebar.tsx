@@ -142,7 +142,7 @@ export function Sidebar({
             aria-hidden={mobileOpen ? true : undefined}
             aria-label={t('app.openAppHint')}
             className="mobile-open-app"
-            href="yaqeen://"
+            href="haneen://"
             inert={mobileOpen ? true : undefined}
             tabIndex={mobileOpen ? -1 : undefined}
             title={t('app.openAppHint')}
@@ -202,7 +202,7 @@ export function Sidebar({
           <a
             aria-label={t('app.openAppHint')}
             className="open-app-link"
-            href="yaqeen://"
+            href="haneen://"
             title={t('app.openAppHint')}
           >
             <span>{t('app.openApp')}</span>

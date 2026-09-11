@@ -86,7 +86,7 @@ struct SituationDetailView: View {
             ToolbarItem(placement: .principal) {
                 YaqeenBrandIcon(size: 28)
                     .accessibilityHidden(false)
-                    .accessibilityLabel("Yaqeen")
+                    .accessibilityLabel("Haneen")
             }
         }
         .task(id: "\(situation.id)-\(languageRaw)-\(translationVisible)") {
@@ -909,7 +909,7 @@ struct VerseShareCard: View {
             HStack(spacing: 12) {
                 YaqeenBrandIcon(size: 39)
                 VStack(alignment: .leading, spacing: 1) {
-                    Text("Yaqeen  يقين")
+                    Text("Haneen  حنين")
                         .font(.system(size: 18, weight: .bold))
                     Text("CERTAINTY IN EVERY STEP")
                         .font(.system(size: 7, weight: .semibold))

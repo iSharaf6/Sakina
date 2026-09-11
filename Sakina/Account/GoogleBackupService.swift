@@ -173,7 +173,7 @@ final class GoogleAccountManager: ObservableObject {
 
         do {
             guard let backup = try await drive.download(accessToken: token) else {
-                syncState = .failure("No Yaqeen backup was found in this Google account.")
+                syncState = .failure("No Haneen backup was found in this Google account.")
                 return nil
             }
             UserDefaults.standard.set(Date.now, forKey: "googleBackupLastSync")
@@ -316,7 +316,7 @@ private enum GoogleBackupError: LocalizedError {
     var errorDescription: String? {
         switch self {
         case .noPresentationContext:
-            return "Yaqeen could not open Google's sign-in screen. Please try again."
+            return "Haneen could not open Google's sign-in screen. Please try again."
         case .invalidResponse:
             return "Google Drive returned an unreadable response."
         case .api(let message):

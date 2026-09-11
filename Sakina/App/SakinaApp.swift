@@ -141,7 +141,7 @@ struct RootView: View {
             if url.host == "auth-callback" { Task { await CompanionAccount.shared.handle(url) }; return }
             if account.isConfigured, account.handle(url) { return }
             if handleCompanionURL(url) { return }
-            guard let scheme = url.scheme, ["sakina", "yaqeen"].contains(scheme) else { return }
+            guard let scheme = url.scheme, ["haneen", "sakina", "yaqeen"].contains(scheme) else { return }
 
             if url.host == "prayer-times" {
                 selection = .home
@@ -185,7 +185,7 @@ struct RootView: View {
 
     @discardableResult
     private func handleCompanionURL(_ url: URL) -> Bool {
-        guard ["yaqeen", "sakina"].contains(url.scheme ?? "") else { return false }
+        guard ["haneen", "yaqeen", "sakina"].contains(url.scheme ?? "") else { return false }
         switch url.host {
         case "daily": open(SharedStore.situationOfTheDay())
         case "prayer-times": selection = .home; homePath = NavigationPath(); prayerRequest += 1

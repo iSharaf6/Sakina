@@ -17,8 +17,8 @@ struct PrivacyPolicyView: View {
                         symbol: "hand.raised",
                         title: copy("The short version", "الخلاصة"),
                         body: copy(
-                            "Yaqeen has no advertising, analytics, cross-app tracking, or sale of personal data. Your bookmarks, reflections, and preferences are local by default.",
-                            "لا يستخدم يقين الإعلانات أو التحليلات أو التتبع بين التطبيقات، ولا يبيع البيانات الشخصية. وتبقى محفوظاتك وتأملاتك وتفضيلاتك على جهازك افتراضيًا."
+                            "Haneen has no advertising, analytics, cross-app tracking, or sale of personal data. Your bookmarks, reflections, and preferences are local by default.",
+                            "لا يستخدم حنين الإعلانات أو التحليلات أو التتبع بين التطبيقات، ولا يبيع البيانات الشخصية. وتبقى محفوظاتك وتأملاتك وتفضيلاتك على جهازك افتراضيًا."
                         )
                     )
                     section(
@@ -33,8 +33,8 @@ struct PrivacyPolicyView: View {
                         symbol: "location",
                         title: copy("Location and Qibla", "الموقع والقبلة"),
                         body: copy(
-                            "Location is requested only after you choose a location-based feature. It is used to calculate prayer times and the Qibla direction. Qibla readings are transient. Prayer calculations happen on device; Apple’s location services may provide the city-level place name. Yaqeen does not retain coordinates in its shared widget data.",
-                            "لا يُطلب الموقع إلا بعد اختيارك ميزة تعتمد عليه. ويُستخدم لحساب مواقيت الصلاة واتجاه القبلة. قراءات القبلة مؤقتة، وتتم حسابات الصلاة على الجهاز، وقد توفر خدمات موقع Apple اسم المكان على مستوى المدينة. ولا يحتفظ يقين بالإحداثيات ضمن بيانات الأداة المشتركة."
+                            "Location is requested only after you choose a location-based feature. It is used to calculate prayer times and the Qibla direction. Qibla readings are transient. Prayer calculations happen on device; Apple’s location services may provide the city-level place name. Haneen does not retain coordinates in its shared widget data.",
+                            "لا يُطلب الموقع إلا بعد اختيارك ميزة تعتمد عليه. ويُستخدم لحساب مواقيت الصلاة واتجاه القبلة. قراءات القبلة مؤقتة، وتتم حسابات الصلاة على الجهاز، وقد توفر خدمات موقع Apple اسم المكان على مستوى المدينة. ولا يحتفظ حنين بالإحداثيات ضمن بيانات الأداة المشتركة."
                         )
                     )
                     section(
@@ -49,8 +49,8 @@ struct PrivacyPolicyView: View {
                         symbol: "network",
                         title: copy("Network services", "خدمات الشبكة"),
                         body: copy(
-                            "When configured, Yaqeen reads public verified-scholar profiles and published scholarly insights from Supabase; it does not send your bookmarks, reflections, searches, prayer location, or backup data there. Recitation audio is streamed from EveryAyah. Source links you open may take you to Quran.com, Sunnah.com, or a cited reference. These services receive normal network information and apply their own privacy terms.",
-                            "عند تهيئة الخدمة، يقرأ يقين ملفات المراجعين الشرعيين العامة الموثّقة والإضاءات الشرعية المنشورة من Supabase، ولا يرسل إليه محفوظاتك أو تأملاتك أو عمليات البحث أو موقع الصلاة أو بيانات النسخ الاحتياطي. ويُبث صوت التلاوة من EveryAyah. وقد تنقلك روابط المصادر إلى Quran.com أو Sunnah.com أو مرجع مذكور، وتتلقى هذه الخدمات معلومات الشبكة المعتادة وتطبق سياسات الخصوصية الخاصة بها."
+                            "When configured, Haneen reads public verified-scholar profiles and published scholarly insights from Supabase; it does not send your bookmarks, reflections, searches, prayer location, or backup data there. Recitation audio is streamed from EveryAyah. Source links you open may take you to Quran.com, Sunnah.com, or a cited reference. These services receive normal network information and apply their own privacy terms.",
+                            "عند تهيئة الخدمة، يقرأ حنين ملفات المراجعين الشرعيين العامة الموثّقة والإضاءات الشرعية المنشورة من Supabase، ولا يرسل إليه محفوظاتك أو تأملاتك أو عمليات البحث أو موقع الصلاة أو بيانات النسخ الاحتياطي. ويُبث صوت التلاوة من EveryAyah. وقد تنقلك روابط المصادر إلى Quran.com أو Sunnah.com أو مرجع مذكور، وتتلقى هذه الخدمات معلومات الشبكة المعتادة وتطبق سياسات الخصوصية الخاصة بها."
                         )
                     )
                     section(
@@ -84,8 +84,8 @@ struct PrivacyPolicyView: View {
                 .font(.title2.weight(.semibold))
                 .foregroundStyle(Color.sakinaInk)
             Text(copy(
-                "This policy describes the data behavior of Yaqeen 1.0.",
-                "تصف هذه السياسة طريقة تعامل يقين 1.0 مع البيانات."
+                "This policy describes the data behavior of Haneen 1.0.",
+                "تصف هذه السياسة طريقة تعامل حنين 1.0 مع البيانات."
             ))
             .font(.subheadline)
             .foregroundStyle(Color.sakinaMuted)

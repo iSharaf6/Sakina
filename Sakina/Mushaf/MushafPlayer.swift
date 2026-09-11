@@ -399,7 +399,7 @@ final class MushafPlayer: ObservableObject {
         var info: [String: Any] = [
             MPMediaItemPropertyTitle: ayah.reference(language),
             MPMediaItemPropertyArtist: reciter.name(language),
-            MPMediaItemPropertyAlbumTitle: "Yaqeen",
+            MPMediaItemPropertyAlbumTitle: "Haneen",
             MPNowPlayingInfoPropertyMediaType: MPNowPlayingInfoMediaType.audio.rawValue,
             MPNowPlayingInfoPropertyPlaybackRate: isPlaying ? 1.0 : 0.0,
         ]

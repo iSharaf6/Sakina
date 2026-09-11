@@ -1,6 +1,6 @@
 import Foundation
 
-/// The six solar events displayed by Yaqeen. Sunrise is included for planning,
+/// The six solar events displayed by Haneen. Sunrise is included for planning,
 /// although it is not one of the five obligatory prayers.
 enum PrayerKind: String, Codable, CaseIterable, Hashable, Identifiable, Sendable {
     case fajr

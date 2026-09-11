@@ -539,7 +539,7 @@ final class NearbyPlacesService: NSObject, ObservableObject, @preconcurrency CLL
             request.httpMethod = "POST"
             request.timeoutInterval = 22
             request.setValue("application/x-www-form-urlencoded; charset=utf-8", forHTTPHeaderField: "Content-Type")
-            request.setValue("Yaqeen iOS (nearby places)", forHTTPHeaderField: "User-Agent")
+            request.setValue("Haneen iOS (nearby places)", forHTTPHeaderField: "User-Agent")
             request.httpBody = Data("data=\(encoded)".utf8)
 
             do {

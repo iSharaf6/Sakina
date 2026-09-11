@@ -51,15 +51,15 @@ targets:
     info:
       path: Sakina/Info.plist
       properties:
-        CFBundleDisplayName: Yaqeen
-        CFBundleName: Yaqeen
+        CFBundleDisplayName: Haneen
+        CFBundleName: Haneen
         UILaunchScreen: {}
         UIBackgroundModes: [audio]
         LSApplicationQueriesSchemes: [comgooglemaps]
         UISupportedInterfaceOrientations:
           - UIInterfaceOrientationPortrait
         ITSAppUsesNonExemptEncryption: false
-        NSLocationWhenInUseUsageDescription: Yaqeen uses your location to calculate local prayer times, the Qibla direction, and to find mosques and halal food near you. Your coordinates stay on this device.
+        NSLocationWhenInUseUsageDescription: Haneen uses your location to calculate local prayer times, the Qibla direction, and to find mosques and halal food near you. Your coordinates stay on this device.
         YaqeenAuthSupabaseURL: $(YAQEEN_AUTH_SUPABASE_URL)
         YaqeenAuthSupabaseKey: $(YAQEEN_AUTH_SUPABASE_KEY)
         YaqeenScholarSupabaseURL: $(YAQEEN_SCHOLAR_SUPABASE_URL)
@@ -67,6 +67,7 @@ targets:
         CFBundleURLTypes:
           - CFBundleURLName: com.islamsharaf.yaqeen
             CFBundleURLSchemes:
+              - haneen
               - sakina
               - yaqeen
         UIAppFonts:
@@ -103,7 +104,7 @@ targets:
     info:
       path: SakinaWidget/Info.plist
       properties:
-        CFBundleDisplayName: Yaqeen
+        CFBundleDisplayName: Haneen
         UIAppFonts:
           - UthmanicHafs.ttf
         NSExtension:
