@@ -10,6 +10,13 @@ final class CompanionExperienceTests: XCTestCase {
         return defaults
     }
 
+    func testEmailValidationRejectsMalformedAndAcceptsTrimmedAddresses() {
+        for email in ["", "person", "person@", "@example.com", "person@example", "a b@example.com"] {
+            XCTAssertFalse(CompanionAccount.validEmail(email), email)
+        }
+        XCTAssertTrue(CompanionAccount.validEmail("  person+reading@example.com\n"))
+    }
+
     func testNoNotificationsWithoutOptIn() {
         XCTAssertTrue(CompanionReminderPlan.make(defaults: defaults(), schedule: .placeholder()).isEmpty)
     }

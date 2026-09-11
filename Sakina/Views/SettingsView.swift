@@ -87,7 +87,7 @@ struct SettingsView: View {
                     }
                 }
             }
-            .fullScreenCover(isPresented: $replayOnboarding) { CompanionOnboarding { replayOnboarding = false } }
+            .fullScreenCover(isPresented: $replayOnboarding) { CompanionOnboarding(allowsDismiss: true) { replayOnboarding = false } }
             .confirmationDialog(copy("Reset settings?", "إعادة ضبط الإعدادات؟"), isPresented: $resetConfirmation, titleVisibility: .visible) {
                 Button(copy("Reset settings", "إعادة الضبط"), role: .destructive) {
                     resetting = true

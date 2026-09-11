@@ -36,12 +36,18 @@ final class CompanionAccount: ObservableObject {
         }
     }
 
+    nonisolated static func validEmail(_ value: String) -> Bool {
+        let value = value.trimmingCharacters(in: .whitespacesAndNewlines)
+        return value.range(of: #"^[^\s@]+@[^\s@]+\.[^\s@]+$"#, options: .regularExpression) != nil
+    }
+
     func sendCode(email: String, creating: Bool) async -> Bool {
-        guard let client else { message = "Accounts aren’t available in this build yet. You can use Yaqeen without an account."; return false }
+        guard let client else { message = "Sign-in is temporarily unavailable. Please try again shortly."; return false }
+        guard Self.validEmail(email) else { message = "Enter a valid email address."; return false }
         busy = true; message = nil; defer { busy = false }
         do {
             try await client.auth.signInWithOTP(email: email.trimmingCharacters(in: .whitespacesAndNewlines), redirectTo: URL(string: "yaqeen://auth-callback"), shouldCreateUser: creating)
-            message = "Check your email for a sign-in code."
+            message = "Check your email for your sign-in link."
             return true
         } catch { message = error.localizedDescription; return false }
     }
@@ -49,7 +55,7 @@ final class CompanionAccount: ObservableObject {
     func verify(email: String, code: String) async {
         guard let client else { return }
         busy = true; message = nil; defer { busy = false }
-        do { _ = try await client.auth.verifyOTP(email: email.trimmingCharacters(in: .whitespacesAndNewlines), token: code, type: .email) }
+        do { _ = try await client.auth.verifyOTP(email: email.trimmingCharacters(in: .whitespacesAndNewlines), token: code.trimmingCharacters(in: .whitespacesAndNewlines), type: .email) }
         catch { message = error.localizedDescription }
     }
 
@@ -83,7 +89,7 @@ final class CompanionAccount: ObservableObject {
     }
 
     func handle(_ url: URL) async {
-        guard url.host == "auth-callback", let client else { return }
+        guard url.scheme == "yaqeen", url.host == "auth-callback", let client else { return }
         do { _ = try await client.auth.session(from: url) } catch { message = error.localizedDescription }
     }
 
@@ -142,7 +148,7 @@ struct CompanionAccountView: View {
                             .padding(16).background(Color.yqFill, in: RoundedRectangle(cornerRadius: 14))
                         Button("Verify & continue") { Task { await account.verify(email: email, code: code) } }.buttonStyle(.borderedProminent).disabled(code.count < 6)
                     }
-                    Button(sent ? "Send another code" : "Email me a code") { Task { sent = await account.sendCode(email: email, creating: creating) } }
+                    Button(sent ? "Send another email" : "Email me a sign-in link") { Task { sent = await account.sendCode(email: email, creating: creating) } }
                         .buttonStyle(.bordered).disabled(!email.contains("@"))
                     }.disabled(!account.configured)
                 }

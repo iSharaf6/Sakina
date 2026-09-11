@@ -98,12 +98,7 @@ struct RootView: View {
         .fullScreenCover(isPresented: $showOnboarding) {
             CompanionOnboarding {
                 showOnboarding = false
-                switch UserDefaults.standard.string(forKey: "companion.intention") {
-                case "read": selection = .quran
-                case "remember": selection = .duas
-                case "reflect": selection = .explore
-                default: selection = .home
-                }
+                selection = .home
             }
         }
         .sheet(item: $debugAyah) { ayah in

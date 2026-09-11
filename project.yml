@@ -13,8 +13,8 @@ settings:
     CURRENT_PROJECT_VERSION: 1
     MARKETING_VERSION: "1.0"
     TARGETED_DEVICE_FAMILY: "1"
-    YAQEEN_AUTH_SUPABASE_URL: ""
-    YAQEEN_AUTH_SUPABASE_KEY: ""
+    YAQEEN_AUTH_SUPABASE_URL: "https://uouukrvkkoegfnhrldwg.supabase.co"
+    YAQEEN_AUTH_SUPABASE_KEY: "sb_publishable_hPrgqvgJBL0DtXQJFiYayA_7VhMEEx5"
     YAQEEN_SCHOLAR_SUPABASE_URL: ""
     YAQEEN_SCHOLAR_SUPABASE_PUBLISHABLE_KEY: ""
 
@@ -52,11 +52,14 @@ targets:
       path: Sakina/Info.plist
       properties:
         CFBundleDisplayName: Yaqeen
+        CFBundleName: Yaqeen
         UILaunchScreen: {}
+        UIBackgroundModes: [audio]
+        LSApplicationQueriesSchemes: [comgooglemaps]
         UISupportedInterfaceOrientations:
           - UIInterfaceOrientationPortrait
         ITSAppUsesNonExemptEncryption: false
-        NSLocationWhenInUseUsageDescription: Yaqeen uses your approximate location to calculate local prayer times and the Qibla direction. Your coordinates stay on this device.
+        NSLocationWhenInUseUsageDescription: Yaqeen uses your location to calculate local prayer times, the Qibla direction, and to find mosques and halal food near you. Your coordinates stay on this device.
         YaqeenAuthSupabaseURL: $(YAQEEN_AUTH_SUPABASE_URL)
         YaqeenAuthSupabaseKey: $(YAQEEN_AUTH_SUPABASE_KEY)
         YaqeenScholarSupabaseURL: $(YAQEEN_SCHOLAR_SUPABASE_URL)

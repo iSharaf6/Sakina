@@ -21,9 +21,19 @@ is animated gently in onboarding; Reduce Motion removes movement.
 
 ## Onboarding
 
-Four optional steps: an actual ayah, the person's reading intention, optional
-reminders/location, then appearance/widgets/account. Finish opens the selected
-area. Skip enters immediately. Settings can replay the welcome tour.
+One welcome screen replaces the former questionnaire. Apple, Google and email
+are immediately available. A phone preview cycles through the actual HomeView,
+PrintedMushafPage and DhikrListView, with the existing cat artwork animated beside
+it. The view responds to light/dark appearance, pauses while inactive or showing
+sheets, and respects Reduce Motion. Preview dots are manually selectable; the
+pause button is accessible. Successful authentication opens Home. Existing users
+can replay the welcome screen from Settings and dismiss it without signing in.
+No notification or location permissions are requested by the welcome screen.
+
+The supplied [onboarding reference video](https://www.youtube.com/watch?v=Qsq-Sj_rojU)
+was reviewed using its transcript and the Tiimo screenshot supplied by the user.
+The product demonstration is rendered natively rather than a bundled video.
+Google's logo comes unchanged from the GoogleSignIn-iOS SDK resource bundle.
 
 Design references checked September 2026, for the requested August 2026-era
 experience (no claim to have an archived August snapshot):
@@ -70,32 +80,48 @@ to add each one. iOS requires the user to add widgets; the app cannot install
 widgets automatically. Gallery times are explicitly labeled as examples. Lock
 Screen cat art uses the drawing's luminance as a monochrome mask.
 
-## Account deployment
+## Account deployment — 11 September 2026
 
-Apple, Google OAuth (PKCE), and email OTP sign-up/sign-in use Supabase Auth. The
-SDK maintains sessions; native Apple sign-in uses a secure random hashed nonce.
-The iOS app contains only a public client key, never a service-role key.
-The account UI explicitly says when the backend is not configured and does not
-pretend to create an account. Guest reading remains available. Authentication
-alone does not upload notes or claim cross-device library sync.
+The app now connects to the existing **Yaqeen** project
+`uouukrvkkoegfnhrldwg` (Sydney) using its publishable client key, configured in
+`project.yml` and the generated Xcode project. The app contains no provider
+client secret or Supabase service-role key.
 
-Required external configuration before live testing:
-1. Set Xcode build settings `YAQEEN_AUTH_SUPABASE_URL` and
-   `YAQEEN_AUTH_SUPABASE_KEY` to the chosen project's URL and public key. These
-   are separate from the existing scholar dashboard configuration.
-2. Enable email, Google and Apple providers in that Supabase project's Auth
-   settings, with provider credentials. Allow `yaqeen://auth-callback` as a
-   redirect URL. Configure the email template to include `{{ .Token }}` so the
-   code entry screen can verify it. Configure production SMTP/rate limits.
-3. Enable Sign in with Apple on `com.islamsharaf.sakina` in the Apple Developer
-   account and refresh the signing profile. The entitlement is present locally.
-4. Deploy `supabase/functions/delete-account`. It validates the bearer token
-   server-side and deletes only that authenticated user; no supplied user ID is
-   trusted. Service-role credentials stay in the function environment.
-5. Verify sign-up, returning sign-in, canceled OAuth, email delivery, sign-out,
-   and account deletion using test accounts on a signed device. Check provider
-   terms/privacy settings before release.
+Completed live configuration:
+- Enabled native Apple authentication with audience `com.islamsharaf.sakina`.
+- Created Google Cloud project **Yaqeen** (`mythical-style-508310-a4`) and web OAuth
+  client **Yaqeen Supabase Sign In**. Its callback is
+  `https://uouukrvkkoegfnhrldwg.supabase.co/auth/v1/callback`.
+- Stored Google's OAuth secret only in the Supabase provider configuration;
+  nonce verification remains enabled. Google audience is **In production**.
+- Added exact native redirect `yaqeen://auth-callback` to Supabase's allowlist.
+- Published app information and privacy pages through the existing Pages workflow:
+  `https://isharaf6.github.io/Sakina/app.html` and `/Sakina/privacy.html`.
+- Deployed `delete-account` v1. It verifies the caller with `auth.getUser()` before
+  deleting that caller only. Gateway JWT checking is off because this function
+  implements its own authentication, including compatibility with current JWT
+  signing keys. An unauthenticated POST was verified to return HTTP 401.
 
-No authentication project or provider credentials were supplied during this
-implementation. The code compiles, but real provider sign-in and server account
-deletion cannot be claimed as tested until configured and deployed.
+Verification:
+- Simulator build succeeded. All 57 unit tests passed, including email validation.
+- Verified the native Google button opens the system authentication browser and
+  reaches Google's credential screen. An end-to-end authenticated Google session
+  has not yet been completed by the account owner in the simulator.
+- Supabase accepted an actual owner email sign-in request with HTTP 200. This
+  verifies request acceptance, not receipt or successful session creation.
+- Inspected welcome and email screens in dark mode, preview navigation, and the
+  light-mode welcome. Screenshots are in ignored `build/welcome-qa/`.
+
+Remaining external steps (do not describe these as completed):
+- Apple Developer login is awaiting the owner's device verification code. The
+  portal app identifier/capability and a signed-device Apple login remain unverified.
+- Supabase uses its default email service, restricted to project team addresses.
+  General public email sign-in needs an owner-approved sending domain and SMTP
+  service. The app supports the currently delivered magic link and optionally a
+  code, so it no longer promises an OTP when the template sends a link.
+- Full provider session restoration, returning-account sign-in and authenticated
+  account deletion still need end-to-end device verification after owner sign-in.
+
+Authentication does not upload local notes or bookmarks. The public privacy
+page describes authentication data separately from the local library and optional
+Google Drive backup.
