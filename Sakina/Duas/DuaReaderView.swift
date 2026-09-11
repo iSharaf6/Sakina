@@ -313,14 +313,14 @@ struct DuaReaderView: View {
         } label: {
             HStack(spacing: 14) {
                 ZStack {
-                    Circle().stroke(done ? Color.white.opacity(0.35) : Color.yqAccent.opacity(0.18), lineWidth: 4)
+                    Circle().stroke(done ? Color.yqOnAccent.opacity(0.35) : Color.yqAccent.opacity(0.18), lineWidth: 4)
                     Circle()
                         .trim(from: 0, to: Double(count) / Double(target))
-                        .stroke(done ? Color.white : Color.yqAccent, style: StrokeStyle(lineWidth: 4, lineCap: .round))
+                        .stroke(done ? Color.yqOnAccent : Color.yqAccent, style: StrokeStyle(lineWidth: 4, lineCap: .round))
                         .rotationEffect(.degrees(-90))
                         .animation(reduceMotion ? nil : .spring(response: 0.4, dampingFraction: 0.8), value: count)
                     if done {
-                        Image(systemName: "checkmark").font(.system(size: 15, weight: .bold)).foregroundStyle(Color.white)
+                        Image(systemName: "checkmark").font(.system(size: 15, weight: .bold)).foregroundStyle(Color.yqOnAccent)
                             .transition(.scale.combined(with: .opacity))
                     } else {
                         Text("\(count)")
@@ -337,7 +337,7 @@ struct DuaReaderView: View {
                         .font(.system(.caption, weight: .medium).monospacedDigit())
                         .opacity(0.8)
                 }
-                .foregroundStyle(done ? Color.white : Color.yqAccentDeep)
+                .foregroundStyle(done ? Color.yqOnAccent : Color.yqAccentDeep)
                 Spacer(minLength: 0)
             }
             .padding(.horizontal, 14)

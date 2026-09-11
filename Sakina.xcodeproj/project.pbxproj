@@ -120,6 +120,13 @@
 		D10200000000000000000004 /* mushaf-lines.json in Resources */ = {isa = PBXBuildFile; fileRef = D10200000000000000000003 /* mushaf-lines.json */; };
 		D10300000000000000000002 /* IndoPak.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D10300000000000000000001 /* IndoPak.ttf */; };
 		D10300000000000000000004 /* quran-transliteration.json in Resources */ = {isa = PBXBuildFile; fileRef = D10300000000000000000003 /* quran-transliteration.json */; };
+		BDE359A18BF1FFEB626FCBE4 /* CompanionReminders.swift in Sources */ = {isa = PBXBuildFile; fileRef = 429D9C3F91E2466500AC7572 /* CompanionReminders.swift */; };
+		57AA6B449506C216B9A4BD49 /* CompanionOnboarding.swift in Sources */ = {isa = PBXBuildFile; fileRef = F95F92A1C773E2E29BE103E8 /* CompanionOnboarding.swift */; };
+		AABA168476979B5D16FF868E /* CompanionAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1513034183544504FB0A85C8 /* CompanionAccount.swift */; };
+		C54812AEEFC6E29279010992 /* WidgetCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 75D6F5A6EA6EF52AFFDDFA8C /* WidgetCollectionView.swift */; };
+		BC55D97D0727E0848B7E18A7 /* CompanionWidgetCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 581508447ADD9BC966748989 /* CompanionWidgetCollection.swift */; };
+		521D22B9340C8BF64824614F /* CompanionWidgetCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 581508447ADD9BC966748989 /* CompanionWidgetCollection.swift */; };
+		AC0100000000000000000002 /* CompanionExperienceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC0100000000000000000001; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -262,6 +269,12 @@
 		D10200000000000000000003 /* mushaf-lines.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "mushaf-lines.json"; sourceTree = "<group>"; };
 		D10300000000000000000001 /* IndoPak.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "IndoPak.ttf"; sourceTree = "<group>"; };
 		D10300000000000000000003 /* quran-transliteration.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "quran-transliteration.json"; sourceTree = "<group>"; };
+		429D9C3F91E2466500AC7572 /* CompanionReminders.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sakina/App/CompanionReminders.swift"; sourceTree = SOURCE_ROOT; };
+		F95F92A1C773E2E29BE103E8 /* CompanionOnboarding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sakina/App/CompanionOnboarding.swift"; sourceTree = SOURCE_ROOT; };
+		1513034183544504FB0A85C8 /* CompanionAccount.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sakina/Account/CompanionAccount.swift"; sourceTree = SOURCE_ROOT; };
+		75D6F5A6EA6EF52AFFDDFA8C /* WidgetCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sakina/Views/WidgetCollectionView.swift"; sourceTree = SOURCE_ROOT; };
+		581508447ADD9BC966748989 /* CompanionWidgetCollection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Shared/CompanionWidgetCollection.swift"; sourceTree = SOURCE_ROOT; };
+		AC0100000000000000000001 /* CompanionExperienceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SakinaTests/CompanionExperienceTests.swift"; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -709,6 +722,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				AC0100000000000000000002 /* CompanionExperienceTests.swift in Sources */,
 				064D1D381DF5D12BDD30691D /* QuranEditionsTests.swift in Sources */,
 				00C1B04865499106CC46C88D /* QuranIntegrityTests.swift in Sources */,
 				2B2C96A6903E9C8219325E58 /* ContentIntegrityTests.swift in Sources */,
@@ -722,6 +736,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				521D22B9340C8BF64824614F /* CompanionWidgetCollection.swift in Sources */,
 				E2D24FAD8D7A59B7B638A8B3 /* CompanionArtwork.swift in Sources */,
 				5B9AC312B431D661FD5E8C90 /* CompanionWidgetCards.swift in Sources */,
 				110248806F05C890C56B77DD /* PrayerSchedule.swift in Sources */,
@@ -735,6 +750,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BC55D97D0727E0848B7E18A7 /* CompanionWidgetCollection.swift in Sources */,
+				C54812AEEFC6E29279010992 /* WidgetCollectionView.swift in Sources */,
+				AABA168476979B5D16FF868E /* CompanionAccount.swift in Sources */,
+				57AA6B449506C216B9A4BD49 /* CompanionOnboarding.swift in Sources */,
+				BDE359A18BF1FFEB626FCBE4 /* CompanionReminders.swift in Sources */,
 				C655E5B2C9CB1521F267F414 /* MushafPlayerBar.swift in Sources */,
 				1A3A1E2BCC595117EB4175C9 /* RecitationCache.swift in Sources */,
 				521493E876A4018BCD811569 /* MushafDisplaySheet.swift in Sources */,

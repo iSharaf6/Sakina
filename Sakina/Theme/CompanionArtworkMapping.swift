@@ -102,11 +102,15 @@ extension CompanionArtwork {
         case "xmark.circle.fill": return .deleteAccount
         case "lock.shield.fill", "shield.fill", "hand.raised.fill", "hand.raised", "lock.trianglebadge.exclamationmark": return .privacy
         case "checkmark.shield.fill", "checkmark.seal.fill", "text.badge.checkmark": return .verified
-        case "book.closed.fill", "book.pages.fill", "text.book.closed": return .quran
+        case "book.closed", "book.closed.fill", "book.pages.fill", "text.book.closed": return .quran
+        case "circle.lefthalf.filled": return .appearance
+        case "bookmark", "bookmark.fill": return .saved
+        case "highlighter": return .journal
+        case "note.text", "square.and.pencil": return .journal
         case "ladybug.fill": return .bug
         case "lightbulb.fill": return .idea
         case "camera.fill": return .camera
-        case "heart.fill": return .salawat
+        case "suit.heart.fill", "heart.fill": return .salawat
         case "sparkles", "leaf.fill": return .praise
         case "hands.and.sparkles.fill", "hands.sparkles": return .istighfar
         case "brain.head.profile": return .breathe

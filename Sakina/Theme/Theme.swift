@@ -26,20 +26,20 @@ private extension UIColor {
 
 extension Color {
     // Surfaces
-    static let yqCanvas = Color(uiColor: .dynamic(light: 0xFFFFFF, dark: 0x0B0F0D))
-    static let yqSurface = Color(uiColor: .dynamic(light: 0xFFFFFF, dark: 0x151A17))
-    static let yqFill = Color(uiColor: .dynamic(light: 0xF3F5F4, dark: 0x1D2320))
+    static let yqCanvas = Color(uiColor: .dynamic(light: 0xFFFFFF, dark: 0x101311))
+    static let yqSurface = Color(uiColor: .dynamic(light: 0xFFFFFF, dark: 0x1B201D))
+    static let yqFill = Color(uiColor: .dynamic(light: 0xF3F5F4, dark: 0x242B26))
     static let yqFillStrong = Color(uiColor: .dynamic(light: 0xE9EDEB, dark: 0x262D29))
-    static let yqHairline = Color(uiColor: .dynamic(light: 0xE6EAE8, dark: 0x2B332E))
+    static let yqHairline = Color(uiColor: .dynamic(light: 0xE6EAE8, dark: 0x343E37))
 
     // Text
     static let yqInk = Color(uiColor: .dynamic(light: 0x101714, dark: 0xF2F5F3))
     static let yqSecondary = Color(uiColor: .dynamic(light: 0x616B66, dark: 0xA2ACA6))
-    static let yqTertiary = Color(uiColor: .dynamic(light: 0x98A19C, dark: 0x6F7A73))
+    static let yqTertiary = Color(uiColor: .dynamic(light: 0x98A19C, dark: 0x929E96))
 
     // The accent
-    static let yqAccent = Color(uiColor: .dynamic(light: 0x16A34A, dark: 0x22C55E))
-    static let yqAccentDeep = Color(uiColor: .dynamic(light: 0x15803D, dark: 0x4ADE80))
+    static let yqAccent = Color(uiColor: .dynamic(light: 0x16A34A, dark: 0x8ECBA2))
+    static let yqAccentDeep = Color(uiColor: .dynamic(light: 0x15803D, dark: 0xA4DBB5))
     static let yqAccentTint = Color(uiColor: .dynamic(light: 0xE6F6EC, dark: 0x12301D))
     static let yqAccentTintStrong = Color(uiColor: .dynamic(light: 0xCDEEDA, dark: 0x1B4A2B))
     static let yqOnAccent = Color(uiColor: .dynamic(light: 0xFFFFFF, dark: 0x052E16))

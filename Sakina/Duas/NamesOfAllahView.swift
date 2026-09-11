@@ -197,12 +197,12 @@ private struct NameTile: View {
         VStack(spacing: 4) {
             Text(name.arabic)
                 .font(.system(size: 22, weight: .semibold))
-                .foregroundStyle(selected ? Color.white : Color.yqInk)
+                .foregroundStyle(selected ? Color.yqOnAccent : Color.yqInk)
                 .lineLimit(1)
                 .minimumScaleFactor(0.7)
             Text(name.transliteration)
                 .font(.yqCaptionBold)
-                .foregroundStyle(selected ? Color.white.opacity(0.9) : Color.yqSecondary)
+                .foregroundStyle(selected ? Color.yqOnAccent.opacity(0.9) : Color.yqSecondary)
                 .lineLimit(1)
                 .minimumScaleFactor(0.8)
         }

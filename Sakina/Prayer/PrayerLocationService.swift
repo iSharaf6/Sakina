@@ -2,8 +2,8 @@ import Combine
 import CoreLocation
 import Foundation
 
-/// A location used transiently for prayer calculation. Coordinates remain in
-/// app memory and are deliberately excluded from `PrayerSchedule`.
+/// A location used for prayer calculation. The app retains the last selection
+/// in private device storage; coordinates are excluded from the shared widget schedule.
 struct PrayerCalculationLocation {
     let coordinate: CLLocationCoordinate2D
     let timeZone: TimeZone

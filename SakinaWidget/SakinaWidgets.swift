@@ -443,6 +443,11 @@ struct SakinaWidgetBundle: WidgetBundle {
         PrayerTimesWidget()
         EarlyPrayerTimesWidget()
         LatePrayerTimesWidget()
+        ExtraCompanionWidget(choice: .prayerCat)
+        ExtraCompanionWidget(choice: .countdown)
+        ExtraCompanionWidget(choice: .morning)
+        ExtraCompanionWidget(choice: .evening)
+        ExtraCompanionWidget(choice: .pause)
     }
 }
 
@@ -456,4 +461,30 @@ struct SakinaWidgetBundle: WidgetBundle {
     LatePrayerTimesWidget()
 } timeline: {
     PrayerWidgetEntry(date: .now, schedule: .placeholder())
+}
+
+struct ExtraCompanionWidget: Widget {
+    let choice: CompanionWidgetChoice
+    init() { choice = .prayerCat }
+    init(choice: CompanionWidgetChoice) { self.choice = choice }
+    var body: some WidgetConfiguration {
+        StaticConfiguration(kind: "YaqeenCompanion.\(choice.rawValue)", provider: PrayerProvider()) { entry in
+            ExtraCompanionWidgetView(choice: choice, entry: entry)
+        }
+        .configurationDisplayName(choice.title)
+        .description(choice.detail)
+        .supportedFamilies(choice == .prayerCat ? [.systemSmall, .systemMedium, .accessoryRectangular] : [.systemSmall, .systemMedium])
+    }
+}
+
+struct ExtraCompanionWidgetView: View {
+    let choice: CompanionWidgetChoice
+    let entry: PrayerWidgetEntry
+    @Environment(\.widgetFamily) private var family
+    var body: some View {
+        CompanionCollectionCard(choice: choice, date: entry.date, schedule: entry.schedule,
+                                compact: family == .systemSmall, lockScreen: family == .accessoryRectangular)
+            .containerBackground(CompanionWidgetPalette.canvas, for: .widget)
+            .widgetURL(choice.destination)
+    }
 }

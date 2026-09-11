@@ -32,10 +32,14 @@ struct SettingsView: View {
     @AppStorage(MushafPreferences.themeKey) private var theme: MushafPreferences.Theme = .system
     @State private var showReaderAppearance = false
     @State private var showAbout = false
+    @State private var resetConfirmation = false
+    @State private var resetting = false
+    @State private var replayOnboarding = false
     @State private var showDisconnectConfirmation = false
     @State private var appeared = false
 
     private func useDigitalReading() {
+        guard !resetting else { return }
         UserDefaults.standard.set(MushafPreferences.Presentation.digital.rawValue, forKey: MushafPreferences.presentationKey)
     }
 
@@ -48,6 +52,11 @@ struct SettingsView: View {
                 VStack(alignment: .leading, spacing: 28) {
                     PageHeader(title: copy("Settings", "الإعدادات"))
                         .revealed(0, appeared: appeared, reduceMotion: reduceMotion)
+                    RowGroup {
+                        NavigationLink { CompanionAccountView() } label: { BadgeRow(symbol: "person.fill", title: copy("Account", "الحساب"), subtitle: copy("Sign in or create an account", "تسجيل الدخول أو إنشاء حساب"), artwork: .privacy) }
+                        RowDivider()
+                        NavigationLink { WidgetCollectionView() } label: { BadgeRow(symbol: "square.grid.2x2", title: copy("Widget collection", "مجموعة الأدوات"), subtitle: copy("10 companions for your screens", "١٠ تصاميم لشاشاتك"), artwork: .morning) }
+                    }.buttonStyle(.plain)
                     prayerSection.revealed(1, appeared: appeared, reduceMotion: reduceMotion)
                     readingSection.revealed(2, appeared: appeared, reduceMotion: reduceMotion)
                     remindersSection.revealed(3, appeared: appeared, reduceMotion: reduceMotion)
@@ -56,6 +65,11 @@ struct SettingsView: View {
                     communitySection.revealed(6, appeared: appeared, reduceMotion: reduceMotion)
                     backupSection.revealed(7, appeared: appeared, reduceMotion: reduceMotion)
                     aboutSection.revealed(8, appeared: appeared, reduceMotion: reduceMotion)
+                    RowGroup {
+                        Button { replayOnboarding = true } label: { BadgeRow(symbol: "sparkles", title: copy("Welcome tour", "جولة الترحيب"), artwork: .breathe) }.buttonStyle(.plain)
+                        RowDivider()
+                        Button { resetConfirmation = true } label: { BadgeRow(symbol: "arrow.counterclockwise", title: copy("Reset settings", "إعادة ضبط الإعدادات"), subtitle: copy("Keep your saved ayat and notes", "الاحتفاظ بالآيات والملاحظات المحفوظة"), artwork: .settings) }.buttonStyle(.plain)
+                    }
                 }
                 .padding(.horizontal, 20)
                 .padding(.top, 8)
@@ -73,6 +87,16 @@ struct SettingsView: View {
                     }
                 }
             }
+            .fullScreenCover(isPresented: $replayOnboarding) { CompanionOnboarding { replayOnboarding = false } }
+            .confirmationDialog(copy("Reset settings?", "إعادة ضبط الإعدادات؟"), isPresented: $resetConfirmation, titleVisibility: .visible) {
+                Button(copy("Reset settings", "إعادة الضبط"), role: .destructive) {
+                    resetting = true
+                    SettingsReset.reset()
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { resetting = false }
+                    PrayerTimesService.shared.refreshSavedLocation()
+                    ReminderScheduler.refresh()
+                }
+            } message: { Text(copy("Appearance, reading, prayer calculation and reminder preferences return to their defaults. Your notes, saved ayat, progress and account stay.", "ستعود إعدادات المظهر والقراءة والصلاة والتذكيرات إلى الوضع الافتراضي. ستبقى ملاحظاتك وآياتك وتقدمك وحسابك.")) }
             .sheet(isPresented: $showAbout) { AboutView() }
             .sheet(isPresented: $showReaderAppearance) { MushafDisplaySheet(language: language) }
             .preferredColorScheme(theme.colorScheme)
@@ -102,6 +126,7 @@ struct SettingsView: View {
             .onChange(of: reminderEnabled) { _, _ in ReminderScheduler.refresh() }
             .onChange(of: reminderHour) { _, _ in ReminderScheduler.refresh() }
             .onChange(of: reminderMinute) { _, _ in ReminderScheduler.refresh() }
+            .onChange(of: [prayerMethodRaw, prayerAsrRaw, highLatitudeRaw]) { _, _ in PrayerTimesService.shared.refreshSavedLocation() }
             .onChange(of: languageRaw) { _, _ in ReminderScheduler.refresh() }
         }
     }
@@ -246,21 +271,12 @@ struct SettingsView: View {
     // MARK: Reminders
 
     private var remindersSection: some View {
-        SettingsGroup(
-            title: copy("Reminders", "التذكيرات"),
-            footnote: copy("A gentle daily invitation, never a streak or score.", "دعوة يومية لطيفة، بلا سلاسل أو نقاط.")
-        ) {
-            ToggleRow(symbol: "bell.fill", title: copy("Daily guidance", "هداية يومية"), isOn: $reminderEnabled)
-            if reminderEnabled {
-                RowDivider()
-                BadgeRow(symbol: "clock.fill", title: copy("Time", "الوقت")) {
-                    DatePicker("", selection: reminderTime, displayedComponents: .hourAndMinute)
-                        .labelsHidden()
-                        .tint(.yqAccentDeep)
-                }
-            }
+        SettingsGroup(title: copy("Reminders", "التذكيرات")) {
+            NavigationLink { ReminderSettingsView() } label: {
+                BadgeRow(symbol: "bell.fill", title: copy("Your reminders", "تذكيراتك"),
+                         subtitle: copy("Prayers, adhkar and a daily reflection", "الصلاة والأذكار وتأمل يومي"))
+            }.buttonStyle(.plain)
         }
-        .animation(reduceMotion ? nil : .spring(response: 0.32, dampingFraction: 0.82), value: reminderEnabled)
     }
 
     private var reminderTime: Binding<Date> {

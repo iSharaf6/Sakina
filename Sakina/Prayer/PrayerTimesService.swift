@@ -76,8 +76,11 @@ final class PrayerTimesService: ObservableObject {
                 settings: settings,
                 now: now
             )
+            UserDefaults.standard.set(["latitude": location.coordinate.latitude, "longitude": location.coordinate.longitude,
+                                       "zone": location.timeZone.identifier, "label": location.displayName], forKey: "prayer.localCalculationLocation")
             schedule = newSchedule
             SharedStore.prayerSchedule = newSchedule
+            ReminderScheduler.refresh()
             // The schedule powers the Home Screen widget plus both paired
             // Lock Screen halves, so invalidate them as one atomic update.
             WidgetCenter.shared.reloadAllTimelines()
@@ -87,6 +90,19 @@ final class PrayerTimesService: ObservableObject {
             errorMessage = error.localizedDescription
             throw error
         }
+    }
+
+    /// Refreshes using the last selected location kept only in this app's private defaults.
+    func refreshSavedLocation() {
+        guard let stored = UserDefaults.standard.dictionary(forKey: "prayer.localCalculationLocation"),
+              let latitude = stored["latitude"] as? Double, let longitude = stored["longitude"] as? Double,
+              let zone = stored["zone"] as? String, let timeZone = TimeZone(identifier: zone), let label = stored["label"] as? String else { return }
+        var settings = PrayerCalculationSettings.default
+        let defaults = UserDefaults.standard
+        settings.method = PrayerCalculationMethod(rawValue: defaults.string(forKey: SettingsKeys.prayerCalculationMethod) ?? "") ?? .muslimWorldLeague
+        settings.asrMethod = PrayerAsrMethod(rawValue: defaults.string(forKey: SettingsKeys.prayerAsrMethod) ?? "") ?? .standard
+        settings.highLatitudePreference = PrayerHighLatitudePreference(rawValue: defaults.string(forKey: SettingsKeys.prayerHighLatitude) ?? "") ?? .automatic
+        _ = try? refresh(for: PrayerCalculationLocation(coordinate: CLLocationCoordinate2D(latitude: latitude, longitude: longitude), timeZone: timeZone, displayName: label), settings: settings)
     }
 
     func reloadSharedSchedule() {

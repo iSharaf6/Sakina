@@ -231,7 +231,7 @@ private struct GoalCheck: View {
         Image(systemName: isDone ? "checkmark.circle.fill" : "circle")
             .font(.system(size: 28, weight: .regular))
             .symbolRenderingMode(.palette)
-            .foregroundStyle(isDone ? Color.white : Color.yqHairline, isDone ? Color.yqAccent : Color.clear)
+            .foregroundStyle(isDone ? Color.yqOnAccent : Color.yqHairline, isDone ? Color.yqAccent : Color.clear)
             .contentTransition(.symbolEffect(.replace))
             .symbolEffect(.bounce, value: isDone)
             .frame(width: 28, height: 28)

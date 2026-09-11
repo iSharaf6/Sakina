@@ -109,6 +109,7 @@ final class NotificationRouter: NSObject, ObservableObject, UNUserNotificationCe
     static let shared = NotificationRouter()
 
     @Published var pendingSituationID: String?
+    @Published var pendingURL: URL?
 
     func activate() {
         UNUserNotificationCenter.current().delegate = self
@@ -119,6 +120,17 @@ final class NotificationRouter: NSObject, ObservableObject, UNUserNotificationCe
         didReceive response: UNNotificationResponse,
         withCompletionHandler completionHandler: @escaping () -> Void
     ) {
+        if response.actionIdentifier == "later", let content = response.notification.request.content.mutableCopy() as? UNMutableNotificationContent {
+            center.add(UNNotificationRequest(identifier: "yaqeen.snooze", content: content,
+                       trigger: UNTimeIntervalNotificationTrigger(timeInterval: 600, repeats: false)))
+            completionHandler()
+            return
+        }
+        if let destination = response.notification.request.content.userInfo["destination"] as? String, let url = URL(string: destination) {
+            Task { @MainActor in self.pendingURL = url }
+            completionHandler()
+            return
+        }
         let storedID = response.notification.request.content.userInfo["situationID"] as? String
         // Repeating reminders cannot carry a different payload each day, so
         // resolve the daily reading at the moment the person returns.
@@ -145,43 +157,5 @@ final class NotificationRouter: NSObject, ObservableObject, UNUserNotificationCe
 /// Schedules one durable, quiet daily invitation. A repeating calendar trigger
 /// keeps working even when the app has not been launched recently.
 enum ReminderScheduler {
-    private static let identifier = "yaqeen.daily-guidance"
-
-    static func refresh() {
-        let defaults = UserDefaults.standard
-        let center = UNUserNotificationCenter.current()
-        let legacyIDs = (0..<7).map { "sakinaDaily\($0)" }
-        center.removePendingNotificationRequests(withIdentifiers: legacyIDs + [identifier])
-
-        guard defaults.bool(forKey: SettingsKeys.reminderEnabled) else { return }
-        let hour = defaults.object(forKey: SettingsKeys.reminderHour) as? Int ?? 9
-        let minute = defaults.object(forKey: SettingsKeys.reminderMinute) as? Int ?? 0
-        let language = AppLanguage(
-            rawValue: defaults.string(forKey: SettingsKeys.appLanguage) ?? AppLanguage.english.rawValue
-        ) ?? .english
-
-        Task {
-            let granted = (try? await center.requestAuthorization(options: [.alert])) ?? false
-            guard granted else { return }
-
-            let content = UNMutableNotificationContent()
-            content.title = language.pick("A quiet moment with the Qur’an", "لحظة هادئة مع القرآن")
-            content.body = language.pick(
-                "Your daily Yaqeen guidance is ready whenever you are.",
-                "هداية يقين اليومية بانتظارك متى كنت مستعدًا."
-            )
-            content.interruptionLevel = .passive
-            content.userInfo = ["openDaily": true]
-
-            let trigger = UNCalendarNotificationTrigger(
-                dateMatching: DateComponents(hour: hour, minute: minute),
-                repeats: true
-            )
-            try? await center.add(UNNotificationRequest(
-                identifier: identifier,
-                content: content,
-                trigger: trigger
-            ))
-        }
-    }
+    static func refresh() { Task { @MainActor in ReminderCenter.shared.refresh() } }
 }

@@ -88,7 +88,7 @@ struct GeometricField: View {
             Color.clear
         } else {
             Canvas(opaque: false, rendersAsynchronously: true) { context, size in
-                let stroke = color.opacity(colorScheme == .dark ? opacity * 0.9 : opacity)
+                let stroke = color.opacity(colorScheme == .dark ? opacity * 0.28 : opacity)
                 let columns = Int(ceil(size.width / unit)) + 2
                 let rows = Int(ceil(size.height / unit)) + 2
                 for row in -1..<rows {

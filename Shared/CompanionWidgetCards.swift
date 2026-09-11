@@ -2,10 +2,10 @@ import SwiftUI
 
 /// Shared with the app's debug gallery so screenshots exercise the actual widget layouts.
 enum CompanionWidgetPalette {
-    static let canvas = adaptive(0xFFFFFF, 0x151A17)
+    static let canvas = adaptive(0xFFFFFF, 0x1B201D)
     static let ink = adaptive(0x101714, 0xF2F5F3)
     static let secondary = adaptive(0x616B66, 0xA2ACA6)
-    static let accent = adaptive(0x15803D, 0x4ADE80)
+    static let accent = adaptive(0x15803D, 0xA4DBB5)
     static let line = adaptive(0xE6EAE8, 0x2B332E)
 
     private static func adaptive(_ light: UInt32, _ dark: UInt32) -> Color {

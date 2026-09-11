@@ -183,6 +183,7 @@ private struct CategoryRow: View {
         }
         .multilineTextAlignment(.leading)
         .padding(.horizontal, 14)
+        .padding(.vertical, 14)
         .frame(maxWidth: .infinity, alignment: .leading)
         .frame(minHeight: 58)
         .contentShape(Rectangle())

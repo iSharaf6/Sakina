@@ -288,7 +288,8 @@ struct SituationRow: View {
             Chevron()
         }
         .multilineTextAlignment(.leading)
-        .padding(.horizontal, 14)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 14)
         .frame(minHeight: 58)
         .contentShape(Rectangle())
         .accessibilityElement(children: .combine)

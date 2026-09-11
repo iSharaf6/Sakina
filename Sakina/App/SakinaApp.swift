@@ -44,6 +44,7 @@ struct RootView: View {
     @State private var debugAyah: QuranAyah?
     @State private var exploreQuery = ""
     @State private var showQibla = false
+    @State private var showOnboarding = false
     @State private var prayerRequest = 0
     @State private var settingsRequest = 0
     @StateObject private var router = NotificationRouter.shared
@@ -94,6 +95,17 @@ struct RootView: View {
         .preferredColorScheme(theme.colorScheme)
         .environmentObject(scholarStore)
         .sensoryFeedback(.selection, trigger: selection)
+        .fullScreenCover(isPresented: $showOnboarding) {
+            CompanionOnboarding {
+                showOnboarding = false
+                switch UserDefaults.standard.string(forKey: "companion.intention") {
+                case "read": selection = .quran
+                case "remember": selection = .duas
+                case "reflect": selection = .explore
+                default: selection = .home
+                }
+            }
+        }
         .sheet(item: $debugAyah) { ayah in
             AyahActionSheet(ayah: ayah, language: language)
                 .presentationDetents([.medium, .large])
@@ -124,12 +136,16 @@ struct RootView: View {
             account.restorePreviousSignIn()
             handlePendingIntent()
             applyDebugRoute()
+            let args = ProcessInfo.processInfo.arguments
+            if args.contains("-yqOnboarding") || (!UserDefaults.standard.bool(forKey: CompanionOnboarding.completedKey) && !args.contains("-yqScreen") && ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] == nil) { showOnboarding = true }
         }
         .onChange(of: scenePhase) { _, phase in
-            if phase == .active { handlePendingIntent() }
+            if phase == .active { handlePendingIntent(); PrayerTimesService.shared.refreshSavedLocation(); ReminderScheduler.refresh() }
         }
         .onOpenURL { url in
+            if url.host == "auth-callback" { Task { await CompanionAccount.shared.handle(url) }; return }
             if account.isConfigured, account.handle(url) { return }
+            if handleCompanionURL(url) { return }
             guard let scheme = url.scheme, ["sakina", "yaqeen"].contains(scheme) else { return }
 
             if url.host == "prayer-times" {
@@ -159,12 +175,31 @@ struct RootView: View {
                   let situation = SituationCatalog.by(id: id) else { return }
             open(situation)
         }
+        .onChange(of: router.pendingURL) { _, url in
+            guard let url else { return }
+            _ = handleCompanionURL(url)
+            router.pendingURL = nil
+        }
         .onChange(of: router.pendingSituationID) { _, newValue in
             guard let newValue,
                   let situation = SituationCatalog.by(id: newValue) else { return }
             router.pendingSituationID = nil
             open(situation)
         }
+    }
+
+    @discardableResult
+    private func handleCompanionURL(_ url: URL) -> Bool {
+        guard ["yaqeen", "sakina"].contains(url.scheme ?? "") else { return false }
+        switch url.host {
+        case "daily": open(SharedStore.situationOfTheDay())
+        case "prayer-times": selection = .home; homePath = NavigationPath(); prayerRequest += 1
+        case "collection":
+            selection = .duas; duaPath = NavigationPath()
+            if let name = url.pathComponents.dropFirst().first, let practice = DuaPractice(rawValue: name) { duaPath.append(practice) }
+        default: return false
+        }
+        return true
     }
 
     private func open(_ situation: Situation) {
@@ -200,7 +235,7 @@ struct RootView: View {
         Tab.home: CompanionArtwork.morning, .explore: .ummah,
         .quran: .quran, .duas: .sunnah, .saved: .saved,
     ].compactMapValues { artwork in
-        guard let image = UIImage(named: artwork.assetName) else { return nil }
+        let image = CompanionImage.image(artwork)
         return UIGraphicsImageRenderer(size: CGSize(width: 29, height: 29)).image { _ in
             image.draw(in: CGRect(x: 0, y: 0, width: 29, height: 29))
         }.withRenderingMode(.alwaysOriginal)

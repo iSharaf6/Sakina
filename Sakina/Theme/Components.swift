@@ -186,7 +186,7 @@ struct BadgeRow<Trailing: View>: View {
         }
         .multilineTextAlignment(.leading)
         .padding(.horizontal, 14)
-        .padding(.vertical, typeSize.isAccessibilitySize ? 12 : 0)
+        .padding(.vertical, 14)
         .frame(maxWidth: .infinity, alignment: .leading)
         .frame(minHeight: 58)
         .contentShape(Rectangle())
@@ -233,7 +233,7 @@ struct BadgeTile: View {
         HStack(spacing: 12) {
             ZStack {
                 if let artwork {
-                    CompanionIllustration(artwork: artwork, size: 50)
+                    CompanionIllustration(artwork: artwork, size: 44)
                 } else {
                     IconBadge(symbol: symbol, tint: tint, size: 40)
                 }
@@ -242,16 +242,16 @@ struct BadgeTile: View {
                         .trim(from: 0, to: progress)
                         .stroke(tint, style: StrokeStyle(lineWidth: 2.5, lineCap: .round))
                         .rotationEffect(.degrees(-90))
-                        .frame(width: 50, height: 50)
+                        .frame(width: 44, height: 44)
                 }
             }
-            .frame(width: 50, height: 50)
+            .frame(width: 44, height: 44)
             VStack(alignment: .leading, spacing: 2) {
                 Text(title)
                     .font(.yqSubheadBold)
                     .foregroundStyle(Color.yqInk)
-                    .lineLimit(1)
-                    .minimumScaleFactor(0.85)
+                    .lineLimit(2)
+                    .fixedSize(horizontal: false, vertical: true)
                 if let detail {
                     Text(detail)
                         .font(.yqCaption)
@@ -265,7 +265,7 @@ struct BadgeTile: View {
         .multilineTextAlignment(.leading)
         .padding(.horizontal, 12)
         .padding(.vertical, 12)
-        .frame(maxWidth: .infinity, minHeight: 74, alignment: .leading)
+        .frame(minWidth: 0, maxWidth: .infinity, minHeight: 84, alignment: .leading)
         .yqCard(cornerRadius: 18)
         .contentShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
     }
@@ -291,7 +291,7 @@ struct FeelingChip: View {
                 .font(.yqSubheadMedium)
                 .lineLimit(1)
         }
-        .foregroundStyle(selected ? Color.white : Color.yqInk)
+        .foregroundStyle(selected ? Color.yqOnAccent : Color.yqInk)
         .padding(.leading, artwork == nil ? 13 : 5)
         .padding(.trailing, 13)
         .frame(minHeight: 44)
@@ -310,7 +310,7 @@ struct Tag: View {
     var body: some View {
         Text(text)
             .font(.yqCaptionBold)
-            .foregroundStyle(filled ? Color.white : tint)
+            .foregroundStyle(filled ? Color.yqOnAccent : tint)
             .padding(.horizontal, 8)
             .padding(.vertical, 4)
             .background(filled ? tint : tint.opacity(0.13), in: Capsule(style: .continuous))
