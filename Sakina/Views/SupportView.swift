@@ -339,11 +339,7 @@ struct AboutUsView: View {
         ScrollView(showsIndicators: false) {
             VStack(alignment: .leading, spacing: 24) {
                 VStack(spacing: 14) {
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 24, style: .continuous).fill(Color.yqNight)
-                        YaqeenMark().fill(Color.yqOnNight).padding(20)
-                    }
-                    .frame(width: 92, height: 92)
+                    YaqeenBrandIcon(size: 92)
                     VStack(spacing: 4) {
                         HStack(alignment: .firstTextBaseline, spacing: 10) {
                             Text("يقين").font(.arabicProse(30))

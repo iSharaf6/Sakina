@@ -1,5 +1,19 @@
 import SwiftUI
 
+/// The same opaque artwork used by the installed app icon and sign-in branding.
+struct YaqeenBrandIcon: View {
+    var size: CGFloat = 32
+
+    var body: some View {
+        Image("YaqeenBrand")
+            .resizable()
+            .scaledToFit()
+            .frame(width: size, height: size)
+            .clipShape(RoundedRectangle(cornerRadius: size * 0.23, style: .continuous))
+            .accessibilityHidden(true)
+    }
+}
+
 /// Original pencil illustrations. Names are explicit so collection art never
 /// depends on a coincidentally matching SF Symbol.
 enum CompanionArtwork: String, CaseIterable {

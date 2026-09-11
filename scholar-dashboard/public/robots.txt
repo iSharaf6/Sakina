@@ -1,2 +1,5 @@
 User-agent: *
+Allow: /Sakina/app.html
+Allow: /Sakina/privacy.html
+Allow: /Sakina/yaqeen-logo.png
 Disallow: /

@@ -39,14 +39,7 @@ struct AboutView: View {
 
     private var brand: some View {
         VStack(spacing: 14) {
-            ZStack {
-                RoundedRectangle(cornerRadius: 25, style: .continuous)
-                    .fill(Color.sakinaInk)
-                YaqeenMark()
-                    .fill(Color.sakinaCanvas)
-                    .padding(20)
-            }
-            .frame(width: 96, height: 96)
+            YaqeenBrandIcon(size: 96)
 
             VStack(spacing: 4) {
                 HStack(alignment: .firstTextBaseline, spacing: 10) {

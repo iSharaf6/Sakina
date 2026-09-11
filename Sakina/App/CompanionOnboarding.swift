@@ -26,6 +26,7 @@ struct CompanionOnboarding: View {
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 0) {
                     HStack {
+                        YaqeenBrandIcon(size: 34)
                         Text("yaqeen").font(.system(size: 26, weight: .semibold, design: .rounded)).tracking(-0.8)
                         Spacer()
                         if account.signedIn || allowsDismiss {

@@ -84,9 +84,8 @@ struct SituationDetailView: View {
         .toolbarBackground(.visible, for: .navigationBar)
         .toolbar {
             ToolbarItem(placement: .principal) {
-                YaqeenMark()
-                    .fill(Color.yaqeenForest)
-                    .frame(width: 16, height: 23)
+                YaqeenBrandIcon(size: 28)
+                    .accessibilityHidden(false)
                     .accessibilityLabel("Yaqeen")
             }
         }
@@ -908,9 +907,7 @@ struct VerseShareCard: View {
     var body: some View {
         VStack(spacing: 24) {
             HStack(spacing: 12) {
-                YaqeenMark()
-                    .fill(forest)
-                    .frame(width: 27, height: 39)
+                YaqeenBrandIcon(size: 39)
                 VStack(alignment: .leading, spacing: 1) {
                     Text("Yaqeen  يقين")
                         .font(.system(size: 18, weight: .bold))
