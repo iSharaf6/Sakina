@@ -1,5 +1,13 @@
 # Yaqeen cat app icon
 
+Current revision: white background with a larger, front-facing cat portrait. Generated with the built-in image_gen tool on 11 September 2026 using the previous app icon as the character/style reference. Mechanical sips resizing supplies all iOS icon sizes, the shared runtime logo, public website logo and Design/YaqeenAppIcon-1024.png. The earlier dark icon is preserved in git history.
+
+## Current generation prompt
+
+Use case: logo-brand. Redesign this existing Yaqeen iOS app icon to be much brighter and unmistakably a cat at 40px. Input image: character/style reference and old icon to improve. Keep the cream-and-charcoal cat, patch over one eye, moss-green scarf, expressive dark pencil outlines and hand-colored pencil storybook texture. Replace the dark green background with clean opaque WHITE edge to edge. New composition: one big welcoming front-facing cat head and upper chest, centered, two clearly pointed ears, wide rounded cheeks, tiny open dark eyes with a friendly attentive expression, small nose and gentle smile, short confident whiskers. Face is the hero, occupying about 70 percent of the square width; whole character fills 85 percent of square height with generous 8 percent edge safety. Cream fur must remain visibly warm against white. Charcoal ears and eye patch with simplified soft pencil texture, a clearly saturated moss-green triangular scarf beneath the face. No full seated body; no big dark tail; no crescent or secondary decorations. Keep the illustration crafted, charming, calm and recognizable rather than glossy or generic vector. Strong clean silhouette, fewer thin details, lighter finer pencil shading, balanced symmetry with the distinctive asymmetric eye patch. No letters, words, frame, border, shadows, mockup or rounded corners. Output only one final opaque square 1024x1024 app icon.
+
+## Previous revision provenance
+
 Generated 11 September 2026 using the built-in image_gen imagegen tool, with `Shared/CompanionAssets.xcassets/Companion-breathe.imageset/artwork.png` as the character and style reference. No external image provider or API fallback was used. The generated square is opaque; macOS sips performed only size conversion for asset delivery.
 
 Master app asset: `Sakina/Assets.xcassets/AppIcon.appiconset/Icon-1024.png`. Runtime asset: `Shared/CompanionAssets.xcassets/YaqeenBrand.imageset/logo.png`. OAuth/public-web asset: `scholar-dashboard/public/yaqeen-logo.png` (120 × 120).
