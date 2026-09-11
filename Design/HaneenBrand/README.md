@@ -24,3 +24,6 @@ Reference: the generated transparent settings artwork. Two earlier Kaaba outputs
 The third output still had an opaque black background. A final image-tool edit used: “Preserve this exact Kaaba artwork. Replace ONLY the black background outside the Kaaba silhouette with completely solid pure white #FFFFFF. All surrounding space must be flat white. No shadow, no checkerboard, no off-white texture on background. Keep the black Kaaba, cream outline, gold belt and door unchanged. This is a production asset for an existing app that automatically renders edge-connected pure-white paper transparent.”
 
 This final paper asset is bundled and displayed through the existing `CompanionImage` edge-paper renderer. The brand and settings masters have native alpha; the Kaaba gains transparency at display time through the same pipeline as the original companion illustrations.
+
+## Sage Home Screen icon
+The installed icon uses `AppIcon-Sage.png`, generated from the previous icon with only a muted sage background requested (#A3B49B). The in-app brand stays transparent. Package with `swift Design/HaneenBrand/package-icons.swift` from the repository root.

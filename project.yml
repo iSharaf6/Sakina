@@ -51,6 +51,8 @@ targets:
     info:
       path: Sakina/Info.plist
       properties:
+        GIDClientID: 440090376926-ms29b34vpbi7h645052qcd3nkrim5s6m.apps.googleusercontent.com
+        GIDServerClientID: 440090376926-re87tf7dmj20a6u1hn0939rd2kp4ljsa.apps.googleusercontent.com
         CFBundleDisplayName: Haneen
         CFBundleName: Haneen
         UILaunchScreen: {}
@@ -67,6 +69,7 @@ targets:
         CFBundleURLTypes:
           - CFBundleURLName: com.islamsharaf.yaqeen
             CFBundleURLSchemes:
+              - com.googleusercontent.apps.440090376926-ms29b34vpbi7h645052qcd3nkrim5s6m
               - haneen
               - sakina
               - yaqeen

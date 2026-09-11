@@ -12,7 +12,7 @@ struct QiblaView: View {
 
     var body: some View {
         ZStack {
-            AtmosphereBackground()
+            Color.yqSurface.ignoresSafeArea()
 
             ScrollView(showsIndicators: false) {
                 VStack(spacing: 24) {
@@ -35,18 +35,18 @@ struct QiblaView: View {
 
     private var introduction: some View {
         VStack(spacing: 9) {
-            CompanionIllustration(artwork: .kaaba, size: 72)
+            CompanionIllustration(artwork: .qibla, size: 58)
                 .accessibilityHidden(true)
 
             Text(copy("Face the Kaaba", "اتجه نحو الكعبة"))
-                .font(.title2.weight(.semibold))
+                .font(.yqTitle2)
                 .foregroundStyle(Color.sakinaInk)
 
             Text(copy(
                 "Hold your iPhone flat, then turn slowly until the pointer rests at the top.",
                 "أمسك هاتفك بشكل مستوٍ، ثم استدر ببطء حتى يستقر المؤشر في الأعلى."
             ))
-            .font(.subheadline)
+            .font(.yqSubhead)
             .foregroundStyle(Color.sakinaMuted)
             .multilineTextAlignment(.center)
             .fixedSize(horizontal: false, vertical: true)
@@ -161,7 +161,7 @@ struct QiblaView: View {
 
             VStack(spacing: 6) {
                 Label(directionTitle, systemImage: directionSymbol)
-                    .font(.title3.weight(.semibold))
+                    .font(.yqHeadline)
                     .foregroundStyle(Color.sakinaInk)
 
                 if let bearing = compass.qiblaBearing {
@@ -201,7 +201,7 @@ struct QiblaView: View {
             .multilineTextAlignment(.center)
         }
         .padding(20)
-        .sakinaCard(cornerRadius: 28)
+        .frame(maxWidth: .infinity)
     }
 
     private var calibrationCard: some View {
@@ -338,7 +338,7 @@ private struct QiblaStatusCard: View {
                     .font(.headline)
                     .foregroundStyle(Color.sakinaInk)
                 Text(message)
-                    .font(.subheadline)
+                    .font(.yqSubhead)
                     .foregroundStyle(Color.sakinaMuted)
                     .multilineTextAlignment(.center)
                     .fixedSize(horizontal: false, vertical: true)
@@ -379,13 +379,13 @@ private struct QiblaCompassDial: View {
 
             ZStack {
                 Circle()
-                    .fill(Color.sakinaCanvas)
+                    .fill(Color.yqFill)
                 Circle()
-                    .strokeBorder(isAligned ? Color.yqAccentDeep : Color.sakinaHairline, lineWidth: isAligned ? 3 : 1)
+                    .strokeBorder(isAligned ? Color.yqAccentDeep : Color.yqSecondary.opacity(0.4), lineWidth: isAligned ? 3 : 1)
 
                 ForEach(0..<72, id: \.self) { index in
                     Capsule()
-                        .fill(index.isMultiple(of: 18) ? Color.sakinaInk : Color.sakinaHairline)
+                        .fill(index.isMultiple(of: 18) ? Color.yqInk : Color.yqSecondary.opacity(0.45))
                         .frame(width: index.isMultiple(of: 18) ? 2.5 : 1, height: index.isMultiple(of: 6) ? 12 : 6)
                         .offset(y: -(radius - 15))
                         .rotationEffect(.degrees(Double(index) * 5))
@@ -402,12 +402,9 @@ private struct QiblaCompassDial: View {
 
                     QiblaPointer()
                         .fill(Color.yqAccentDeep)
-                        .frame(width: size * 0.18, height: size * 0.31)
-                        .offset(y: -size * 0.14)
+                        .frame(width: size * 0.12, height: size * 0.36)
+                        .offset(y: -size * 0.15)
 
-                    CompanionIllustration(artwork: .kaaba, size: size * 0.18)
-                        .rotationEffect(.degrees(-turn))
-                        .offset(y: -size * 0.37)
 
                     Circle()
                         .fill(Color.sakinaElevated)

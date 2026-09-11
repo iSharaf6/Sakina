@@ -57,8 +57,8 @@ struct PrivacyPolicyView: View {
                         symbol: "trash",
                         title: copy("Your choices", "خياراتك"),
                         body: copy(
-                            "You can delete your sign-in account from Settings → Account → Delete account. You can remove bookmarks and reflections in the app, disable notifications in iOS Settings, deny location access, and disconnect any configured backup. Deleting the app removes its local data, subject to your device backups.",
-                            "يمكنك حذف حساب الدخول من الإعدادات ← الحساب ← حذف الحساب، وحذف المحفوظات والتأملات داخل التطبيق، وتعطيل الإشعارات من إعدادات iOS، ورفض إذن الموقع، وفصل أي نسخة احتياطية مهيأة. ويؤدي حذف التطبيق إلى إزالة بياناته المحلية مع مراعاة نسخ جهازك الاحتياطية."
+                            "You can delete your sign-in account from Settings → Account → Delete account. You can remove bookmarks and reflections in the app, disable notifications in iOS Settings, deny location access, and disconnect any configured backup. Deleting the app removes its local data, subject to your device backups. Optional deletion feedback is retained in Supabase to improve Haneen, without your account identifier. Please do not include personal details.",
+                            "يمكنك حذف حساب الدخول من الإعدادات ← الحساب ← حذف الحساب، وحذف المحفوظات والتأملات داخل التطبيق، وتعطيل الإشعارات من إعدادات iOS، ورفض إذن الموقع، وفصل أي نسخة احتياطية مهيأة. ويؤدي حذف التطبيق إلى إزالة بياناته المحلية مع مراعاة نسخ جهازك الاحتياطية. تُحفظ ملاحظات الحذف الاختيارية في Supabase لتحسين حنين دون معرّف حسابك. يرجى عدم تضمين تفاصيل شخصية."
                         )
                     )
 

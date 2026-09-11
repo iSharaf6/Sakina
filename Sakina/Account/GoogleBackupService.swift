@@ -79,6 +79,7 @@ final class GoogleAccountManager: ObservableObject {
     var imageURL: URL? { user?.profile?.imageURL(withDimension: 160) }
 
     var isConfigured: Bool {
+        guard Bundle.main.object(forInfoDictionaryKey: "HaneenGoogleBackupEnabled") as? Bool == true else { return false }
         guard let value = Bundle.main.object(forInfoDictionaryKey: "GIDClientID") as? String else {
             return false
         }

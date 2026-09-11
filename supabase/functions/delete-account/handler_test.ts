@@ -44,3 +44,20 @@ Deno.test("malformed Apple proof fails without deleting", async () => {
     const f = fixture(); assert((await handleDeletion(request({ appleAuthorizationCode: code }), f.services)).status === 400); assert(f.calls.length === 1);
   }
 });
+Deno.test("feedback is optional and is recorded without identity after deletion", async () => {
+  const f = fixture({ id: "caller" });
+  f.services.saveFeedback = async (reason, feedback) => { f.calls.push(`feedback:${reason}:${feedback.length}`); };
+  assert((await handleDeletion(request({ reason: "technical", feedback: "a".repeat(1200), userID: "victim" }), f.services)).status === 200);
+  assert(f.calls.join("|") === "authenticate:session|delete:caller|feedback:technical:1000");
+});
+Deno.test("feedback storage failure cannot block deletion", async () => {
+  const f = fixture({ id: "caller" });
+  f.services.saveFeedback = async () => { throw new Error("offline"); };
+  assert((await handleDeletion(request({ feedback: "A suggestion" }), f.services)).status === 200);
+});
+Deno.test("blank feedback never creates a retained record", async () => {
+  const f = fixture({ id: "caller" });
+  f.services.saveFeedback = async () => { throw new Error("must not be called"); };
+  assert((await handleDeletion(request({ reason: "invalid-reason", feedback: " " }), f.services)).status === 200);
+  assert(f.calls.join("|") === "authenticate:session|delete:caller");
+});

@@ -309,36 +309,40 @@ struct MushafView: View {
         }
     }
 
-    /// Pages turn like a bound mushaf: the next page lies to the left, so a
-    /// finger moving right turns forward, in both app languages. Rather than
-    /// trusting how a paged TabView treats right-to-left layout, the TabView
-    /// is pinned left-to-right and its tags run backwards: tag 604 is page 1
-    /// at the right end, tag 1 is page 604 at the left end. Moving to the
-    /// tag on the left (tag − 1) is therefore page + 1. See `tag(forPage:)`.
+    /// A lazy native scroll container creates only visible pages and neighbours.
+    /// Reversed IDs preserve the bound-mushaf direction without 604 TabView hosts.
     private var horizontalPages: some View {
         GeometryReader { geometry in
-            TabView(selection: pageTag) {
-                ForEach(1...QuranStore.pageCount, id: \.self) { tag in
-                    let number = Self.page(forTag: tag)
-                    if printedLayout {
-                        // One screen, no scrolling: the page is fitted to it.
-                        pageView(number, windowed: true, size: geometry.size)
-                            .frame(width: geometry.size.width, height: geometry.size.height)
-                            .tag(tag)
-                    } else {
-                        ScrollView {
-                            pageView(number, windowed: true, size: geometry.size)
-                                .frame(minHeight: geometry.size.height)
+            ScrollView(.horizontal) {
+                LazyHStack(spacing: 0) {
+                    ForEach((1...QuranStore.pageCount).reversed(), id: \.self) { number in
+                        Group {
+                            if printedLayout {
+                                pageView(number, windowed: false, size: geometry.size)
+                            } else {
+                                ScrollView {
+                                    pageView(number, windowed: false, size: geometry.size)
+                                        .frame(minHeight: geometry.size.height)
+                                }.scrollIndicators(.hidden)
+                            }
                         }
-                        .scrollIndicators(.hidden)
-                        .tag(tag)
+                        .frame(width: geometry.size.width, height: geometry.size.height)
+                        .id(number)
                     }
-                }
+                }.scrollTargetLayout()
             }
-            .tabViewStyle(.page(indexDisplayMode: .never))
+            .scrollTargetBehavior(.paging)
+            .scrollPosition(id: $scrolledPage)
+            .scrollIndicators(.hidden)
             .environment(\.layoutDirection, .leftToRight)
+            .onAppear { scrolledPage = page }
+            .onChange(of: scrolledPage) { _, new in
+                if let new, new != page { page = new }
+            }
+            .onChange(of: page) { _, new in
+                if scrolledPage != new { scrolledPage = new }
+            }
         }
-
     }
 
     /// The TabView tag for a page: pages count down from the right.

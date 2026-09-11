@@ -18,6 +18,9 @@ Prayer times and Qibla calculations run on device. Apple location services may r
 ## Network services
 Recitation streams from EveryAyah. Source links open Quran.com, Sunnah.com or other cited references. Where configured, public scholarly content is read from Supabase. These services receive ordinary network information, including the IP address, and apply their own privacy policies.
 
+## Optional deletion feedback
+If you choose to give a reason or written feedback when deleting your account, it is retained in Supabase to improve Haneen, without your account identifier. Feedback is optional; do not include personal details.
+
 ## Your choices and retention
 Delete notes and bookmarks inside Haneen, delete your sign-in account from Account settings, disconnect optional backup, and control location and notifications in iOS Settings. Local data is removed when the app is deleted, subject to device backups. Account data is retained to provide sign-in until the account is deleted; service security logs follow the providers' retention policies.
 

@@ -3,6 +3,7 @@ import Supabase
 import AuthenticationServices
 import CryptoKit
 import Security
+import GoogleSignIn
 
 @MainActor
 final class CompanionAccount: ObservableObject {
@@ -62,8 +63,19 @@ final class CompanionAccount: ObservableObject {
     func google() async {
         guard let client else { return }
         busy = true; message = nil; defer { busy = false }
-        do { _ = try await client.auth.signInWithOAuth(provider: .google, redirectTo: URL(string: "yaqeen://auth-callback")) }
-        catch { if (error as NSError).code != ASWebAuthenticationSessionError.canceledLogin.rawValue { message = error.localizedDescription } }
+        do {
+            guard let presenter = UIApplication.shared.connectedScenes.compactMap({ $0 as? UIWindowScene })
+                .first(where: { $0.activationState == .foregroundActive })?.windows.first(where: \.isKeyWindow)?.rootViewController else { return }
+            var top = presenter
+            while let presented = top.presentedViewController { top = presented }
+            let result = try await GIDSignIn.sharedInstance.signIn(withPresenting: top)
+            guard let token = result.user.idToken?.tokenString else {
+                message = "Google couldn’t complete sign-in. Please try again."; return
+            }
+            _ = try await client.auth.signInWithIdToken(credentials: .init(provider: .google, idToken: token, accessToken: result.user.accessToken.tokenString))
+        } catch {
+            if (error as NSError).code != GIDSignInError.canceled.rawValue { message = "Google sign-in couldn’t finish. Please try again." }
+        }
     }
 
     func prepareApple(_ request: ASAuthorizationAppleIDRequest) {
@@ -97,12 +109,12 @@ final class CompanionAccount: ObservableObject {
         do { try await client?.auth.signOut(scope: .local) } catch { message = error.localizedDescription }
     }
 
-    func deleteAccount() async {
+    func deleteAccount(reason: String = "", feedback: String = "") async {
         guard let client else { return }
         busy = true; message = nil; defer { busy = false }
         do {
             let user = try await client.auth.user()
-            var body: [String: String] = [:]
+            var body: [String: String] = ["reason": reason, "feedback": String(feedback.prefix(1000))]
             if user.identities?.contains(where: { $0.provider == "apple" }) == true {
                 let authorization = AppleDeletionAuthorization()
                 body["appleAuthorizationCode"] = try await authorization.authorize()
@@ -123,57 +135,152 @@ struct CompanionAccountView: View {
     @State private var email = ""
     @State private var code = ""
     @State private var sent = false
-    @State private var confirmDelete = false
+    @State private var showDelete = false
+
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 24) {
-                CompanionIllustration(artwork: .privacy, size: 110).frame(maxWidth: .infinity)
-                Text(account.signedIn ? "Your Haneen account" : creating ? "Make yourself at home." : "Welcome back.")
-                    .font(.yqTitle)
-                Text("Reading, prayer times and your local library are always available without an account.").font(.yqBody).foregroundStyle(Color.yqSecondary)
-                if account.signedIn {
-                    Text(account.email ?? "Signed in").font(.yqHeadline)
-                    Text("Your account is connected. Notes and bookmarks stay on this iPhone; account sign-in does not upload them.").font(.yqSubhead).foregroundStyle(Color.yqSecondary)
-                    Button("Sign out") { Task { await account.signOut() } }.buttonStyle(.bordered)
-                    Button("Delete account", role: .destructive) { confirmDelete = true }
-                } else {
-                    if !account.configured {
-                        Text("Accounts aren’t available in this build yet. Your local library is ready to use.")
-                            .font(.yqSubhead).padding(20).frame(maxWidth: .infinity, alignment: .leading).yqCard()
+            VStack(spacing: 24) {
+                HStack(spacing: 16) {
+                    CompanionIllustration(artwork: .privacy, size: 76)
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text(account.signedIn ? "Your account" : "Welcome to Haneen").font(.yqTitle2)
+                        Text(account.signedIn ? "A little space of your own." : "Come back to what matters.")
+                            .font(.yqSubhead).foregroundStyle(Color.yqSecondary)
                     }
-                    Group {
-                    Picker("Account", selection: $creating) { Text("Sign up").tag(true); Text("Sign in").tag(false) }.pickerStyle(.segmented)
-                    SignInWithAppleButton(creating ? .signUp : .signIn, onRequest: account.prepareApple) { result in
-                        Task { await account.completeApple(result) }
-                    }.signInWithAppleButtonStyle(colorScheme == .dark ? .white : .black).frame(height: 52).clipShape(RoundedRectangle(cornerRadius: 14))
-                    Button { Task { await account.google() } } label: {
-                        Text("Continue with Google").font(.yqHeadline).frame(maxWidth: .infinity).padding(17).yqCard(cornerRadius: 14)
-                    }.buttonStyle(.plain)
-                    Text("Or use your email").font(.yqCaption).foregroundStyle(Color.yqSecondary)
-                    TextField("Email address", text: $email).textContentType(.emailAddress).keyboardType(.emailAddress)
-                        .textInputAutocapitalization(.never).autocorrectionDisabled().padding(16).background(Color.yqFill, in: RoundedRectangle(cornerRadius: 14))
-                    if sent {
-                        TextField("Email code", text: $code).textContentType(.oneTimeCode).keyboardType(.numberPad)
-                            .padding(16).background(Color.yqFill, in: RoundedRectangle(cornerRadius: 14))
-                        Button("Verify & continue") { Task { await account.verify(email: email, code: code) } }.buttonStyle(.borderedProminent).disabled(code.count < 6)
-                    }
-                    Button(sent ? "Send another email" : "Email me a sign-in link") { Task { sent = await account.sendCode(email: email, creating: creating) } }
-                        .buttonStyle(.bordered).disabled(!email.contains("@"))
-                    }.disabled(!account.configured)
+                    Spacer(minLength: 0)
+                }.padding(.top, 12)
+                if account.signedIn { connectedContent } else { signInContent }
+                if account.busy { ProgressView().frame(minHeight: 32) }
+                if let message = account.message {
+                    Text(message).font(.yqSubhead).foregroundStyle(Color.yqSecondary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
                 }
-                if account.busy { ProgressView() }
-                if let message = account.message { Text(message).font(.yqSubhead).foregroundStyle(Color.yqSecondary) }
-                NavigationLink("Sources & privacy") { AboutView() }.font(.yqCaption)
-            }.font(.yqBody).padding(24).disabled(account.busy)
-        }.yqScreen().navigationTitle("Account").navigationBarTitleDisplayMode(.inline)
-            .onChange(of: email) { _, _ in sent = false; code = "" }
-            .onChange(of: creating) { _, _ in sent = false; code = "" }
-            .confirmationDialog("Delete your Haneen account?", isPresented: $confirmDelete, titleVisibility: .visible) {
-                Button("Delete account", role: .destructive) { Task { await account.deleteAccount() } }
-            } message: { Text("Your sign-in account will be permanently deleted. Local notes and bookmarks stay on this iPhone.") }
+                NavigationLink { AboutView() } label: {
+                    HStack {
+                        CompanionIllustration(artwork: .help, size: 32)
+                        Text("Sources & privacy").font(.yqSubheadBold)
+                        Spacer()
+                        Image(systemName: "chevron.right").font(.caption)
+                    }.padding(16).yqCard(cornerRadius: 20)
+                }.buttonStyle(.plain)
+            }.padding(20).font(.yqBody).disabled(account.busy)
+        }
+        .background(Color.yqSurface.ignoresSafeArea())
+        .navigationTitle("Account").navigationBarTitleDisplayMode(.inline)
+        .onChange(of: email) { _, _ in sent = false; code = "" }
+        .onChange(of: creating) { _, _ in sent = false; code = "" }
+        .sheet(isPresented: $showDelete) { AccountDeletionSheet() }
+    }
+
+    private var connectedContent: some View {
+        VStack(spacing: 20) {
+            VStack(alignment: .leading, spacing: 14) {
+                Text("SIGNED IN").font(.yqCaption).foregroundStyle(Color.yqAccentDeep)
+                Text(account.email ?? "Connected").font(.yqHeadline).textSelection(.enabled)
+                    .fixedSize(horizontal: false, vertical: true)
+                Divider()
+                HStack(alignment: .top, spacing: 12) {
+                    CompanionIllustration(artwork: .saved, size: 42)
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Your library stays with you").font(.yqSubheadBold)
+                        Text("Notes and bookmarks are stored on this iPhone. Signing out keeps them here.")
+                            .font(.yqSubhead).foregroundStyle(Color.yqSecondary)
+                    }
+                }
+            }.padding(20).frame(maxWidth: .infinity, alignment: .leading).yqCard(cornerRadius: 24)
+            Button { Task { await account.signOut() } } label: {
+                HStack(spacing: 12) {
+                    CompanionIllustration(artwork: .signout, size: 36)
+                    Text("Sign out").font(.yqHeadline)
+                    Spacer()
+                    Image(systemName: "chevron.right").font(.caption)
+                }.padding(16).yqCard(cornerRadius: 20)
+            }.buttonStyle(.plain)
+            Button { showDelete = true } label: {
+                Text("Delete account").font(.yqSubhead).foregroundStyle(.red).frame(minHeight: 44)
+            }.frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
+
+    private var signInContent: some View {
+        VStack(spacing: 16) {
+            Picker("Account", selection: $creating) { Text("Sign up").tag(true); Text("Sign in").tag(false) }.pickerStyle(.segmented)
+            SignInWithAppleButton(creating ? .signUp : .signIn, onRequest: account.prepareApple) { result in
+                Task { await account.completeApple(result) }
+            }.signInWithAppleButtonStyle(colorScheme == .dark ? .white : .black)
+                .frame(height: 52).clipShape(RoundedRectangle(cornerRadius: 14))
+            Button { Task { await account.google() } } label: {
+                HStack(spacing: 12) {
+                    Image("GoogleSignInLogo").resizable().frame(width: 20, height: 20)
+                    Text("Continue with Google").font(.yqHeadline)
+                }.frame(maxWidth: .infinity).frame(height: 52).yqCard(cornerRadius: 14)
+            }.buttonStyle(.plain)
+            HStack { Rectangle().frame(height: 1); Text("or email").font(.yqCaption).fixedSize(); Rectangle().frame(height: 1) }
+                .foregroundStyle(Color.yqSecondary).padding(.vertical, 8)
+            TextField("Email address", text: $email).textContentType(.emailAddress).keyboardType(.emailAddress)
+                .textInputAutocapitalization(.never).autocorrectionDisabled()
+                .padding(16).background(Color.yqFill, in: RoundedRectangle(cornerRadius: 14))
+            if sent {
+                TextField("Email code", text: $code).textContentType(.oneTimeCode).keyboardType(.numberPad)
+                    .padding(16).background(Color.yqFill, in: RoundedRectangle(cornerRadius: 14))
+                Button("Verify & continue") { Task { await account.verify(email: email, code: code) } }
+                    .buttonStyle(.borderedProminent).disabled(code.count < 6)
+            }
+            Button { Task { sent = await account.sendCode(email: email, creating: creating) } } label: {
+                Text(sent ? "Send another email" : "Continue with email").font(.yqHeadline)
+                    .frame(maxWidth: .infinity).frame(height: 52)
+                    .background(Color.yqAccentDeep, in: RoundedRectangle(cornerRadius: 14)).foregroundStyle(Color.yqOnAccent)
+            }.buttonStyle(.plain).disabled(!CompanionAccount.validEmail(email)).opacity(CompanionAccount.validEmail(email) ? 1 : 0.45)
+            Text("Your reading and local library are also available without an account.")
+                .font(.yqCaption).foregroundStyle(Color.yqSecondary).multilineTextAlignment(.center)
+        }.disabled(!account.configured)
     }
 }
 
+private struct AccountDeletionSheet: View {
+    @ObservedObject private var account = CompanionAccount.shared
+    @Environment(\.dismiss) private var dismiss
+    @State private var reason = ""
+    @State private var feedback = ""
+    @State private var confirm = false
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section {
+                    Text("Your sign-in account will be permanently deleted. Your local notes and bookmarks stay on this iPhone.")
+                        .font(.yqSubhead)
+                }
+                Section {
+                    Picker("Reason", selection: $reason) {
+                        Text("Prefer not to say").tag("")
+                        Text("I don’t use it enough").tag("not_using")
+                        Text("Something isn’t working").tag("technical")
+                        Text("Privacy concerns").tag("privacy")
+                        Text("I’m using another app").tag("another_app")
+                        Text("Something else").tag("other")
+                    }
+                    TextField("What could we improve?", text: $feedback, axis: .vertical)
+                        .lineLimit(4...7)
+                        .onChange(of: feedback) { _, value in if value.count > 1000 { feedback = String(value.prefix(1000)) } }
+                } header: { Text("Optional feedback") }
+                  footer: { Text("If you leave feedback, it is sent to Haneen without your account identifier. Please leave out personal details. You can delete without answering.") }
+                Section {
+                    Button("Delete account", role: .destructive) { confirm = true }
+                        .disabled(account.busy)
+                    if account.busy { ProgressView("Deleting account…") }
+                    if let message = account.message { Text(message).font(.yqSubhead).foregroundStyle(Color.yqSecondary) }
+                }
+            }.font(.yqBody).navigationTitle("Delete account").navigationBarTitleDisplayMode(.inline)
+                .toolbar { ToolbarItem(placement: .cancellationAction) { Button("Cancel") { dismiss() }.disabled(account.busy) } }
+                .confirmationDialog("Permanently delete your account?", isPresented: $confirm, titleVisibility: .visible) {
+                    Button("Delete account", role: .destructive) { Task {
+                        await account.deleteAccount(reason: reason, feedback: feedback)
+                        if !account.signedIn { dismiss() }
+                    } }
+                }
+        }
+    }
+}
 
 /// Obtain a fresh, single-use code only after the user confirms account deletion.
 /// The server verifies its Apple subject against the signed-in Supabase identity.

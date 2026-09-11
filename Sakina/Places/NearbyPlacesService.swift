@@ -177,6 +177,8 @@ final class NearbyPlacesService: NSObject, ObservableObject, @preconcurrency CLL
     private var continuation: CheckedContinuation<CLLocation, Error>?
     private var cachedLocation: CLLocation?
     private var searchTask: Task<Void, Never>?
+    private var locationTimeout: Task<Void, Never>?
+    @Published private(set) var updating = false
 
     var canWiden: Bool { radiusMeters < Self.maximumRadiusMeters }
 
@@ -215,7 +217,7 @@ final class NearbyPlacesService: NSObject, ObservableObject, @preconcurrency CLL
     }
 
     private func run(_ kind: NearbyPlaceKind) {
-        searchTask?.cancel()
+        cancel()
         searchTask = Task { [weak self] in
             await self?.perform(kind)
         }
@@ -250,32 +252,40 @@ final class NearbyPlacesService: NSObject, ObservableObject, @preconcurrency CLL
         let radius = radiusMeters
         let language = language
 
-        async let appleOutcome = Self.searchApple(kind: kind, around: location, radius: radius)
-        async let osmOutcome = Self.searchOverpass(kind: kind, around: location, radius: radius, language: language)
-        let (apple, osm) = await (appleOutcome, osmOutcome)
-
-        if Task.isCancelled { return }
-
-        var failures: Set<PlaceSource> = []
-        var candidates: [Candidate] = []
-        switch apple {
-        case let .success(items): candidates += items
-        case .failure: failures.insert(.appleMaps)
+        updating = true
+        defer { if !Task.isCancelled { updating = false } }
+        await withTaskGroup(of: (PlaceSource, Result<[Candidate], Error>).self) { group in
+            group.addTask { (.appleMaps, await Self.searchApple(kind: kind, around: location, radius: radius)) }
+            group.addTask { (.openStreetMap, await Self.searchOverpass(kind: kind, around: location, radius: radius, language: language)) }
+            var candidates: [Candidate] = []
+            var successes = 0
+            for await (source, result) in group {
+                guard !Task.isCancelled else { group.cancelAll(); return }
+                switch result {
+                case .success(let items): candidates += items; successes += 1
+                case .failure: unavailableSources.insert(source)
+                }
+                // Show useful results immediately; the slower source enriches them later.
+                if !candidates.isEmpty {
+                    lastUpdated = .now
+                    state = .results(Array(Self.merge(candidates, around: location).prefix(Self.resultCap)))
+                }
+            }
+            guard !Task.isCancelled else { return }
+            if successes == 0 { state = .failed(NearbyPlacesError.allSourcesFailed.message(language)) }
+            else {
+                lastUpdated = .now
+                state = .results(Array(Self.merge(candidates, around: location).prefix(Self.resultCap)))
+            }
         }
-        switch osm {
-        case let .success(items): candidates += items
-        case .failure: failures.insert(.openStreetMap)
-        }
-        unavailableSources = failures
+    }
 
-        if failures.count == PlaceSource.allCases.count {
-            state = .failed(NearbyPlacesError.allSourcesFailed.message(language))
-            return
-        }
-
-        let merged = Self.merge(candidates, around: location)
-        lastUpdated = .now
-        state = .results(Array(merged.prefix(Self.resultCap)))
+    func cancel() {
+        searchTask?.cancel()
+        searchTask = nil
+        locationTimeout?.cancel()
+        finish(with: .failure(CancellationError()))
+        updating = false
     }
 
     // MARK: Location
@@ -284,6 +294,8 @@ final class NearbyPlacesService: NSObject, ObservableObject, @preconcurrency CLL
         if let cachedLocation, Date.now.timeIntervalSince(cachedLocation.timestamp) < 120 {
             return cachedLocation
         }
+        if let recent = manager.location, recent.horizontalAccuracy >= 0,
+           abs(recent.timestamp.timeIntervalSinceNow) < 120 { return recent }
         guard continuation == nil else { throw NearbyPlacesError.requestAlreadyInProgress }
 
         let location = try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<CLLocation, Error>) in
@@ -300,6 +312,11 @@ final class NearbyPlacesService: NSObject, ObservableObject, @preconcurrency CLL
             manager.requestWhenInUseAuthorization()
         case .authorizedWhenInUse, .authorizedAlways:
             manager.requestLocation()
+            locationTimeout?.cancel()
+            locationTimeout = Task { [weak self] in
+                do { try await Task.sleep(for: .seconds(12)) } catch { return }
+                self?.finish(with: .failure(NearbyPlacesError.locationUnavailable))
+            }
         case .denied:
             finish(with: .failure(NearbyPlacesError.permissionDenied))
         case .restricted:
@@ -335,6 +352,8 @@ final class NearbyPlacesService: NSObject, ObservableObject, @preconcurrency CLL
     private func finish(with result: Result<CLLocation, Error>) {
         guard let continuation else { return }
         self.continuation = nil
+        locationTimeout?.cancel()
+        locationTimeout = nil
         continuation.resume(with: result)
     }
 
@@ -365,14 +384,22 @@ final class NearbyPlacesService: NSObject, ObservableObject, @preconcurrency CLL
         var lastError: Error?
 
         await withTaskGroup(of: Result<[Candidate], Error>.self) { group in
-            for query in kind.searchQueries {
+            for query in kind.searchQueries.prefix(1) {
                 group.addTask {
                     do {
                         let request = MKLocalSearch.Request()
                         request.naturalLanguageQuery = query
                         request.region = region
                         request.resultTypes = .pointOfInterest
-                        let response = try await MKLocalSearch(request: request).start()
+                        let search = MKLocalSearch(request: request)
+                        let timeout = Task {
+                            do { try await Task.sleep(for: .seconds(10)) } catch { return }
+                            search.cancel()
+                        }
+                        defer { timeout.cancel() }
+                        let response = try await withTaskCancellationHandler {
+                            try await search.start()
+                        } onCancel: { search.cancel() }
                         let hits = response.mapItems.compactMap { item in
                             Self.candidate(from: item, query: query, kind: kind, origin: location, radius: radius)
                         }
@@ -508,7 +535,7 @@ final class NearbyPlacesService: NSObject, ObservableObject, @preconcurrency CLL
         switch kind {
         case .mosques:
             return """
-            [out:json][timeout:20];
+            [out:json][timeout:10];
             (
               nwr["amenity"="place_of_worship"]["religion"="muslim"]\(around);
               nwr["building"="mosque"]\(around);
@@ -518,7 +545,7 @@ final class NearbyPlacesService: NSObject, ObservableObject, @preconcurrency CLL
         case .halal:
             let food = "[\"amenity\"~\"^(restaurant|cafe|fast_food|food_court)$\"]"
             return """
-            [out:json][timeout:20];
+            [out:json][timeout:10];
             (
               nwr["diet:halal"~"^(yes|only)$"]\(food)\(around);
               nwr["cuisine"~"halal"]\(food)\(around);
@@ -534,10 +561,11 @@ final class NearbyPlacesService: NSObject, ObservableObject, @preconcurrency CLL
         guard let encoded = query.addingPercentEncoding(withAllowedCharacters: .alphanumerics) else {
             return .failure(NearbyPlacesError.overpassUnavailable)
         }
-        for endpoint in overpassEndpoints {
+        for endpoint in overpassEndpoints.prefix(1) {
+            if Task.isCancelled { return .failure(CancellationError()) }
             var request = URLRequest(url: endpoint)
             request.httpMethod = "POST"
-            request.timeoutInterval = 22
+            request.timeoutInterval = 12
             request.setValue("application/x-www-form-urlencoded; charset=utf-8", forHTTPHeaderField: "Content-Type")
             request.setValue("Haneen iOS (nearby places)", forHTTPHeaderField: "User-Agent")
             request.httpBody = Data("data=\(encoded)".utf8)

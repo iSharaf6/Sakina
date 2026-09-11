@@ -65,6 +65,7 @@ struct NearbyPlacesView: View {
             }
         }
         .task { service.search(kind) }
+        .onDisappear { service.cancel() }
         .onAppear { appeared = true }
         .onChange(of: service.state) { _, newState in
             switch newState {
@@ -313,6 +314,7 @@ struct NearbyPlacesView: View {
         VStack(alignment: .leading, spacing: 4) {
             Text(copy("Search radius \(NearbyPlace.formatDistance(service.radiusMeters, language: language)). Map data from Apple Maps and © OpenStreetMap contributors.",
                       "نطاق البحث \(NearbyPlace.formatDistance(service.radiusMeters, language: language)). بيانات الخريطة من خرائط Apple ومساهمي © OpenStreetMap."))
+            if service.updating { Text(copy("Checking the other map source…", "جارٍ التحقق من مصدر الخريطة الآخر…")) }
             if let updated = service.lastUpdated {
                 let time = updated.formatted(Date.FormatStyle(date: .omitted, time: .shortened).locale(language.locale))
                 Text(copy("Updated \(time).", "حُدِّث في \(time)."))

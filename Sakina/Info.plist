@@ -25,6 +25,7 @@
 			<string>com.islamsharaf.yaqeen</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
+				<string>com.googleusercontent.apps.440090376926-ms29b34vpbi7h645052qcd3nkrim5s6m</string>
 				<string>haneen</string>
 				<string>sakina</string>
 				<string>yaqeen</string>
@@ -33,6 +34,10 @@
 	</array>
 	<key>CFBundleVersion</key>
 	<string>1</string>
+	<key>GIDClientID</key>
+	<string>440090376926-ms29b34vpbi7h645052qcd3nkrim5s6m.apps.googleusercontent.com</string>
+	<key>GIDServerClientID</key>
+	<string>440090376926-re87tf7dmj20a6u1hn0939rd2kp4ljsa.apps.googleusercontent.com</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>LSApplicationQueriesSchemes</key>

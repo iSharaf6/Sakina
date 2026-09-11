@@ -1,13 +1,13 @@
 import AppKit
 import ImageIO
 let root = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
-// Run from the repository root after the approved transparent master is installed.
-let src = CGImageSourceCreateWithURL(root.appendingPathComponent("Shared/CompanionAssets.xcassets/YaqeenBrand.imageset/logo.png") as CFURL, nil)!
+// Run from the repository root after the approved opaque app-icon master is installed.
+let src = CGImageSourceCreateWithURL(root.appendingPathComponent("Design/HaneenBrand/AppIcon-Sage.png") as CFURL, nil)!
 let img=CGImageSourceCreateImageAtIndex(src,0,nil)!
 print("Brand alpha:", img.alphaInfo.rawValue)
 func icon(_ size:Int,_ path:String) throws {
  let ctx=CGContext(data:nil,width:size,height:size,bitsPerComponent:8,bytesPerRow:size*4,space:CGColorSpaceCreateDeviceRGB(),bitmapInfo:CGImageAlphaInfo.noneSkipLast.rawValue)!
- ctx.setFillColor(CGColor(red:0.99,green:0.98,blue:0.95,alpha:1));ctx.fill(CGRect(x:0,y:0,width:size,height:size))
+ ctx.setFillColor(CGColor(red:0.64,green:0.71,blue:0.61,alpha:1));ctx.fill(CGRect(x:0,y:0,width:size,height:size))
  ctx.interpolationQuality = .high
  ctx.draw(img,in:CGRect(x:0,y:0,width:size,height:size))
  let out=CGImageDestinationCreateWithURL(root.appendingPathComponent(path) as CFURL,"public.png" as CFString,1,nil)!

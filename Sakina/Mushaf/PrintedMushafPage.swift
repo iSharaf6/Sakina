@@ -149,6 +149,21 @@ final class PrintedMushafCanvas: UIView {
         let origin: CGPoint // baseline in UIKit's top-down coordinates
         let rect: CGRect
     }
+    private final class LayoutEntry {
+        let words: [PositionedWord]
+        let headers: [(surah: QuranSurah, row: Int)]
+        let fontSize: CGFloat
+        let rowHeight: CGFloat
+        let rowOffset: CGFloat
+        init(_ canvas: PrintedMushafCanvas) {
+            words = canvas.positioned; headers = canvas.headers
+            fontSize = canvas.renderedFontSize; rowHeight = canvas.rowHeight; rowOffset = canvas.rowOffset
+        }
+    }
+    // Retain shaped text for recent pages in either direction; bounded under memory pressure.
+    private static let layouts: NSCache<NSString, LayoutEntry> = {
+        let cache = NSCache<NSString, LayoutEntry>(); cache.countLimit = 12; return cache
+    }()
     private(set) var positioned: [PositionedWord] = []
     private(set) var renderedFontSize: CGFloat = 0
     private var page = 0
@@ -215,6 +230,13 @@ final class PrintedMushafCanvas: UIView {
     }
 
     private func typeset() {
+        let cacheKey = "\(page):\(bounds.width):\(bounds.height):\(dark):\(colorMarkers)" as NSString
+        if let cached = Self.layouts.object(forKey: cacheKey) {
+            positioned = cached.words; headers = cached.headers; renderedFontSize = cached.fontSize
+            rowHeight = cached.rowHeight; rowOffset = cached.rowOffset
+            rebuildAccessibility()
+            return
+        }
         positioned = []
         headers = []
         guard !words.isEmpty else { return }
@@ -275,6 +297,7 @@ final class PrintedMushafCanvas: UIView {
             let headerRow = word.l - (surah.bismillahPre ? 2 : 1)
             if headerRow >= 1 { headers.append((surah, headerRow)) }
         }
+        Self.layouts.setObject(LayoutEntry(self), forKey: cacheKey)
         rebuildAccessibility()
     }
 

@@ -139,7 +139,7 @@ struct RootView: View {
         }
         .onOpenURL { url in
             if url.host == "auth-callback" { Task { await CompanionAccount.shared.handle(url) }; return }
-            if account.isConfigured, account.handle(url) { return }
+            if account.handle(url) { return }
             if handleCompanionURL(url) { return }
             guard let scheme = url.scheme, ["haneen", "sakina", "yaqeen"].contains(scheme) else { return }
 

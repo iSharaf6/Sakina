@@ -3,6 +3,7 @@ export type DeletionServices = {
   authenticate: (token: string) => Promise<DeletionUser | null>;
   revokeApple: (code: string, subject: string) => Promise<void>;
   deleteUser: (id: string) => Promise<void>;
+  saveFeedback?: (reason: string, feedback: string) => Promise<void>;
 };
 
 // Authenticate before accepting any identity information from the request body.
@@ -16,10 +17,10 @@ export async function handleDeletion(request: Request, services: DeletionService
   try {
     const user = await services.authenticate(authorization.slice(7));
     if (!user) return reply(401, "unauthorized");
+    let body: { appleAuthorizationCode?: unknown; reason?: unknown; feedback?: unknown } = {};
+    try { body = await request.json(); } catch { /* An empty body is valid for non-Apple accounts. */ }
     const apple = user.identities?.find((identity) => identity.provider === "apple");
     if (apple) {
-      let body: { appleAuthorizationCode?: unknown };
-      try { body = await request.json(); } catch { return reply(400, "apple_authorization_required"); }
       const code = body?.appleAuthorizationCode;
       if (typeof code !== "string" || !code.trim() || code.length > 4096) return reply(400, "apple_authorization_required");
       const subject = typeof apple.identity_data?.sub === "string" ? apple.identity_data.sub : apple.id;
@@ -29,6 +30,13 @@ export async function handleDeletion(request: Request, services: DeletionService
       catch { return reply(409, "apple_revocation_failed"); }
     }
     await services.deleteUser(user.id);
+    const allowed = ["not_using", "technical", "privacy", "another_app", "other"];
+    const reason = typeof body?.reason === "string" && allowed.includes(body.reason) ? body.reason : "";
+    const feedback = typeof body?.feedback === "string" ? body.feedback.trim().slice(0, 1000) : "";
+    if ((reason || feedback) && services.saveFeedback) {
+      // Optional feedback must never prevent account deletion; no account identifier is retained.
+      try { await services.saveFeedback(reason, feedback); } catch { /* Deletion already succeeded. */ }
+    }
     return reply(200);
   } catch { return reply(500, "deletion_failed"); }
 }

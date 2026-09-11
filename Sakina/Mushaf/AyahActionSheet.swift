@@ -658,10 +658,7 @@ private struct ActionTile: View {
                         .controlSize(.small)
                         .tint(active ? Color.yqOnAccent : Color.yqAccentDeep)
                 } else {
-                    Image(systemName: symbol)
-                        .font(.system(size: 19, weight: .semibold))
-                        .foregroundStyle(active ? Color.yqOnAccent : Color.yqInk)
-                        .contentTransition(.symbolEffect(.replace))
+                    CompanionIllustration(artwork: ayahArtwork(for: symbol), size: 42)
                 }
             }
             .frame(width: 48, height: 48)
@@ -694,8 +691,7 @@ private struct CategoryChip: View {
 
     var body: some View {
         HStack(spacing: 6) {
-            Image(systemName: symbol)
-                .font(.system(size: 13, weight: .semibold))
+            CompanionIllustration(artwork: ayahArtwork(for: symbol), size: 30)
             Text(title)
                 .font(.yqSubheadMedium)
                 .lineLimit(1)
@@ -777,11 +773,29 @@ struct AyahSelectionBar: View {
     }
     private func action(_ title: String, icon: String, prominent: Bool = false, perform: @escaping () -> Void) -> some View {
         Button { Haptics.press(); perform() } label: {
-            Label(title, systemImage: icon).font(.yqSubheadBold)
+            HStack(spacing: 6) {
+                CompanionIllustration(artwork: ayahArtwork(for: icon), size: 30)
+                Text(title).font(.yqSubheadBold)
+            }
                 .frame(maxWidth: .infinity).frame(minHeight: 44)
                 .background(prominent ? Color.yqAccentDeep : Color.yqAccentTint, in: RoundedRectangle(cornerRadius: 14))
                 .foregroundStyle(prominent ? Color.yqOnAccent : Color.yqAccentDeep)
                 .contentShape(RoundedRectangle(cornerRadius: 14))
         }.buttonStyle(.yqPressSoft)
+    }
+}
+
+/// Keep library actions in the same illustrated family as the rest of Haneen.
+private func ayahArtwork(for symbol: String) -> CompanionArtwork {
+    switch symbol {
+    case "cloud.rain.fill": return .sad
+    case "sun.max.fill": return .hopeful
+    case "leaf.fill": return .grateful
+    case "heart", "heart.fill": return .happy
+    case "play.fill", "pause.fill", "speaker.wave.2.fill": return .reciter
+    case "square.and.arrow.up": return .share
+    case "square.and.pencil", "note.text", "pencil", "plus": return .journal
+    case "ellipsis": return .help
+    default: return CompanionArtwork.badge(for: symbol) ?? .saved
     }
 }

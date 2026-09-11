@@ -13,6 +13,10 @@ Deno.serve(async (request) => {
       return error ? null : data.user;
     },
     revokeApple: revokeAppleAuthorization,
+    saveFeedback: async (reason, feedback) => {
+      const { error } = await admin.from("account_exit_feedback").insert({ reason, feedback });
+      if (error) throw error;
+    },
     deleteUser: async (id) => {
       const { error } = await admin.auth.admin.deleteUser(id);
       if (error) throw error;
