@@ -55,6 +55,9 @@ struct PrintedMushafPage: View {
     let language: AppLanguage
     let onTap: (QuranAyah) -> Void
     let onPageTap: () -> Void
+    var onSurahTap: () -> Void = {}
+    var onJuzTap: () -> Void = {}
+    var selectedKey: String? = nil
     @ObservedObject private var library = AyahLibrary.shared
     @ObservedObject private var player = MushafPlayer.shared
     @Environment(\.colorScheme) private var colorScheme
@@ -71,7 +74,7 @@ struct PrintedMushafPage: View {
             .padding(.top, 5)
 
             PrintedMushafText(page: page, highlights: highlights, playingKey: player.playingKey,
-                             colorMarkers: library.colorReferenceMarks, dark: colorScheme == .dark, onTap: onTap)
+                             colorMarkers: library.colorReferenceMarks, dark: colorScheme == .dark, selectedKey: selectedKey, onTap: onTap)
                 .padding(.horizontal, 31)
                 .padding(.vertical, 5)
 
@@ -97,7 +100,11 @@ struct PrintedMushafPage: View {
     }
 
     private func cartouche(_ title: String, isJuz: Bool = false) -> some View {
-        Text(title)
+        Button(action: isJuz ? onJuzTap : onSurahTap) {
+        HStack(spacing: 5) {
+            Text(title)
+            Image(systemName: "chevron.down").font(.system(size: 8, weight: .semibold)).foregroundStyle(MushafPaper.gold)
+        }
             .font(isJuz ? .system(size: 13, design: .serif) : .custom(QuranTextRenderer.uthmaniFontName, fixedSize: 15))
             .foregroundStyle(Color(uiColor: MushafPaper.ink))
             .lineLimit(1)
@@ -106,6 +113,12 @@ struct PrintedMushafPage: View {
             .padding(.vertical, 1)
             .background(MushafPaper.background)
             .overlay(Capsule().stroke(MushafPaper.gold.opacity(0.65), lineWidth: 0.65))
+            .frame(minHeight: 44)
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(language.pick(isJuz ? "Choose juz" : "Choose surah", isJuz ? "اختر الجزء" : "اختر السورة"))
+        .accessibilityValue(title)
     }
 }
 
@@ -115,13 +128,14 @@ private struct PrintedMushafText: UIViewRepresentable {
     let playingKey: String?
     let colorMarkers: Bool
     let dark: Bool
+    let selectedKey: String?
     let onTap: (QuranAyah) -> Void
 
     func makeUIView(context: Context) -> PrintedMushafCanvas { PrintedMushafCanvas() }
     func updateUIView(_ view: PrintedMushafCanvas, context: Context) {
         view.onTap = onTap
         view.configure(page: page, highlights: highlights, playingKey: playingKey,
-                       colorMarkers: colorMarkers, dark: dark)
+                       colorMarkers: colorMarkers, dark: dark, selectedKey: selectedKey)
     }
 }
 
@@ -143,6 +157,7 @@ final class PrintedMushafCanvas: UIView {
     private var playingKey: String?
     private var colorMarkers = true
     private var dark = false
+    private var selectedKey: String?
     private var previousSize = CGSize.zero
     private var headers: [(surah: QuranSurah, row: Int)] = []
     private var rowHeight: CGFloat = 0
@@ -160,15 +175,16 @@ final class PrintedMushafCanvas: UIView {
     }
     required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
 
-    func configure(page: Int, highlights: [String: HighlightColor], playingKey: String?, colorMarkers: Bool, dark: Bool) {
+    func configure(page: Int, highlights: [String: HighlightColor], playingKey: String?, colorMarkers: Bool, dark: Bool, selectedKey: String? = nil) {
         guard self.page != page || self.highlights != highlights || self.playingKey != playingKey
-                || self.colorMarkers != colorMarkers || self.dark != dark else { return }
+                || self.colorMarkers != colorMarkers || self.dark != dark || self.selectedKey != selectedKey else { return }
         self.page = page
         self.words = MushafLineStore.shared.words(on: page)
         self.highlights = highlights
         self.playingKey = playingKey
         self.colorMarkers = colorMarkers
         self.dark = dark
+        self.selectedKey = selectedKey
         previousSize = .zero
         setNeedsLayout()
     }
@@ -259,7 +275,8 @@ final class PrintedMushafCanvas: UIView {
         guard let context = UIGraphicsGetCurrentContext() else { return }
         for item in positioned {
             let tint: UIColor?
-            if playingKey == item.word.k { tint = UIColor.systemGreen.withAlphaComponent(dark ? 0.24 : 0.12) }
+            if selectedKey == item.word.k { tint = UIColor.systemGreen.withAlphaComponent(dark ? 0.32 : 0.20) }
+            else if playingKey == item.word.k { tint = UIColor.systemGreen.withAlphaComponent(dark ? 0.24 : 0.12) }
             else { tint = highlights[item.word.k]?.uiColor.withAlphaComponent(0.2) }
             if let tint {
                 tint.setFill()
@@ -339,7 +356,7 @@ final class PrintedMushafCanvas: UIView {
     }
 }
 
-private final class VerseAccessibilityElement: UIAccessibilityElement {
+final class VerseAccessibilityElement: UIAccessibilityElement {
     var activate: (() -> Void)?
     override func accessibilityActivate() -> Bool { activate?(); return true }
 }

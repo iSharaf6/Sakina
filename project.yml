@@ -62,6 +62,8 @@ targets:
               - yaqeen
         UIAppFonts:
           - UthmanicHafs.ttf
+          - HafsSmart.ttf
+          - IndoPak.ttf
     dependencies:
       - target: SakinaWidget
         embed: true

@@ -118,6 +118,8 @@
 		5ACC6245C72768E6172A0B30 /* hafs-smart.json in Resources */ = {isa = PBXBuildFile; fileRef = 6F11C20B8FC458A0D2CD3AE3 /* hafs-smart.json */; };
 		D10200000000000000000002 /* PrintedMushafPage.swift in Sources */ = {isa = PBXBuildFile; fileRef = D10200000000000000000001 /* PrintedMushafPage.swift */; };
 		D10200000000000000000004 /* mushaf-lines.json in Resources */ = {isa = PBXBuildFile; fileRef = D10200000000000000000003 /* mushaf-lines.json */; };
+		D10300000000000000000002 /* IndoPak.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D10300000000000000000001 /* IndoPak.ttf */; };
+		D10300000000000000000004 /* quran-transliteration.json in Resources */ = {isa = PBXBuildFile; fileRef = D10300000000000000000003 /* quran-transliteration.json */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -258,6 +260,8 @@
 		6F11C20B8FC458A0D2CD3AE3 /* hafs-smart.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = hafs-smart.json; sourceTree = "<group>"; };
 		D10200000000000000000001 /* PrintedMushafPage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "PrintedMushafPage.swift"; sourceTree = "<group>"; };
 		D10200000000000000000003 /* mushaf-lines.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "mushaf-lines.json"; sourceTree = "<group>"; };
+		D10300000000000000000001 /* IndoPak.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "IndoPak.ttf"; sourceTree = "<group>"; };
+		D10300000000000000000003 /* quran-transliteration.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "quran-transliteration.json"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -444,6 +448,8 @@
 		C05A71F312F6DAB97685A9B7 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				D10300000000000000000001 /* IndoPak.ttf */,
+				D10300000000000000000003 /* quran-transliteration.json */,
 				6620EC3873EEF13F6200F77A /* HafsSmart.ttf */,
 				D10200000000000000000003 /* mushaf-lines.json */,
 				FAA11D5F405A2BF91BEDF0F0 /* AppIcon60x60@2x.png */,
@@ -677,6 +683,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				5ACC6245C72768E6172A0B30 /* hafs-smart.json in Resources */,
+				D10300000000000000000002 /* IndoPak.ttf in Resources */,
+				D10300000000000000000004 /* quran-transliteration.json in Resources */,
 				C090EBDAC41EA9B837FE5FC0 /* HafsSmart.ttf in Resources */,
 				D10200000000000000000004 /* mushaf-lines.json in Resources */,
 				AB75D9E1FD123715FA8ABA9A /* translations.json in Resources */,

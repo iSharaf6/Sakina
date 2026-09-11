@@ -21,6 +21,7 @@ struct MushafView: View {
     @State private var surahNumber = 1
     @State private var currentJuz = 1
     @State private var selectedAyah: QuranAyah?
+    @State private var activeAyah: QuranAyah?
     @State private var focusKey: String?
     @State private var pulseKey: String?
     @State private var pulseVisible = false
@@ -34,23 +35,25 @@ struct MushafView: View {
     @State private var showSettings = false
     @State private var textProxy = MushafTextProxy()
     @State private var tracker = ScrollTracker()
-    @State private var fitCache = FitCache()
 
     @ObservedObject private var library = AyahLibrary.shared
     @ObservedObject private var player = MushafPlayer.shared
 
+    @AppStorage(MushafPreferences.presentationKey) private var presentation: MushafPreferences.Presentation = .traditional
+    @AppStorage(MushafPreferences.themeKey) private var theme: MushafPreferences.Theme = .system
+    @AppStorage(SettingsKeys.transliterationVisible) private var showTransliteration = true
+    @AppStorage("yaqeen.mushaf.didSelectAyah") private var didSelectAyah = false
     @AppStorage(MushafPreferences.layoutKey) private var layout: MushafPreferences.Layout = .page
     @AppStorage(MushafPreferences.directionKey) private var direction: MushafPreferences.Direction = .horizontal
     @AppStorage(MushafPreferences.scriptKey) private var script: QuranScript = .uthmani
     @AppStorage(MushafPreferences.translationKey) private var translationEdition = QuranTranslationEdition.saheehInternational.id
-    @AppStorage(MushafPreferences.showTranslationKey) private var showTranslation = false
+    @AppStorage(MushafPreferences.showTranslationKey) private var showTranslation = true
     @AppStorage(MushafPreferences.fontScaleKey) private var fontScale = 1.0
-    @AppStorage(MushafPreferences.fitKey) private var fitPage = true
     @AppStorage("yaqeen.mushaf.printedPage") private var lastPrintedPage = 1
     @AppStorage("yaqeen.mushaf.printedKey") private var lastPrintedKey = ""
 
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @ScaledMetric(relativeTo: .title2) private var baseArabicSize = 24.0
+    @ScaledMetric(relativeTo: .title2) private var baseArabicSize = 28.0
 
     private var copy: AppCopy { AppCopy(language: language) }
 
@@ -67,20 +70,6 @@ struct MushafView: View {
     final class ScrollTracker {
         var textTop: CGFloat = 0
         var visibleTask: Task<Void, Never>?
-    }
-
-    /// Fitted font sizes by page and screen, so a page turn never measures
-    /// twice. A reference type: it is filled while the body is evaluated,
-    /// and the answer for a key never changes.
-    final class FitCache {
-        struct Key: Hashable {
-            let page: Int
-            let width: CGFloat
-            let height: CGFloat
-            let maxFontSize: CGFloat
-            let script: QuranScript
-        }
-        var sizes: [Key: CGFloat] = [:]
     }
 
     /// Snaps page by page when the pages are one screen tall; otherwise
@@ -103,7 +92,7 @@ struct MushafView: View {
     private var store: QuranStore { QuranStore.shared }
     private var surah: QuranSurah? { store.surah(surahNumber) }
     private var ayat: [QuranAyah] { store.ayat(in: surahNumber) }
-    private var printedLayout: Bool { layout == .page && fitPage && script == .uthmani && !MushafLineStore.shared.pages.isEmpty }
+    private var printedLayout: Bool { presentation == .traditional && !MushafLineStore.shared.pages.isEmpty }
     private func readingPage(for ayah: QuranAyah) -> Int {
         printedLayout ? (MushafLineStore.shared.page(for: ayah.key) ?? ayah.page) : ayah.page
     }
@@ -111,6 +100,8 @@ struct MushafView: View {
         if printedLayout, let key = MushafLineStore.shared.words(on: number).first?.k { return store.ayah(key) }
         return store.firstAyah(onPage: number)
     }
+    private var readerBackground: Color { presentation == .traditional ? MushafPaper.background : Color.yqSurface }
+    private var readerAccent: Color { presentation == .traditional ? MushafPaper.gold : .yqAccentDeep }
     private var fontSize: CGFloat { baseArabicSize * fontScale }
 
     private var highlights: [String: HighlightColor] {
@@ -155,9 +146,10 @@ struct MushafView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
         }
-        .background(MushafPaper.background.ignoresSafeArea())
-        .tint(MushafPaper.gold)
-        .toolbarBackground(MushafPaper.background, for: .navigationBar)
+        .background(readerBackground.ignoresSafeArea())
+        .preferredColorScheme(theme.colorScheme)
+        .tint(readerAccent)
+        .toolbarBackground(readerBackground, for: .navigationBar)
         .toolbarRole(.editor)
         .toolbar(.visible, for: .navigationBar)
         .toolbar(showsTabBar && !focusedReading ? .visible : .hidden, for: .tabBar)
@@ -170,14 +162,33 @@ struct MushafView: View {
                     focusedReading.toggle()
                 } label: {
                     Image(systemName: focusedReading ? "viewfinder.circle.fill" : "viewfinder")
-                        .foregroundStyle(MushafPaper.gold)
+                        .foregroundStyle(readerAccent)
                 }
                 .accessibilityLabel(copy(focusedReading ? "Show app tabs" : "Focus reading", focusedReading ? "إظهار التبويبات" : "القراءة بتركيز"))
                 moreMenu
             }
         }
+        .safeAreaInset(edge: .top, spacing: 0) {
+            if !didSelectAyah {
+                HStack(spacing: 8) {
+                    Image(systemName: "hand.tap")
+                    Text(copy("Tap an ayah to listen, save or read more", "اضغط على آية للاستماع أو الحفظ أو القراءة"))
+                    Spacer(minLength: 0)
+                    Button { didSelectAyah = true } label: { Image(systemName: "xmark").padding(8) }
+                        .accessibilityLabel(copy("Dismiss tip", "إخفاء التلميح"))
+                }
+                .font(.system(size: 12))
+                .foregroundStyle(Color.yqSecondary)
+                .padding(.horizontal, 20)
+                .padding(.vertical, 2)
+                .background(readerBackground)
+            }
+        }
         .safeAreaInset(edge: .bottom, spacing: 0) {
-            if player.playingKey != nil {
+            if let activeAyah {
+                AyahSelectionBar(ayah: activeAyah, language: language,
+                                 onMore: { selectedAyah = activeAyah }, onClose: { self.activeAyah = nil })
+            } else if player.playingKey != nil {
                 MushafPlayerBar(language: language) { key in
                     open(key: key, pulse: true)
                 }
@@ -221,12 +232,17 @@ struct MushafView: View {
             guard let key, let ayah = store.ayah(key) else { return }
             followAlong(ayah)
         }
-        .onChange(of: fitPage) { _, _ in restorePageAfterDisplayChange() }
+        .onChange(of: presentation) { _, new in
+            activeAyah = nil
+            if new == .traditional { layout = .page }
+            restorePageAfterDisplayChange()
+        }
         .onChange(of: script) { _, _ in restorePageAfterDisplayChange() }
         .onChange(of: layout) { old, new in
             switchLayout(from: old, to: new)
         }
         .onChange(of: page) { _, new in
+            activeAyah = nil
             pageDidChange(new)
         }
         .onDisappear {
@@ -295,7 +311,7 @@ struct MushafView: View {
             }
         } label: {
             Image(systemName: "ellipsis.circle")
-                .foregroundStyle(MushafPaper.gold)
+                .foregroundStyle(readerAccent)
         }
         .accessibilityLabel(copy("More", "المزيد"))
     }
@@ -321,7 +337,7 @@ struct MushafView: View {
             TabView(selection: pageTag) {
                 ForEach(1...QuranStore.pageCount, id: \.self) { tag in
                     let number = Self.page(forTag: tag)
-                    if fitPage {
+                    if printedLayout {
                         // One screen, no scrolling: the page is fitted to it.
                         pageView(number, windowed: true, size: geometry.size)
                             .frame(width: geometry.size.width, height: geometry.size.height)
@@ -339,8 +355,7 @@ struct MushafView: View {
             .tabViewStyle(.page(indexDisplayMode: .never))
             .environment(\.layoutDirection, .leftToRight)
         }
-        .accessibilityLabel(copy("Mushaf pages", "صفحات المصحف"))
-        .accessibilityValue(pageTitle)
+
     }
 
     /// The TabView tag for a page: pages count down from the right.
@@ -366,7 +381,7 @@ struct MushafView: View {
             ScrollView {
                 LazyVStack(spacing: 0) {
                     ForEach(1...QuranStore.pageCount, id: \.self) { number in
-                        if fitPage {
+                        if printedLayout {
                             pageView(number, windowed: false, size: geometry.size)
                                 .frame(height: geometry.size.height)
                                 .id(number)
@@ -379,7 +394,7 @@ struct MushafView: View {
                 }
                 .scrollTargetLayout()
             }
-            .scrollTargetBehavior(PageSnapping(enabled: fitPage))
+            .scrollTargetBehavior(PageSnapping(enabled: printedLayout))
             .scrollPosition(id: $scrolledPage)
             .scrollIndicators(.hidden)
             .onAppear { scrolledPage = page }
@@ -390,7 +405,7 @@ struct MushafView: View {
                 if scrolledPage != new { scrolledPage = new }
             }
         }
-        .accessibilityLabel(copy("Mushaf pages", "صفحات المصحف"))
+
     }
 
     /// One page of the mushaf. A paged TabView keeps every child alive, so
@@ -399,48 +414,68 @@ struct MushafView: View {
     @ViewBuilder
     private func pageView(_ number: Int, windowed: Bool, size: CGSize) -> some View {
         if windowed, abs(number - page) > 1 {
-            PageFrame(fit: fitPage)
-                .padding(.horizontal, MushafPageView.Metrics.outerHorizontal)
-                .padding(.vertical, MushafPageView.Metrics.outerVertical)
-                .accessibilityHidden(true)
+            readerBackground.accessibilityHidden(true)
         } else if printedLayout {
-            PrintedMushafPage(page: number, language: language, onTap: { ayah in
-                Haptics.tap()
-                library.lastReadKey = ayah.key
-                selectedAyah = ayah
-            }, onPageTap: { showPagePicker = true })
-                .frame(minHeight: fitPage ? nil : size.height)
+            PrintedMushafPage(page: number, language: language, onTap: selectAyah,
+                             onPageTap: { showPagePicker = true }, onSurahTap: { showSurahPicker = true },
+                             onJuzTap: { showJuzPicker = true }, selectedKey: activeAyah?.key)
         } else {
-            MushafPageView(
-                page: number,
-                language: language,
-                fontSize: fontSize,
-                script: script,
-                translationEdition: translationEdition,
-                showTranslation: showTranslation,
-                fit: fit(for: number, in: size),
-                onTap: { ayah in
-                    Haptics.tap()
-                    selectedAyah = ayah
-                },
-                onPageTap: { showPagePicker = true }
-            )
+            VStack(spacing: 16) {
+                digitalNavigation(number)
+                ForEach(MushafPageView.segments(for: number)) { segment in
+                    if segment.opensSurah { digitalOpening(segment.surah) }
+                    MushafTextView(ayat: segment.ayat, surahName: segment.surah.name(language), language: language,
+                                   fontSize: fontSize, highlights: digitalHighlights(segment.ayat),
+                                   colorMarkers: library.colorReferenceMarks, playingKey: player.playingKey,
+                                   showTranslation: showTranslation, showTransliteration: showTransliteration,
+                                   selectedKey: activeAyah?.key, script: script, translationEdition: translationEdition,
+                                   onTap: selectAyah)
+                        .environment(\.layoutDirection, .leftToRight)
+                }
+                Button(copy("Page \(number) · Go to page", "صفحة \(QuranAyah.arabicDigits(number)) · الانتقال لصفحة")) { showPagePicker = true }
+                    .font(.yqCaption).padding(.vertical, 16)
+            }
+            .padding(.horizontal, 8)
+            .padding(.bottom, 24)
         }
     }
 
-    /// The fit for a page on this screen, measured once per (page, screen,
-    /// font scale, script) and remembered. The font-size slider is the
-    /// ceiling; the page shrinks below it only as far as it must.
-    private func fit(for number: Int, in size: CGSize) -> MushafPageView.Fit? {
-        guard fitPage, size.width > 0, size.height > 0 else { return nil }
-        let key = FitCache.Key(page: number, width: size.width, height: size.height,
-                               maxFontSize: fontSize, script: script)
-        if let cached = fitCache.sizes[key] {
-            return MushafPageView.Fit(size: size, fontSize: cached)
+    private func digitalHighlights(_ ayat: [QuranAyah]) -> [String: HighlightColor] {
+        Dictionary(uniqueKeysWithValues: ayat.compactMap { ayah in library.highlight(ayah.key).map { (ayah.key, $0) } })
+    }
+    private func digitalNavigation(_ number: Int) -> some View {
+        HStack {
+            Button { showJuzPicker = true } label: {
+                HStack(spacing: 4) { Text(copy("Juz \(store.firstAyah(onPage: number)?.juz ?? 1)", "الجزء \(QuranAyah.arabicDigits(store.firstAyah(onPage: number)?.juz ?? 1))")); Image(systemName: "chevron.down") }
+            }
+            Spacer()
+            Button { showDisplay = true } label: {
+                HStack(spacing: 5) { Text(presentation.title(language)); Image(systemName: "textformat.size") }
+            }
+            Spacer()
+            Button { showPagePicker = true } label: {
+                HStack(spacing: 4) { Text(copy("Page \(number)", "صفحة \(QuranAyah.arabicDigits(number))")); Image(systemName: "chevron.down") }
+            }
         }
-        let fitted = MushafPageView.fittedFontSize(page: number, size: size, maxFontSize: fontSize, script: script)
-        fitCache.sizes[key] = fitted
-        return MushafPageView.Fit(size: size, fontSize: fitted)
+        .font(.system(size: 12, weight: .medium))
+        .padding(.horizontal, 16)
+        .frame(minHeight: 44)
+        .overlay(alignment: .bottom) { Rectangle().fill(Color.yqHairline).frame(height: 0.5).padding(.horizontal, 16) }
+    }
+    private func digitalOpening(_ surah: QuranSurah) -> some View {
+        VStack(spacing: 10) {
+            Button { showSurahPicker = true } label: {
+                HStack { Text("سورة \(surah.nameArabic)").font(.arabicProse(25)); Image(systemName: "chevron.down").font(.caption) }
+            }
+            if surah.bismillahPre { BasmalahLine() }
+        }
+        .padding(.top, 12)
+    }
+    private func selectAyah(_ ayah: QuranAyah) {
+        Haptics.tap()
+        library.lastReadKey = ayah.key
+        activeAyah = ayah
+        didSelectAyah = true
     }
 
     // MARK: Surah layout
@@ -451,7 +486,7 @@ struct MushafView: View {
                 VStack(spacing: 16) {
                     Color.clear.frame(height: 1).id("top")
                     if let surah {
-                        SurahOpening(surah: surah, language: language)
+                        digitalOpening(surah)
                             .padding(.top, 8)
                         Text(headerDetail(surah))
                             .font(.yqCaption)
@@ -509,13 +544,12 @@ struct MushafView: View {
             colorMarkers: library.colorReferenceMarks,
             playingKey: player.playingKey,
             showTranslation: showTranslation,
+            showTransliteration: showTransliteration,
+            selectedKey: activeAyah?.key,
             script: script,
             translationEdition: translationEdition,
             proxy: textProxy,
-            onTap: { ayah in
-                Haptics.tap()
-                selectedAyah = ayah
-            },
+            onTap: selectAyah,
             onLayout: { rects in
                 if rects != anchors { anchors = rects }
             }

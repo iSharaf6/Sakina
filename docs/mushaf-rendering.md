@@ -1,4 +1,26 @@
-# Printed Mushaf reader
+# Traditional and Digital Qur’an readers
+
+Traditional preserves the ornamental, fixed Uthmani pages. Digital reflows
+Uthmani, Tajweed or IndoPak at the chosen text size, with optional English
+meaning and transliteration beneath each ayah. Digital never compresses the
+text into a fixed page height. Both views support the shared System/Light/Dark
+appearance. Changing script, size or reading aids opens Digital; returning to
+Traditional preserves those reading-aid preferences for later.
+
+The reader and app Settings use the same `translationVisible`,
+`transliterationVisible` and `arabicScale` keys and the same appearance sheet.
+An idempotent migration imports legacy reader settings only when the shared
+setting has no explicit value. Selecting an ayah highlights it and opens a
+Listen/Save/More dock. A dismissible first-use hint explains the interaction.
+The printed surah and juz cartouches have chevrons and open their pickers.
+
+IndoPak uses the unmodified Quran Foundation / QuranWBW Nastaleeq Waqf Lazim
+v4.2.1 font (`AlQuran-IndoPak-by-QuranWBW`). Its private-use pause signs are
+retained; only layout whitespace and invisible controls are normalized.
+Font source: <https://verses.quran.foundation/fonts/quran/hafs/nastaleeq/indopak/indopak-nastaleeq-waqf-lazim-v4.2.1.ttf>.
+`scratchpad/gen/bundle_transliteration.py` bundles the word transliterations
+from the cached Quran Foundation page responses, with all 6,236 verse keys
+validated. Arabic source text is not rewritten.
 
 The fitted Uthmani reader uses Quran Foundation's modern Madani page/line
 placement (mushaf 1), with QPC Hafs Unicode words and the matching bundled
@@ -44,3 +66,6 @@ and translations remain available in the flowing layouts.
 Validation: the XCTest suite checks all display characters against the bundled
 font, all page bounds and verse hit targets at compact phone dimensions,
 canonical content integrity, QPC coverage and legacy combining-mark fallback.
+It also checks preference migration, complete transliteration coverage,
+IndoPak glyph coverage and pause-sign preservation, and growing Digital text
+layouts across all three scripts at regular and enlarged sizes.

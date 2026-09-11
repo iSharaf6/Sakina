@@ -40,6 +40,9 @@ struct MushafTextView: UIViewRepresentable {
     var colorMarkers: Bool
     var playingKey: String?
     var showTranslation: Bool
+    var showTransliteration: Bool = false
+    var selectedKey: String? = nil
+    @Environment(\.colorScheme) private var colorScheme
     /// Which orthography to draw; see `QuranTextRenderer`.
     var script: QuranScript = .uthmani
     /// Quran.com translation resource id, 20 = Saheeh International.
@@ -61,6 +64,9 @@ struct MushafTextView: UIViewRepresentable {
         var colorMarkers: Bool
         var playingKey: String?
         var showTranslation: Bool
+        var showTransliteration: Bool = false
+        var selectedKey: String? = nil
+        var dark: Bool = false
         var script: QuranScript
         var translationEdition: Int
         var lineSpacingFactor: CGFloat
@@ -69,6 +75,7 @@ struct MushafTextView: UIViewRepresentable {
     private var inputs: Inputs {
         Inputs(keys: ayat.map(\.key), fontSize: fontSize, highlights: highlights,
                colorMarkers: colorMarkers, playingKey: playingKey, showTranslation: showTranslation,
+               showTransliteration: showTransliteration, selectedKey: selectedKey, dark: colorScheme == .dark,
                script: script, translationEdition: translationEdition, lineSpacingFactor: lineSpacingFactor)
     }
 
@@ -96,8 +103,8 @@ struct MushafTextView: UIViewRepresentable {
         view.adjustsFontForContentSizeCategory = false
         view.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
         view.setContentHuggingPriority(.required, for: .vertical)
-        view.isAccessibilityElement = true
-        view.accessibilityTraits = .staticText
+        view.isAccessibilityElement = false
+        view.accessibilityContainerType = .semanticGroup
 
         let coordinator = context.coordinator
         coordinator.textView = view
@@ -123,7 +130,6 @@ struct MushafTextView: UIViewRepresentable {
         proxy?.rectForKey = { [weak coordinator] key in coordinator?.rect(for: key) }
         proxy?.scrollToKey = { [weak coordinator] key, animated in coordinator?.scroll(to: key, animated: animated) ?? false }
         coordinator.proxy = proxy
-        uiView.accessibilityLabel = surahName
 
         let inputs = inputs
         guard coordinator.lastInputs != inputs else { return }
@@ -217,16 +223,17 @@ struct MushafTextView: UIViewRepresentable {
 
             let arabicStyle = NSMutableParagraphStyle()
             arabicStyle.baseWritingDirection = .rightToLeft
-            arabicStyle.alignment = .justified
-            arabicStyle.lineSpacing = (inputs.fontSize * inputs.lineSpacingFactor).rounded()
+            let readingAids = inputs.showTranslation || inputs.showTransliteration
+            arabicStyle.alignment = readingAids ? .center : .justified
+            arabicStyle.lineSpacing = (inputs.fontSize * (inputs.script == .indopak ? 0.15 : inputs.lineSpacingFactor)).rounded()
             arabicStyle.lineHeightMultiple = 1.0
-            arabicStyle.paragraphSpacing = inputs.showTranslation ? 4 : 0
+            arabicStyle.paragraphSpacing = readingAids ? 12 : 0
 
             let translationStyle = NSMutableParagraphStyle()
             let edition = QuranTranslationStore.shared.edition(inputs.translationEdition)
             let translationIsRTL = rightToLeftLanguages.contains(edition?.language.lowercased() ?? "")
             translationStyle.baseWritingDirection = translationIsRTL ? .rightToLeft : .leftToRight
-            translationStyle.alignment = .natural
+            translationStyle.alignment = .center
             translationStyle.lineSpacing = translationIsRTL ? 5 : 3
             translationStyle.paragraphSpacing = 18
             let translationFont = UIFont.preferredFont(forTextStyle: .subheadline)
@@ -253,6 +260,7 @@ struct MushafTextView: UIViewRepresentable {
                 var background: UIColor?
                 if let highlight { background = highlight.uiColor.withAlphaComponent(0.22) }
                 if inputs.playingKey == ayah.key { background = playingTint }
+                if inputs.selectedKey == ayah.key { background = UIColor(Color.yqAccentTintStrong) }
 
                 // The renderer picks the font per script, colours tajweed
                 // runs and moves the marks the KFGQPC font draws wrongly
@@ -277,17 +285,30 @@ struct MushafTextView: UIViewRepresentable {
                     .paragraphStyle: arabicStyle,
                 ]))
 
-                if inputs.showTranslation {
+                if readingAids {
                     result.append(NSAttributedString(string: "\n", attributes: [
                         .font: font,
                         .paragraphStyle: arabicStyle,
                     ]))
+                    if inputs.showTransliteration, let text = QuranTransliterationStore.shared.text(for: ayah.key) {
+                        let latinStyle = NSMutableParagraphStyle()
+                        latinStyle.baseWritingDirection = .leftToRight
+                        latinStyle.alignment = .center
+                        latinStyle.lineSpacing = 6
+                        latinStyle.paragraphSpacing = inputs.showTranslation ? 10 : 26
+                        result.append(NSAttributedString(string: text + "\n", attributes: [
+                            .font: UIFont.preferredFont(forTextStyle: .subheadline),
+                            .foregroundColor: secondary, .paragraphStyle: latinStyle
+                        ]))
+                    }
+                    if inputs.showTranslation {
                     let translation = QuranTranslationStore.shared.text(for: ayah, edition: inputs.translationEdition)
                     result.append(NSAttributedString(string: translation + "\n", attributes: [
                         .font: translationFont,
                         .foregroundColor: secondary,
                         .paragraphStyle: translationStyle,
                     ]))
+                    }
                 }
 
                 let hitRange = NSRange(location: start, length: result.length - start)
@@ -389,6 +410,17 @@ struct MushafTextView: UIViewRepresentable {
             }
             guard rects != lastRects else { return }
             lastRects = rects
+            textView.accessibilityElements = entries.compactMap { entry -> UIAccessibilityElement? in
+                guard let rect = rects[entry.ayah.key] else { return nil }
+                let element = VerseAccessibilityElement(accessibilityContainer: textView)
+                element.accessibilityLabel = entry.ayah.displayArabic
+                element.accessibilityValue = entry.ayah.arabicNumber
+                element.accessibilityLanguage = "ar"
+                element.accessibilityTraits = .button
+                element.accessibilityFrameInContainerSpace = rect
+                element.activate = { [weak self] in self?.onTap?(entry.ayah) }
+                return element
+            }
             let callback = onLayout
             DispatchQueue.main.async { callback?(rects) }
         }
@@ -400,6 +432,13 @@ struct MushafTextView: UIViewRepresentable {
 /// A `UITextView` that reports when its layout settles so the SwiftUI side
 /// can place scroll anchors.
 final class MushafUITextView: UITextView {
+    // UITextView normally synthesizes one text accessibility element. Keep the
+    // verse buttons supplied by the coordinator so each ayah can be activated.
+    private var verseAccessibilityElements: [Any]?
+    override var accessibilityElements: [Any]? {
+        get { verseAccessibilityElements }
+        set { verseAccessibilityElements = newValue }
+    }
     var onLayout: (() -> Void)?
     var contentGeneration = 0
 

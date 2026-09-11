@@ -3,6 +3,7 @@ import SwiftData
 
 @main
 struct SakinaApp: App {
+    init() { MushafPreferences.migrate() }
     var body: some Scene {
         WindowGroup {
             #if DEBUG
@@ -33,6 +34,7 @@ struct RootView: View {
 
     @Environment(\.scenePhase) private var scenePhase
     @AppStorage(SettingsKeys.appLanguage) private var languageRaw = AppLanguage.english.rawValue
+    @AppStorage(MushafPreferences.themeKey) private var theme: MushafPreferences.Theme = .system
     @State private var selection: Tab = .home
     @State private var homePath = NavigationPath()
     @State private var explorePath = NavigationPath()
@@ -89,6 +91,7 @@ struct RootView: View {
         }
         .tint(.yqAccent)
         .yaqeenLanguage(language)
+        .preferredColorScheme(theme.colorScheme)
         .environmentObject(scholarStore)
         .sensoryFeedback(.selection, trigger: selection)
         .sheet(item: $debugAyah) { ayah in

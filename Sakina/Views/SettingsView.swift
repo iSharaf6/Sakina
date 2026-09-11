@@ -29,9 +29,15 @@ struct SettingsView: View {
     @AppStorage(SettingsKeys.prayerHighLatitude) private var highLatitudeRaw = PrayerHighLatitudePreference.automatic.rawValue
     @AppStorage(Haptics.enabledKey) private var hapticsEnabled = true
 
+    @AppStorage(MushafPreferences.themeKey) private var theme: MushafPreferences.Theme = .system
+    @State private var showReaderAppearance = false
     @State private var showAbout = false
     @State private var showDisconnectConfirmation = false
     @State private var appeared = false
+
+    private func useDigitalReading() {
+        UserDefaults.standard.set(MushafPreferences.Presentation.digital.rawValue, forKey: MushafPreferences.presentationKey)
+    }
 
     private var language: AppLanguage { AppLanguage(rawValue: languageRaw) ?? .english }
     private var copy: AppCopy { AppCopy(language: language) }
@@ -68,6 +74,11 @@ struct SettingsView: View {
                 }
             }
             .sheet(isPresented: $showAbout) { AboutView() }
+            .sheet(isPresented: $showReaderAppearance) { MushafDisplaySheet(language: language) }
+            .preferredColorScheme(theme.colorScheme)
+            .onChange(of: arabicScale) { _, _ in useDigitalReading() }
+            .onChange(of: translationVisible) { _, _ in useDigitalReading() }
+            .onChange(of: transliterationVisible) { _, _ in useDigitalReading() }
             .sheet(isPresented: $account.showConfigurationHelp) {
                 GoogleConfigurationHelp(language: language)
             }
@@ -190,6 +201,17 @@ struct SettingsView: View {
                 ForEach(Reciter.allCases) { Text($0.displayName).tag($0.rawValue) }
             }
             RowDivider()
+            Button { showReaderAppearance = true } label: {
+                BadgeRow(symbol: "book.closed", title: copy("Qur’an reader", "قارئ القرآن")) {
+                    Image(systemName: "chevron.forward").foregroundStyle(Color.yqSecondary)
+                }
+            }.buttonStyle(.plain)
+            RowDivider()
+            MenuRow(symbol: "circle.lefthalf.filled", title: copy("Appearance", "المظهر"),
+                    value: theme.title(language), selection: $theme) {
+                ForEach(MushafPreferences.Theme.allCases) { Text($0.title(language)).tag($0) }
+            }
+            RowDivider()
             ToggleRow(symbol: "text.quote", title: copy("English meaning", "المعنى بالإنجليزية"),
                       isOn: $translationVisible)
             RowDivider()
@@ -207,7 +229,7 @@ struct SettingsView: View {
                 HStack(spacing: 12) {
                     Image(systemName: "textformat.size.smaller")
                         .font(.system(size: 13, weight: .semibold))
-                    Slider(value: $arabicScale, in: 0.85...1.45, step: 0.05)
+                    Slider(value: $arabicScale, in: MushafPreferences.fontScaleRange, step: 0.05)
                         .tint(.yqAccentDeep)
                     Image(systemName: "textformat.size.larger")
                         .font(.system(size: 17, weight: .semibold))

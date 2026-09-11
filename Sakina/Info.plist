@@ -48,6 +48,7 @@
 	<array>
 		<string>UthmanicHafs.ttf</string>
 		<string>HafsSmart.ttf</string>
+		<string>IndoPak.ttf</string>
 	</array>
 	<key>UILaunchScreen</key>
 	<dict/>

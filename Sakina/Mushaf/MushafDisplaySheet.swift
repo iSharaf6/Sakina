@@ -1,326 +1,161 @@
 import SwiftUI
 
-/// The reader's display controls: layout, reading direction, script,
-/// translation, font size and ayah-marker colour. Everything lives in
-/// UserDefaults under the `MushafPreferences` keys, so the reader updates
-/// live while the sheet is open.
+/// The same preferences surface is opened from the reader and app Settings.
 struct MushafDisplaySheet: View {
     let language: AppLanguage
-
+    @AppStorage(MushafPreferences.presentationKey) private var presentation: MushafPreferences.Presentation = .traditional
+    @AppStorage(MushafPreferences.themeKey) private var theme: MushafPreferences.Theme = .system
     @AppStorage(MushafPreferences.layoutKey) private var layout: MushafPreferences.Layout = .page
     @AppStorage(MushafPreferences.directionKey) private var direction: MushafPreferences.Direction = .horizontal
     @AppStorage(MushafPreferences.scriptKey) private var script: QuranScript = .uthmani
     @AppStorage(MushafPreferences.translationKey) private var translationEdition = QuranTranslationEdition.saheehInternational.id
-    @AppStorage(MushafPreferences.showTranslationKey) private var showTranslation = false
-    @AppStorage(MushafPreferences.fontScaleKey) private var fontScale = 1.0
-    @AppStorage(MushafPreferences.fitKey) private var fitPage = true
-
+    @AppStorage(SettingsKeys.translationVisible) private var showTranslation = true
+    @AppStorage(SettingsKeys.transliterationVisible) private var showTransliteration = true
+    @AppStorage(SettingsKeys.arabicScale) private var fontScale = 1.0
     @ObservedObject private var library = AyahLibrary.shared
     @Environment(\.dismiss) private var dismiss
-
     private var copy: AppCopy { AppCopy(language: language) }
-    private var editions: [QuranTranslationEdition] { QuranTranslationStore.shared.editions }
-    /// Pages fitted to the screen: the slider is a ceiling and the
-    /// translation stays out of the page.
-    private var fitting: Bool { layout == .page && fitPage }
-
-    init(language: AppLanguage) {
-        self.language = language
-    }
 
     var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(alignment: .leading, spacing: 20) {
-                    section(copy("Layout", "التخطيط")) {
-                        layoutChips
-                        if layout == .page { fitCard }
-                    }
-                    section(copy("Direction", "اتجاه التصفح")) { directionChips }
-                    section(copy("Script", "الرسم")) { scriptCards }
-                    section(copy("Translation", "الترجمة")) { translationCard }
-                    if fitting && script == .uthmani {
-                        Text(copy("Printed pages keep their original lines. For larger, adjustable text, turn off Fit page to screen or choose Surah.",
-                                  "تحافظ الصفحات المطبوعة على سطورها. لتكبير النص، أوقف ملاءمة الصفحة للشاشة أو اختر عرض السورة."))
-                            .font(.yqCaption)
-                            .foregroundStyle(Color.yqSecondary)
-                    } else {
-                        section(fitting ? copy("Maximum font size", "الحد الأقصى لحجم الخط") : copy("Font size", "حجم الخط")) { fontCard }
-                    }
-                    section(copy("Markers", "علامات الآيات")) { markersCard }
-                }
-                .padding(.horizontal, 20)
-                .padding(.top, 8)
-                .padding(.bottom, 32)
-            }
-            .yqScreen()
-            .navigationTitle(copy("Display", "العرض"))
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .confirmationAction) {
-                    Button(copy("Done", "تم")) { dismiss() }
-                }
-            }
-        }
-        .yaqeenLanguage(language)
-        .onChange(of: layout) { _, _ in Haptics.selection() }
-        .onChange(of: fitPage) { _, _ in Haptics.press() }
-        .onChange(of: direction) { _, _ in Haptics.selection() }
-        .onChange(of: script) { _, _ in Haptics.selection() }
-        .onChange(of: translationEdition) { _, _ in Haptics.selection() }
-        .onChange(of: showTranslation) { _, _ in Haptics.press() }
-        .onChange(of: library.colorReferenceMarks) { _, _ in Haptics.press() }
-        .onChange(of: fontScale) { _, _ in Haptics.selection() }
-    }
-
-    // MARK: Sections
-
-    private func section<Content: View>(_ title: String, @ViewBuilder content: () -> Content) -> some View {
-        VStack(alignment: .leading, spacing: 10) {
-            CapsLabel(text: title)
-            content()
-        }
-    }
-
-    // MARK: Layout and direction
-
-    private var layoutChips: some View {
-        HStack(spacing: 8) {
-            ForEach(MushafPreferences.Layout.allCases) { option in
-                chip(option.title(language), symbol: option == .page ? "book.closed" : "text.alignright",
-                     selected: layout == option) {
-                    layout = option
-                }
-            }
-        }
-    }
-
-    /// Fit the whole page to the screen, as a printed mushaf page.
-    private var fitCard: some View {
-        Toggle(isOn: $fitPage) {
-            VStack(alignment: .leading, spacing: 2) {
-                Text(copy("Fit page to screen", "ملاءمة الصفحة للشاشة"))
-                    .font(.yqBodyMedium)
-                    .foregroundStyle(Color.yqInk)
-                Text(copy("The whole page on one screen, as in a printed mushaf.", "الصفحة كاملة على شاشة واحدة، كما في المصحف المطبوع."))
-                    .font(.yqCaption)
-                    .foregroundStyle(Color.yqSecondary)
-            }
-        }
-        .tint(.yqAccent)
-        .padding(.horizontal, 14)
-        .padding(.vertical, 10)
-        .frame(minHeight: 58)
-        .yqCard(cornerRadius: 16)
-    }
-
-    private var directionChips: some View {
-        HStack(spacing: 8) {
-            ForEach(MushafPreferences.Direction.allCases) { option in
-                chip(option.title(language), symbol: option == .horizontal ? "arrow.left.arrow.right" : "arrow.down",
-                     selected: direction == option) {
-                    direction = option
-                }
-            }
-        }
-    }
-
-    private func chip(_ title: String, symbol: String, selected: Bool, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            HStack(spacing: 6) {
-                Image(systemName: symbol)
-                    .font(.system(size: 12, weight: .semibold))
-                Text(title)
-                    .font(.yqCaptionBold)
-                    .lineLimit(1)
-            }
-            .foregroundStyle(selected ? Color.white : Color.yqAccentDeep)
-            .padding(.horizontal, 12)
-            .padding(.vertical, 8)
-            .frame(maxWidth: .infinity)
-            .background(selected ? Color.yqAccentDeep : Color.yqAccentDeep.opacity(0.13), in: Capsule(style: .continuous))
-            .contentShape(Capsule())
-        }
-        .buttonStyle(.yqPressSoft)
-        .accessibilityAddTraits(selected ? [.isSelected] : [])
-    }
-
-    // MARK: Script
-
-    private var scriptCards: some View {
-        VStack(spacing: 8) {
-            ForEach(QuranScript.allCases) { option in
-                let selected = script == option
-                Button {
-                    script = option
-                } label: {
-                    HStack(spacing: 12) {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(option.title(language))
-                                .font(.yqBodyMedium)
-                                .foregroundStyle(Color.yqInk)
-                            Text(option.detail(language))
-                                .font(.yqCaption)
-                                .foregroundStyle(Color.yqSecondary)
+                VStack(alignment: .leading, spacing: 26) {
+                    section(copy("Your reading view", "طريقة القراءة")) {
+                        HStack(spacing: 12) {
+                            modeCard(.traditional)
+                            modeCard(.digital)
                         }
-                        Spacer(minLength: 8)
-                        Image(systemName: selected ? "checkmark.circle.fill" : "circle")
-                            .font(.system(size: 20, weight: .semibold))
-                            .foregroundStyle(selected ? Color.yqAccent : Color.yqTertiary)
                     }
-                    .multilineTextAlignment(.leading)
-                    .padding(.horizontal, 14)
-                    .frame(minHeight: 58)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .yqCard(cornerRadius: 16)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 16, style: .continuous)
-                            .strokeBorder(selected ? Color.yqAccent : Color.clear, lineWidth: 1)
-                    )
-                    .contentShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-                }
-                .buttonStyle(.yqPressSoft)
-                .accessibilityLabel("\(option.title(language)), \(option.detail(language))")
-                .accessibilityAddTraits(selected ? [.isSelected] : [])
-            }
-        }
-    }
-
-    // MARK: Translation
-
-    private var currentEdition: QuranTranslationEdition {
-        QuranTranslationStore.shared.edition(translationEdition) ?? .saheehInternational
-    }
-
-    private var translationCard: some View {
-        VStack(spacing: 0) {
-            Toggle(isOn: $showTranslation) {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(copy("Show translation", "إظهار الترجمة"))
+                    section(copy("Appearance", "المظهر")) {
+                        Picker(copy("Appearance", "المظهر"), selection: $theme) {
+                            ForEach(MushafPreferences.Theme.allCases) { Text($0.title(language)).tag($0) }
+                        }.pickerStyle(.segmented)
+                    }
+                    section(copy("Arabic script", "الرسم القرآني")) {
+                        VStack(spacing: 0) {
+                            ForEach(QuranScript.allCases) { option in
+                                scriptRow(option)
+                                if option != .indopak { Divider().padding(.leading, 16) }
+                            }
+                        }.yqCard(cornerRadius: 18)
+                        Text(copy("Tajweed and IndoPak use the flexible Digital view.", "يستخدم التجويد والرسم الهندي العرض الرقمي المرن."))
+                            .font(.yqCaption).foregroundStyle(Color.yqSecondary)
+                    }
+                    section(copy("Text & meaning", "النص والمعنى")) {
+                        VStack(spacing: 16) {
+                            if let sample = QuranStore.shared.ayah("1:2") {
+                                Text(QuranTextRenderer.swiftUI(sample, script: script, size: 25 * fontScale, includeMarker: false))
+                                    .multilineTextAlignment(.center).frame(maxWidth: .infinity)
+                                    .padding(.vertical, 8)
+                            }
+                            HStack {
+                                Text(copy("Arabic size", "حجم الخط العربي")).font(.yqBodyMedium)
+                                Spacer()
+                                Text("\(Int((fontScale * 100).rounded()))%")
+                                    .font(.yqCaption).monospacedDigit().foregroundStyle(Color.yqSecondary)
+                            }
+                            Slider(value: $fontScale, in: MushafPreferences.fontScaleRange, step: 0.05)
+                                .accessibilityLabel(copy("Arabic text size", "حجم النص العربي"))
+                            Divider()
+                            Toggle(copy("English meaning", "المعنى بالإنجليزية"), isOn: $showTranslation)
+                            Toggle(copy("Transliteration", "الكتابة بحروف لاتينية"), isOn: $showTransliteration)
+                            if showTranslation {
+                                Picker(copy("Translation", "الترجمة"), selection: $translationEdition) {
+                                    ForEach(QuranTranslationStore.shared.editions) { Text($0.name).tag($0.id) }
+                                }.font(.yqSubhead)
+                            }
+                        }
                         .font(.yqBodyMedium)
-                        .foregroundStyle(Color.yqInk)
-                    if fitting {
-                        Text(copy("Not shown on fitted pages; turn off Fit page to screen or use the Surah layout.",
-                                  "لا تظهر في الصفحات الملاءمة للشاشة؛ أوقف ملاءمة الصفحة أو استخدم تخطيط السورة."))
-                            .font(.yqCaption)
-                            .foregroundStyle(Color.yqSecondary)
+                        .padding(16).yqCard(cornerRadius: 18)
+                        Text(copy("These settings are shared with the app. Changing size or reading aids opens Digital; Traditional keeps the printed page.",
+                                  "تتزامن هذه الإعدادات مع التطبيق. تغيير حجم النص أو وسائل القراءة يفتح العرض الرقمي؛ ويحتفظ المصحف بصفحته المطبوعة."))
+                            .font(.yqCaption).foregroundStyle(Color.yqSecondary)
+                    }
+                    section(copy("Navigation", "التصفح")) {
+                        VStack(spacing: 14) {
+                            if presentation == .digital {
+                                Picker(copy("Read by", "القراءة حسب"), selection: $layout) {
+                                    ForEach(MushafPreferences.Layout.allCases) { Text($0.title(language)).tag($0) }
+                                }.pickerStyle(.segmented)
+                            }
+                            Picker(copy("Direction", "اتجاه التصفح"), selection: $direction) {
+                                ForEach(MushafPreferences.Direction.allCases) { Text($0.title(language)).tag($0) }
+                            }.pickerStyle(.segmented)
+                            Toggle(copy("Coloured ayah markers", "تلوين علامات الآيات"), isOn: $library.colorReferenceMarks)
+                                .font(.yqSubhead)
+                        }
                     }
                 }
+                .padding(20).padding(.bottom, 24)
             }
-            .tint(.yqAccent)
-            .padding(.horizontal, 14)
-            .padding(.vertical, 10)
-            .frame(minHeight: 54)
-
-            ForEach(editions) { edition in
-                RowDivider(inset: 14)
-                editionRow(edition)
-            }
+            .background(Color.yqCanvas.ignoresSafeArea())
+            .navigationTitle(copy("Reading appearance", "مظهر القراءة"))
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar { ToolbarItem(placement: .confirmationAction) { Button(copy("Done", "تم")) { dismiss() } } }
         }
-        .yqCard(cornerRadius: 16)
+        .tint(.yqAccentDeep)
+        .yaqeenLanguage(language)
+        .preferredColorScheme(theme.colorScheme)
+        .onChange(of: fontScale) { _, _ in useDigital() }
+        .onChange(of: showTranslation) { _, _ in useDigital() }
+        .onChange(of: showTransliteration) { _, _ in useDigital() }
     }
-
-    /// One translation, name over author, with a check on the chosen one.
-    private func editionRow(_ edition: QuranTranslationEdition) -> some View {
-        let selected = edition.id == currentEdition.id
-        return Button {
-            translationEdition = edition.id
+    private func scriptRow(_ option: QuranScript) -> some View {
+                                Button {
+                                    script = option
+                                    if option != .uthmani { presentation = .digital }
+                                } label: {
+                                    HStack(spacing: 12) {
+                                        VStack(alignment: .leading, spacing: 3) {
+                                            Text(option.title(language)).font(.yqBodyMedium).foregroundStyle(Color.yqInk)
+                                            Text(option.detail(language)).font(.yqCaption).foregroundStyle(Color.yqSecondary)
+                                        }
+                                        Spacer()
+                                        Image(systemName: script == option ? "checkmark.circle.fill" : "circle")
+                                            .foregroundStyle(script == option ? Color.yqAccentDeep : Color.yqTertiary)
+                                    }
+                                    .padding(16)
+                                    .contentShape(Rectangle())
+                                }
+                                .buttonStyle(.plain)
+                                .accessibilityAddTraits(script == option ? [.isSelected] : [])
+    }
+    private func useDigital() { presentation = .digital; Haptics.selection() }
+    private func section<C: View>(_ title: String, @ViewBuilder content: () -> C) -> some View {
+        VStack(alignment: .leading, spacing: 12) { Text(title).font(.yqHeadline); content() }
+    }
+    private func modeCard(_ option: MushafPreferences.Presentation) -> some View {
+        Button {
+            if option == .traditional { script = .uthmani; layout = .page }
+            presentation = option
+            Haptics.selection()
         } label: {
-            HStack(spacing: 12) {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(edition.name)
-                        .font(.yqBodyMedium)
-                        .foregroundStyle(Color.yqInk)
-                    if edition.author != edition.name {
-                        Text(edition.author)
-                            .font(.yqCaption)
-                            .foregroundStyle(Color.yqSecondary)
+            VStack(alignment: .leading, spacing: 10) {
+                ZStack {
+                    if option == .traditional { PageFrame(fit: true) }
+                    else { RoundedRectangle(cornerRadius: 5).fill(Color.yqSurface) }
+                    VStack(spacing: 6) {
+                        Text("بِسْمِ ٱللَّهِ").font(.custom(QuranTextRenderer.uthmaniFontName, fixedSize: 21)).foregroundStyle(Color.yqInk)
+                        if option == .digital {
+                            Text("In the name of Allah").font(.system(size: 8)).foregroundStyle(Color.yqSecondary)
+                        }
                     }
+                }.frame(height: 85)
+                HStack {
+                    Text(option.title(language)).font(.yqSubheadBold)
+                    Spacer(minLength: 0)
+                    if presentation == option { Image(systemName: "checkmark.circle.fill").foregroundStyle(Color.yqAccentDeep) }
                 }
-                Spacer(minLength: 8)
-                if selected {
-                    Image(systemName: "checkmark")
-                        .font(.system(size: 14, weight: .bold))
-                        .foregroundStyle(Color.yqAccent)
-                }
+                Text(option == .traditional ? copy("The familiar printed page", "الصفحة المطبوعة المألوفة") : copy("Room to read your way", "قراءة تناسبك"))
+                    .font(.system(size: 11)).foregroundStyle(Color.yqSecondary).lineLimit(2)
             }
-            .multilineTextAlignment(.leading)
-            .lineLimit(1)
-            .padding(.horizontal, 14)
-            .frame(minHeight: 54)
-            .contentShape(Rectangle())
+            .padding(12)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .yqCard(cornerRadius: 18)
+            .overlay(RoundedRectangle(cornerRadius: 18).stroke(presentation == option ? Color.yqAccentDeep : .clear, lineWidth: 1.5))
         }
-        .buttonStyle(.yqPressSoft)
-        .disabled(!showTranslation)
-        .opacity(showTranslation ? 1 : 0.45)
-        .accessibilityLabel(editionLabel(edition))
-        .accessibilityAddTraits(selected ? [.isSelected] : [])
-    }
-
-    private func editionLabel(_ edition: QuranTranslationEdition) -> String {
-        edition.author == edition.name ? edition.name : "\(edition.name) · \(edition.author)"
-    }
-
-    // MARK: Font size
-
-    private var fontCard: some View {
-        VStack(spacing: 14) {
-            Text("بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ")
-                .font(.arabic(24 * fontScale))
-                .foregroundStyle(Color.yqInk)
-                .lineLimit(1)
-                .minimumScaleFactor(0.5)
-                .frame(maxWidth: .infinity)
-                .frame(minHeight: 64)
-                .accessibilityHidden(true)
-
-            Slider(
-                value: $fontScale,
-                in: MushafPreferences.fontScaleRange,
-                step: 0.05
-            ) {
-                Text(copy("Font size", "حجم الخط"))
-            } minimumValueLabel: {
-                Text("A")
-                    .font(.system(size: 12, weight: .semibold))
-                    .foregroundStyle(Color.yqSecondary)
-            } maximumValueLabel: {
-                Text("A")
-                    .font(.system(size: 20, weight: .semibold))
-                    .foregroundStyle(Color.yqSecondary)
-            }
-            .tint(.yqAccent)
-            .accessibilityValue("\(Int((fontScale * 100).rounded()))%")
-
-            if fitting {
-                Text(copy("Fitted pages use this as a ceiling and shrink only as far as the page needs.",
-                          "تستخدم الصفحات الملاءمة هذا الحجم حدًا أقصى وتصغر بقدر ما تحتاج الصفحة فقط."))
-                    .font(.yqCaption)
-                    .foregroundStyle(Color.yqSecondary)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-            }
-        }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 14)
-        .yqCard(cornerRadius: 16)
-    }
-
-    // MARK: Markers
-
-    private var markersCard: some View {
-        Toggle(isOn: $library.colorReferenceMarks) {
-            VStack(alignment: .leading, spacing: 2) {
-                Text(copy("Colour ayah markers", "تلوين أرقام الآيات"))
-                    .font(.yqBodyMedium)
-                    .foregroundStyle(Color.yqInk)
-                Text(copy("Numbers take the highlight colour", "تأخذ الأرقام لون التظليل"))
-                    .font(.yqCaption)
-                    .foregroundStyle(Color.yqSecondary)
-            }
-        }
-        .tint(.yqAccent)
-        .padding(.horizontal, 14)
-        .frame(minHeight: 58)
-        .yqCard(cornerRadius: 16)
+        .buttonStyle(.plain).foregroundStyle(Color.yqInk)
+        .accessibilityLabel(option.title(language))
+        .accessibilityAddTraits(presentation == option ? [.isSelected] : [])
     }
 }

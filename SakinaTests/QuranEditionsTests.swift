@@ -193,3 +193,69 @@ extension QuranEditionsTests {
         XCTAssertEqual(pieces.last?.isMark, false)
     }
 }
+
+extension QuranEditionsTests {
+    func testReadingPreferencesMigrateWithoutOverwritingSettings() {
+        let name = "reader-migration-\(UUID().uuidString)"
+        let defaults = UserDefaults(suiteName: name)!
+        defer { defaults.removePersistentDomain(forName: name) }
+        defaults.set(false, forKey: SettingsKeys.translationVisible)
+        defaults.set(true, forKey: "yaqeen.mushaf.showTranslation")
+        defaults.set(1.35, forKey: "yaqeen.mushaf.fontScale")
+        defaults.set("indopak", forKey: MushafPreferences.scriptKey)
+        MushafPreferences.migrate(defaults)
+        XCTAssertFalse(defaults.bool(forKey: SettingsKeys.translationVisible))
+        XCTAssertEqual(defaults.double(forKey: SettingsKeys.arabicScale), 1.35)
+        XCTAssertEqual(defaults.string(forKey: MushafPreferences.presentationKey), "digital")
+        defaults.set(1.6, forKey: SettingsKeys.arabicScale)
+        MushafPreferences.migrate(defaults)
+        XCTAssertEqual(defaults.double(forKey: SettingsKeys.arabicScale), 1.6)
+        XCTAssertEqual(MushafPreferences.showTranslationKey, SettingsKeys.translationVisible)
+        XCTAssertEqual(MushafPreferences.fontScaleKey, SettingsKeys.arabicScale)
+    }
+
+    func testTransliterationCoversTheWholeQuran() {
+        XCTAssertEqual(Set(QuranTransliterationStore.shared.ayat.keys), Set(store.ayat.map(\.key)))
+        for ayah in store.ayat {
+            let text = QuranTransliterationStore.shared.text(for: ayah.key) ?? ""
+            XCTAssertFalse(text.isEmpty, ayah.key)
+            XCTAssertFalse(text.contains("<"), ayah.key)
+        }
+    }
+
+    @MainActor
+    func testIndoPakUsesItsOwnFontAndPreservesPauseSigns() {
+        let font = QuranTextRenderer.font(for: .indopak, size: 30)
+        XCTAssertEqual(font.fontName, QuranTextRenderer.indopakFontName)
+        var privateSigns: Set<UInt32> = []
+        var displayCharacters: Set<UInt16> = []
+        for ayah in store.ayat {
+            let raw = QuranScriptStore.shared.indopak(for: ayah.key) ?? ""
+            let displayed = QuranTextRenderer.runs(for: ayah, script: .indopak).runs.map(\.text).joined()
+            let expected = raw.unicodeScalars.filter { (0xE000...0xF8FF).contains($0.value) }.map(\.value)
+            let actual = displayed.unicodeScalars.filter { (0xE000...0xF8FF).contains($0.value) }.map(\.value)
+            XCTAssertEqual(actual, expected, ayah.key)
+            privateSigns.formUnion(actual)
+            displayCharacters.formUnion(displayed.utf16)
+        }
+        XCTAssertGreaterThan(privateSigns.count, 5)
+        var chars = Array(displayCharacters)
+        var glyphs = [CGGlyph](repeating: 0, count: chars.count)
+        let complete = CTFontGetGlyphsForCharacters(font as CTFont, &chars, &glyphs, chars.count)
+        XCTAssertTrue(complete, "Missing IndoPak characters: \(zip(chars, glyphs).filter { $0.1 == 0 }.map { String(format: "U+%04X", $0.0) })")
+    }
+
+    @MainActor
+    func testDigitalScriptsReflowAtLargeSizes() {
+        for script in QuranScript.allCases {
+            for page in [1, 4, 93, 114, 516, 604] {
+                let ayat = store.ayat(onPage: page)
+                let regular = MushafTextView.measureHeight(ayat: ayat, width: 320, fontSize: 28, script: script, colorMarkers: true)
+                let enlarged = MushafTextView.measureHeight(ayat: ayat, width: 320, fontSize: 50, script: script, colorMarkers: true)
+                XCTAssertGreaterThan(regular, 0)
+                XCTAssertTrue(enlarged.isFinite)
+                XCTAssertGreaterThan(enlarged, regular, "\(script) page \(page) must grow instead of clipping")
+            }
+        }
+    }
+}

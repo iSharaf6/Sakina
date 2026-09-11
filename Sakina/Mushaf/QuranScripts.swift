@@ -205,8 +205,8 @@ final class HafsSmartStore {
 enum MushafPreferences {
     static let scriptKey = "yaqeen.mushaf.script"
     static let translationKey = "yaqeen.mushaf.translation"
-    static let showTranslationKey = "yaqeen.mushaf.showTranslation"
-    static let fontScaleKey = "yaqeen.mushaf.fontScale"
+    static let showTranslationKey = SettingsKeys.translationVisible
+    static let fontScaleKey = SettingsKeys.arabicScale
     static let layoutKey = "yaqeen.mushaf.layout"
     static let directionKey = "yaqeen.mushaf.direction"
 
@@ -236,4 +236,57 @@ enum MushafPreferences {
     }
 
     static let fontScaleRange: ClosedRange<Double> = 0.75...1.8
+}
+
+
+extension MushafPreferences {
+    static let presentationKey = "yaqeen.mushaf.presentation"
+    static let themeKey = "yaqeen.appearance"
+    enum Presentation: String, CaseIterable, Identifiable {
+        case traditional, digital
+        var id: String { rawValue }
+        func title(_ language: AppLanguage) -> String {
+            language.pick(self == .traditional ? "Traditional" : "Digital", self == .traditional ? "المصحف" : "رقمي")
+        }
+    }
+    enum Theme: String, CaseIterable, Identifiable {
+        case system, light, dark
+        var id: String { rawValue }
+        var colorScheme: ColorScheme? { self == .system ? nil : (self == .light ? .light : .dark) }
+        func title(_ language: AppLanguage) -> String {
+            switch self {
+            case .system: return language.pick("System", "النظام")
+            case .light: return language.pick("Light", "فاتح")
+            case .dark: return language.pick("Dark", "داكن")
+            }
+        }
+    }
+    /// Preserve explicit app-wide settings; only import the old reader value
+    /// when no shared value exists. Runs before any AppStorage view is made.
+    static func migrate(_ defaults: UserDefaults = .standard) {
+        guard !defaults.bool(forKey: "yaqeen.mushaf.sharedSettings.v1") else { return }
+        for (old, shared) in [("yaqeen.mushaf.showTranslation", showTranslationKey), ("yaqeen.mushaf.fontScale", fontScaleKey)] {
+            if defaults.object(forKey: shared) == nil, let value = defaults.object(forKey: old) { defaults.set(value, forKey: shared) }
+        }
+        if defaults.object(forKey: presentationKey) == nil {
+            let script = defaults.string(forKey: scriptKey) ?? QuranScript.uthmani.rawValue
+            let layout = defaults.string(forKey: layoutKey) ?? Layout.page.rawValue
+            let fit = defaults.object(forKey: fitKey) as? Bool ?? true
+            defaults.set(script == "uthmani" && layout == "page" && fit ? "traditional" : "digital", forKey: presentationKey)
+        }
+        defaults.set(true, forKey: "yaqeen.mushaf.sharedSettings.v1")
+    }
+}
+
+final class QuranTransliterationStore {
+    static let shared = QuranTransliterationStore()
+    private struct File: Decodable { let ayat: [String: String] }
+    let ayat: [String: String]
+    private init() {
+        if let url = Bundle.main.url(forResource: "quran-transliteration", withExtension: "json"),
+           let data = try? Data(contentsOf: url), let file = try? JSONDecoder().decode(File.self, from: data) {
+            ayat = file.ayat
+        } else { ayat = [:] }
+    }
+    func text(for key: String) -> String? { ayat[key] }
 }

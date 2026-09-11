@@ -12,6 +12,8 @@ struct AyahActionSheet: View {
     @ObservedObject private var player = MushafPlayer.shared
     @Environment(\.dismiss) private var dismiss
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @AppStorage(SettingsKeys.translationVisible) private var meaningVisible = true
+    @AppStorage(SettingsKeys.transliterationVisible) private var transliterationVisible = true
     @AppStorage(SettingsKeys.arabicScale) private var arabicScale = 1.0
     @AppStorage(MushafPreferences.scriptKey) private var scriptRaw = QuranScript.uthmani.rawValue
     @AppStorage(MushafPreferences.translationKey) private var translationID = QuranTranslationEdition.saheehInternational.id
@@ -149,6 +151,12 @@ struct AyahActionSheet: View {
                 .multilineTextAlignment(.leading)
                 .environment(\.layoutDirection, .rightToLeft)
                 .textSelection(.enabled)
+            if transliterationVisible, let text = QuranTransliterationStore.shared.text(for: key) {
+                Text(text).font(.yqSubhead).lineSpacing(6).foregroundStyle(Color.yqSecondary)
+                    .environment(\.layoutDirection, .leftToRight)
+                    .textSelection(.enabled)
+            }
+            if meaningVisible {
             Text(translationText)
                 .font(translationIsRTL ? .arabicProse(18) : .yqBody)
                 .lineSpacing(6)
@@ -157,6 +165,7 @@ struct AyahActionSheet: View {
                 .multilineTextAlignment(.leading)
                 .environment(\.layoutDirection, translationIsRTL ? .rightToLeft : .leftToRight)
                 .textSelection(.enabled)
+            }
             if let url = URL(string: ayah.canonicalURL) {
                 Link(destination: url) {
                     HStack(spacing: 4) {
@@ -722,4 +731,45 @@ private struct CategorySuggestion: Identifiable {
         CategorySuggestion(id: "hope", english: "Hope", arabic: "أمل", symbol: "sun.max.fill", color: .orange),
         CategorySuggestion(id: "gratitude", english: "Gratitude", arabic: "امتنان", symbol: "leaf.fill", color: .green)
     ]
+}
+
+/// A selection has visible feedback before a full sheet covers the text.
+struct AyahSelectionBar: View {
+    let ayah: QuranAyah
+    let language: AppLanguage
+    let onMore: () -> Void
+    let onClose: () -> Void
+    @ObservedObject private var library = AyahLibrary.shared
+    @ObservedObject private var player = MushafPlayer.shared
+    private var isPlaying: Bool { player.playingKey == ayah.key && player.isPlaying }
+    var body: some View {
+        VStack(spacing: 10) {
+            HStack {
+                Text(ayah.reference(language)).font(.yqSubheadBold)
+                Spacer()
+                Button(action: onClose) { Image(systemName: "xmark").padding(8) }
+                    .accessibilityLabel(language.pick("Clear selection", "إلغاء التحديد"))
+            }
+            HStack(spacing: 12) {
+                action(isPlaying ? language.pick("Pause", "إيقاف مؤقت") : language.pick("Listen", "استماع"), icon: isPlaying ? "pause.fill" : "play.fill") {
+                    if isPlaying { player.pause() } else { player.play(from: ayah.key) }
+                }
+                action(library.isBookmarked(ayah.key) ? language.pick("Saved", "محفوظة") : language.pick("Save", "حفظ"), icon: library.isBookmarked(ayah.key) ? "bookmark.fill" : "bookmark") {
+                    library.toggleBookmark(ayah.key)
+                }
+                action(language.pick("More", "المزيد"), icon: "ellipsis", perform: onMore)
+            }
+        }
+        .padding(.horizontal, 20).padding(.top, 8).padding(.bottom, 14)
+        .background(.regularMaterial)
+        .overlay(alignment: .top) { Divider() }
+        .foregroundStyle(Color.yqInk)
+    }
+    private func action(_ title: String, icon: String, perform: @escaping () -> Void) -> some View {
+        Button { Haptics.press(); perform() } label: {
+            Label(title, systemImage: icon).font(.yqSubheadBold)
+                .frame(maxWidth: .infinity).frame(minHeight: 44)
+                .background(Color.yqAccentTint, in: RoundedRectangle(cornerRadius: 12))
+        }.buttonStyle(.plain).foregroundStyle(Color.yqAccentDeep)
+    }
 }

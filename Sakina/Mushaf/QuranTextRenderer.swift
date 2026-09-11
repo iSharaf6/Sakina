@@ -14,6 +14,8 @@ enum QuranTextRenderer {
     static let uthmaniFontName = "KFGQPC HAFS Uthmanic Script"
 
     /// The Complex's pre-shaped Madani font, driven by `HafsSmartStore`.
+    static let indopakFontName = "AlQuran-IndoPak-by-QuranWBW"
+
     static let smartFontName = "KFGQPC Hafs Smart"
 
     static func smartFont(size: CGFloat) -> UIFont {
@@ -34,14 +36,14 @@ enum QuranTextRenderer {
         return (String(trimmed[..<space]), String(trimmed[trimmed.index(after: space)...]))
     }
 
-    /// The base font for a script. IndoPak falls back to the system font
-    /// (see the type comment); the others use KFGQPC when it is installed.
+    /// Each orthography uses its matching bundled font, including IndoPak's
+    /// private-use pause signs. System fallback is only for a missing bundle.
     static func font(for script: QuranScript, size: CGFloat) -> UIFont {
         switch script {
         case .uthmani, .tajweed:
             return uthmaniFont(size: size)
         case .indopak:
-            return UIFont.systemFont(ofSize: size)
+            return UIFont(name: indopakFontName, size: size) ?? UIFont.systemFont(ofSize: size)
         }
     }
 
@@ -274,13 +276,13 @@ enum QuranTextRenderer {
             guard let raw = QuranScriptStore.shared.indopak(for: ayah.key) else {
                 return (.uthmani, [Run(text: MushafLineStore.shared.text(for: ayah.key) ?? ayah.displayArabic, color: nil)])
             }
-            // Quran.com's IndoPak text carries Private Use Area pause glyphs
-            // (U+E01A…E022) that only its own font can draw; iOS shows some
-            // as emoji. Without that font they are dropped, along with the
-            // zero-width and directional controls around them.
-            let text = String(raw.unicodeScalars.filter { scalar in
-                !(0xE000...0xF8FF).contains(scalar.value) && ![0x200B, 0x200F, 0xFEFF].contains(scalar.value)
-            }).replacingOccurrences(of: "  ", with: " ").trimmingCharacters(in: .whitespacesAndNewlines)
+            // The matching IndoPak font includes the private-use pause signs.
+            // Preserve them. Only normalize layout whitespace/control characters.
+            let scalars = raw.unicodeScalars.compactMap { scalar -> Unicode.Scalar? in
+                if [0x200B, 0x200F, 0xFEFF].contains(scalar.value) { return nil }
+                return [0x2002, 0x2003].contains(scalar.value) ? Unicode.Scalar(0x20)! : scalar
+            }
+            let text = String(String.UnicodeScalarView(scalars)).trimmingCharacters(in: .whitespacesAndNewlines)
             let runs = strippingTrailingMarker([Run(text: text, color: nil)])
             return runs.isEmpty ? (.uthmani, [Run(text: ayah.displayArabic, color: nil)]) : (.indopak, runs)
         }
@@ -507,7 +509,7 @@ enum QuranTextRenderer {
         }
         let resolved = runs(for: ayah, script: script)
         let baseFont: Font = resolved.script == .indopak
-            ? .system(size: scaled)
+            ? .custom(indopakFontName, fixedSize: scaled)
             : .custom(uthmaniFontName, fixedSize: scaled)
         let fallbackFont: Font = .system(size: scaled)
         let markerFont: Font = .custom(uthmaniFontName, fixedSize: scaled)
