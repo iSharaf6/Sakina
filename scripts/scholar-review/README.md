@@ -1,3 +1,7 @@
+# Archived review-pack workflow
+
+The September 2026 review packs are optional archival material. The Sheikh is not being asked to complete them. Haneen now uses a short acknowledgment in Sources, privacy & credits; this does not assert content approval or review.
+
 # Arabic scholar review packs
 
 These PDFs export Haneen's actual life-situation and feeling catalogs. Each entry has its Arabic Qur’an/du’a/hadith text, source references, and a separate ruled response page for Sheikh Abdullah Abu Hattab. No insight has been attributed to him. The introductory profile page lets him specify his public name, biography, links and attribution preference.

@@ -43,12 +43,9 @@ struct DuaRewardCard: View {
             Label(language.pick("Reward & virtue", "الأجر والفضل"), systemImage: "sparkle")
                 .font(.yqSubheadBold)
                 .foregroundStyle(Color.yqAccentDeep)
-            Text(reward.summary(language))
-                .font(.yqBody).foregroundStyle(Color.yqInk)
-                .lineSpacing(4).fixedSize(horizontal: false, vertical: true)
-            Text(reward.conditions(language))
-                .font(.yqSubhead).foregroundStyle(Color.yqSecondary)
-                .lineSpacing(3).fixedSize(horizontal: false, vertical: true)
+            rewardText(summary: reward.summaryArabic, conditions: reward.conditionsArabic, direction: .rightToLeft)
+            Divider()
+            rewardText(summary: reward.summaryEnglish, conditions: reward.conditionsEnglish, direction: .leftToRight)
             Divider()
             if let url = URL(string: reward.sourceURL) {
                 Link(destination: url) {
@@ -75,4 +72,14 @@ struct DuaRewardCard: View {
         .overlay { RoundedRectangle(cornerRadius: 20).strokeBorder(Color.yqAccentDeep.opacity(0.16), lineWidth: 1) }
         .environment(\.layoutDirection, language.layoutDirection)
     }
+    private func rewardText(summary: String, conditions: String, direction: LayoutDirection) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text(summary).font(.yqBody).foregroundStyle(Color.yqInk).lineSpacing(4)
+            Text(conditions).font(.yqSubhead).foregroundStyle(Color.yqSecondary).lineSpacing(3)
+        }
+        .fixedSize(horizontal: false, vertical: true)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .environment(\.layoutDirection, direction)
+    }
+
 }

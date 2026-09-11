@@ -148,10 +148,7 @@ struct HomeView: View {
                     .foregroundStyle(Color.yqSecondary)
             }
             Spacer(minLength: 0)
-            Button { sheet = .settings } label: { CompanionIllustration(artwork: .settings, size: 48)
-                .padding(3)
-                .background(Color(red: 0.97, green: 0.95, blue: 0.89), in: RoundedRectangle(cornerRadius: 17))
-                .overlay { RoundedRectangle(cornerRadius: 17).strokeBorder(Color.yqHairline, lineWidth: 1) } }
+            Button { sheet = .settings } label: { CompanionIllustration(artwork: .settings, size: 48).contentShape(Rectangle()) }
                 .buttonStyle(.yqPress)
                 .accessibilityLabel(copy("Settings", "الإعدادات"))
                 .padding(.top, 2)
@@ -340,10 +337,7 @@ struct SettingsButton: View {
     let language: AppLanguage
     let action: () -> Void
     var body: some View {
-        Button(action: action) { CompanionIllustration(artwork: .settings, size: 48)
-                .padding(3)
-                .background(Color(red: 0.97, green: 0.95, blue: 0.89), in: RoundedRectangle(cornerRadius: 17))
-                .overlay { RoundedRectangle(cornerRadius: 17).strokeBorder(Color.yqHairline, lineWidth: 1) } }
+        Button(action: action) { CompanionIllustration(artwork: .settings, size: 48).contentShape(Rectangle()) }
             .buttonStyle(.yqPress)
             .accessibilityLabel(language.pick("Settings", "الإعدادات"))
             .padding(.top, 2)

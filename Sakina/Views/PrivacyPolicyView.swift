@@ -33,16 +33,16 @@ struct PrivacyPolicyView: View {
                         symbol: "location",
                         title: copy("Location and Qibla", "الموقع والقبلة"),
                         body: copy(
-                            "Location is requested only after you choose a location-based feature. It is used to calculate prayer times and the Qibla direction. Qibla readings are transient. Prayer calculations happen on device; Apple’s location services may provide the city-level place name. Haneen does not retain coordinates in its shared widget data.",
-                            "لا يُطلب الموقع إلا بعد اختيارك ميزة تعتمد عليه. ويُستخدم لحساب مواقيت الصلاة واتجاه القبلة. قراءات القبلة مؤقتة، وتتم حسابات الصلاة على الجهاز، وقد توفر خدمات موقع Apple اسم المكان على مستوى المدينة. ولا يحتفظ حنين بالإحداثيات ضمن بيانات الأداة المشتركة."
+                            "Location is requested only after you choose a location-based feature. It is used to calculate prayer times and the Qibla direction. Qibla readings are transient. Prayer calculations happen on device; Apple’s location services may provide the city-level place name. Haneen does not retain coordinates in its shared widget data. When you open nearby mosques or halal places, your search location is sent to Apple Maps and OpenStreetMap Overpass services to find nearby results.",
+                            "لا يُطلب الموقع إلا بعد اختيارك ميزة تعتمد عليه. ويُستخدم لحساب مواقيت الصلاة واتجاه القبلة. قراءات القبلة مؤقتة، وتتم حسابات الصلاة على الجهاز، وقد توفر خدمات موقع Apple اسم المكان على مستوى المدينة. ولا يحتفظ حنين بالإحداثيات ضمن بيانات الأداة المشتركة. وعند فتح المساجد أو المطاعم القريبة، يُرسل موقع البحث إلى خرائط Apple وخدمات OpenStreetMap Overpass لإيجاد النتائج القريبة."
                         )
                     )
                     section(
                         symbol: "icloud.and.arrow.up",
-                        title: copy("Optional backup", "النسخ الاحتياطي الاختياري"),
+                        title: copy("Account & optional backup", "الحساب والنسخ الاحتياطي الاختياري"),
                         body: copy(
-                            "Some configured editions can offer an optional Google sign-in and private Google Drive app-data backup. Nothing is sent unless that option is visible and you choose to connect it. The backup contains bookmarks and reflections, not prayer coordinates. You can disconnect it from Settings.",
-                            "قد تتيح بعض الإصدارات المهيأة تسجيلًا اختياريًا عبر Google ونسخة خاصة في مساحة بيانات التطبيق على Google Drive. ولا يُرسل شيء إلا إذا ظهر هذا الخيار واخترت ربطه. وتحتوي النسخة على المحفوظات والتأملات دون إحداثيات الصلاة، ويمكنك فصلها من الإعدادات."
+                            "Signing in with Apple, Google or email creates an account with Supabase. Supabase stores your account identifier, email address and display name when supplied by the provider. Sign-in alone does not upload your notes or bookmarks. A separate Google Drive connection can provide a private app-data backup. Nothing is sent unless that option is visible and you choose to connect it. The backup contains bookmarks and reflections, not prayer coordinates. You can disconnect it from Settings.",
+                            "يُنشئ تسجيل الدخول عبر Apple أو Google أو البريد الإلكتروني حسابًا لدى Supabase، الذي يحفظ معرّف الحساب والبريد الإلكتروني والاسم المعروض إذا أتاحها موفّر الخدمة. لا يرفع تسجيل الدخول وحده ملاحظاتك أو محفوظاتك. ويمكن لاتصال منفصل بـ Google Drive توفير نسخة خاصة في مساحة بيانات التطبيق. ولا يُرسل شيء إلا إذا ظهر هذا الخيار واخترت ربطه. وتحتوي النسخة على المحفوظات والتأملات دون إحداثيات الصلاة، ويمكنك فصلها من الإعدادات."
                         )
                     )
                     section(
@@ -57,12 +57,12 @@ struct PrivacyPolicyView: View {
                         symbol: "trash",
                         title: copy("Your choices", "خياراتك"),
                         body: copy(
-                            "You can remove bookmarks and reflections in the app, disable notifications in iOS Settings, deny location access, and disconnect any configured backup. Deleting the app removes its local data, subject to your device backups.",
-                            "يمكنك حذف المحفوظات والتأملات داخل التطبيق، وتعطيل الإشعارات من إعدادات iOS، ورفض إذن الموقع، وفصل أي نسخة احتياطية مهيأة. ويؤدي حذف التطبيق إلى إزالة بياناته المحلية مع مراعاة نسخ جهازك الاحتياطية."
+                            "You can delete your sign-in account from Settings → Account → Delete account. You can remove bookmarks and reflections in the app, disable notifications in iOS Settings, deny location access, and disconnect any configured backup. Deleting the app removes its local data, subject to your device backups.",
+                            "يمكنك حذف حساب الدخول من الإعدادات ← الحساب ← حذف الحساب، وحذف المحفوظات والتأملات داخل التطبيق، وتعطيل الإشعارات من إعدادات iOS، ورفض إذن الموقع، وفصل أي نسخة احتياطية مهيأة. ويؤدي حذف التطبيق إلى إزالة بياناته المحلية مع مراعاة نسخ جهازك الاحتياطية."
                         )
                     )
 
-                    Text(copy("Effective 11 August 2026", "سارية من 11 أغسطس 2026"))
+                    Text(copy("Effective 12 September 2026", "سارية من 12 سبتمبر 2026"))
                         .font(.caption)
                         .foregroundStyle(Color.sakinaMuted)
                         .frame(maxWidth: .infinity, alignment: .center)
@@ -87,7 +87,7 @@ struct PrivacyPolicyView: View {
                 "This policy describes the data behavior of Haneen 1.0.",
                 "تصف هذه السياسة طريقة تعامل حنين 1.0 مع البيانات."
             ))
-            .font(.subheadline)
+            .font(.yqSubhead)
             .foregroundStyle(Color.sakinaMuted)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -96,10 +96,10 @@ struct PrivacyPolicyView: View {
     private func section(symbol: String, title: String, body: String) -> some View {
         VStack(alignment: .leading, spacing: 10) {
             Label(title, systemImage: symbol)
-                .font(.headline)
+                .font(.yqSubheadBold)
                 .foregroundStyle(Color.sakinaInk)
             Text(body)
-                .font(.subheadline)
+                .font(.yqSubhead)
                 .foregroundStyle(Color.sakinaMuted)
                 .lineSpacing(5)
                 .fixedSize(horizontal: false, vertical: true)

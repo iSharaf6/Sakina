@@ -40,7 +40,7 @@
 		<string>comgooglemaps</string>
 	</array>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Haneen uses your location to calculate local prayer times, the Qibla direction, and to find mosques and halal food near you. Your coordinates stay on this device.</string>
+	<string>Haneen uses your location to calculate local prayer times, the Qibla direction, and to find mosques and halal food near you. Prayer and Qibla calculations stay on device. Nearby searches share your search location with map providers.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>UthmanicHafs.ttf</string>

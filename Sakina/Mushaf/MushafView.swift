@@ -31,6 +31,7 @@ struct MushafView: View {
     @State private var showPagePicker = false
     @State private var showDisplay = false
     @State private var focusedReading = false
+    @State private var showAyahTip = false
     @State private var showReciter = false
     @State private var showSettings = false
     @State private var textProxy = MushafTextProxy()
@@ -168,7 +169,14 @@ struct MushafView: View {
                 moreMenu
             }
         }
-        .safeAreaInset(edge: .bottom, spacing: 0) { selectionDock }
+        .overlay(alignment: .bottom) { selectionDock }
+        .task {
+            guard !didSelectAyah else { return }
+            didSelectAyah = true
+            showAyahTip = true
+            try? await Task.sleep(for: .seconds(6))
+            withAnimation(reduceMotion ? nil : .easeOut(duration: 0.2)) { showAyahTip = false }
+        }
         .sheet(item: $selectedAyah) { ayah in
             AyahActionSheet(ayah: ayah, language: language)
                 .presentationDetents([.medium, .large])
@@ -448,6 +456,7 @@ struct MushafView: View {
     }
     private func selectAyah(_ ayah: QuranAyah) {
         Haptics.tap()
+        showAyahTip = false
         library.lastReadKey = ayah.key
         if activeAyah?.key == ayah.key {
             selectedAyah = ayah
@@ -459,41 +468,37 @@ struct MushafView: View {
         didSelectAyah = true
     }
 
-    // A fixed dock keeps printed pages and Arabic line layout still during selection.
-    // Only the controls animate; selecting an ayah never resizes the Qur’an text.
-    @ScaledMetric(relativeTo: .subheadline) private var selectionDockHeight = 108.0
-
+    // Contextual controls float above the page; they never reflow the printed text.
+    @ViewBuilder
     private var selectionDock: some View {
-        ZStack {
+        Group {
             if let activeAyah {
                 AyahSelectionBar(ayah: activeAyah, language: language,
                                  onMore: { selectedAyah = activeAyah },
                                  onClose: {
-                    withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.2)) { self.activeAyah = nil }
+                    withAnimation(reduceMotion ? nil : .easeOut(duration: 0.2)) { self.activeAyah = nil }
                 })
-                .transition(reduceMotion ? .opacity : .opacity.combined(with: .offset(y: 8)))
             } else if player.playingKey != nil {
                 MushafPlayerBar(language: language) { key in open(key: key, pulse: true) }
-                    .transition(.opacity)
-            } else {
+            } else if showAyahTip {
                 HStack(spacing: 12) {
-                    Image(systemName: "hand.tap").font(.title3).foregroundStyle(readerAccent)
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(copy("Tap an ayah", "اضغط على آية")).font(.yqSubheadBold)
-                        Text(copy("Listen, save, or explore its meaning", "استمع أو احفظ أو اكتشف المعنى"))
-                            .font(.yqCaption).foregroundStyle(Color.yqSecondary)
-                    }
-                    Spacer(minLength: 0)
+                    Image(systemName: "hand.tap").foregroundStyle(readerAccent)
+                    Text(copy("Tap an ayah to listen, save or read more", "اضغط على آية للاستماع أو الحفظ أو القراءة"))
+                        .font(.yqSubhead)
+                    Button {
+                        withAnimation(reduceMotion ? nil : .easeOut(duration: 0.2)) { showAyahTip = false }
+                    } label: { Image(systemName: "xmark").frame(width: 44, height: 44) }
+                        .accessibilityLabel(copy("Dismiss tip", "إخفاء التلميح"))
                 }
-                .padding(.horizontal, 24)
+                .padding(.leading, 16).padding(.vertical, 4)
                 .foregroundStyle(Color.yqInk)
-                .transition(.opacity)
+                .background(.regularMaterial)
             }
         }
-        .frame(height: selectionDockHeight)
-        .frame(maxWidth: .infinity)
-        .background(.regularMaterial)
-        .overlay(alignment: .top) { Divider() }
+        .clipShape(RoundedRectangle(cornerRadius: 22))
+        .shadow(color: .black.opacity(0.12), radius: 12, y: 4)
+        .padding(.horizontal, 12).padding(.bottom, 8)
+        .transition(reduceMotion ? .opacity : .opacity.combined(with: .move(edge: .bottom)))
     }
 
     // MARK: Surah layout

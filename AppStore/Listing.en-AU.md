@@ -1,60 +1,48 @@
-# Yaqeen — App Store listing draft
+# Haneen — App Store listing
 
 ## Name
-
-Yaqeen
+Haneen
 
 ## Subtitle
-
-Qur’an guidance for life
+Qur’an, Du’a & Prayer
 
 ## Promotional text
-
-Find a reviewed ayah for the moment you are in, keep private reflections, follow local prayer times, and face the Qibla with calm, bilingual guidance.
+Read Qur’an, find du’as for your day, and keep prayer times close. Arabic and English, a beautiful mushaf, and a small companion along the way.
 
 ## Keywords
-
-quran,islam,muslim,dua,hadith,prayer,qibla,reflection,faith,ayat,arabic
+quran,islam,muslim,dua,dhikr,prayer,qibla,hadith,arabic,athan,adhkar
 
 ## Description
+Haneen brings Qur’an, du’a and prayer into your everyday life.
 
-Yaqeen helps you return to the Qur’an in the moments that shape everyday life.
+Read the Qur’an in a traditional mushaf or a flexible digital reader. Tap an ayah to listen, save it, or explore its meaning. Adjust the text, translation and transliteration to suit the way you read.
 
-Start with what you are facing—worry, uncertainty, family pressure, work, marriage, grief, hope, or worship—and reach a carefully presented ayah with its Arabic text, English meaning, source context, and practical reflection.
+Find morning and evening adhkar, daily du’as, and passages for how you feel or where you are in life. Reported rewards appear in Arabic and English with their source and conditions.
 
-Features:
+• Full Qur’an reader with recitation and saved ayat
+• Du’as and hadith references, including sourced virtues
+• Arabic and English interface
+• Light, dark and system appearance
+• Prayer times with calculation settings
+• Qibla compass and nearby mosques
+• Ten widget designs for your Home Screen and Lock Screen
+• Customisable reminders and a dhikr counter
+• Private notes and bookmarks stored on your device
 
-- Reviewed Qur’anic guidance organised around real-life situations
-- A verified scholar profile, with bilingual expanded insights only after they have been reviewed and published
-- Arabic and English interface with full right-to-left support
-- Fast “Qur’an for the moment you’re in” shortcuts
-- Source context, related du‘a and hadith references, and clear safety notes
-- Private bookmarks and written reflections stored locally by default
-- Local prayer times with calculation-method controls
-- Home Screen and paired Lock Screen prayer widgets
-- A private, live Qibla compass
-- Gentle daily reminders without streaks, scores, advertising, or tracking
-- Siri and Shortcuts actions for today’s guidance, Qibla, and the next prayer
-
-Yaqeen supports reflection. It is not tafsir and does not replace qualified scholarship, safeguarding, pastoral care, or professional help.
+Use Haneen without an account, or sign in with Apple, Google or email. Signing in does not automatically upload your notes or bookmarks.
 
 ## Review notes
+- The welcome screen offers Apple, Google and email sign-in, plus access without an account. The guest button is “Use Haneen without an account”.
+- Delete an account in Settings → Account → Delete account. Local notes and bookmarks are kept separately.
+- Prayer and Qibla calculations run on device. Nearby-place searches use Apple Maps and OpenStreetMap Overpass.
+- The iOS Simulator has no magnetometer; test Qibla on a physical iPhone.
+- The Sheikh acknowledgment is a credit, not a claim that all content has been reviewed or endorsed.
+- Source links and the privacy policy are in Settings → Sources, privacy & credits.
 
-- No account is required. The submitted build works fully with local storage.
-- The supplied scholar name, portrait, and links are bundled only as a clearly labelled, unverified local placeholder. Verification appears only after the public service confirms a public profile (or from that previously verified profile’s offline cache); a successful unpublication response clears the cache. Expanded scholar insights appear only for verified published content, and the app never invents placeholder insight prose.
-- Location permission appears only after the reviewer taps “Use my location” for prayer times or opens the Qibla compass. Prayer calculations are performed on device.
-- The iOS Simulator has no magnetometer. Please test Qibla on a physical iPhone; the app intentionally shows a clear unavailable-heading state in Simulator.
-- To test the requested Lock Screen layout, add both accessory rectangular widgets: “Fajr–Dhuhr” on the left and “Asr–Isha” on the right.
-- Google backup UI is hidden unless a valid production OAuth client is included in the submitted build.
-- Qur’an source and integrity notes are available in Settings → Sources, privacy & about.
+## Public links and contact
+- Support: https://isharaf6.github.io/Sakina/app.html
+- Privacy policy: https://isharaf6.github.io/Sakina/privacy.html
+- Support email: islamsharaf2005@gmail.com
 
-## Fields that require owner input
-
-- Support URL
-- Hosted Privacy Policy URL
-- Support email
-- Copyright holder name
-- Category, age rating, price, and availability
-- Content-rights confirmation for Qur’an/translation text, recitation audio, hadith material, and the bundled font
-- Written permission to publish the supplied scholar portrait, identity, social links, and submitted editorial content
-- Final screenshots captured from the distribution candidate
+## Submission fields still to complete
+App Store Connect app ID, copyright declaration, content-rights declarations, age rating, availability, screenshots and final build number. Enter the public URLs above in App Store Connect. Use the current release checklist for test status.

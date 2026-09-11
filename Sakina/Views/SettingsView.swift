@@ -215,7 +215,7 @@ struct SettingsView: View {
     // MARK: Reading
 
     private var readingSection: some View {
-        SettingsGroup(title: copy("Reading", "القراءة")) {
+        SettingsGroup(title: copy("Reading", "القراءة"), footnote: copy("Text size, translation and transliteration are shared by the Qur’an and du’a readers.", "حجم الخط والترجمة والكتابة اللاتينية مشتركة بين قارئ القرآن والأدعية.")) {
             MenuRow(symbol: "character.bubble.fill", title: copy("App language", "لغة التطبيق"),
                     value: language.nativeName, selection: $languageRaw) {
                 ForEach(AppLanguage.allCases) { Text($0.nativeName).tag($0.rawValue) }
@@ -244,7 +244,7 @@ struct SettingsView: View {
                       isOn: $transliterationVisible)
             RowDivider()
             VStack(spacing: 0) {
-                BadgeRow(symbol: "textformat.size", title: copy("Qur’an text size", "حجم خط القرآن")) {
+                BadgeRow(symbol: "textformat.size", title: copy("Arabic text size", "حجم الخط العربي")) {
                     Text("بِسْمِ ٱللَّهِ")
                         .font(.arabic(18 * arabicScale))
                         .foregroundStyle(Color.yqInk)
@@ -336,11 +336,6 @@ struct SettingsView: View {
             Button { AppRating.request(fallback: openURL) } label: {
                 BadgeRow(symbol: "star.fill", title: copy("Rate Haneen", "قيّم حنين"),
                          subtitle: copy("A review helps others find it", "تقييمك يساعد غيرك على إيجاده"))
-            }
-            .buttonStyle(.yqPressSoft)
-            RowDivider()
-            NavigationLink { FollowUsView(language: language) } label: {
-                BadgeRow(symbol: "at", title: copy("Follow us", "تابعنا"))
             }
             .buttonStyle(.yqPressSoft)
         }
@@ -505,13 +500,13 @@ struct SettingsView: View {
         SettingsGroup(
             title: copy("Sources & privacy", "المصادر والخصوصية"),
             footnote: copy(
-                "Qur’anic guidance supports reflection; it does not replace qualified scholarship, pastoral care, or professional help.",
-                "الهداية القرآنية تعين على التدبر، ولا تغني عن سؤال أهل العلم أو الدعم الأسري أو المساعدة المتخصصة."
+                "Read the original references and learn about Haneen.",
+                "اقرأ المراجع الأصلية وتعرّف على حنين."
             )
         ) {
             Button { showAbout = true } label: {
                 BadgeRow(symbol: "checkmark.shield.fill",
-                         title: copy("Sources, privacy & review", "المصادر والخصوصية والمراجعة"))
+                         title: copy("Sources, privacy & credits", "المصادر والخصوصية والشكر"))
             }
             .buttonStyle(.yqPress)
 

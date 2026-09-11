@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// The same opaque artwork used by the installed app icon and sign-in branding.
+/// Transparent brand artwork for in-app use; the installed app icon has its own opaque canvas.
 struct YaqeenBrandIcon: View {
     var size: CGFloat = 32
 
@@ -9,7 +9,6 @@ struct YaqeenBrandIcon: View {
             .resizable()
             .scaledToFit()
             .frame(width: size, height: size)
-            .clipShape(RoundedRectangle(cornerRadius: size * 0.23, style: .continuous))
             .accessibilityHidden(true)
     }
 }
@@ -23,7 +22,7 @@ enum CompanionArtwork: String, CaseIterable {
     case angry, anxious, confident, confused, grateful, greedy, guilty, happy
     case hurt, indecisive, hypocritical, jealous, lazy, lonely, lost, overwhelmed
     case sad, scared, unloved, impatient, hopeful, grieving, breathe
-    case family, shelter, work, qibla, support
+    case family, shelter, work, qibla, kaaba, support
     case fajr, sunrise, dhuhr, asr, maghrib, isha
     case journal, privacy, settings, saved, appearance
 

@@ -38,12 +38,6 @@ struct RuqyahView: View {
 
                 etiquette.revealed(2, appeared: appeared, reduceMotion: reduceMotion)
 
-                Text(copy("Ruqyah is du’a. Seek medical care alongside it.", "الرقية دعاء. اطلب الرعاية الطبية معها."))
-                    .font(.yqCaption)
-                    .foregroundStyle(Color.yqTertiary)
-                    .fixedSize(horizontal: false, vertical: true)
-                    .revealed(2, appeared: appeared, reduceMotion: reduceMotion)
-
                 list(header: copy("All passages", "كل المقاطع"), entries: quran, collectionTitle: quranTitle)
                     .revealed(3, appeared: appeared, reduceMotion: reduceMotion)
                 list(header: copy("From the Sunnah", "من السنة"), entries: sunnah, collectionTitle: sunnahTitle)

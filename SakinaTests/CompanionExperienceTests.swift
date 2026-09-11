@@ -81,7 +81,7 @@ final class CompanionExperienceTests: XCTestCase {
     }
 
     func testArtworkRenderingRemovesEdgePaperAndKeepsVisibleContent() {
-        for art in [CompanionArtwork.breathe, .settings, .saved, .appearance] {
+        for art in [CompanionArtwork.breathe, .settings, .saved, .appearance, .kaaba] {
             let image = CompanionImage.image(art)
             guard let cg = image.cgImage else { return XCTFail("Missing \(art)") }
             var pixels = [UInt8](repeating: 0, count: cg.width * cg.height * 4)

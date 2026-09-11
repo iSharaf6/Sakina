@@ -35,8 +35,7 @@ struct QiblaView: View {
 
     private var introduction: some View {
         VStack(spacing: 9) {
-            KaabaGlyph()
-                .frame(width: 45, height: 45)
+            CompanionIllustration(artwork: .kaaba, size: 72)
                 .accessibilityHidden(true)
 
             Text(copy("Face the Kaaba", "اتجه نحو الكعبة"))
@@ -152,6 +151,7 @@ struct QiblaView: View {
         VStack(spacing: 18) {
             QiblaCompassDial(
                 turn: compass.signedTurn ?? 0,
+                heading: compass.heading ?? 0,
                 isAligned: compass.isAligned,
                 isLoading: false,
                 accessibilityLabel: copy("Qibla compass", "بوصلة القبلة"),
@@ -365,6 +365,7 @@ private struct QiblaStatusCard: View {
 
 private struct QiblaCompassDial: View {
     let turn: Double
+    var heading: Double = 0
     let isAligned: Bool
     let isLoading: Bool
     let accessibilityLabel: String
@@ -380,7 +381,7 @@ private struct QiblaCompassDial: View {
                 Circle()
                     .fill(Color.sakinaCanvas)
                 Circle()
-                    .strokeBorder(isAligned ? Color.yaqeenForest : Color.sakinaHairline, lineWidth: isAligned ? 3 : 1)
+                    .strokeBorder(isAligned ? Color.yqAccentDeep : Color.sakinaHairline, lineWidth: isAligned ? 3 : 1)
 
                 ForEach(0..<72, id: \.self) { index in
                     Capsule()
@@ -391,26 +392,27 @@ private struct QiblaCompassDial: View {
                 }
 
                 cardinalLabels(radius: radius)
+                    .rotationEffect(.degrees(-heading))
 
                 ZStack {
                     Capsule()
-                        .fill(Color.yaqeenForest.opacity(0.2))
+                        .fill(Color.yqAccentDeep.opacity(0.2))
                         .frame(width: 8, height: size * 0.34)
                         .offset(y: -size * 0.12)
 
                     QiblaPointer()
-                        .fill(Color.yaqeenForest)
+                        .fill(Color.yqAccentDeep)
                         .frame(width: size * 0.18, height: size * 0.31)
                         .offset(y: -size * 0.14)
 
-                    KaabaGlyph()
-                        .frame(width: size * 0.105, height: size * 0.105)
-                        .offset(y: -size * 0.34)
+                    CompanionIllustration(artwork: .kaaba, size: size * 0.18)
+                        .rotationEffect(.degrees(-turn))
+                        .offset(y: -size * 0.37)
 
                     Circle()
                         .fill(Color.sakinaElevated)
                         .frame(width: size * 0.1, height: size * 0.1)
-                        .overlay(Circle().strokeBorder(Color.yaqeenForest, lineWidth: 3))
+                        .overlay(Circle().strokeBorder(Color.yqAccentDeep, lineWidth: 3))
                 }
                 .rotationEffect(.degrees(turn))
                 .animation(
@@ -422,7 +424,7 @@ private struct QiblaCompassDial: View {
                 if isLoading {
                     ProgressView()
                         .controlSize(.large)
-                        .tint(Color.yaqeenForest)
+                        .tint(Color.yqAccentDeep)
                 }
             }
             .frame(width: size, height: size)
@@ -457,24 +459,6 @@ private struct QiblaPointer: Shape {
         path.addLine(to: CGPoint(x: rect.minX, y: rect.maxY))
         path.closeSubpath()
         return path
-    }
-}
-
-private struct KaabaGlyph: View {
-    var body: some View {
-        ZStack {
-            RoundedRectangle(cornerRadius: 4, style: .continuous)
-                .fill(Color(red: 0.09, green: 0.095, blue: 0.09))
-            Rectangle()
-                .fill(Color(red: 0.72, green: 0.60, blue: 0.31))
-                .frame(height: 4)
-                .offset(y: -7)
-            RoundedRectangle(cornerRadius: 1.5)
-                .fill(Color(red: 0.72, green: 0.60, blue: 0.31))
-                .frame(width: 5, height: 10)
-                .offset(x: 9, y: 8)
-        }
-        .shadow(color: .black.opacity(0.12), radius: 3, y: 2)
     }
 }
 

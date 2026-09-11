@@ -1,62 +1,35 @@
-# Yaqeen 1.0 release checklist
+# Haneen release check — 12 September 2026
 
-## Completed in the repository
+## Verified
 
-- [x] iPhone-only iOS 17+ app target and WidgetKit extension
-- [x] Production AppIcon catalog including opaque 1024×1024 marketing icon
-- [x] App and widget privacy manifests
-- [x] App Group entitlement on both targets
-- [x] Location usage description
-- [x] No placeholder OAuth client or reversed URL scheme in the submitted configuration
-- [x] Google UI safely hidden when production OAuth is absent
-- [x] Qur’an content-integrity tests and Qibla geometry tests
-- [x] Verified-scholar public profile and published-insight presentation, with an offline/unconfigured safe state
-- [x] Invite-only scholar/admin dashboard and least-privilege Supabase schema, RLS, revision history, and publishing workflow
-- [x] Deterministic guidance manifest and CI drift check
-- [x] Schema and JWT-role pgTAP suites wired into CI, including public-read denial, revoked-role denial, admin-only publication, inactive-source denial, and stale-revision conflicts
-- [x] Revision-safe draft/translation/review/submit RPCs and exact-origin CORS handling for the browser translation function
-- [x] In-app bilingual privacy policy
-- [x] Release device build and unsigned Archive verification
+- [x] 60 iOS tests passed, including all 604 mushaf pages, Arabic script coverage, reminders, widget models and Qibla geometry.
+- [x] Eight account-deletion security tests passed; the Edge Function type-check passed.
+- [x] Simulator checks: light/dark appearance, transparent artwork, Settings tap target, temporary ayah hint, ayah actions, and du’a display toggles with bilingual rewards.
+- [x] New cat-and-Qur’an app icon packaged at all required sizes; opaque 1024-pixel App Store icon. Kaaba artwork transparency covered by the asset test.
+- [x] Signed Release archive and App Store export succeeded. Artifact: `build/Haneen-AppStore/Haneen.ipa` (local, ignored by Git).
+- [x] Signed Release installed and launched on the paired iPhone 15. This confirms installation and launch, not the device-only checks below.
+- [x] Apple, Google and email providers enabled in production Supabase; guest access available from the welcome screen.
+- [x] Apple account deletion requests fresh Apple authorization and revokes the grant before deleting the Supabase user. Production function v6 deployed. No private key or token is bundled in the app.
+- [x] Google OAuth is in production; Haneen name, logo and public URLs saved. Google reports branding under review.
+- [x] In-app and public privacy text updated for authentication, location and nearby-place services.
+- [x] Sheikh Abdullah Abu Hattab receives a simple acknowledgment. The large review workbook is optional and not part of launch requirements; no endorsement is claimed.
 
-## Apple Developer and App Store Connect
+## Before submission
 
-- [ ] Confirm the App ID and widget App ID both have `group.com.islamsharaf.sakina`
-- [ ] Create or refresh App Store distribution profiles for both targets
-- [ ] Choose the final unique build number before upload
-- [ ] Create the App Store Connect app record for bundle ID `com.islamsharaf.sakina`
-- [ ] Host `PrivacyPolicy.md` on a public HTTPS URL and enter it in App Store Connect
-- [ ] Provide a public Support URL and monitored support email
-- [ ] Complete App Privacy answers against the exact uploaded binary and all third-party services
-- [ ] Confirm permission to publish the supplied scholar portrait, name, links, and any subsequently submitted prose
-- [ ] Complete age rating, category, pricing, availability, and content-rights questions
-- [ ] Upload final device screenshots and optional App Preview
-- [ ] Add review notes from `Listing.en-AU.md`
+- [ ] Complete Apple, Google and email sign-in with real test accounts on a physical device; test sign-out, relaunch, email confirmation and account deletion, including Apple's reauthorization/revocation flow. Provider configuration and automated tests do not replace these checks.
+- [ ] Confirm real-device Qibla heading, location permission changes, prayer notifications across midnight/restart, and Home/Lock Screen widget updates. Simulator checks cannot verify a magnetometer or notification delivery while the device is locked.
+- [ ] Check VoiceOver, largest text sizes, Reduce Motion, recitation on cellular, and installation on the oldest supported iOS version.
+- [ ] Create/confirm the App Store Connect record for `com.islamsharaf.sakina`; choose the final unique build number and upload the signed build.
+- [ ] Add screenshots, age rating, category, pricing/availability, content-rights declarations and privacy answers matching the shipped binary and services. Confirm consent for the Sheikh acknowledgment.
+- [ ] Enter public support and privacy URLs from the listing, add review notes, then submit for review.
+- [ ] Monitor Google's external branding review; approval timing is controlled by Google.
 
-## Final physical-device QA
+No build has been uploaded or submitted to App Store Connect during this release check.
 
-- [ ] Prayer times: precise/approximate location, denied access, time-zone changes, and calculation methods
-- [ ] Qibla: true-north heading, calibration, magnetic interference/case, denied access, and disabled services
-- [ ] Widgets: both Lock Screen halves plus Home Screen widget, including after Isha and after location refresh
-- [ ] Arabic and English, right-to-left layout, Dynamic Type, VoiceOver, Reduce Motion, and dark appearance
-- [ ] Notifications after a restart and across midnight
-- [ ] Recitation playback on Wi-Fi and cellular data
-- [ ] Cold-launch deep links and App Shortcuts
-- [ ] Install/upgrade on the oldest supported iOS 17 device
+## Account-deletion operations
 
-## Scholar service activation
+Production secrets are stored in Supabase: `APPLE_SIGNIN_PRIVATE_KEY`, `APPLE_SIGNIN_KEY_ID`, `APPLE_SIGNIN_TEAM_ID`, `APPLE_SIGNIN_CLIENT_ID`. The Apple private-key backup is outside this repository in the owner's protected local configuration directory. Never commit or bundle it.
 
-- [ ] Create the production Supabase project and apply every migration in order
-- [ ] Configure only the project URL and publishable key in the public app/dashboard; keep secret/service-role keys in Supabase or encrypted CI secrets
-- [ ] Invite the scholar and administrator through Supabase Auth; disable public user creation for this workflow
-- [ ] Assign the `scholar` and `admin` roles with the protected administrator RPC
-- [ ] Create the profile using only owner-confirmed facts, upload the supplied portrait to the scholar’s UUID folder, then explicitly mark the profile verified and public
-- [ ] Deploy the manifest-sync and translation Edge Functions and set their server-side secrets, including the dashboard’s exact HTTPS origin in `SCHOLAR_DASHBOARD_ORIGINS`
-- [ ] Run `supabase test db` from a clean local/staging stack and require both pgTAP suites to pass before production deployment
-- [ ] Run the manifest sync, confirm the expected queue count, and review a draft/translation/submission/publication end to end
-- [ ] Deploy the dashboard over HTTPS and verify an uninvited or role-less user is signed out
-- [ ] Confirm only `published` content is readable with an unauthenticated publishable-key request
-- [ ] Re-run App Privacy answers and physical-device QA against the exact production Supabase configuration
+The Apple credential check returned `invalid_grant` for an intentionally invalid authorization code, rather than `invalid_client`. This supports correct client credentials; it is not an end-to-end user deletion test.
 
-## Optional Google backup decision
-
-For a local-only 1.0, leave OAuth credentials absent; the UI remains hidden. If Google backup is enabled before submission, add the production iOS OAuth client and reversed URL scheme, verify Drive API consent and data deletion, repeat privacy review, and retest account restoration and two-device conflict behavior.
+Tests: `deno test supabase/functions/delete-account/handler_test.ts`. The endpoint validates the bearer session, ignores caller-supplied deletion targets and preserves Apple-linked accounts when revocation fails.

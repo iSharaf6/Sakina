@@ -2,12 +2,10 @@ import SwiftUI
 
 struct AboutView: View {
     @Environment(\.dismiss) private var dismiss
-    @EnvironmentObject private var scholarStore: ScholarContentStore
     @AppStorage(SettingsKeys.appLanguage) private var languageRaw = AppLanguage.english.rawValue
 
     private var language: AppLanguage { AppLanguage(rawValue: languageRaw) ?? .english }
     private var copy: AppCopy { AppCopy(language: language) }
-    private var scholarProfile: ScholarProfile { scholarStore.profile }
 
     var body: some View {
         NavigationStack {
@@ -19,8 +17,7 @@ struct AboutView: View {
                         brand
                         trustCard
                         privacyCard
-                        careCard
-                        scholarlyReview
+                        acknowledgment
                         links
                         version
                     }
@@ -51,7 +48,7 @@ struct AboutView: View {
                 .foregroundStyle(Color.sakinaInk)
 
                 Text(copy("Qur’an and du’a for how you feel", "قرآن ودعاء لما تشعر به"))
-                    .font(.subheadline.weight(.medium))
+                    .font(.yqBodyMedium)
                     .foregroundStyle(Color.sakinaMuted)
             }
         }
@@ -63,8 +60,8 @@ struct AboutView: View {
             symbol: "checkmark.shield",
             title: copy("The Qur’an is an amanah", "القرآن أمانة"),
             body: copy(
-                "All 71 bundled ayat were machine-compared against Quran.com API v4 on 20 July 2026. The Arabic matches its Uthmani text exactly; the displayed Saheeh International text removes only HTML footnote markers. A frozen checksum guards against accidental glyph changes.",
-                "تمت مطابقة الآيات الـ71 المضمّنة آليًا مع Quran.com API v4 بتاريخ 20 يوليو 2026. يطابق النص العربي الرسم العثماني تمامًا، ولا يُحذف من ترجمة Saheeh International المعروضة إلا علامات الحواشي البرمجية. ويحمي فحص ثابت النص من أي تغيير غير مقصود."
+                "Qur’an passages link to their original references. Du’as and their reported virtues include the supporting narration and its grading, so you can read the source in context.",
+                "ترتبط الآيات بمراجعها الأصلية، وتُذكر مع الأدعية وفضائلها الروايات الدالة عليها ودرجتها، لتقرأ المصدر في سياقه."
             )
         )
     }
@@ -80,88 +77,21 @@ struct AboutView: View {
         )
     }
 
-    private var careCard: some View {
+    private var acknowledgment: some View {
         aboutCard(
-            symbol: "heart.text.square",
-            title: copy("Guidance, with context", "هداية مع حفظ السياق"),
-            body: copy(
-                "Haneen distinguishes direct source context from a general principle. It never treats forgiveness as permission for harm, or patience as a reason to remain unsafe. Reflections are not tafsir or a substitute for qualified scholarship, safeguarding, or professional care.",
-                "يميّز حنين بين سياق النص المباشر والمبدأ العام. ولا يجعل العفو إذنًا بالضرر، ولا الصبر سببًا للبقاء في الخطر. والتأملات ليست تفسيرًا ولا بديلًا عن أهل العلم أو الحماية أو الرعاية المتخصصة."
-            )
+            symbol: "heart",
+            title: copy("With thanks", "شكر وتقدير"),
+            body: copy("Special thanks to Sheikh Abdullah Abu Hattab.", "شكر خاص للشيخ عبد الله أبو حطاب.")
         )
-    }
-
-    private var scholarlyReview: some View {
-        NavigationLink {
-            ScholarProfileView()
-        } label: {
-            HStack(spacing: 14) {
-                ScholarAvatarView(profile: scholarProfile, size: 58, language: language)
-
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(copy("Scholarly review", "المراجعة الشرعية"))
-                        .font(.headline)
-                        .foregroundStyle(Color.sakinaInk)
-                    Text(scholarProfile.displayName(language))
-                        .font(.subheadline.weight(.medium))
-                        .foregroundStyle(Color.sakinaInk)
-                    if let title = scholarProfile.title(language) {
-                        Text(title)
-                            .font(.caption)
-                            .foregroundStyle(Color.sakinaMuted)
-                    }
-                    Label(scholarTrustText, systemImage: scholarTrustSymbol)
-                        .font(.caption2.weight(.semibold))
-                        .foregroundStyle(Color.sakinaMuted)
-                }
-
-                Spacer(minLength: 8)
-                Image(systemName: language == .arabic ? "chevron.left" : "chevron.right")
-                    .font(.caption.weight(.bold))
-                    .foregroundStyle(Color.sakinaMuted)
-            }
-            .padding(16)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(Color.sakinaElevated, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
-            .overlay {
-                RoundedRectangle(cornerRadius: 20, style: .continuous)
-                    .strokeBorder(Color.sakinaHairline, lineWidth: 1)
-            }
-            .contentShape(Rectangle())
-        }
-        .buttonStyle(.plain)
-        .accessibilityHint(
-            scholarStore.isShowingLocalPlaceholder
-                ? copy(
-                    "Opens local placeholder details that are not verified online",
-                    "يفتح بيانات محلية مؤقتة غير موثّقة عبر الإنترنت"
-                )
-                : copy("Opens the verified public scholar profile", "يفتح الملف العام الموثّق للمراجع")
-        )
-    }
-
-    private var scholarTrustText: String {
-        switch scholarStore.profileSource {
-        case .localPlaceholder:
-            return copy("Local placeholder · unverified", "عنصر محلي مؤقت · غير موثّق")
-        case .cachedVerified:
-            return copy("Previously verified · saved", "سبق توثيقه · محفوظ")
-        case .liveVerified:
-            return copy("Verified public profile", "ملف عام موثّق")
-        }
-    }
-
-    private var scholarTrustSymbol: String {
-        scholarStore.isShowingLocalPlaceholder ? "exclamationmark.circle" : "checkmark.seal.fill"
     }
 
     private func aboutCard(symbol: String, title: String, body: String) -> some View {
         VStack(alignment: .leading, spacing: 12) {
             Label(title, systemImage: symbol)
-                .font(.headline)
+                .font(.yqSubheadBold)
                 .foregroundStyle(Color.sakinaInk)
             Text(body)
-                .font(.subheadline)
+                .font(.yqSubhead)
                 .foregroundStyle(Color.sakinaMuted)
                 .lineSpacing(5)
                 .fixedSize(horizontal: false, vertical: true)
@@ -203,7 +133,7 @@ struct AboutView: View {
             Image(systemName: "arrow.up.right.square")
                 .frame(width: 24)
             Text(title)
-                .font(.subheadline.weight(.medium))
+                .font(.yqBodyMedium)
             Spacer()
             Text(detail)
                 .font(.caption)

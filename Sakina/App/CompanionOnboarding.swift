@@ -85,6 +85,12 @@ struct CompanionOnboarding: View {
                                     .overlay(Capsule().strokeBorder(ink.opacity(0.16), lineWidth: 1))
                             }.accessibilityIdentifier("welcome.email")
                         }
+                        if !account.signedIn {
+                            Button("Use Haneen without an account") { completeWelcome() }
+                                .font(.yqSubheadMedium)
+                                .frame(minHeight: 44)
+                                .accessibilityIdentifier("welcome.guest")
+                        }
                         if account.busy { ProgressView().tint(ink).accessibilityLabel("Signing in") }
                         if let message = account.message, !showEmail {
                             Text(message).font(.footnote).multilineTextAlignment(.center).accessibilityAddTraits(.updatesFrequently)
@@ -113,6 +119,9 @@ struct CompanionOnboarding: View {
     }
     private func finish() {
         guard account.signedIn else { return }
+        completeWelcome()
+    }
+    private func completeWelcome() {
         UserDefaults.standard.set(true, forKey: Self.completedKey)
         onFinish()
     }

@@ -11,9 +11,6 @@ enum AppLinks {
     /// Set once the app is live: the numeric id from App Store Connect.
     static let appStoreID = ""
     static let supportEmail = "islamsharaf2005@gmail.com"
-    static let instagram = URL(string: "https://instagram.com/yaqeen.app")!
-    static let tiktok = URL(string: "https://tiktok.com/@yaqeen.app")!
-    static let x = URL(string: "https://x.com/yaqeenapp")!
 
     static var appStore: URL? {
         guard !appStoreID.isEmpty else { return nil }
@@ -62,8 +59,8 @@ struct FAQView: View {
              copy("Each du’a shows its collection, hadith number and grade, with a link to the source page on Sunnah.com. Excerpts are labelled.",
                   "يعرض كل دعاء المصدر ورقم الحديث ودرجته مع رابط إلى صفحة المصدر في Sunnah.com، وتُوسم المقتطفات.")),
             (copy("How are prayer times calculated?", "كيف تُحسب مواقيت الصلاة؟"),
-             copy("On your iPhone, from your approximate location, using the calculation method you choose in Settings. Coordinates never leave the device.",
-                  "على جهازك من موقعك التقريبي وبالطريقة التي تختارها في الإعدادات. ولا تغادر الإحداثيات الجهاز.")),
+             copy("On your iPhone, from your approximate location, using the calculation method you choose in Settings. Nearby-place searches separately share your search location with map providers.",
+                  "على جهازك من موقعك التقريبي وبالطريقة التي تختارها في الإعدادات. ويشارك البحث عن الأماكن القريبة موقع البحث مع مزودي الخرائط بشكل منفصل.")),
             (copy("Why does a mosque or restaurant look wrong?", "لماذا يبدو مسجد أو مطعم غير صحيح؟"),
              copy("Nearby places come from Apple Maps and OpenStreetMap. Places found in both are marked. Always confirm halal status with the restaurant, and use Report a problem to fix the map data.",
                   "الأماكن القريبة من خرائط Apple وOpenStreetMap. تُوسم الأماكن الموجودة في المصدرين معًا. تأكد دائمًا من الحلال لدى المطعم، واستخدم الإبلاغ عن مشكلة لتصحيح البيانات.")),
@@ -378,8 +375,8 @@ struct AboutUsView: View {
                     symbol: "person.fill",
                     title: copy("Who we are", "من نحن"),
                     body: copy(
-                        "Haneen is built by a small independent team of Muslims, reviewed by a scholar, and shaped by the people who write to us. It has no investors and no advertising. If it helps you, tell a friend.",
-                        "حنين يبنيه فريق مستقل صغير من المسلمين، ويراجعه عالم، ويشكله من يراسلوننا. لا مستثمرين ولا إعلانات. إن نفعك، فأخبر صديقًا."
+                        "Haneen is independently built and shaped by your feedback. If it helps you, tell a friend.",
+                        "حنين تطبيق مستقل تسهم ملاحظاتكم في تطويره. إن نفعك، فأخبر صديقًا."
                     )
                 )
                 .revealed(3, appeared: appeared, reduceMotion: reduceMotion)
@@ -387,11 +384,6 @@ struct AboutUsView: View {
                 RowGroup {
                     ShareLink(item: AppLinks.shareText(language)) {
                         BadgeRow(symbol: "square.and.arrow.up.fill", title: copy("Share Haneen", "شارك حنين"))
-                    }
-                    .buttonStyle(.yqPressSoft)
-                    RowDivider()
-                    NavigationLink { FollowUsView(language: language) } label: {
-                        BadgeRow(symbol: "at", title: copy("Follow us", "تابعنا"))
                     }
                     .buttonStyle(.yqPressSoft)
                     RowDivider()
@@ -434,56 +426,6 @@ struct AboutUsView: View {
         .yqCard(cornerRadius: 20)
     }
 }
-
-// MARK: - Follow us
-
-struct FollowUsView: View {
-    let language: AppLanguage
-    private var copy: AppCopy { AppCopy(language: language) }
-
-    var body: some View {
-        ScrollView(showsIndicators: false) {
-            VStack(alignment: .leading, spacing: 22) {
-                PageHeader(title: copy("Follow us", "تابعنا"),
-                           subtitle: copy("New du’as, reminders and what we’re building next.", "أدعية جديدة وتذكيرات وما نبنيه لاحقًا."))
-                RowGroup {
-                    Link(destination: AppLinks.instagram) {
-                        BadgeRow(symbol: "camera.fill", title: "Instagram", subtitle: "@yaqeen.app") { outward }
-                    }
-                    .buttonStyle(.yqPressSoft)
-                    RowDivider()
-                    Link(destination: AppLinks.tiktok) {
-                        BadgeRow(symbol: "music.note", title: "TikTok", subtitle: "@yaqeen.app") { outward }
-                    }
-                    .buttonStyle(.yqPressSoft)
-                    RowDivider()
-                    Link(destination: AppLinks.x) {
-                        BadgeRow(symbol: "number", title: "X", subtitle: "@yaqeenapp") { outward }
-                    }
-                    .buttonStyle(.yqPressSoft)
-                }
-                ShareLink(item: AppLinks.shareText(language)) {
-                    PrimaryButton(title: copy("Share Haneen with a friend", "شارك حنين مع صديق"), symbol: "square.and.arrow.up.fill")
-                }
-                .buttonStyle(.yqPress)
-            }
-            .padding(.horizontal, 20)
-            .padding(.top, 8)
-            .padding(.bottom, 32)
-        }
-        .yqScreen()
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar(.hidden, for: .tabBar)
-    }
-
-    private var outward: some View {
-        Image(systemName: "arrow.up.right")
-            .font(.system(size: 13, weight: .semibold))
-            .foregroundStyle(Color.yqTertiary)
-    }
-}
-
-// MARK: - Rating
 
 enum AppRating {
     /// Asks for the native review prompt; falls back to the App Store page when it can’t show one.

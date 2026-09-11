@@ -12,6 +12,7 @@ struct DuaReaderView: View {
     @State private var count = 0
     @State private var completed = false
     @State private var showSource = false
+    @State private var showReadingOptions = false
     @State private var advanceTask: Task<Void, Never>?
     @Environment(\.dynamicTypeSize) private var typeSize
     @Environment(\.dismiss) private var dismiss
@@ -74,18 +75,10 @@ struct DuaReaderView: View {
                     }
                 }
                 ToolbarItemGroup(placement: .topBarTrailing) {
-                    Menu {
-                        Toggle(copy("Meaning", "المعنى"), isOn: $translationVisible)
-                        Toggle(copy("Pronunciation", "النطق"), isOn: $transliterationVisible)
-                        Section(copy("Arabic size", "حجم العربية")) {
-                            Button(copy("Smaller", "أصغر")) { arabicScale = max(0.8, arabicScale - 0.1) }
-                            Button(copy("Larger", "أكبر")) { arabicScale = min(1.6, arabicScale + 0.1) }
-                        }
-                        ShareLink(item: sharedText) { Label(copy("Share", "مشاركة"), systemImage: "square.and.arrow.up") }
-                    } label: {
+                    Button { showReadingOptions = true } label: {
                         Image(systemName: "textformat.size")
                     }
-                    .accessibilityLabel(copy("Reading options", "خيارات القراءة"))
+                    .accessibilityLabel(copy("Du’a display options", "خيارات عرض الدعاء"))
                     Button {
                         savedRaw = DuaCollection.toggling(dua.id, in: savedRaw)
                     } label: {
@@ -97,6 +90,8 @@ struct DuaReaderView: View {
             }
         }
         .sheet(isPresented: $showSource) { sourceSheet }
+        .sheet(isPresented: $showReadingOptions) { readingOptions }
+
         .sensoryFeedback(.impact(weight: .light), trigger: count)
         .sensoryFeedback(.selection, trigger: index)
         .sensoryFeedback(.success, trigger: completed)
@@ -111,6 +106,33 @@ struct DuaReaderView: View {
             rememberPlace()
         }
         .onDisappear { advanceTask?.cancel() }
+    }
+
+    private var readingOptions: some View {
+        NavigationStack {
+            Form {
+                Section {
+                    Toggle(copy("Translation", "الترجمة"), isOn: $translationVisible)
+                    Toggle(copy("Transliteration", "الكتابة بحروف لاتينية"), isOn: $transliterationVisible)
+                } footer: {
+                    Text(copy("These choices also update your reading settings.", "تتزامن هذه الخيارات مع إعدادات القراءة."))
+                }
+                Section(copy("Arabic text size", "حجم النص العربي")) {
+                    Slider(value: $arabicScale, in: MushafPreferences.fontScaleRange, step: 0.05)
+                        .accessibilityLabel(copy("Arabic text size", "حجم النص العربي"))
+                    Text("بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ")
+                        .font(.arabicProse(28 * arabicScale)).frame(maxWidth: .infinity).padding(.vertical, 10)
+                }
+                ShareLink(item: sharedText) { Label(copy("Share du’a", "مشاركة الدعاء"), systemImage: "square.and.arrow.up") }
+            }
+            .font(.yqBody)
+            .tint(.yqAccentDeep)
+            .navigationTitle(copy("Du’a display", "عرض الدعاء"))
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar { ToolbarItem(placement: .confirmationAction) { Button(copy("Done", "تم")) { showReadingOptions = false }.font(.yqSubheadBold) } }
+        }
+        .environment(\.layoutDirection, language.layoutDirection)
+        .presentationDetents([.medium, .large])
     }
 
     // MARK: Reader
@@ -221,7 +243,7 @@ struct DuaReaderView: View {
                         .environment(\.layoutDirection, .leftToRight)
                         .textSelection(.enabled)
                 }
-                if translationVisible || language == .arabic {
+                if translationVisible {
                     Text(entry.meaning(language))
                         .font(.yqBody)
                         .lineSpacing(6)
@@ -254,17 +276,7 @@ struct DuaReaderView: View {
             }
             .buttonStyle(.yqPressSoft)
 
-            if let caution = entry.caution(language) {
-                HStack(alignment: .top, spacing: 9) {
-                    Image(systemName: "exclamationmark.shield.fill")
-                        .font(.system(size: 13, weight: .semibold))
-                        .foregroundStyle(BadgeTint.red.color)
-                        .padding(.top, 2)
-                    Text(caution).font(.yqSubhead).foregroundStyle(Color.yqInk).fixedSize(horizontal: false, vertical: true)
-                }
-                .padding(12)
-                .background(BadgeTint.red.color.opacity(0.07), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
-            }
+
         }
     }
 
@@ -432,9 +444,6 @@ struct DuaReaderView: View {
                     if dua.source.textForm == .excerpt {
                         Text(copy("This is an excerpt. The source page has the full passage or narration.", "هذا مقتطف، وتجد النص أو الرواية كاملة في المصدر."))
                             .font(.yqSubhead).foregroundStyle(Color.yqSecondary)
-                    }
-                    if let caution = dua.caution(language) {
-                        Text(caution).font(.yqSubheadMedium).foregroundStyle(Color.yqInk)
                     }
                     Link(destination: URL(string: dua.source.canonicalURL)!) {
                         PrimaryButton(title: copy("Read the original source", "اقرأ المصدر الأصلي"), symbol: "arrow.up.right")

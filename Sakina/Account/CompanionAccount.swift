@@ -99,11 +99,20 @@ final class CompanionAccount: ObservableObject {
 
     func deleteAccount() async {
         guard let client else { return }
-        busy = true; defer { busy = false }
+        busy = true; message = nil; defer { busy = false }
         do {
-            try await client.functions.invoke("delete-account")
+            let user = try await client.auth.user()
+            var body: [String: String] = [:]
+            if user.identities?.contains(where: { $0.provider == "apple" }) == true {
+                let authorization = AppleDeletionAuthorization()
+                body["appleAuthorizationCode"] = try await authorization.authorize()
+            }
+            try await client.functions.invoke("delete-account", options: .init(body: body))
             try await client.auth.signOut(scope: .local)
-        } catch { message = "Account deletion couldn’t finish. \(error.localizedDescription)" }
+        } catch {
+            if let error = error as? ASAuthorizationError, error.code == .canceled { return }
+            message = "Account deletion couldn’t finish. Please try again and use the same Apple account if prompted."
+        }
     }
 }
 
@@ -120,7 +129,7 @@ struct CompanionAccountView: View {
             VStack(alignment: .leading, spacing: 24) {
                 CompanionIllustration(artwork: .privacy, size: 110).frame(maxWidth: .infinity)
                 Text(account.signedIn ? "Your Haneen account" : creating ? "Make yourself at home." : "Welcome back.")
-                    .font(.system(.largeTitle, design: .serif, weight: .medium))
+                    .font(.yqTitle)
                 Text("Reading, prayer times and your local library are always available without an account.").font(.yqBody).foregroundStyle(Color.yqSecondary)
                 if account.signedIn {
                     Text(account.email ?? "Signed in").font(.yqHeadline)
@@ -155,12 +164,66 @@ struct CompanionAccountView: View {
                 if account.busy { ProgressView() }
                 if let message = account.message { Text(message).font(.yqSubhead).foregroundStyle(Color.yqSecondary) }
                 NavigationLink("Sources & privacy") { AboutView() }.font(.yqCaption)
-            }.padding(24).disabled(account.busy)
+            }.font(.yqBody).padding(24).disabled(account.busy)
         }.yqScreen().navigationTitle("Account").navigationBarTitleDisplayMode(.inline)
             .onChange(of: email) { _, _ in sent = false; code = "" }
             .onChange(of: creating) { _, _ in sent = false; code = "" }
             .confirmationDialog("Delete your Haneen account?", isPresented: $confirmDelete, titleVisibility: .visible) {
                 Button("Delete account", role: .destructive) { Task { await account.deleteAccount() } }
             } message: { Text("Your sign-in account will be permanently deleted. Local notes and bookmarks stay on this iPhone.") }
+    }
+}
+
+
+/// Obtain a fresh, single-use code only after the user confirms account deletion.
+/// The server verifies its Apple subject against the signed-in Supabase identity.
+@MainActor
+private final class AppleDeletionAuthorization: NSObject, ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding {
+    private var continuation: CheckedContinuation<String, Error>?
+    private var controller: ASAuthorizationController?
+    private var window: UIWindow?
+
+    func authorize() async throws -> String {
+        guard let window = UIApplication.shared.connectedScenes.compactMap({ $0 as? UIWindowScene })
+            .first(where: { $0.activationState == .foregroundActive })?.windows.first(where: \.isKeyWindow) else {
+            throw CocoaError(.userCancelled)
+        }
+        self.window = window
+        return try await withCheckedThrowingContinuation { continuation in
+            self.continuation = continuation
+            let request = ASAuthorizationAppleIDProvider().createRequest()
+            request.requestedScopes = []
+            let controller = ASAuthorizationController(authorizationRequests: [request])
+            controller.delegate = self
+            controller.presentationContextProvider = self
+            self.controller = controller
+            controller.performRequests()
+        }
+    }
+
+    func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
+        window ?? ASPresentationAnchor()
+    }
+
+    func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
+        guard let credential = authorization.credential as? ASAuthorizationAppleIDCredential,
+              let data = credential.authorizationCode,
+              let code = String(data: data, encoding: .utf8), !code.isEmpty else {
+            finish(.failure(CocoaError(.coderInvalidValue)))
+            return
+        }
+        finish(.success(code))
+    }
+
+    func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
+        finish(.failure(error))
+    }
+
+    private func finish(_ result: Result<String, Error>) {
+        let pending = continuation
+        continuation = nil
+        controller = nil
+        window = nil
+        pending?.resume(with: result)
     }
 }

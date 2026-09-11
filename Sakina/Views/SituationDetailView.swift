@@ -533,7 +533,7 @@ struct SituationDetailView: View {
                     .environment(\.layoutDirection, .leftToRight)
             }
 
-            if language == .arabic || translationVisible {
+            if translationVisible {
                 VStack(alignment: .leading, spacing: 6) {
                     CapsLabel(text: copy("Meaning", "المعنى"), size: 9)
                     Text(supplication.meaning(language))
@@ -544,10 +544,6 @@ struct SituationDetailView: View {
             }
 
             contextBlock(supplication.context(language))
-
-            if let caution = supplication.caution(language) {
-                cautionBlock(caution)
-            }
 
             sourceFooter(supplication.source)
         }
