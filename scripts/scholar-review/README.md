@@ -29,3 +29,5 @@ The dated release manifest in `Design/ContentReview` preserves the original page
 - CoreText clipping assertions pass on all pages.
 - Covers, content, long passages, response pages and final entries were rendered and visually inspected.
 - Qur’anic entries whose source is a recitation hadith use explicit surah labels; hadith numbers are never interpreted as surah numbers.
+
+The protected scholar queue sync is now manual-only: run the “Validate and sync scholar guidance” workflow on `main` with `sync_queue` enabled only if the editorial programme resumes. Normal pushes still run content and security validation, but do not populate the queue.
