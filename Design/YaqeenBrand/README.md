@@ -7,3 +7,15 @@ Master app asset: `Sakina/Assets.xcassets/AppIcon.appiconset/Icon-1024.png`. Run
 ## Generation prompt
 
 Generate one finished square 1024x1024 iOS app icon for Yaqeen. Reference image is STYLE AND CHARACTER REFERENCE ONLY. Preserve this exact cream cat with dark charcoal ears and patch over one eye, tiny gentle closed eyes, moss-green triangular scarf, hand-drawn colored pencil texture and confident dark outlines. New composition: bold closely framed seated cat portrait, head and front chest/paws filling about 78% of canvas, tail curving beside its cheek, a tiny warm ochre crescent near upper right. Rich flat deep forest green background edge-to-edge. Refined storybook pencil illustration, warm cream fur, moss scarf, restrained ochre. Calm and memorable, very legible at 40px. Simplify thin details, no floating leaf, no books or writing. Cat centered with 12% safe margins. No words, letters, borders, rounded corners, mockup, gradients, glossy 3D or extra panels. Deliver just the opaque square icon artwork.
+
+## Google branding
+
+Google Cloud project: `mythical-style-508310-a4` (Yaqeen). The OAuth brand uses the 120px logo and the public `app.html` and `privacy.html` pages. Search Console ownership of `https://isharaf6.github.io/Sakina/` was verified using the public meta tag in `scholar-dashboard/index.html`; retain that tag. The same tag is present in `public/app.html`.
+
+Google requires brand verification and publication before displaying the app name/logo in place of the authentication domain. Publishing the OAuth audience alone does not publish the brand. Check the Branding panel for its live review status before claiming it has propagated.
+
+On 11 September 2026, an additional branding review was submitted with Search Console ownership evidence after the automated check still reported the homepage as unregistered. Google confirmed: “Your branding is currently under review.” The exact app.html property was also auto-verified through its parent property. Name/logo publication remains pending Google approval.
+
+## Validation
+
+The Debug simulator build succeeded. The welcome screen was visually checked in light and dark appearances, and icon outputs were checked for the expected 1024px and 120px dimensions with no alpha. GitHub Pages deployment succeeded, and the homepage, app page, and logo returned HTTP 200 with the ownership tag present.
