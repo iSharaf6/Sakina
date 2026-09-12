@@ -84,7 +84,7 @@ Icons use a consistent rounded 1.5–2 px stroke, inherit current color, and rem
 
 ## Allowed primary-screen copy
 
-Sidebar: `Yaqeen Review`, `Review queue`, `Drafts`, `Submitted`, `Published`, `Scholar profile`, `Dr. Abdullah Abu Hatab`, `Scholar`.
+Sidebar: `Yaqeen Review`, `Review queue`, `Drafts`, `Submitted`, `Published`, `Scholar profile`, `Editorial contributor`, `Scholar`.
 
 Queue: `Review queue`, `Search situations or ayat`, `Needs review`, `Changed`, `All`, `Situation`, `Ayah`, `Orientation`, `Status`, `Action`, `Existing app orientation`, `Open review`, `Source context`, `Existing English meaning`, `Why this reading`.
 

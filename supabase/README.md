@@ -45,10 +45,10 @@ dashboard bundle.
    scholar accounts through Supabase Auth.
 2. Apply migrations with `supabase db push`.
 3. Bootstrap the first admin and private scholar profile using
-   `templates/provision-dr-abdullah-abu-hatab.sql`, passing both Auth UUIDs as
+   `templates/provision-scholar.sql`, passing both Auth UUIDs as
    runtime `psql` variables. Do not edit UUIDs into the repository.
 4. Add the supplied Arabic display name, real qualification/title, approved bios,
-   and avatar. The included Dr. Abdullah Abu Hatab profile template deliberately
+   and avatar. The included Editorial contributor profile template deliberately
    leaves those unsupplied fields `null` and remains private/unverified.
 5. Upload the approved image to
    `<scholar-auth-uuid>/profile.jpg` in `scholar-avatars`, update `avatar_path`,

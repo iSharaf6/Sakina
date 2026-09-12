@@ -4,7 +4,7 @@
 --   psql "$DATABASE_URL" \
 --     --set=admin_user_id='<invited-admin-auth-uuid>' \
 --     --set=scholar_user_id='<invited-scholar-auth-uuid>' \
---     --file=supabase/templates/provision-dr-abdullah-abu-hatab.sql
+--     --file=supabase/templates/provision-scholar.sql
 
 begin;
 
@@ -27,9 +27,7 @@ select public.admin_assign_user_role(
 
 select public.admin_upsert_scholar_profile(
   p_user_id => :'scholar_user_id'::uuid,
-  p_display_name_en => 'Dr. Abdullah Abu Hatab',
-  p_instagram_url => 'https://instagram.com/Dr.AbdullahAbuHatab',
-  p_facebook_url => 'https://facebook.com/Dr.AbdullahAbuHatab'
+  p_display_name_en => 'Editorial contributor'
 );
 
 -- Deliberately remains unverified and private. An admin must add the supplied

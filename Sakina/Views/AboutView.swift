@@ -17,7 +17,7 @@ struct AboutView: View {
                         brand
                         trustCard
                         privacyCard
-                        acknowledgment
+                        dedication
                         links
                         version
                     }
@@ -32,6 +32,7 @@ struct AboutView: View {
                 }
             }
         }
+        .yaqeenLanguage(language)
     }
 
     private var brand: some View {
@@ -77,12 +78,39 @@ struct AboutView: View {
         )
     }
 
-    private var acknowledgment: some View {
-        aboutCard(
-            symbol: "heart",
-            title: copy("With thanks", "شكر وتقدير"),
-            body: copy("Special thanks to Sheikh Abdullah Abu Hattab.", "شكر خاص للشيخ عبد الله أبو حطاب.")
-        )
+    private var dedication: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            Image(uiImage: CompanionImage.image(.dedication))
+                .resizable()
+                .scaledToFit()
+                .frame(maxWidth: .infinity, maxHeight: 220)
+                .accessibilityHidden(true)
+
+            Text(copy("For those who came before us", "وفاءً لمن سبقونا"))
+                .font(.yqSubheadBold)
+                .foregroundStyle(Color.sakinaInk)
+            Text(copy(
+                "Haneen was created with the intention of sadaqah jariyah for my late grandparents, on both my mother’s and father’s sides.",
+                "أُنشئ حنين بنية الصدقة الجارية عن أجدادي وجدّاتي المتوفَّين من جهة أمي وأبي."
+            ))
+            .font(.yqSubhead)
+            .foregroundStyle(Color.sakinaMuted)
+            .lineSpacing(5)
+            .fixedSize(horizontal: false, vertical: true)
+
+            Text(copy(
+                "May Allah forgive them, have mercy on them, and make the good this app brings a lasting benefit for them. Ameen.",
+                "اللهم اغفر لهم وارحمهم، واجعل ما ينفع به هذا التطبيق في ميزان حسناتهم. آمين."
+            ))
+            .font(.yqSubhead)
+            .foregroundStyle(Color.sakinaInk)
+            .lineSpacing(5)
+            .fixedSize(horizontal: false, vertical: true)
+        }
+        .padding(20)
+        .background(Color.sakinaElevated, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
+        .overlay(RoundedRectangle(cornerRadius: 20, style: .continuous)
+            .strokeBorder(Color.sakinaHairline, lineWidth: 1))
     }
 
     private func aboutCard(symbol: String, title: String, body: String) -> some View {

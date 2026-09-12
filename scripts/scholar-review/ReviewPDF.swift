@@ -103,7 +103,7 @@ final class ReviewPDF {
         newPage();y-=35
         block(title,size:28,gap:24)
         block("ملف مراجعة وإضافة إضاءات عربية",size:20,color:green,gap:28)
-        block("مقدّم إلى الشيخ عبد الله أبو حطاب",size:18,gap:24)
+        block("مقدّم إلى المراجع",size:18,gap:24)
         block(intro,size:15,gap:20)
         block("نرجو إضافة إضاءة موجزة بأسلوبكم تصل النصوص بحال القارئ، مع تنبيه على ما يحتاج تصحيحًا أو تقييدًا. يمكن الكتابة على الصفحات بالقلم أو إضافة تعليقات PDF. يبقى معرّف كل مدخل ثابتًا لربط ملاحظاتكم بمكانها في التطبيق.",size:14,gap:18)
         block("النصوص والسياق من نسخة التطبيق الحالية. عرضها هنا لا يعني اعتمادكم لها، ولن تُنسب إليكم أي إضاءة قبل أن تكتبوها وتوافقوا على نشرها.",size:14,gap:18)
@@ -130,7 +130,7 @@ final class ReviewPDF {
     func response() {
         // Give each entry a clearly labelled full response page, never a sliver at the bottom.
         newPage();block(entryTitle,size:21,gap:12)
-        heading("إضاءة الشيخ عبد الله أبو حطاب")
+        heading("إضاءة المراجع")
         block("ما المعنى الأهم الذي تحبون إيصاله للقارئ في هذا الحال؟ يمكن إضافة توجيه عملي أو تعليق يوضح صلة النصوص بالموضوع.",size:12,gap:2);lines(10)
         heading("ملاحظات على النصوص والمصادر")
         block("أي تصحيح أو تقييد أو مصدر إضافي تقترحونه",size:12,gap:2);lines(4)

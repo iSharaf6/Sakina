@@ -47,7 +47,7 @@ async function main() {
     manifest: resolve(root, "supabase/manifests/guidance-manifest.json"),
     profileTemplate: resolve(
       root,
-      "supabase/templates/dr-abdullah-abu-hatab-profile.json",
+      "supabase/templates/scholar-profile.json",
     ),
     action: resolve(root, ".github/workflows/sync-scholar-guidance.yml"),
   };
@@ -305,7 +305,7 @@ async function main() {
 
   const profileTemplate = JSON.parse(profileTemplateSource);
   assert(
-    profileTemplate.display_name_en === "Dr. Abdullah Abu Hatab",
+    profileTemplate.display_name_en === "Editorial contributor",
     "Scholar profile template must use the supplied display name",
   );
   for (const unverifiedClaim of [

@@ -36,7 +36,6 @@ Use Haneen without an account, or sign in with Apple, Google or email. Signing i
 - Delete an account in Settings → Account → Delete account. Local notes and bookmarks are kept separately.
 - Prayer and Qibla calculations run on device. Nearby-place searches use Apple Maps and OpenStreetMap Overpass.
 - The iOS Simulator has no magnetometer; test Qibla on a physical iPhone.
-- The Sheikh acknowledgment is a credit, not a claim that all content has been reviewed or endorsed.
 - Source links and the privacy policy are in Settings → Sources, privacy & credits.
 
 ## Public links and contact

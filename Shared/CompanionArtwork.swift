@@ -22,7 +22,7 @@ enum CompanionArtwork: String, CaseIterable {
     case angry, anxious, confident, confused, grateful, greedy, guilty, happy
     case hurt, indecisive, hypocritical, jealous, lazy, lonely, lost, overwhelmed
     case sad, scared, unloved, impatient, hopeful, grieving, breathe
-    case family, shelter, work, qibla, kaaba, support
+    case dedication, family, shelter, work, qibla, kaaba, support
     case fajr, sunrise, dhuhr, asr, maghrib, isha
     case journal, privacy, settings, saved, appearance
 

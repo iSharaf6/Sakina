@@ -48,7 +48,11 @@ struct RootView: View {
     @State private var prayerRequest = 0
     @State private var settingsRequest = 0
     @StateObject private var router = NotificationRouter.shared
-    @StateObject private var scholarStore = ScholarContentStore()
+    // Editorial contributions are deferred until a later release. Do not load
+    // a profile from the network or an earlier build’s on-disk cache.
+    @StateObject private var scholarStore = ScholarContentStore(
+        client: nil, cache: ScholarContentCache(fileURL: nil)
+    )
     @ObservedObject private var account = GoogleAccountManager.shared
 
     private var language: AppLanguage { AppLanguage(rawValue: languageRaw) ?? .english }

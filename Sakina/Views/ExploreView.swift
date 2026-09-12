@@ -43,6 +43,15 @@ struct ExploreView: View {
             .yqScreen()
             .navigationDestination(for: LifeGroup.self) { LifeGroupView(group: $0) }
             .navigationDestination(for: Situation.self) { SituationDetailView(situation: $0) }
+            .navigationDestination(for: DuaRoute.self) { route in
+                switch route {
+                case .feelings: FeelingsView(language: language)
+                case .counter: DhikrListView(language: language)
+                case .ruqyah: RuqyahView(language: language)
+                case .benefits: AdhkarBenefitsView(language: language)
+                case .goals: DailyGoalsView(language: language)
+                }
+            }
             .navigationDestination(for: DuaMood.self) { MoodDetailView(mood: $0, language: language) }
             .navigationDestination(for: NearbyPlaceKind.self) { NearbyPlacesView(kind: $0, language: language) }
             .toolbar(.hidden, for: .navigationBar)
@@ -120,7 +129,7 @@ struct ExploreView: View {
     }
 
     private var feelingRow: some View {
-        NavigationLink { FeelingsView(language: language) } label: {
+        NavigationLink(value: DuaRoute.feelings) {
             HStack(spacing: 14) {
                 CompanionIllustration(artwork: .breathe, size: 48)
                 VStack(alignment: .leading, spacing: 2) {

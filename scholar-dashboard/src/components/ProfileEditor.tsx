@@ -1,6 +1,6 @@
 import { ArrowSquareOut } from '@phosphor-icons/react/ArrowSquareOut'
 import { useEffect, useState } from 'react'
-import scholarPortrait from '../assets/dr-abdullah-abu-hatab.png'
+import scholarPortrait from '../assets/contributor-placeholder.png'
 import { useTranslation } from '../i18n/useTranslation'
 import { localizedErrorMessage } from '../i18n/localizedError'
 import type { TranslationKey } from '../i18n/translations'

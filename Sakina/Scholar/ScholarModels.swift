@@ -125,17 +125,17 @@ struct ScholarProfile: Codable, Hashable, Identifiable, Sendable {
     /// supplied by the app owner. It must never be promoted to public/verified
     /// content without a successful response from the public profile endpoint.
     static let bundledPlaceholder = ScholarProfile(
-        id: "local-placeholder-abdullah-abu-hatab",
-        displayNameArabic: "Dr. Abdullah Abu Hatab",
-        displayNameEnglish: "Dr. Abdullah Abu Hatab",
+        id: "local-placeholder-contributor",
+        displayNameArabic: "مساهم في المحتوى",
+        displayNameEnglish: "Editorial contributor",
         titleArabic: nil,
         titleEnglish: nil,
         bioArabic: nil,
         bioEnglish: nil,
         avatarURL: nil,
-        avatarAssetName: "ScholarAbdullahAbuHatab",
-        instagramURL: URL(string: "https://instagram.com/Dr.AbdullahAbuHatab"),
-        facebookURL: URL(string: "https://facebook.com/Dr.AbdullahAbuHatab"),
+        avatarAssetName: nil,
+        instagramURL: nil,
+        facebookURL: nil,
         verified: false
     )
 }

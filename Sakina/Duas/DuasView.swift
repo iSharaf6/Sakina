@@ -2,7 +2,9 @@ import SwiftUI
 
 // MARK: - Du'as tab
 
-/// Value-based routes inside the Du'as stack.
+/// Shared value routes keep drill-downs in the same NavigationPath. In particular,
+/// a view-based FeelingsView link followed by a value-based mood push can pop
+/// immediately when SwiftUI reconciles the parent stack.
 enum DuaRoute: Hashable {
     case feelings, counter, ruqyah, benefits, goals
 }
@@ -85,7 +87,7 @@ struct DuasView: View {
     private var heart: some View {
         VStack(alignment: .leading, spacing: 12) {
             SectionHeader(copy("How’s your heart?", "كيف حال قلبك؟")) {
-                NavigationLink { FeelingsView(language: language) } label: {
+                NavigationLink(value: DuaRoute.feelings) {
                     TextAction(title: copy("All \(DuaMood.allCases.count)", "الكل"))
                 }
                 .buttonStyle(.yqPressSoft)
@@ -98,7 +100,7 @@ struct DuasView: View {
                         }
                         .buttonStyle(.yqPress)
                     }
-                    NavigationLink { FeelingsView(language: language) } label: {
+                    NavigationLink(value: DuaRoute.feelings) {
                         FeelingChip(symbol: "ellipsis", title: copy("More", "المزيد"), tint: BadgeTint.slate.color)
                     }
                     .buttonStyle(.yqPress)

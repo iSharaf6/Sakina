@@ -248,7 +248,7 @@ struct HomeView: View {
     private var heart: some View {
         VStack(alignment: .leading, spacing: 12) {
             SectionHeader(copy("How’s your heart?", "كيف حال قلبك؟")) {
-                NavigationLink { FeelingsView(language: language) } label: {
+                NavigationLink(value: DuaRoute.feelings) {
                     TextAction(title: copy("All feelings", "كل المشاعر"))
                 }
                 .buttonStyle(.yqPressSoft)

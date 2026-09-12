@@ -1,7 +1,7 @@
 {
   "edition": "2026-09-12",
-  "status": "awaiting-scholar-review",
-  "scholar": "عبد الله أبو حطاب",
+  "status": "archived-not-required-for-release",
+  "scholar": null,
   "books": [
     {
       "file": "output/pdf/Haneen-Life-Situations-Arabic-Review.pdf",
@@ -142,5 +142,6 @@
     "haneen-moods.json": "9683b124fc3766d488f72ee30c440440c6de338cabdd6b42c1189a59a73bcb7c",
     "quran.json": "cc7641ecb5a388f5ed88be043b0bca58ccd0d146a3cd7c3dfabd595de0cfc3ee",
     "haneen-situations.json": "d09def7efb789bc0199b95f415f77ccc3c2428e243a8f83ee4d8a1215e36c5fb"
-  }
+  },
+  "note": "Attributed review PDFs removed from the release. Historical hashes and page indexes are retained only for archive identification."
 }
