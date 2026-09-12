@@ -9,6 +9,9 @@ struct SakinaApp: App {
             #if DEBUG
             if ProcessInfo.processInfo.arguments.contains("-yqWidgetGallery") {
                 CompanionWidgetGallery()
+            } else if ProcessInfo.processInfo.arguments.contains("-yqWidgetCollection") {
+                NavigationStack { WidgetCollectionView() }
+                    .preferredColorScheme(ProcessInfo.processInfo.arguments.contains("-yqDarkPreview") ? .dark : .light)
             } else if ProcessInfo.processInfo.arguments.contains("-yqPrayerCards") {
                 CompanionPrayerCardGallery()
             } else {
@@ -34,6 +37,7 @@ struct RootView: View {
 
     @Environment(\.scenePhase) private var scenePhase
     @AppStorage(SettingsKeys.appLanguage) private var languageRaw = AppLanguage.english.rawValue
+    @AppStorage(PracticeLog.key) private var practiceLogRaw = ""
     @AppStorage(MushafPreferences.themeKey) private var theme: MushafPreferences.Theme = .system
     @State private var selection: Tab = .home
     @State private var homePath = NavigationPath()
@@ -132,6 +136,8 @@ struct RootView: View {
             QuranTranslationStore.warmUp()
             router.activate()
             ReminderScheduler.refresh()
+            WidgetPracticeSync.refresh()
+            WidgetPracticeSync.syncLanguage(language)
             account.restorePreviousSignIn()
             handlePendingIntent()
             applyDebugRoute()
@@ -139,7 +145,20 @@ struct RootView: View {
             if args.contains("-yqOnboarding") || (!UserDefaults.standard.bool(forKey: CompanionOnboarding.completedKey) && !args.contains("-yqScreen") && ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] == nil) { showOnboarding = true }
         }
         .onChange(of: scenePhase) { _, phase in
-            if phase == .active { handlePendingIntent(); PrayerTimesService.shared.refreshSavedLocation(); ReminderScheduler.refresh() }
+            if phase == .active {
+                handlePendingIntent()
+                PrayerTimesService.shared.refreshSavedLocation()
+                ReminderScheduler.refresh()
+                WidgetPracticeSync.refresh()
+            }
+        }
+        .onChange(of: practiceLogRaw) { _, _ in WidgetPracticeSync.refresh() }
+        .onChange(of: languageRaw) { _, _ in WidgetPracticeSync.syncLanguage(language) }
+        .onReceive(NotificationCenter.default.publisher(for: .NSCalendarDayChanged)) { _ in
+            WidgetPracticeSync.refresh()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .NSSystemTimeZoneDidChange)) { _ in
+            WidgetPracticeSync.refresh()
         }
         .onOpenURL { url in
             if url.host == "auth-callback" { Task { await CompanionAccount.shared.handle(url) }; return }

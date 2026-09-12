@@ -71,10 +71,10 @@ enum CompanionWidgetChoice: String, CaseIterable, Identifiable {
         case .timetable: return .salah
         case .early: return .morning
         case .late: return .evening
-        case .prayerCat: return .tahajjud
-        case .countdown: return .clock
-        case .morning: return .morning
-        case .evening: return .evening
+        case .prayerCat: return .widgetEvening
+        case .countdown: return .widgetMorning
+        case .morning: return .widgetMorning
+        case .evening: return .widgetEvening
         case .pause: return .breathe
         }
     }
@@ -102,72 +102,195 @@ struct CompanionCollectionCard: View {
     var preview = false
     @Environment(\.locale) private var locale
     private var language: AppLanguage { locale.language.languageCode?.identifier == "ar" ? .arabic : .english }
-    private var next: PrayerEvent? { schedule?.nextEvent(after: date) }
+    private var next: PrayerEvent? {
+        guard let schedule, !schedule.isStale(at: date) else { return nil }
+        return schedule.nextEvent(after: date)
+    }
+
     var body: some View {
         Group {
             if lockScreen {
-                HStack(spacing: 8) {
-                    Image(uiImage: CompanionImage.inkMask(choice.artwork)).resizable().renderingMode(.template)
-                        .scaledToFit().frame(width: 58, height: 58).widgetAccentable()
-                        .accessibilityHidden(true)
-                    VStack(alignment: .leading, spacing: 3) {
-                        Text(next?.kind.displayName(locale: locale) ?? language.pick("Prayer times", "مواقيت الصلاة")).font(.headline).lineLimit(1).minimumScaleFactor(0.8)
-                        if let next { Text(time(next.time)).font(.subheadline.monospacedDigit()).lineLimit(1).minimumScaleFactor(0.8) }
-                        else { Text(language.pick("Set your location in Haneen", "حدّد موقعك في حنين")).font(.caption2).lineLimit(2) }
-                    }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                }
-                .accessibilityElement(children: .combine)
+                lockContent
             } else if choice == .timetable {
                 PrayerCompanionCard(schedule: schedule, date: date)
-            } else if choice == .daily || choice == .pinned {
-                VerseCompanionCard(situation: choice == .pinned ? (SharedStore.pinnedSituation ?? SharedStore.situationOfTheDay(for: date)) : SharedStore.situationOfTheDay(for: date), caption: choice.title(language), compact: compact, artwork: choice.artwork)
+            } else if choice == .daily || choice == .pinned || choice == .pause {
+                VerseCompanionCard(
+                    situation: choice == .pinned ? (SharedStore.pinnedSituation ?? SharedStore.situationOfTheDay(for: date)) : SharedStore.situationOfTheDay(for: date),
+                    caption: choice.title(language), compact: compact, artwork: choice.artwork)
             } else if choice == .early || choice == .late {
-                let kinds: [PrayerKind] = choice == .early ? [.fajr, .sunrise, .dhuhr] : [.asr, .maghrib, .isha]
-                VStack(alignment: .leading, spacing: 5) {
-                    ForEach(kinds, id: \.self) { kind in
-                        HStack {
-                            Circle().fill(next?.kind == kind ? Color.primary : .clear).frame(width: 5, height: 5).overlay(Circle().stroke(lineWidth: 1))
-                            Text(kind.displayName(locale: locale))
-                            Spacer(minLength: 4)
-                            if let event = schedule?.events(on: next?.time ?? date).first(where: { $0.kind == kind }) { Text(time(event.time)).monospacedDigit() }
-                            else { Text("—") }
-                        }.font(.system(size: 11, weight: .medium)).lineLimit(1).minimumScaleFactor(0.8)
-                    }
-                }
+                prayerRows
+            } else if choice == .prayerCat || choice == .countdown {
+                if let next { prayerContent(next) }
+                else { WidgetPrayerSetupCard(hasSchedule: schedule != nil, compact: compact) }
             } else {
-                let layout = compact ? AnyLayout(VStackLayout(alignment: .leading, spacing: 4)) : AnyLayout(HStackLayout(spacing: 18))
-                layout {
-                    CompanionIllustration(artwork: choice.artwork, size: compact ? 60 : 92)
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text(choice == .countdown || choice == .prayerCat ? language.pick("NEXT PRAYER", "الصلاة القادمة") : language.pick("HANEEN", "حنين") + language.listSeparator + choice.title(language))
-                            .font(.system(size: 9, weight: .bold)).tracking(1).foregroundStyle(CompanionWidgetPalette.accent)
-                        if choice == .countdown || choice == .prayerCat {
-                            if let next {
-                                Text(next.kind.displayName(locale: locale)).font(.system(size: compact ? 20 : 24, weight: .semibold, design: .serif))
-                                if choice == .countdown {
-                                    Group {
-                                        if preview { Text("30:00") }
-                                        else { Text(timerInterval: date...max(date, next.time), countsDown: true) }
-                                    }.font(.system(size: compact ? 21 : 28, weight: .medium, design: .rounded)).monospacedDigit()
-                                } else { Text(time(next.time)).font(.title3.monospacedDigit()) }
-                            } else {
-                                Text(language.pick("Find your prayer times", "تعرّف على مواقيت الصلاة")).font(.headline)
-                                Text(language.pick("Set your location in Haneen", "حدّد موقعك في حنين")).font(.caption).foregroundStyle(CompanionWidgetPalette.secondary)
-                            }
-                        } else {
-                            Text(choice == .morning ? language.pick("Begin with remembrance.", "ابدأ يومك بذكر الله.") : choice == .evening ? language.pick("Let the day soften.", "اختم يومك بذكر الله.") : language.pick("A breath. An ayah. A little peace.", "لحظة للتنفّس والتأمّل."))
-                                .font(.system(size: compact ? 17 : 23, weight: .medium, design: .serif)).fixedSize(horizontal: false, vertical: true)
-                            if !compact { Text(choice.detail(language)).font(.caption).foregroundStyle(CompanionWidgetPalette.secondary) }
-                        }
-                    }
-                    if !compact { Spacer(minLength: 0) }
+                adhkarContent
+            }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)
+        .foregroundStyle(lockScreen ? Color.primary : CompanionWidgetPalette.ink)
+    }
+
+    private var lockContent: some View {
+        HStack(spacing: 7) {
+            Image(uiImage: CompanionImage.inkMask(.tahajjud)).resizable().renderingMode(.template)
+                .scaledToFit().frame(width: 61, height: 61).widgetAccentable()
+                .accessibilityHidden(true)
+            VStack(alignment: .leading, spacing: 2) {
+                Text(next?.kind.displayName(locale: locale) ?? language.pick("Prayer times", "مواقيت الصلاة"))
+                    .font(.system(size: 15, weight: .semibold)).lineLimit(1).minimumScaleFactor(0.8)
+                if let next {
+                    Text(time(next.time)).font(.system(size: 14, weight: .medium)).monospacedDigit()
+                        .lineLimit(1).minimumScaleFactor(0.8)
+                } else {
+                    Text(schedule == nil ? language.pick("Choose your city", "اختر مدينتك") : language.pick("Open to refresh", "افتح لتحديث المواقيت"))
+                        .font(.caption2).lineLimit(2)
                 }
             }
-        }.foregroundStyle(lockScreen ? Color.primary : CompanionWidgetPalette.ink)
+            .frame(maxWidth: .infinity, alignment: .leading)
+        }
+        .accessibilityElement(children: .combine)
     }
+
+    private var prayerRows: some View {
+        let kinds: [PrayerKind] = choice == .early ? [.fajr, .sunrise, .dhuhr] : [.asr, .maghrib, .isha]
+        return VStack(alignment: .leading, spacing: 5) {
+            ForEach(kinds, id: \.self) { kind in
+                HStack {
+                    Circle().fill(next?.kind == kind ? Color.primary : .clear).frame(width: 6, height: 6)
+                        .overlay(Circle().stroke(lineWidth: 1)).accessibilityHidden(true)
+                    Text(kind.displayName(locale: locale))
+                    Spacer(minLength: 4)
+                    if next != nil, let event = schedule?.events(on: next?.time ?? date).first(where: { $0.kind == kind }) {
+                        Text(time(event.time)).monospacedDigit()
+                    } else { Text("—") }
+                }.font(.system(size: 11, weight: .medium)).lineLimit(1).minimumScaleFactor(0.8)
+            }
+        }
+    }
+
+    @ViewBuilder private func prayerContent(_ event: PrayerEvent) -> some View {
+        if compact {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(choice == .countdown ? language.pick("Until ", "الوقت المتبقي حتى ") + event.kind.displayName(locale: locale)
+                     : language.pick("Next, ", "التالي، ") + event.kind.displayName(locale: locale))
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundStyle(CompanionWidgetPalette.accent).lineLimit(1).minimumScaleFactor(0.8)
+                if choice == .countdown {
+                    countdown(event, size: 28)
+                } else {
+                    Text(time(event.time)).font(.system(size: 24, weight: .semibold, design: .rounded))
+                        .monospacedDigit().lineLimit(1).minimumScaleFactor(0.8)
+                }
+                Spacer(minLength: 0)
+                HStack(alignment: .bottom, spacing: 0) {
+                    WidgetCompanionArt(artwork: choice.artwork, size: 82)
+                    Spacer(minLength: 0)
+                    WidgetOpenCue().padding(.bottom, 3)
+                }.frame(height: 69, alignment: .bottom)
+            }
+        } else {
+            VStack(alignment: .leading, spacing: 6) {
+                HStack(spacing: 16) {
+                    WidgetCompanionArt(artwork: choice.artwork, size: 94)
+                    VStack(alignment: .leading, spacing: 3) {
+                        Text(upcomingLabel(event))
+                            .font(.system(size: 11, weight: .semibold)).foregroundStyle(CompanionWidgetPalette.accent)
+                        Text(event.kind.displayName(locale: locale))
+                            .font(.system(size: 24, weight: .semibold, design: .serif)).lineLimit(1)
+                        if choice == .countdown { countdown(event, size: 29) }
+                        else { Text(time(event.time)).font(.system(size: 25, weight: .semibold, design: .rounded)).monospacedDigit() }
+                        if choice == .countdown {
+                            Text(time(event.time)).font(.system(size: 11, weight: .medium)).foregroundStyle(CompanionWidgetPalette.secondary)
+                        } else if let location = schedule?.locationLabel {
+                            Text(location).font(.system(size: 11)).foregroundStyle(CompanionWidgetPalette.secondary).lineLimit(1)
+                        }
+                    }.frame(maxWidth: .infinity, alignment: .leading)
+                }
+                HStack(spacing: 4) {
+                    if let following = schedule?.followingEvent(after: date) {
+                        Text(language.pick("Then ", "ثم ") + following.kind.displayName(locale: locale) + language.listSeparator + time(following.time))
+                            .font(.system(size: 11, weight: .medium)).foregroundStyle(CompanionWidgetPalette.secondary)
+                            .lineLimit(1).minimumScaleFactor(0.85)
+                    }
+                    Spacer(minLength: 0)
+                    WidgetOpenCue()
+                }.frame(height: 24)
+            }
+        }
+    }
+
+    private func upcomingLabel(_ event: PrayerEvent) -> String {
+        event.kind == .sunrise ? language.pick("Coming up", "الموعد القادم") : language.pick("Next prayer", "الصلاة القادمة")
+    }
+
+    private func countdown(_ event: PrayerEvent, size: CGFloat) -> some View {
+        Group {
+            if preview { Text(language.pick("30:00", "٣٠:٠٠")) }
+            else { Text(timerInterval: date...max(date, event.time), countsDown: true) }
+        }
+        .font(.system(size: size, weight: .semibold, design: .rounded))
+        .monospacedDigit().lineLimit(1).minimumScaleFactor(0.75)
+        .multilineTextAlignment(.leading)
+    }
+
+    private var adhkarComplete: Bool {
+        let progress = SharedStore.practiceProgress(on: date)
+        // The labelled in-app preview illustrates both available states.
+        if preview { return choice == .morning }
+        return choice == .morning ? progress.morningComplete : progress.eveningComplete
+    }
+
+    private var adhkarTitle: String {
+        choice == .morning ? language.pick("Morning adhkar", "أذكار الصباح") : language.pick("Evening adhkar", "أذكار المساء")
+    }
+
+    private var adhkarContent: some View {
+        Group {
+            if compact {
+                VStack(alignment: .leading, spacing: 5) {
+                    Text(adhkarTitle).font(.system(size: 17, weight: .semibold, design: .serif))
+                        .lineLimit(1).minimumScaleFactor(0.8)
+                    completionLabel
+                    Spacer(minLength: 0)
+                    HStack(alignment: .bottom, spacing: 0) {
+                        WidgetCompanionArt(artwork: choice.artwork, size: 92)
+                        Spacer(minLength: 0)
+                        WidgetOpenCue().padding(.bottom, 3)
+                    }.frame(height: 76, alignment: .bottom)
+                }
+            } else {
+                HStack(spacing: 18) {
+                    WidgetCompanionArt(artwork: choice.artwork, size: 125)
+                    VStack(alignment: .leading, spacing: 7) {
+                        Text(language.pick("Today", "اليوم"))
+                            .font(.system(size: 11, weight: .semibold)).foregroundStyle(CompanionWidgetPalette.accent)
+                        Text(adhkarTitle).font(.system(size: 23, weight: .semibold, design: .serif))
+                            .lineLimit(2).minimumScaleFactor(0.85)
+                        completionLabel
+                        Spacer(minLength: 0)
+                        WidgetOpenCue(label: adhkarComplete ? language.pick("Read again", "اقرأ مجددًا") : language.pick("Begin", "ابدأ"))
+                    }.frame(maxWidth: .infinity, alignment: .leading)
+                }
+            }
+        }
+    }
+
+    private var completionLabel: some View {
+        HStack(spacing: 4) {
+            if adhkarComplete {
+                Image(systemName: "checkmark.circle.fill").font(.system(size: 11)).accessibilityHidden(true)
+            }
+            Text(adhkarComplete ? language.pick("Completed today", "أتممتها اليوم") : language.pick("Ready for today", "جاهزة ليومك"))
+                .font(.system(size: 10, weight: .medium)).lineLimit(1)
+        }
+        .foregroundStyle(adhkarComplete ? CompanionWidgetPalette.accent : CompanionWidgetPalette.secondary)
+    }
+
     private func time(_ date: Date) -> String {
-        let formatter = DateFormatter(); formatter.locale = locale; formatter.timeZone = schedule?.timeZone ?? .current
-        formatter.setLocalizedDateFormatFromTemplate("jm"); return formatter.string(from: date)
+        let formatter = DateFormatter()
+        formatter.locale = locale
+        formatter.timeZone = schedule?.timeZone ?? .current
+        formatter.setLocalizedDateFormatFromTemplate("jm")
+        return formatter.string(from: date)
     }
 }

@@ -30,6 +30,7 @@ enum CompanionArtwork: String, CaseIterable {
     case translation, transliteration, textSize, reminder, clock, haptics, help
     case share, rating, backup, download, signout, deleteAccount
     case bug, idea, camera, social, water
+    case widgetMorning, widgetEvening, widgetReading
 
     var assetName: String { "Companion-\(rawValue)" }
 }
@@ -68,7 +69,12 @@ extension PrayerKind {
 /// Removes only edge-connected white paper at display time. Enclosed cream fur,
 /// pencil marks and source assets remain intact. Cached once per illustration.
 enum CompanionImage {
-    private static let cache = NSCache<NSString, UIImage>()
+    private static let cache: NSCache<NSString, UIImage> = {
+        let cache = NSCache<NSString, UIImage>()
+        cache.totalCostLimit = 8 * 1_024 * 1_024
+        cache.countLimit = 24
+        return cache
+    }()
     static func inkMask(_ artwork: CompanionArtwork) -> UIImage {
         let key = "ink.\(artwork.assetName)" as NSString
         if let cached = cache.object(forKey: key) { return cached }
@@ -92,7 +98,13 @@ enum CompanionImage {
 
     static func image(_ artwork: CompanionArtwork) -> UIImage {
         if let cached = cache.object(forKey: artwork.assetName as NSString) { return cached }
-        guard let original = UIImage(named: artwork.assetName), let cg = original.cgImage else { return UIImage() }
+        guard let source = UIImage(named: artwork.assetName) else { return UIImage() }
+        // Generated widget masters are larger than their display size. Bound
+        // the pixel work before allocating the flood-fill buffers in WidgetKit.
+        let original = artwork.rawValue.hasPrefix("widget")
+            ? (source.preparingThumbnail(of: CGSize(width: 420, height: 420)) ?? source)
+            : source
+        guard let cg = original.cgImage else { return original }
         let width = cg.width, height = cg.height
         var pixels = [UInt8](repeating: 0, count: width * height * 4)
         guard let context = CGContext(data: &pixels, width: width, height: height, bitsPerComponent: 8,
@@ -119,7 +131,7 @@ enum CompanionImage {
         for index in queue { for channel in 0..<4 { pixels[index * 4 + channel] = 0 } }
         guard let output = context.makeImage() else { return original }
         let image = UIImage(cgImage: output, scale: original.scale, orientation: original.imageOrientation)
-        cache.setObject(image, forKey: artwork.assetName as NSString)
+        cache.setObject(image, forKey: artwork.assetName as NSString, cost: width * height * 4)
         return image
     }
 }

@@ -1,59 +1,69 @@
 #if DEBUG
 import SwiftUI
 
-/// Launched with -yqWidgetGallery. These are the shared production card views,
-/// inset by WidgetKit's standard margins; providers and deep links remain in the extension.
+/// `-yqWidgetGallery` exercises production content at WidgetKit dimensions.
+/// Add `-yqArabicPreview` and/or `-yqDarkPreview` for deterministic QA variants.
 struct CompanionWidgetGallery: View {
-    private let situation = SharedStore.situationOfTheDay()
     private let schedule = PrayerSchedule.placeholder()
     private var previewDate: Date { schedule.days[0].events[2].time.addingTimeInterval(-1_800) }
+    private var language: AppLanguage { ProcessInfo.processInfo.arguments.contains("-yqArabicPreview") ? .arabic : .english }
+    private var scheme: ColorScheme { ProcessInfo.processInfo.arguments.contains("-yqDarkPreview") ? .dark : .light }
+    private var homeChoices: [CompanionWidgetChoice] {
+        let args = ProcessInfo.processInfo.arguments
+        if let index = args.firstIndex(of: "-yqWidgetFocus"), args.indices.contains(index + 1),
+           let choice = CompanionWidgetChoice(rawValue: args[index + 1]) { return [choice] }
+        return [.prayerCat, .daily, .countdown, .morning, .evening, .pause, .pinned, .timetable]
+    }
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 16) {
-                Text("Haneen widgets").font(.largeTitle.bold())
-                Text("Lock Screen, Prayer Companion").font(.headline)
-                HStack(spacing: 12) {
-                    lockCard(date: schedule.days[0].events[0].time.addingTimeInterval(-1800))
-                    lockCard(date: schedule.days[0].events[4].time.addingTimeInterval(-1800))
-                }
-                lockCard(date: previewDate, hasLocation: false)
-                HStack(spacing: 16) {
-                    card(width: 170) {
-                        VerseCompanionCard(situation: situation, caption: "Ayah of the day", compact: true)
+        GeometryReader { geometry in
+            let width = min(geometry.size.width - 32, 356)
+            ScrollView {
+                VStack(alignment: .leading, spacing: 24) {
+                    Text(language.pick("Haneen widgets", "أدوات حنين")).font(.largeTitle.bold())
+                    Text(language.pick("Production previews, example times and progress", "معاينات الأدوات، بمواقيت وتقدّم للعرض فقط"))
+                        .font(.caption).foregroundStyle(.secondary)
+                    ForEach(homeChoices) { choice in
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text(choice.title(language)).font(.headline)
+                            CompanionWidgetPreview(choice: choice, size: .medium, schedule: schedule,
+                                                   date: previewDate, availableWidth: width)
+                            if choice != .timetable {
+                                HStack(alignment: .top, spacing: 16) {
+                                    CompanionWidgetPreview(choice: choice, size: .small, schedule: schedule,
+                                                           date: previewDate, availableWidth: (width - 16) / 2)
+                                    CompanionWidgetPreview(choice: choice, size: .small, schedule: schedule,
+                                                           date: previewDate, availableWidth: (width - 16) / 2)
+                                        .environment(\.colorScheme, scheme == .dark ? .light : .dark)
+                                }
+                            }
+                        }
                     }
-                    card(width: 170) {
-                        VerseCompanionCard(situation: situation, caption: "Reflecting on", compact: true, artwork: .praise)
+                    Text(language.pick("Lock Screen", "شاشة القفل")).font(.title2.bold())
+                    ForEach([CompanionWidgetChoice.prayerCat, .early, .late], id: \.self) { choice in
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text(choice.title(language)).font(.headline)
+                            CompanionWidgetPreview(choice: choice, size: .lock, schedule: schedule,
+                                                   date: previewDate, availableWidth: width)
+                                .frame(width: width, height: 120)
+                                .background(Color(red: 0.22, green: 0.29, blue: 0.26), in: RoundedRectangle(cornerRadius: 24))
+                        }
                     }
-                }
-                card {
-                    VerseCompanionCard(situation: situation, caption: "Ayah of the day", compact: false)
-                }
-                card { PrayerCompanionCard(schedule: schedule, date: previewDate) }
-                card { PrayerCompanionCard(schedule: nil, date: previewDate) }
-            }
-            .padding(20)
+                    Text(language.pick("Location not set", "لم يُحدّد الموقع")).font(.headline)
+                    CompanionWidgetPreview(choice: .prayerCat, size: .medium, schedule: nil,
+                                           date: previewDate, availableWidth: width)
+                    CompanionWidgetPreview(choice: .prayerCat, size: .lock, schedule: nil,
+                                           date: previewDate, availableWidth: width)
+                        .frame(width: width, height: 120)
+                        .background(Color(red: 0.22, green: 0.29, blue: 0.26), in: RoundedRectangle(cornerRadius: 24))
+                }.frame(width: width).padding(.vertical, 20).frame(maxWidth: .infinity)
+            }.background(Color.yqCanvas)
         }
-        .background(Color(uiColor: .systemGroupedBackground))
-    }
-
-    private func lockCard(date: Date, hasLocation: Bool = true) -> some View {
-        CompanionCollectionCard(choice: .prayerCat, date: date,
-                                schedule: hasLocation ? schedule : nil, lockScreen: true, preview: true)
-            .foregroundStyle(.white)
-            .environment(\.colorScheme, .dark)
-            .padding(12)
-            .frame(width: 180, height: 86)
-            .background(Color(white: 0.26), in: RoundedRectangle(cornerRadius: 18))
-    }
-
-    private func card<Content: View>(width: CGFloat = 356, @ViewBuilder content: () -> Content) -> some View {
-        content()
-            .padding(16)
-            .frame(width: width, height: 170)
-            .background(CompanionWidgetPalette.canvas, in: RoundedRectangle(cornerRadius: 24))
+        .yaqeenLanguage(language)
+        .preferredColorScheme(scheme)
     }
 }
+
 struct CompanionPrayerCardGallery: View {
     private let schedule = PrayerSchedule.placeholder()
     private var language: AppLanguage {

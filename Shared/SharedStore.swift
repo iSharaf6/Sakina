@@ -6,9 +6,19 @@ enum SharedStore {
     static let appGroupID = "group.com.islamsharaf.sakina"
     private static let pinnedKey = "pinnedSituationID"
     private static let prayerScheduleKey = "prayerSchedule.v1"
+    private static let practiceProgressKey = "widgetPracticeProgress.v1"
+    private static let widgetLanguageKey = "widgetLanguage.v1"
 
     static var defaults: UserDefaults {
         UserDefaults(suiteName: appGroupID) ?? .standard
+    }
+
+    static var widgetLanguage: AppLanguage? {
+        get { defaults.string(forKey: widgetLanguageKey).flatMap(AppLanguage.init(rawValue:)) }
+        set {
+            if let newValue { defaults.set(newValue.rawValue, forKey: widgetLanguageKey) }
+            else { defaults.removeObject(forKey: widgetLanguageKey) }
+        }
     }
 
     // MARK: Pinned situation (widget)
@@ -49,6 +59,32 @@ enum SharedStore {
 
     static func clearPrayerSchedule() {
         prayerSchedule = nil
+    }
+
+    // MARK: Reader completion (widget)
+
+    /// Returns today's actual completion state, or an uncompleted state when
+    /// the app has not written one for the requested local day.
+    static func practiceProgress(on date: Date = .now, calendar: Calendar = .autoupdatingCurrent,
+                                 in storage: UserDefaults = defaults) -> WidgetPracticeProgress {
+        guard let data = storage.data(forKey: practiceProgressKey),
+              let progress = try? JSONDecoder().decode(WidgetPracticeProgress.self, from: data) else {
+            return WidgetPracticeProgress(on: date, calendar: calendar)
+        }
+        return progress.current(on: date, calendar: calendar)
+    }
+
+    /// Whether a write occurred lets the app avoid spending widget refreshes
+    /// when it returns to the foreground without any completion changes.
+    @discardableResult
+    static func savePracticeProgress(_ progress: WidgetPracticeProgress,
+                                     in storage: UserDefaults = defaults) -> Bool {
+        if let data = storage.data(forKey: practiceProgressKey),
+           let existing = try? JSONDecoder().decode(WidgetPracticeProgress.self, from: data),
+           existing == progress { return false }
+        guard let data = try? JSONEncoder().encode(progress) else { return false }
+        storage.set(data, forKey: practiceProgressKey)
+        return true
     }
 
     // MARK: Verse of the day

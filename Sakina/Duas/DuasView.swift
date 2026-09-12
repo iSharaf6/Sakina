@@ -458,6 +458,8 @@ struct PracticeDestination: View {
             NamesOfAllahView(language: language)
         } else if let first = practice.entries.first {
             DuaReaderView(dua: first, sequence: practice.entries, collectionTitle: practice.title(language), practice: practice)
+                // Different collection links need their own progress and transient reader state.
+                .id(practice)
         } else {
             EmptyGuidanceState(title: language.pick("Coming soon", "قريبًا"), detail: practice.invitation(language), symbol: practice.symbol, artwork: practice.artwork)
                 .yqScreen()

@@ -2,7 +2,16 @@ import WidgetKit
 import SwiftUI
 
 private func widgetLanguage(for locale: Locale = .current) -> AppLanguage {
-    locale.language.languageCode?.identifier == "ar" ? .arabic : .english
+    SharedStore.widgetLanguage ?? (locale.language.languageCode?.identifier == "ar" ? .arabic : .english)
+}
+
+private extension View {
+    /// Set once at each WidgetKit entry root. The app's gallery remains free
+    /// to preview a different language through its own locale environment.
+    func haneenWidgetLanguage() -> some View {
+        environment(\.locale, SharedStore.widgetLanguage?.locale ?? Locale.current)
+            .environment(\.layoutDirection, widgetLanguage().layoutDirection)
+    }
 }
 
 // MARK: - Timeline
@@ -12,13 +21,29 @@ struct VerseEntry: TimelineEntry {
     let situation: Situation
 }
 
-private func nextMidnight(after date: Date) -> Date {
-    let cal = Calendar.current
-    return cal.nextDate(
-        after: date,
-        matching: DateComponents(hour: 0, minute: 0, second: 5),
-        matchingPolicy: .nextTime
-    ) ?? date.addingTimeInterval(86_400)
+/// Predictable changes are supplied as future entries, so midnight updates do
+/// not depend on WidgetKit granting a fresh extension run at that exact time.
+private enum WidgetTimelinePlan {
+    static func dayDates(from now: Date, days: Int = 7, calendar: Calendar = Calendar(identifier: .gregorian)) -> [Date] {
+        let start = calendar.startOfDay(for: now)
+        return [now] + (1...max(1, days)).compactMap {
+            calendar.date(byAdding: .day, value: $0, to: start)
+        }
+    }
+
+    static func prayerDates(from now: Date, schedule: PrayerSchedule?) -> [Date] {
+        var dates = dayDates(from: now)
+        let end = dates.last ?? now
+        guard let schedule, schedule.schemaVersion == PrayerSchedule.currentSchemaVersion else { return dates }
+        // Solar instants and the saved city's date boundaries may differ from
+        // the phone's local midnight when a manually selected city is used.
+        dates += schedule.allEvents.map(\.time).filter { $0 > now && $0 <= end && $0 <= schedule.expiresAt }
+        dates += schedule.days.map(\.dayStart).filter { $0 > now && $0 <= end && $0 < schedule.expiresAt }
+        // Include expiry itself. A reload request alone could leave an old
+        // rendered prayer time visible if the system delays the next reload.
+        if schedule.expiresAt > now && schedule.expiresAt <= end { dates.append(schedule.expiresAt) }
+        return Array(Set(dates)).sorted()
+    }
 }
 
 struct DailyProvider: TimelineProvider {
@@ -27,31 +52,38 @@ struct DailyProvider: TimelineProvider {
     }
 
     func getSnapshot(in context: Context, completion: @escaping (VerseEntry) -> Void) {
-        completion(VerseEntry(date: .now, situation: SharedStore.situationOfTheDay()))
+        let now = Date.now
+        completion(VerseEntry(date: now, situation: SharedStore.situationOfTheDay(for: now)))
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<VerseEntry>) -> Void) {
-        let entry = VerseEntry(date: .now, situation: SharedStore.situationOfTheDay())
-        completion(Timeline(entries: [entry], policy: .after(nextMidnight(after: .now))))
+        let dates = WidgetTimelinePlan.dayDates(from: .now)
+        let entries = dates.map { VerseEntry(date: $0, situation: SharedStore.situationOfTheDay(for: $0)) }
+        completion(Timeline(entries: entries, policy: .atEnd))
     }
 }
 
 struct PinnedProvider: TimelineProvider {
-    private func current() -> Situation {
-        SharedStore.pinnedSituation ?? SharedStore.situationOfTheDay()
-    }
-
     func placeholder(in context: Context) -> VerseEntry {
-        VerseEntry(date: .now, situation: current())
+        VerseEntry(date: .now, situation: SharedStore.pinnedSituation ?? SharedStore.situationOfTheDay())
     }
 
     func getSnapshot(in context: Context, completion: @escaping (VerseEntry) -> Void) {
-        completion(VerseEntry(date: .now, situation: current()))
+        let now = Date.now
+        completion(VerseEntry(date: now, situation: SharedStore.pinnedSituation ?? SharedStore.situationOfTheDay(for: now)))
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<VerseEntry>) -> Void) {
-        let entry = VerseEntry(date: .now, situation: current())
-        completion(Timeline(entries: [entry], policy: .after(nextMidnight(after: .now))))
+        let now = Date.now
+        if let pinned = SharedStore.pinnedSituation {
+            // Changing the pin in Haneen explicitly reloads the widget.
+            completion(Timeline(entries: [VerseEntry(date: now, situation: pinned)], policy: .never))
+        } else {
+            let entries = WidgetTimelinePlan.dayDates(from: now).map {
+                VerseEntry(date: $0, situation: SharedStore.situationOfTheDay(for: $0))
+            }
+            completion(Timeline(entries: entries, policy: .atEnd))
+        }
     }
 }
 
@@ -63,34 +95,30 @@ struct PrayerWidgetEntry: TimelineEntry {
 }
 
 struct PrayerProvider: TimelineProvider {
+    var includesPrayerEvents = true
+
     func placeholder(in context: Context) -> PrayerWidgetEntry {
-        PrayerWidgetEntry(date: .now, schedule: .placeholder())
+        let now = Date.now
+        return PrayerWidgetEntry(date: now, schedule: .placeholder(now: now))
     }
 
     func getSnapshot(in context: Context, completion: @escaping (PrayerWidgetEntry) -> Void) {
-        let schedule = SharedStore.prayerSchedule ?? (context.isPreview ? .placeholder() : nil)
-        completion(PrayerWidgetEntry(date: .now, schedule: schedule))
+        let now = Date.now
+        let schedule = SharedStore.prayerSchedule ?? (context.isPreview ? .placeholder(now: now) : nil)
+        completion(PrayerWidgetEntry(date: now, schedule: schedule))
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<PrayerWidgetEntry>) -> Void) {
         let now = Date.now
-        guard let schedule = SharedStore.prayerSchedule else {
-            completion(Timeline(
-                entries: [PrayerWidgetEntry(date: now, schedule: nil)],
-                policy: .never
-            ))
-            return
-        }
-
-        let transitionDates = schedule.allEvents
-            .map(\.time)
-            .filter { $0 > now && $0 < schedule.expiresAt }
-        let dates = [now] + transitionDates
+        let schedule = SharedStore.prayerSchedule
+        let dates = includesPrayerEvents
+            ? WidgetTimelinePlan.prayerDates(from: now, schedule: schedule)
+            : WidgetTimelinePlan.dayDates(from: now)
         let entries = dates.map { PrayerWidgetEntry(date: $0, schedule: schedule) }
-        let policy: TimelineReloadPolicy = schedule.expiresAt > now
-            ? .after(schedule.expiresAt)
-            : .never
-        completion(Timeline(entries: entries, policy: policy))
+        // Morning/evening completion is scoped to the entry's local day, even
+        // for people who haven't configured prayer times. App progress changes
+        // also trigger WidgetCenter reloads; no minute-by-minute polling is used.
+        completion(Timeline(entries: entries, policy: .atEnd))
     }
 }
 
@@ -119,13 +147,14 @@ struct VerseWidgetView: View {
     let captionArabic: String
     @Environment(\.locale) private var locale
     var artwork: CompanionArtwork = .quran
+    var choice: CompanionWidgetChoice = .daily
     @Environment(\.widgetFamily) private var family
 
     var body: some View {
         VerseCompanionCard(situation: entry.situation, caption: widgetLanguage(for: locale).pick(caption, captionArabic),
                            compact: family == .systemSmall, artwork: artwork)
-            .containerBackground(CompanionWidgetPalette.canvas, for: .widget)
-            .widgetURL(URL(string: "sakina://situation/\(entry.situation.id)"))
+            .containerBackground(CompanionWidgetPalette.background(for: choice), for: .widget)
+            .widgetURL(URL(string: "haneen://situation/\(entry.situation.id)"))
     }
 }
 
@@ -137,6 +166,11 @@ struct PrayerWidgetView: View {
     @Environment(\.widgetFamily) private var family
     @Environment(\.locale) private var locale
     private var language: AppLanguage { widgetLanguage(for: locale) }
+    private var unavailablePrompt: String {
+        entry.schedule == nil
+            ? language.pick("Open Haneen to choose your location", "افتح حنين لتحديد موقعك")
+            : language.pick("Open Haneen to refresh prayer times", "افتح حنين لتحديث مواقيت الصلاة")
+    }
 
     private var nextEvent: PrayerEvent? {
         entry.schedule?.nextEvent(after: entry.date)
@@ -165,12 +199,12 @@ struct PrayerWidgetView: View {
         }
         .containerBackground(for: .widget) {
             if family == .systemMedium {
-                CompanionWidgetPalette.canvas
+                CompanionWidgetPalette.background(for: .timetable)
             } else {
                 Color.clear
             }
         }
-        .widgetURL(URL(string: "sakina://prayer-times"))
+        .widgetURL(URL(string: "haneen://prayer-times"))
     }
 
     private func inline(_ schedule: PrayerSchedule) -> some View {
@@ -247,22 +281,24 @@ struct PrayerWidgetView: View {
         Group {
             switch family {
             case .accessoryInline:
-                Label(language.pick("Open Haneen to set prayer times", "افتح حنين لضبط مواقيت الصلاة"), systemImage: "location")
+                Label(unavailablePrompt, systemImage: "location")
             case .accessoryCircular:
                 ZStack {
                     AccessoryWidgetBackground()
                     Image(systemName: "location")
                 }
+                .accessibilityElement(children: .ignore)
+                .accessibilityLabel(unavailablePrompt)
             case .accessoryRectangular:
                 VStack(alignment: .leading, spacing: 3) {
                     Text(language.pick("Prayer times", "مواقيت الصلاة"))
                         .font(.headline)
-                    Text(language.pick("Open Haneen to choose your location", "افتح حنين لتحديد موقعك"))
+                    Text(unavailablePrompt)
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
             default:
-                PrayerCompanionCard(schedule: nil, date: entry.date)
+                PrayerCompanionCard(schedule: entry.schedule, date: entry.date)
             }
         }
     }
@@ -285,6 +321,11 @@ private struct PrayerScheduleHalfView: View {
 
     @Environment(\.locale) private var locale
     private var language: AppLanguage { widgetLanguage(for: locale) }
+    private var unavailablePrompt: String {
+        entry.schedule == nil
+            ? language.pick("Open Haneen to choose your location", "افتح حنين لتحديد موقعك")
+            : language.pick("Open Haneen to refresh prayer times", "افتح حنين لتحديث مواقيت الصلاة")
+    }
 
     private var nextEvent: PrayerEvent? {
         entry.schedule?.nextEvent(after: entry.date)
@@ -303,7 +344,7 @@ private struct PrayerScheduleHalfView: View {
         .containerBackground(for: .widget) {
             Color.clear
         }
-        .widgetURL(URL(string: "sakina://prayer-times"))
+        .widgetURL(URL(string: "haneen://prayer-times"))
     }
 
     private func prayerRows(_ events: [PrayerEvent], schedule: PrayerSchedule) -> some View {
@@ -360,7 +401,7 @@ private struct PrayerScheduleHalfView: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text(language.pick("Prayer times", "مواقيت الصلاة"))
                     .font(.system(size: 12, weight: .semibold))
-                Text(language.pick("Open Haneen to set your location", "افتح حنين لتحديد موقعك"))
+                Text(unavailablePrompt)
                     .font(.system(size: 9.5, weight: .medium))
                     .foregroundStyle(.secondary)
                     .lineLimit(2)
@@ -383,6 +424,7 @@ struct VerseOfDayWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: "SakinaVerseOfDay", provider: DailyProvider()) { entry in
             VerseWidgetView(entry: entry, caption: "Ayah of the day", captionArabic: "آية اليوم")
+                .haneenWidgetLanguage()
         }
         .configurationDisplayName(widgetLanguage().pick("Ayah of the Day", "آية اليوم"))
         .description(widgetLanguage().pick("A daily ayah from Haneen, refreshed each morning.", "آية من حنين تتجدد كل صباح."))
@@ -393,7 +435,8 @@ struct VerseOfDayWidget: Widget {
 struct PinnedVerseWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: "SakinaPinned", provider: PinnedProvider()) { entry in
-            VerseWidgetView(entry: entry, caption: "Reflecting on", captionArabic: "آية للتأمل", artwork: .praise)
+            VerseWidgetView(entry: entry, caption: "Reflecting on", captionArabic: "آية للتأمل", artwork: .saved, choice: .pinned)
+                .haneenWidgetLanguage()
         }
         .configurationDisplayName(widgetLanguage().pick("Pinned Situation", "موقف مثبّت"))
         .description(widgetLanguage().pick("Keep a saved ayah on your Home Screen. Pin one from any guidance page in Haneen.", "احتفظ بآية على شاشتك الرئيسية، وثبّتها من إحدى صفحات الإرشاد في حنين."))
@@ -405,6 +448,7 @@ struct PrayerTimesWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: PrayerSchedule.widgetKind, provider: PrayerProvider()) { entry in
             PrayerWidgetView(entry: entry)
+                .haneenWidgetLanguage()
         }
         .configurationDisplayName(widgetLanguage().pick("Prayer Times", "مواقيت الصلاة"))
         .description(widgetLanguage().pick("See the next prayer on your Lock Screen or today's full schedule on your Home Screen.", "اعرض موعد الصلاة القادمة على شاشة القفل، أو مواقيت اليوم كاملة على الشاشة الرئيسية."))
@@ -423,6 +467,7 @@ struct EarlyPrayerTimesWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: Self.kind, provider: PrayerProvider()) { entry in
             PrayerScheduleHalfView(entry: entry, side: .early)
+                .haneenWidgetLanguage()
         }
         .configurationDisplayName(widgetLanguage().pick("Prayer Times, Fajr–Dhuhr", "مواقيت الصلاة، من الفجر إلى الظهر"))
         .description(widgetLanguage().pick("Place this widget on the left of your Lock Screen for Fajr, Sunrise and Dhuhr.", "ضع هذه الأداة على يسار شاشة القفل لعرض مواقيت الفجر والشروق والظهر."))
@@ -436,6 +481,7 @@ struct LatePrayerTimesWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: Self.kind, provider: PrayerProvider()) { entry in
             PrayerScheduleHalfView(entry: entry, side: .late)
+                .haneenWidgetLanguage()
         }
         .configurationDisplayName(widgetLanguage().pick("Prayer Times, Asr–Isha", "مواقيت الصلاة، من العصر إلى العشاء"))
         .description(widgetLanguage().pick("Place this widget on the right of your Lock Screen for Asr, Maghrib and Isha.", "ضع هذه الأداة على يمين شاشة القفل لعرض مواقيت العصر والمغرب والعشاء."))
@@ -476,8 +522,9 @@ struct ExtraCompanionWidget: Widget {
     init() { choice = .prayerCat }
     init(choice: CompanionWidgetChoice) { self.choice = choice }
     var body: some WidgetConfiguration {
-        StaticConfiguration(kind: "YaqeenCompanion.\(choice.rawValue)", provider: PrayerProvider()) { entry in
+        StaticConfiguration(kind: "YaqeenCompanion.\(choice.rawValue)", provider: PrayerProvider(includesPrayerEvents: choice == .prayerCat || choice == .countdown)) { entry in
             ExtraCompanionWidgetView(choice: choice, entry: entry)
+                .haneenWidgetLanguage()
         }
         .configurationDisplayName(choice.title(widgetLanguage()))
         .description(choice.detail(widgetLanguage()))
@@ -489,10 +536,23 @@ struct ExtraCompanionWidgetView: View {
     let choice: CompanionWidgetChoice
     let entry: PrayerWidgetEntry
     @Environment(\.widgetFamily) private var family
+    private var destination: URL {
+        // Open the verse represented by this rendered timeline entry, even if
+        // a cached Quiet Moment remains visible across a date change.
+        if choice == .pause {
+            let situation = SharedStore.situationOfTheDay(for: entry.date)
+            return URL(string: "haneen://situation/\(situation.id)")!
+        }
+        return choice.destination
+    }
+
     var body: some View {
         CompanionCollectionCard(choice: choice, date: entry.date, schedule: entry.schedule,
                                 compact: family == .systemSmall, lockScreen: family == .accessoryRectangular)
-            .containerBackground(CompanionWidgetPalette.canvas, for: .widget)
-            .widgetURL(choice.destination)
+            .containerBackground(for: .widget) {
+                if family == .accessoryRectangular { Color.clear }
+                else { CompanionWidgetPalette.background(for: choice) }
+            }
+            .widgetURL(destination)
     }
 }

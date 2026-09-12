@@ -379,6 +379,7 @@ struct DuaReaderView: View {
             if let practice {
                 placesRaw = ReadingPlace.updating(practice, entryID: nil, in: placesRaw)
                 practiceLogRaw = PracticeLog.marking(practice, in: practiceLogRaw)
+                WidgetPracticeSync.refresh()
             }
             withAnimation(reduceMotion ? nil : .spring(response: 0.4, dampingFraction: 0.85)) { completed = true }
         } else {
@@ -516,20 +517,14 @@ enum ReadingPlace {
 enum PracticeLog {
     static let key = "yaqeen.practiceLog"
 
-    private static func day(_ date: Date) -> String {
-        let f = DateFormatter()
-        f.calendar = Calendar(identifier: .gregorian)
-        f.locale = Locale(identifier: "en_US_POSIX")
-        f.dateFormat = "yyyy-MM-dd"
-        return f.string(from: date)
+    static func isDone(_ practice: DuaPractice, on date: Date = .now,
+                       calendar: Calendar = .autoupdatingCurrent, in raw: String) -> Bool {
+        raw.split(separator: "|").contains("\(WidgetPracticeProgress.dayKey(for: date, calendar: calendar)):\(practice.rawValue)")
     }
 
-    static func isDone(_ practice: DuaPractice, on date: Date = .now, in raw: String) -> Bool {
-        raw.split(separator: "|").contains("\(day(date)):\(practice.rawValue)")
-    }
-
-    static func marking(_ practice: DuaPractice, on date: Date = .now, in raw: String) -> String {
-        let today = day(date)
+    static func marking(_ practice: DuaPractice, on date: Date = .now,
+                        calendar: Calendar = .autoupdatingCurrent, in raw: String) -> String {
+        let today = WidgetPracticeProgress.dayKey(for: date, calendar: calendar)
         var kept = raw.split(separator: "|").map(String.init).filter { $0.hasPrefix(today + ":") }
         let entry = "\(today):\(practice.rawValue)"
         if !kept.contains(entry) { kept.append(entry) }
