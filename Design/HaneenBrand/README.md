@@ -1,4 +1,6 @@
-# Haneen artwork · 12 September 2026
+# Haneen artwork, 13 September 2026
+
+The current installed icon uses `AppIcon-Cream.png`, refined with the user's warm ivory swatch. See [the cream icon notes and prompt](CreamIcon-2026-09-13.md). The earlier sage version below is retained as design history.
 
 Generated using the built-in image generation tool. No external model or API key. Original generation outputs remain in the Codex generated-images directory. The approved assets live in Shared/CompanionAssets.xcassets.
 
@@ -25,5 +27,5 @@ The third output still had an opaque black background. A final image-tool edit u
 
 This final paper asset is bundled and displayed through the existing `CompanionImage` edge-paper renderer. The brand and settings masters have native alpha; the Kaaba gains transparency at display time through the same pipeline as the original companion illustrations.
 
-## Sage Home Screen icon
-The installed icon uses `AppIcon-Sage.png`, generated from the previous icon with only a muted sage background requested (#A3B49B). The in-app brand stays transparent. Package with `swift Design/HaneenBrand/package-icons.swift` from the repository root.
+## Earlier sage Home Screen icon
+The previous installed icon used `AppIcon-Sage.png`, generated with a muted sage background (#A3B49B). The in-app brand stays transparent. The packaging script now uses the cream master; run `swift Design/HaneenBrand/package-icons.swift` from the repository root.
