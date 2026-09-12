@@ -1,0 +1,20 @@
+# Simpler Haneen icon exploration
+
+The user preferred the direction of the reading companion but found it wrong, then clarified that their reference icons use very simple shapes or names with little visual clutter. The new directions remove the detailed pencil shading, large wooden stand, body and tail, and compare a simple mascot/book symbol against an Arabic name mark.
+
+## Outputs and review
+
+- `04-simple-companion.png`: simplified cat head and open olive Qur’an.
+- `05-arabic-wordmark.png`: the Arabic app name, حنين. Recommended for the clarified brief: calmer, mature, and immediately readable. The Arabic lettering and dots were independently checked.
+
+Both PNGs are 1254 × 1254, square, opaque, with no alpha channel. Built-in image generation; no external API key or CLI generation. App icon replacement is not part of these preview files.
+
+## Full prompts
+
+### 04-simple-companion
+
+Use case: logo-brand. Create one NEW exceptionally simple, memorable app icon for Haneen, a Qur'an and daily remembrance app. Image 1 is ONLY a reference for the LEVEL OF SIMPLICITY and clear small-size silhouette of the shown app icons, not their names, typography, characters or exact compositions. Image 2 is ONLY a reference for our familiar cat identity and cream/olive palette. Strip away the detailed illustration completely. Design ONE compact graphic mark: a simple cream cat HEAD with two dark brown ears and its signature single dark brown eye patch, peeking above a broad open olive-green Qur'an. The cat and open book fit closely together into ONE cohesive silhouette, not two floating stickers. Just the head, with a calm friendly tiny face looking gently down, not a huge cartoon grin. The book is only TWO broad simple olive shapes meeting at a central fold, with one restrained thin ivory ornamental cover detail, no writing or page lines. No stand, body, paws, tail, scarf, leaves, frame, arch, moon, stars or surrounding extras. Use very few intentional slightly hand-drawn bold smooth lines, flat fills, no pencil shading, no scribbles, no fur texture, no 3D, no gold ornamentation, no shadows, no gradients. Only three colours: solid warm cream #FCF3E3 background and face, deep muted olive #536541 book, warm charcoal brown #43392F outlines/ears/patch. The mark should occupy roughly 72% of the square with excellent breathing room. Cat face and Qur'an both immediately readable at 60px. Understated adult-friendly charm, a real minimal brand symbol someone could sketch in 5 seconds. Full bleed opaque cream SQUARE canvas, no rounded corners, no mockup, no lettering, no watermark. Render a polished raster logo, not an illustrated scene.
+
+### 05-arabic-wordmark
+
+Use case: logo-brand. Create a sophisticated extremely simple square app icon for Haneen / حنين, an Islamic Qur'an and daily remembrance app. Image 1 is ONLY a reference for clear simple name-led app icons and generous space, NOT a reference to copy typography, names, characters or exact layout. Image 2 gives the warm cream and olive brand palette only; do NOT depict its cat or book. The ONLY visual is the exact Arabic word "حنين" written correctly right-to-left, in bold, graceful, exceptionally legible custom contemporary Arabic lettering, with a softly human brush character and confident letterforms. The letters are ح ن ي ن. Preserve the correct dots: the two ن letters each have ONE dot above, and the ي has TWO dots below. No other letters, ornamental dots, decoration or diacritics. Use one restrained deep olive colour #536541 for lettering on a solid warm cream #FCF3E3 background. A compact elegantly balanced wide wordmark, approximately 72% of canvas width and 35% height, centered optically within generous blank space. All strokes bold enough to remain clearly legible at 60px. No cat, illustration, book, English text, frame, border, mosque, crescent, star, flourish, extra stroke, shadow, texture, gradient, 3D effect or watermark. Full square opaque cream canvas with no rounded tile mask. One clean finished app icon, not a presentation sheet.
