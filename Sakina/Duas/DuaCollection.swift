@@ -5,6 +5,48 @@ import Foundation
 enum DuaMood: String, CaseIterable, Identifiable, Hashable {
     case angry, anxious, urgeToSin, confident, confused, content, depressed, doubtful, grateful, greedy, guilty, happy, hurt, indecisive, hypocritical, jealous, lazy, lonely, lost, nervous, overwhelmed, regret, sad, scared, suicidal, tired, unloved, weak, bored, impatient, hopeful, grieving, seekingForgiveness
     var id: String { rawValue }
+
+    /// A complete sentence avoids attaching «أنك» to incompatible mood labels.
+    func readerTitle(_ language: AppLanguage) -> String {
+        guard language == .arabic else { return "For when you feel \(title(language).lowercased())" }
+        switch self {
+        case .angry: return "حين تشعر بالغضب"
+        case .anxious: return "حين تشعر بالقلق"
+        case .urgeToSin: return "حين تميل إلى المعصية"
+        case .confident: return "حين تشعر بالثقة"
+        case .confused: return "حين تشعر بالحيرة"
+        case .content: return "حين تشعر بالرضا"
+        case .depressed: return "حين تشعر بالاكتئاب"
+        case .doubtful: return "حين تساورك الشكوك"
+        case .grateful: return "حين تشعر بالامتنان"
+        case .greedy: return "حين تشعر بالطمع"
+        case .guilty: return "حين تشعر بالذنب"
+        case .happy: return "حين تشعر بالسعادة"
+        case .hurt: return "حين تؤلمك إساءة الآخرين"
+        case .indecisive: return "حين تتردد في قرارك"
+        case .hypocritical: return "حين تخشى النفاق"
+        case .jealous: return "حين تشعر بالحسد"
+        case .lazy: return "حين تشعر بالكسل"
+        case .lonely: return "حين تشعر بالوحدة"
+        case .lost: return "حين تشعر بالضياع"
+        case .nervous: return "حين تشعر بالتوتر"
+        case .overwhelmed: return "حين تثقلك الهموم"
+        case .regret: return "حين تشعر بالندم"
+        case .sad: return "حين تشعر بالحزن"
+        case .scared: return "حين تشعر بالخوف"
+        case .suicidal: return "حين تراودك أفكار انتحارية"
+        case .tired: return "حين تشعر بالتعب"
+        case .unloved: return "حين تشعر أنك غير محبوب"
+        case .weak: return "حين تشعر بالضعف"
+        case .bored: return "حين تشعر بالملل"
+        case .impatient: return "حين ينفد صبرك"
+        case .hopeful: return "حين تشعر بالأمل"
+        case .grieving: return "حين تحزن على من فقدت"
+        case .seekingForgiveness: return "حين تعود إلى الله"
+        }
+    }
+
+
     func title(_ language: AppLanguage) -> String {
         switch self {
         case .angry: return language.pick("Angry", "غاضب")
@@ -147,7 +189,7 @@ enum FeelingFamily: String, CaseIterable, Identifiable {
         }
     }
     func subtitle(_ language: AppLanguage) -> String {
-        moods.prefix(2).map { $0.title(language) }.joined(separator: language == .arabic ? "، " : " · ")
+        moods.prefix(2).map { $0.title(language) }.joined(separator: language.listSeparator)
     }
 }
 
@@ -198,6 +240,6 @@ enum DuaCollection {
     }
 
     static func sourceLabel(_ entry: GuidanceSupplication, language: AppLanguage) -> String {
-        "\(entry.source.collection(language)) · \(entry.source.number)"
+        "\(entry.source.collection(language))\(language.listSeparator)\(entry.source.number)"
     }
 }

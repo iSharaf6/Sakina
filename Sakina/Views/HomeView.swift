@@ -143,7 +143,7 @@ struct HomeView: View {
                     .tracking(-0.5)
                     .foregroundStyle(Color.yqInk)
                     .accessibilityAddTraits(.isHeader)
-                Text(copy("Du’a, dhikr and Qur’an for how you feel.", "دعاء وذكر وقرآن لما تشعر به."))
+                Text(copy("Du’a, dhikr and Qur’an for how you feel.", "أدعية وأذكار وآيات تناسب ما تشعر به."))
                     .font(.yqSubhead)
                     .foregroundStyle(Color.yqSecondary)
             }
@@ -292,7 +292,7 @@ struct HomeView: View {
                 NavigationLink { DuasView(showsNavigationBar: true) } label: {
                     BadgeTile(symbol: "book.closed.fill", tint: .yqAccent,
                               title: copy("Du’a collections", "مجموعات الأدعية"),
-                              detail: copy("For every part of your day", "لكل أوقات يومك"), artwork: .sunnah)
+                              detail: copy("For every part of your day", "لأوقات يومك المختلفة"), artwork: .sunnah)
                 }
                 .buttonStyle(.yqPress)
 
@@ -516,7 +516,7 @@ struct NextPrayerCard: View {
         let hours = minutes / 60
         let remainder = minutes % 60
         if hours > 0 { return copy("in \(hours) hr \(remainder) min", "بعد \(hours) س و\(remainder) د") }
-        return copy("in \(remainder) min", "بعد \(remainder) دقيقة")
+        return copy("in \(remainder) min", "بعد \(ArabicCount.label(remainder, zero: "أقل من دقيقة", one: "دقيقة واحدة", two: "دقيقتين", few: "دقائق", many: "دقيقة", other: "دقيقة"))")
     }
 }
 
@@ -716,7 +716,7 @@ private struct HomePracticeSection: View {
         }
         if let entryID = ReadingPlace.entry(for: suggested, in: placesRaw),
            let position = suggested.entryIDs.firstIndex(of: entryID) {
-            return copy("Continue · \(position + 1) of \(suggested.entries.count)", "تابع · \(position + 1) من \(suggested.entries.count)")
+            return copy("Continue, \(position + 1) of \(suggested.entries.count)", "تابع، \(position + 1) من \(suggested.entries.count)")
         }
         return suggested.invitation(language)
     }
@@ -736,13 +736,13 @@ private struct HomePracticeSection: View {
             NavigationLink(value: DuaRoute.counter) {
                 BadgeTile(symbol: "hand.tap.fill", tint: .yqAccent,
                           title: copy("Tasbih", "التسبيح"),
-                          detail: copy("Tap to count dhikr", "اضغط لعدّ الذكر"), artwork: .anytime)
+                          detail: copy("Tap to count dhikr", "اضغط لعدّ الأذكار"), artwork: .anytime)
             }
             .buttonStyle(.yqPress)
             NavigationLink(value: DuaRoute.goals) {
                 BadgeTile(symbol: "checkmark.circle.fill", tint: .yqAccent,
                           title: copy("Daily goals", "أهداف اليوم"),
-                          detail: copy("Small, daily, yours", "صغيرة، يومية، لك"), artwork: .salah)
+                          detail: copy("Small, daily, yours", "أهداف بسيطة تختارها ليومك"), artwork: .salah)
             }
             .buttonStyle(.yqPress)
             NavigationLink(value: DuaRoute.ruqyah) {

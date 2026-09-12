@@ -45,7 +45,7 @@ struct DuasView: View {
             VStack(alignment: .leading, spacing: 22) {
                 HStack(alignment: .top, spacing: 12) {
                     PageHeader(title: copy("Du’a & dhikr", "الدعاء والذكر"),
-                               subtitle: copy("For your day, and for what’s in your heart.", "ليومك، ولما في قلبك."))
+                               subtitle: copy("For your day, and for what’s in your heart.", "أذكار ليومك وأدعية لما في قلبك."))
                     if !showsNavigationBar { SettingsButton(language: language) { showSettings = true } }
                 }
                 .revealed(0, appeared: appeared, reduceMotion: reduceMotion)
@@ -258,7 +258,7 @@ struct FeelingsView: View {
         ScrollView(showsIndicators: false) {
             VStack(alignment: .leading, spacing: 22) {
                 PageHeader(title: copy("How’s your heart, really?", "كيف حال قلبك حقًا؟"),
-                           subtitle: copy("One tap. There’s no wrong answer.", "ضغطة واحدة، ولا توجد إجابة خاطئة."))
+                           subtitle: copy("One tap. There’s no wrong answer.", "اختر الشعور الأقرب إلى ما تمرّ به."))
                 if !recent.isEmpty {
                     band(title: copy("Recently", "مؤخرًا"), tint: BadgeTint.slate.color, moods: recent, order: 0)
                 }
@@ -266,7 +266,7 @@ struct FeelingsView: View {
                     band(title: family.title(language), subtitle: family.line(language), tint: family.tint, moods: family.moods, order: position + 1)
                 }
                 Text(copy("Feelings lead to reflections from the Qur’an and Sunnah. They are not prescriptions for an emotion.",
-                          "تقود المشاعر إلى تأملات من القرآن والسنة، وليست وصفات لكل شعور."))
+                          "ستجد مع كل شعور آيات وأدعية للتأمل من القرآن والسنة، دون تخصيصها شرعًا لذلك الشعور."))
                     .font(.yqCaption)
                     .foregroundStyle(Color.yqTertiary)
             }
@@ -318,10 +318,10 @@ extension DuaMood {
         if let line = FeelingLibrary.opening(for: self, language: language) { return line }
         switch family {
         case .heavy: return language.pick("It’s heavy. You don’t have to carry it alone.", "الحمل ثقيل، ولست وحدك في حمله.")
-        case .restless: return language.pick("Your heart is racing. Let it slow down here.", "قلبك يتسارع. دعه يهدأ هنا.")
+        case .restless: return language.pick("Your heart is racing. Let it slow down here.", "تتسارع دقات قلبك. خذ لحظة لتهدأ.")
         case .direction: return language.pick("The way isn’t clear yet. Ask the One who knows it.", "الطريق غير واضح بعد. اسأل من يعلمه.")
         case .returning: return language.pick("The door back is open. It always was.", "باب العودة مفتوح، وما زال كذلك.")
-        case .peace: return language.pick("Good days are a gift. Say thank you for it.", "الأيام الطيبة نعمة، فاشكرها.")
+        case .peace: return language.pick("Good days are a gift. Say thank you for it.", "الأيام الطيبة نعمة، فاشكر الله عليها.")
         case .energy: return language.pick("Running low is allowed. Ask for strength.", "لا بأس أن تتعب. اطلب القوة.")
         }
     }
@@ -342,7 +342,7 @@ struct MoodDetailView: View {
     @ObservedObject private var library = AyahLibrary.shared
     private var copy: AppCopy { AppCopy(language: language) }
     private var entries: [GuidanceSupplication] { DuaCollection.entries(mood: mood) }
-    private var title: String { copy("For when you feel \(mood.title(language).lowercased())", "حين تشعر أنك \(mood.title(language))") }
+    private var title: String { mood.readerTitle(language) }
     private var ownKeys: [String] { library.keys(for: mood) }
 
     var body: some View {
@@ -391,7 +391,7 @@ struct MoodDetailView: View {
         } else if let first = entries.first {
             DuaReaderView(dua: first, sequence: entries, collectionTitle: title, mood: mood)
         } else {
-            EmptyGuidanceState(title: copy("Nothing here yet", "لا يوجد شيء بعد"),
+            EmptyGuidanceState(title: copy("Nothing here yet", "لا توجد أدعية هنا بعد"),
                                detail: copy("Try another feeling.", "جرّب شعورًا آخر."), symbol: "heart", artwork: mood.artwork)
                 .yqScreen()
         }
@@ -410,7 +410,9 @@ struct MoodAyatSection: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             SectionHeader(copy("Your ayat", "آياتك")) {
-                Text(copy("\(keys.count) saved", "\(keys.count) محفوظة"))
+                Text(copy("\(keys.count) saved", ArabicCount.label(keys.count,
+                    zero: "لا آيات محفوظة", one: "آية محفوظة", two: "آيتان محفوظتان",
+                    few: "آيات محفوظة", many: "آيةً محفوظةً", other: "آية محفوظة")))
                     .font(.yqCaption).foregroundStyle(Color.yqSecondary)
             }
             RowGroup {

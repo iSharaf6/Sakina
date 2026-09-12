@@ -12,7 +12,7 @@ struct CompanionWidgetGallery: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
                 Text("Haneen widgets").font(.largeTitle.bold())
-                Text("Lock Screen · Prayer Companion").font(.headline)
+                Text("Lock Screen, Prayer Companion").font(.headline)
                 HStack(spacing: 12) {
                     lockCard(date: schedule.days[0].events[0].time.addingTimeInterval(-1800))
                     lockCard(date: schedule.days[0].events[4].time.addingTimeInterval(-1800))

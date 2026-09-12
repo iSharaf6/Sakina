@@ -3,6 +3,19 @@ import UIKit
 @testable import Sakina
 
 final class CompanionExperienceTests: XCTestCase {
+    func testArabicCountsUseGrammaticalFormsAtPluralBoundaries() {
+        func duas(_ count: Int) -> String {
+            ArabicCount.label(count, zero: "لا أدعية", one: "دعاء واحد", two: "دعاءان",
+                              few: "أدعية", many: "دعاءً", other: "دعاء")
+        }
+        for (count, expected) in [(0, "لا أدعية"), (1, "دعاء واحد"), (2, "دعاءان"),
+                                  (3, "٣ أدعية"), (10, "١٠ أدعية"), (11, "١١ دعاءً"),
+                                  (33, "٣٣ دعاءً"), (99, "٩٩ دعاءً"), (100, "١٠٠ دعاء"),
+                                  (103, "١٠٣ أدعية"), (111, "١١١ دعاءً")] {
+            XCTAssertEqual(duas(count), expected, "Incorrect Arabic count for \(count)")
+        }
+    }
+
     private func defaults() -> UserDefaults {
         let name = "companion-tests.\(UUID().uuidString)"
         let defaults = UserDefaults(suiteName: name)!

@@ -44,7 +44,7 @@ struct QiblaView: View {
 
             Text(copy(
                 "Hold your iPhone flat, then turn slowly until the pointer rests at the top.",
-                "أمسك هاتفك بشكل مستوٍ، ثم استدر ببطء حتى يستقر المؤشر في الأعلى."
+                "أمسك هاتفك أفقيًا، ثم استدر ببطء حتى يشير السهم إلى أعلى الشاشة."
             ))
             .font(.yqSubhead)
             .foregroundStyle(Color.sakinaMuted)
@@ -176,7 +176,7 @@ struct QiblaView: View {
                 if !compass.isUsingTrueNorth {
                     Text(copy(
                         "Using magnetic north briefly while true north settles.",
-                        "يُستخدم الشمال المغناطيسي مؤقتًا حتى يستقر الشمال الحقيقي."
+                        "يُستخدم اتجاه الشمال المغناطيسي مؤقتًا حتى تتوفر قراءة مستقرة للشمال الحقيقي."
                     ))
                     .font(.caption2)
                     .foregroundStyle(Color.sakinaMuted)
@@ -241,7 +241,7 @@ struct QiblaView: View {
 
     private var directionTitle: String {
         guard let turn = compass.signedTurn else {
-            return copy("Hold still for a moment", "اثبت للحظة")
+            return copy("Hold still for a moment", "أبقِ الهاتف ثابتًا للحظة")
         }
         if compass.isAligned {
             return copy("You are facing Qibla", "أنت متجه نحو القبلة")
@@ -274,12 +274,12 @@ struct QiblaView: View {
         if let bearing = compass.qiblaBearing {
             return copy(
                 "This device cannot provide live heading. Using another compass, face \(Int(bearing.rounded()))° from true north.",
-                "لا يستطيع هذا الجهاز توفير اتجاه مباشر. باستخدام بوصلة أخرى، اتجه \(Int(bearing.rounded()))° من الشمال الحقيقي."
+                "لا يستطيع هذا الجهاز تحديد الاتجاه لحظيًا. استخدم بوصلة أخرى واتجه بزاوية \(Int(bearing.rounded()))° من الشمال الحقيقي."
             )
         }
         return copy(
             "A live compass is not available on this device. Qibla works on an iPhone with a magnetometer.",
-            "لا تتوفر بوصلة مباشرة على هذا الجهاز. تعمل القبلة على هاتف آيفون مزوّد بمقياس مغناطيسي."
+            "لا يستطيع هذا الجهاز عرض اتجاه البوصلة لحظيًا. تتطلب هذه الميزة هاتف آيفون مزوّدًا بمستشعر مغناطيسي."
         )
     }
 
@@ -302,7 +302,7 @@ struct QiblaShortcutCard: View {
                 Text(copy("Find Qibla", "حدد القبلة"))
                     .font(.subheadline.weight(.semibold))
                     .foregroundStyle(Color.sakinaInk)
-                Text(copy("A private, live compass", "بوصلة مباشرة وخاصة"))
+                Text(copy("A private, live compass", "بوصلة لحظية تحافظ على خصوصيتك"))
                     .font(.caption)
                     .foregroundStyle(Color.sakinaMuted)
             }

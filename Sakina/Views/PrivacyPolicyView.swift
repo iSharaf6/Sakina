@@ -26,7 +26,7 @@ struct PrivacyPolicyView: View {
                         title: copy("Data on this iPhone", "البيانات على هذا الهاتف"),
                         body: copy(
                             "Bookmarks, written reflections, language, prayer settings, and notification preferences are stored on your device. The prayer widget receives calculated times, a city-level label, and a time zone through Apple’s App Group storage; it never receives your latitude or longitude.",
-                            "تُحفظ المحفوظات والتأملات المكتوبة واللغة وإعدادات الصلاة والإشعارات على جهازك. وتتلقى أداة الصلاة الأوقات المحسوبة واسمًا على مستوى المدينة والمنطقة الزمنية عبر مساحة App Group من Apple، ولا تتلقى خط العرض أو خط الطول."
+                            "تُحفظ الآيات والأدعية التي تحفظها وتأملاتك المكتوبة واختيارات اللغة والصلاة والإشعارات على جهازك. وتتلقى أداة الصلاة المواقيت المحسوبة واسم المدينة والمنطقة الزمنية عبر مساحة التخزين المشتركة App Group من Apple، دون إحداثيات خط العرض أو خط الطول."
                         )
                     )
                     section(
@@ -34,7 +34,7 @@ struct PrivacyPolicyView: View {
                         title: copy("Location and Qibla", "الموقع والقبلة"),
                         body: copy(
                             "Location is requested only after you choose a location-based feature. It is used to calculate prayer times and the Qibla direction. Qibla readings are transient. Prayer calculations happen on device; Apple’s location services may provide the city-level place name. Haneen does not retain coordinates in its shared widget data. When you open nearby mosques or halal places, your search location is sent to Apple Maps and OpenStreetMap Overpass services to find nearby results.",
-                            "لا يُطلب الموقع إلا بعد اختيارك ميزة تعتمد عليه. ويُستخدم لحساب مواقيت الصلاة واتجاه القبلة. قراءات القبلة مؤقتة، وتتم حسابات الصلاة على الجهاز، وقد توفر خدمات موقع Apple اسم المكان على مستوى المدينة. ولا يحتفظ حنين بالإحداثيات ضمن بيانات الأداة المشتركة. وعند فتح المساجد أو المطاعم القريبة، يُرسل موقع البحث إلى خرائط Apple وخدمات OpenStreetMap Overpass لإيجاد النتائج القريبة."
+                            "لا يُطلب الموقع إلا بعد اختيارك ميزة تعتمد عليه. ويُستخدم لحساب مواقيت الصلاة واتجاه القبلة. قراءات القبلة مؤقتة، وتتم حسابات الصلاة على الجهاز، وقد توفر خدمات موقع Apple اسم المدينة. ولا يحتفظ حنين بالإحداثيات ضمن بيانات الأداة المشتركة. وعند فتح المساجد أو المطاعم القريبة، يُرسل موقع البحث إلى خرائط Apple وخدمات OpenStreetMap Overpass لإيجاد النتائج القريبة."
                         )
                     )
                     section(
@@ -58,7 +58,7 @@ struct PrivacyPolicyView: View {
                         title: copy("Your choices", "خياراتك"),
                         body: copy(
                             "You can delete your sign-in account from Settings → Account → Delete account. You can remove bookmarks and reflections in the app, disable notifications in iOS Settings, deny location access, and disconnect any configured backup. Deleting the app removes its local data, subject to your device backups. Optional deletion feedback is retained in Supabase to improve Haneen, without your account identifier. Please do not include personal details.",
-                            "يمكنك حذف حساب الدخول من الإعدادات ← الحساب ← حذف الحساب، وحذف المحفوظات والتأملات داخل التطبيق، وتعطيل الإشعارات من إعدادات iOS، ورفض إذن الموقع، وفصل أي نسخة احتياطية مهيأة. ويؤدي حذف التطبيق إلى إزالة بياناته المحلية مع مراعاة نسخ جهازك الاحتياطية. تُحفظ ملاحظات الحذف الاختيارية في Supabase لتحسين حنين دون معرّف حسابك. يرجى عدم تضمين تفاصيل شخصية."
+                            "يمكنك حذف حسابك من الإعدادات ← الحساب ← حذف الحساب، وحذف المحفوظات والتأملات داخل التطبيق، وتعطيل الإشعارات من إعدادات iOS، ورفض إذن الموقع، وفصل أي خدمة نسخ احتياطي ربطتها. ويؤدي حذف التطبيق إلى إزالة بياناته المحلية، مع احتمال بقائها في النسخ الاحتياطية لجهازك. تُحفظ الملاحظات التي تختار إرسالها عند حذف الحساب في Supabase لتحسين حنين دون معرّف حسابك. يرجى عدم تضمين تفاصيل شخصية."
                         )
                     )
 

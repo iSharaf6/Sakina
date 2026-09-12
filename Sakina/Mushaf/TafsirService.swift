@@ -45,8 +45,8 @@ final class TafsirService: ObservableObject {
         /// name in both app languages, as the owner asked.
         func title(_ language: AppLanguage) -> String {
             switch self {
-            case .ibnKathirEnglish: return language.pick("Ibn Kathir (English)", "ابن كثير (إنجليزي)")
-            case .muyassarArabic: return language.pick("الميسر (عربي)", "الميسر (عربي)")
+            case .ibnKathirEnglish: return language.pick("Ibn Kathir (English)", "ابن كثير (بالإنجليزية)")
+            case .muyassarArabic: return language.pick("الميسر (بالعربية)", "الميسر (بالعربية)")
             }
         }
 

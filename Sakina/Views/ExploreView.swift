@@ -20,7 +20,7 @@ struct ExploreView: View {
                 VStack(alignment: .leading, spacing: 22) {
                     HStack(alignment: .top, spacing: 12) {
                         PageHeader(title: copy("Explore", "استكشف"),
-                                   subtitle: copy("Qur’an and Sunnah for the season you’re in.", "قرآن وسنة للمرحلة التي تعيشها."))
+                                   subtitle: copy("Qur’an and Sunnah for the season you’re in.", "آيات وأحاديث لما تمرّ به في حياتك."))
                         SettingsButton(language: language) { showSettings = true }
                     }
                     .revealed(0, appeared: appeared, reduceMotion: reduceMotion)
@@ -70,7 +70,7 @@ struct ExploreView: View {
                     Text(copy("An ayah for right now", "آية لهذه اللحظة"))
                         .font(.yqHeadline)
                         .foregroundStyle(Color.yqInk)
-                    Text(copy("Worry · feeling lost · setbacks · hope", "القلق · الضياع · الانتكاسات · الأمل"))
+                    Text(copy("Worry, feeling lost, setbacks, hope", "القلق، الحيرة، الشدائد، الأمل"))
                         .font(.yqSubhead)
                         .foregroundStyle(Color.yqSecondary)
                         .lineLimit(1)
@@ -91,13 +91,13 @@ struct ExploreView: View {
             RowGroup {
                 NavigationLink { NearbyPlacesView(kind: .mosques, language: language) } label: {
                     BadgeRow(symbol: "building.columns.fill", title: copy("Mosques near me", "مساجد قريبة"),
-                             subtitle: copy("Apple Maps and OpenStreetMap, cross-checked", "خرائط Apple وOpenStreetMap مع مطابقة"))
+                             subtitle: copy("Apple Maps and OpenStreetMap, cross-checked", "نتائج من خرائط Apple وOpenStreetMap بعد مطابقتها"))
                 }
                 .buttonStyle(.yqPressSoft)
                 RowDivider()
                 NavigationLink { NearbyPlacesView(kind: .halal, language: language) } label: {
-                    BadgeRow(symbol: "fork.knife", title: copy("Halal food near me", "طعام حلال قريب"),
-                             subtitle: copy("Confirm with the restaurant before you order", "تأكد من المطعم قبل الطلب"))
+                    BadgeRow(symbol: "fork.knife", title: copy("Halal food near me", "مطاعم حلال قريبة"),
+                             subtitle: copy("Confirm with the restaurant before you order", "اسأل المطعم عن توفر الطعام الحلال قبل الطلب"))
                 }
                 .buttonStyle(.yqPressSoft)
             }
@@ -106,12 +106,12 @@ struct ExploreView: View {
 
     private var groups: some View {
         VStack(alignment: .leading, spacing: 12) {
-            SectionHeader(copy("Where are you in life?", "أين أنت من الحياة؟"))
+            SectionHeader(copy("Where are you in life?", "ما الذي تمرّ به في حياتك؟"))
             RowGroup {
                 ForEach(Array(GuidanceCatalog.groups.enumerated()), id: \.element.id) { index, group in
                     NavigationLink(value: group) {
                         BadgeRow(symbol: group.badgeSymbol, tint: group.tint, title: group.title(language),
-                                 subtitle: group.stages.prefix(2).map { $0.title(language) }.joined(separator: " · "),
+                                 subtitle: group.stages.prefix(2).map { $0.title(language) }.joined(separator: language.listSeparator),
                                  artwork: group.artwork, subtitleLines: 1) {
                             HStack(spacing: 8) {
                                 Text("\(group.situations.count)")
@@ -133,10 +133,10 @@ struct ExploreView: View {
             HStack(spacing: 14) {
                 CompanionIllustration(artwork: .breathe, size: 48)
                 VStack(alignment: .leading, spacing: 2) {
-                    Text(copy("Start with a feeling", "ابدأ بشعور"))
+                    Text(copy("Start with a feeling", "اختر ما تشعر به"))
                         .font(.yqSubheadBold)
                         .foregroundStyle(Color.yqInk)
-                    Text(copy("\(DuaMood.allCases.count) feelings, one tap to a du’a.", "\(DuaMood.allCases.count) شعورًا، وضغطة واحدة إلى دعاء."))
+                    Text(copy("\(DuaMood.allCases.count) feelings, one tap to a du’a.", "اختر من بين \(DuaMood.allCases.count) شعورًا، واقرأ دعاءً يناسب حالك."))
                         .font(.yqCaption)
                         .foregroundStyle(Color.yqSecondary)
                 }
@@ -167,16 +167,16 @@ struct ExploreView: View {
                     }
                 }
             }
-            SectionHeader(results.isEmpty ? copy("No match yet", "لا توجد نتيجة بعد") : copy("Guidance", "هداية")) {
+            SectionHeader(results.isEmpty ? copy("No match yet", "لا توجد نتيجة بعد") : copy("Guidance", "نتائج البحث")) {
                 if !results.isEmpty {
-                    Text(results.count == 1 ? copy("1 moment", "موقف واحد") : copy("\(results.count) moments", "\(results.count) مواقف"))
+                    Text(results.count == 1 ? copy("1 moment", "موقف واحد") : copy("\(results.count) moments", ArabicCount.label(results.count, zero: "لا توجد مواقف", one: "موقف واحد", two: "موقفان", few: "مواقف", many: "موقفًا", other: "موقف")))
                         .font(.yqCaption).foregroundStyle(Color.yqSecondary)
                 }
             }
             if results.isEmpty {
                 EmptyGuidanceState(
                     title: copy("No matching moments", "لا توجد مواقف مطابقة"),
-                    detail: copy("Try a simpler feeling, or choose a life group.", "ابحث بكلمة أبسط أو اختر مجموعة من مجموعات الحياة."),
+                    detail: copy("Try a simpler feeling, or choose a life group.", "جرّب كلمة أبسط أو اختر موضوعًا من مواضيع الحياة."),
                     symbol: "text.magnifyingglass", artwork: .evening
                 )
             } else {

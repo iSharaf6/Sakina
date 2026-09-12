@@ -70,8 +70,8 @@ struct ScholarInsightCard: View {
             if language == .english, insight.hasReviewedEnglishTranslation {
                 Label(
                     copy(
-                        "Originally written in Arabic · English translation reviewed",
-                        "كُتب أصلًا باللغة العربية · روجعت الترجمة الإنجليزية"
+                        "Originally written in Arabic, English translation reviewed",
+                        "كُتب أصلًا باللغة العربية، روجعت الترجمة الإنجليزية"
                     ),
                     systemImage: "character.book.closed"
                 )
@@ -119,8 +119,8 @@ struct ScholarInsightCard: View {
                 ?? copy("Verified public profile", "ملف عام موثّق")
         }
         return copy(
-            "Local placeholder · not verified online",
-            "عنصر محلي مؤقت · غير موثّق عبر الإنترنت"
+            "Local placeholder, not verified online",
+            "عنصر محلي مؤقت، غير موثّق عبر الإنترنت"
         )
     }
 }
@@ -219,8 +219,8 @@ struct ScholarInsightDetailView: View {
                 ?? copy("Verified public profile", "ملف عام موثّق")
         }
         return copy(
-            "Local placeholder · not verified online",
-            "عنصر محلي مؤقت · غير موثّق عبر الإنترنت"
+            "Local placeholder, not verified online",
+            "عنصر محلي مؤقت، غير موثّق عبر الإنترنت"
         )
     }
 

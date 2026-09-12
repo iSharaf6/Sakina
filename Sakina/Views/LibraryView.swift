@@ -34,7 +34,7 @@ struct LibraryView: View {
                     NavigationLink { AyahLibraryView(language: language) } label: {
                         BadgeRow(symbol: "bookmark.fill", title: copy("My ayat", "آياتي"),
                                  subtitle: copy("Highlights, bookmarks, notes and categories from the mushaf",
-                                                "تظليلات وعلامات وملاحظات وتصنيفات من المصحف"), artwork: .quran)
+                                                "الآيات المظلَّلة والعلامات المرجعية والملاحظات والتصنيفات"), artwork: .quran)
                             .yqCard()
                     }
                     .buttonStyle(.yqPress)
@@ -138,7 +138,7 @@ struct LibraryView: View {
                 EmptyGuidanceState(
                     title: copy("Nothing saved yet", "لا توجد محفوظات بعد"),
                     detail: copy("Save a moment from any guidance screen and it will wait here for you.",
-                                 "احفظ أي موقف من شاشة الهداية وستجده هنا عند عودتك."),
+                                 "احفظ أي موقف أثناء التصفح لتجده هنا عند عودتك."),
                     symbol: "bookmark", artwork: .saved
                 )
                 NavigationLink { QuickGuidanceView() } label: {

@@ -37,7 +37,7 @@ struct BreathingView: View {
                 }
                 .accessibilityHidden(true)
                 VStack(spacing: 12) {
-                    Text(!started ? copy("Just this moment.", "هذه اللحظة فقط.") : phase == 3 ? copy("A little more room.", "فسحة أوسع في قلبك.") : phase == 1 ? copy("Breathe in.", "خذ شهيقًا.") : copy("Let it go.", "أخرج الزفير."))
+                    Text(!started ? copy("Just this moment.", "هذه اللحظة فقط.") : phase == 3 ? copy("A little more room.", "فسحة أوسع في قلبك.") : phase == 1 ? copy("Breathe in.", "خذ شهيقًا.") : copy("Let it go.", "أخرج الهواء بهدوء."))
                         .font(.system(.largeTitle, weight: .medium)).tracking(-1)
                         .contentTransition(.opacity)
                     Text(!started ? copy("Breathe gently, at your own pace.", "تنفس بهدوء، بالوتيرة التي تناسبك.") : phase == 3 ? copy("Take this softness with you.", "خذ هذا الهدوء معك.") : copy("Nothing else to do right now.", "لا شيء آخر عليك فعله الآن."))
@@ -59,7 +59,7 @@ struct BreathingView: View {
                     .background(paper.opacity(0.12), in: Capsule())
                     .buttonStyle(YaqeenPressStyle())
                 }
-                Text(started && phase != 3 ? copy("\(cycle + 1) of 3 breaths", "النفس \(cycle + 1) من ٣") : copy("A pause, whenever you need one.", "استراحة كلما احتجت إليها."))
+                Text(started && phase != 3 ? copy("\(cycle + 1) of 3 breaths", "النَّفَس \(cycle + 1) من ٣") : copy("A pause, whenever you need one.", "استراحة كلما احتجت إليها."))
                     .font(.caption).foregroundStyle(paper.opacity(0.7))
             }
             .foregroundStyle(paper)
@@ -83,7 +83,7 @@ struct BreathingView: View {
         .onChange(of: phase) { _, value in
             guard UIAccessibility.isVoiceOverRunning else { return }
             let announcement = value == 1 ? copy("Breathe in", "خذ شهيقًا")
-                : value == 2 ? copy("Breathe out", "أخرج الزفير")
+                : value == 2 ? copy("Breathe out", "أخرج الهواء بهدوء")
                 : copy("Breathing pause complete", "اكتملت استراحة التنفس")
             UIAccessibility.post(notification: .announcement, argument: announcement)
         }

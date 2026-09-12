@@ -23,7 +23,7 @@ extension FeelingFamily {
         switch self {
         case .heavy: return language.pick("When it weighs on you", "حين يثقل قلبك")
         case .restless: return language.pick("When it won’t settle", "حين لا يهدأ ذهنك")
-        case .direction: return language.pick("When the way isn’t clear", "حين يغيب الطريق")
+        case .direction: return language.pick("When the way isn’t clear", "حين لا يتضح لك الطريق")
         case .returning: return language.pick("When you want to come back", "حين تريد العودة")
         case .peace: return language.pick("When things are good", "حين تكون بخير")
         case .energy: return language.pick("When you’re running low", "حين تنفد طاقتك")
@@ -119,7 +119,9 @@ extension DuaPractice {
     func countLabel(_ language: AppLanguage) -> String {
         if self == .names { return language.pick("99 names", "٩٩ اسمًا") }
         let count = entries.count
-        return language.pick(count == 1 ? "1 du’a" : "\(count) du’as", "\(count) أدعية")
+        return language.pick(count == 1 ? "1 du’a" : "\(count) du’as",
+                             ArabicCount.label(count, zero: "لا أدعية", one: "دعاء واحد", two: "دعاءان",
+                                               few: "أدعية", many: "دعاءً", other: "دعاء"))
     }
 
     /// The four groupings used by the collections screen.
@@ -137,7 +139,7 @@ extension DuaPractice {
         func title(_ language: AppLanguage) -> String {
             switch self {
             case .day: return language.pick("Through the day", "على مدار اليوم")
-            case .prayer: return language.pick("Prayer & care", "الصلاة والرعاية")
+            case .prayer: return language.pick("Prayer & care", "الصلاة والرقية")
             case .remembrance: return language.pick("Remembrance", "الذكر")
             case .sources: return language.pick("From the sources", "من المصادر")
             }

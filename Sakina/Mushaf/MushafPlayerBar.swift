@@ -201,7 +201,7 @@ struct ReciterPickerSheet: View {
         .yaqeenLanguage(language)
         .task { await refreshSize() }
         .confirmationDialog(
-            copy("Clear downloaded audio?", "حذف الصوت المحمّل؟"),
+            copy("Clear downloaded audio?", "حذف التلاوات المحمّلة؟"),
             isPresented: $confirmClear,
             titleVisibility: .visible
         ) {
@@ -215,7 +215,7 @@ struct ReciterPickerSheet: View {
         } message: {
             Text(copy(
                 "Ayat will download again the next time they play.",
-                "سيتم تحميل الآيات مجددًا عند تشغيلها في المرة القادمة."
+                "ستُحمَّل تلاوات الآيات مجددًا عند تشغيلها في المرة القادمة."
             ))
         }
     }
@@ -248,13 +248,13 @@ struct ReciterPickerSheet: View {
 
     private var footer: some View {
         VStack(alignment: .leading, spacing: 10) {
-            SectionHeader(copy("Downloaded audio", "الصوت المحمّل"))
+            SectionHeader(copy("Downloaded audio", "التلاوات المحمّلة"))
             RowGroup {
                 BadgeRow(
                     symbol: "arrow.down.circle.fill",
                     title: copy("On this device", "على هذا الجهاز"),
                     subtitle: copy("Played ayat are kept for offline listening, up to 300 MB.",
-                                   "تُحفظ الآيات المشغّلة للاستماع دون اتصال، حتى 300 ميغابايت.")
+                                   "تُحفظ التلاوات التي تستمع إليها لتشغيلها دون اتصال، بحد أقصى 300 ميغابايت.")
                 ) {
                     Text(ByteCountFormatter.string(fromByteCount: cacheBytes, countStyle: .file))
                         .font(.yqSubheadBold)
@@ -266,7 +266,7 @@ struct ReciterPickerSheet: View {
                     Haptics.press()
                     confirmClear = true
                 } label: {
-                    Text(copy("Clear downloaded audio", "حذف الصوت المحمّل"))
+                    Text(copy("Clear downloaded audio", "حذف التلاوات المحمّلة"))
                         .font(.yqBodyMedium)
                         .foregroundStyle(cacheBytes > 0 ? Color.red : Color.yqTertiary)
                         .frame(maxWidth: .infinity, minHeight: 50)
@@ -298,9 +298,9 @@ struct ReciterPickerSheet: View {
 
     private func styleDetail(_ style: String) -> String {
         switch style {
-        case "Mujawwad": return copy("Slow, melodic", "بطيء، مُلحّن")
-        case "Muallim": return copy("Repeats for learners", "يكرر للمتعلمين")
-        default: return copy("Measured, everyday", "متّزن، للقراءة اليومية")
+        case "Mujawwad": return copy("Slow, melodic", "تلاوة متأنية مجوّدة")
+        case "Muallim": return copy("Repeats for learners", "تكرار يساعد على التعلّم")
+        default: return copy("Measured, everyday", "ترتيل للاستماع اليومي")
         }
     }
 }

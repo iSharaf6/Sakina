@@ -52,7 +52,7 @@ struct QuickGuidanceView: View {
                     }
                     .revealed(1, appeared: appeared, reduceMotion: reduceMotion)
                 }
-                Text(copy("Each opens a reading, its meaning, and room to reflect.", "يفتح كل منها قراءة ومعنى وفسحة للتأمل."))
+                Text(copy("Each opens a reading, its meaning, and room to reflect.", "اختر ما يشغلك لتقرأ آيات تناسب حالك، وتطّلع على معناها وتتأمل فيها."))
                     .font(.yqCaption)
                     .foregroundStyle(Color.yqTertiary)
             }
@@ -73,12 +73,12 @@ struct QuickGuidanceView: View {
             "worry-will-not-settle": ("Overthinking", "تفكير لا يهدأ"),
             "doubting-ability": ("Doubting myself", "أشك في نفسي"),
             "comparing-progress": ("Falling behind", "أشعر بالتأخر"),
-            "struggling-to-continue": ("Running out of strength", "نفدت قوتي"),
+            "struggling-to-continue": ("Running out of strength", "أشعر بأن قوتي تنفد"),
             "lost-next-step": ("What comes next?", "ما الخطوة التالية؟"),
             "setback-after-effort": ("Facing a setback", "أواجه انتكاسة"),
             "effort-feels-unseen": ("Feeling unseen", "لا يلاحظون جهدي"),
             "alone-or-misunderstood": ("Feeling alone", "أشعر بالوحدة"),
-            "distant-from-faith": ("Far from my faith", "بعيد عن إيماني"),
+            "distant-from-faith": ("Far from my faith", "أشعر بفتور في إيماني"),
             "repeating-mistake": ("The same mistake", "أكرر الخطأ"),
             "fear-too-late-to-return": ("Is it too late?", "هل فات الأوان؟"),
             "outcome-beyond-control": ("Letting go", "أفوّض أمري"),

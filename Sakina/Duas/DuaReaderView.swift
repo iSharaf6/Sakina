@@ -421,9 +421,9 @@ struct DuaReaderView: View {
 
     private var completionLine: String {
         if let practice {
-            return copy("\(practice.title(language)) done for today. Come back whenever you need.", "أنجزت \(practice.title(language)) لليوم. عُد متى شئت.")
+            return copy("\(practice.title(language)) done for today. Come back whenever you need.", "أكملت قراءة هذه المجموعة اليوم. عُد متى شئت.")
         }
-        return copy("Carry these words into your day.", "احمل هذه الكلمات معك في يومك.")
+        return copy("Carry these words into your day.", "تذكّر هذه الكلمات في يومك.")
     }
 
     // MARK: Source sheet
@@ -442,7 +442,7 @@ struct DuaReaderView: View {
                         Text(dua.applicability.explanation(language)).font(.yqSubhead).lineSpacing(5).foregroundStyle(Color.yqSecondary)
                     }
                     if dua.source.textForm == .excerpt {
-                        Text(copy("This is an excerpt. The source page has the full passage or narration.", "هذا مقتطف، وتجد النص أو الرواية كاملة في المصدر."))
+                        Text(copy("This is an excerpt. The source page has the full passage or narration.", "هذا مقتطف، ويمكنك قراءة النص كاملًا في المصدر."))
                             .font(.yqSubhead).foregroundStyle(Color.yqSecondary)
                     }
                     Link(destination: URL(string: dua.source.canonicalURL)!) {
@@ -451,12 +451,12 @@ struct DuaReaderView: View {
                     .buttonStyle(.yqPress)
                     if mood != nil {
                         Text(copy("Readings under a feeling are chosen for reflection. That placement does not prescribe a special use, count or promised outcome.",
-                                  "اختيرت القراءات تحت الشعور للتأمل، ولا يثبت وضعها تخصيصًا شرعيًا أو عددًا أو نتيجة موعودة."))
+                                  "اختيرت هذه الآيات والأدعية للتأمل، ولا يعني ربطها بشعور معيّن تخصيصها شرعًا له أو تحديد عدد لتكرارها أو الوعد بنتيجة معيّنة."))
                             .font(.yqCaption).foregroundStyle(Color.yqTertiary)
                     }
                     if practice != nil {
                         Text(copy("Selected readings, not a complete manual. Follow each source for timing and repetition.",
-                                  "قراءات مختارة وليست دليلًا شاملًا. يُرجع إلى كل مصدر لوقته وعدده."))
+                                  "هذه قراءات مختارة وليست دليلًا شاملًا. راجع مصدر كل ذكر لمعرفة وقته وعدد تكراره."))
                             .font(.yqCaption).foregroundStyle(Color.yqTertiary)
                     }
                 }

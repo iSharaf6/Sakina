@@ -50,7 +50,7 @@ enum DailyDuaCatalog {
               meaningAR: "يا الله، بقدرتك ندرك المساء والصباح ونحيا ونموت، وإليك البعث.",
               context: "The evening wording in al-Tirmidhi 3391. This preserves the wording of this particular narration.",
               contextAR: "صيغة المساء كما جاءت في هذه الرواية من الترمذي ٣٣٩١.", collection: "tirmidhi", number: "3391"),
-        entry("daily-sleep", "Entrust your night", "سلّم ليلتك لله",
+        entry("daily-sleep", "Entrust your night", "توكل على الله عند النوم",
               arabic: "بِاسْمِكَ اللَّهُمَّ أَمُوتُ وَأَحْيَا",
               transliteration: "Bismika Allahumma amutu wa ahya.",
               meaning: "In Your name, O Allah, I die and I live.", meaningAR: "باسمك يا الله أموت وأحيا.",
@@ -122,7 +122,7 @@ enum DuaPractice: String, CaseIterable, Identifiable, Hashable {
         let labels: [Self: (String, String)] = [
             .morning: ("Morning", "الصباح"), .evening: ("Evening", "المساء"), .sleep: ("Before sleep", "قبل النوم"),
             .tahajjud: ("Tahajjud", "التهجد"), .salah: ("Salah", "الصلاة"), .afterSalah: ("After salah", "بعد الصلاة"),
-            .ummah: ("For the ummah", "للأمة"), .healing: ("Ruqyah & illness", "الرقية والمرض"), .praise: ("Praises of Allah", "الثناء على الله"),
+            .ummah: ("For the ummah", "للأمة"), .healing: ("Ruqyah & illness", "الرقية وأدعية المرض"), .praise: ("Praises of Allah", "الثناء على الله"),
             .salawat: ("Salawat", "الصلاة على النبي"), .quran: ("Qur’anic du’as", "أدعية قرآنية"), .sunnah: ("Sunnah du’as", "أدعية من السنة"),
             .istighfar: ("Istighfar", "الاستغفار"), .anytime: ("Dhikr for all times", "أذكار لكل وقت"), .names: ("Names of Allah", "أسماء الله الحسنى")
         ]
@@ -137,7 +137,7 @@ enum DuaPractice: String, CaseIterable, Identifiable, Hashable {
         case .salah: return language.pick("Words for bowing and sujud.", "كلمات للركوع والسجود.")
         case .afterSalah: return language.pick("Stay a little after the salam.", "تمهّل بعد السلام.")
         case .ummah: return language.pick("Make room for others in your du’a.", "اجعل للآخرين نصيبًا من دعائك.")
-        case .healing: return language.pick("Ask for healing and seek care.", "اسأل الشفاء وخذ بأسباب العلاج.")
+        case .healing: return language.pick("Ask for healing and seek care.", "اسأل الله الشفاء وخذ بأسباب العلاج.")
         case .praise: return language.pick("Remember who you’re turning to.", "تذكّر من تدعوه.")
         case .salawat: return language.pick("Send blessings upon the Prophet ﷺ.", "صلِّ على النبي ﷺ.")
         case .quran: return language.pick("Prayers within Allah’s words.", "أدعية في كلام الله.")

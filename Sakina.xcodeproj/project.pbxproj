@@ -39,6 +39,7 @@
 		30FCB5E3D12897ED3CE3E64E /* QuranScripts.swift in Sources */ = {isa = PBXBuildFile; fileRef = D86AE9978186628A2C1BD93A /* QuranScripts.swift */; };
 		313752037AA3D4F16064F2C0 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 812F742F72217F0819013056 /* Theme.swift */; };
 		316E5686B40A7DCED88129B8 /* CompanionReminders.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349D70C764C065879A7F1606 /* CompanionReminders.swift */; };
+		354987CA0A6B8320A156C948 /* Localization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E8388D70A1ECA4A577E39C7 /* Localization.swift */; };
 		36F7298E254BC3676EC7E9C1 /* DailyGoals.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B8575520EEBF2BC8F2451E /* DailyGoals.swift */; };
 		379837A0AA2806F70FD91E22 /* DailyDuaCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = B805C5620A23DD65CA03AF22 /* DailyDuaCatalog.swift */; };
 		38FA7F46E6341FD407174CD3 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = 10800182FDA9B6D0BF263424 /* GoogleSignIn */; };
@@ -60,6 +61,7 @@
 		5CAB6A5F33D61E18312979C2 /* DuaLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C923DD523105A8594B87A6E /* DuaLibrary.swift */; };
 		5D27632C32DE06E810E1DF0C /* ScholarProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FB5CC68230639107231C077 /* ScholarProfileView.swift */; };
 		5D92E8F2998E1A2848627E98 /* MushafPlayerBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 493C99CEAD2B74283DE5A658 /* MushafPlayerBar.swift */; };
+		5E5F25E6ED7FAFE8243C0DD0 /* ArabicSituationTitles.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE172B97AC73C6323102B583 /* ArabicSituationTitles.swift */; };
 		5E6E860E4A92FD966D5FB17D /* MushafPickers.swift in Sources */ = {isa = PBXBuildFile; fileRef = FBD6E5A368A2AD7D09A40F31 /* MushafPickers.swift */; };
 		67F08D235D2815305D03F12B /* CompanionWidgetCards.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFC87C7898223217CE931326 /* CompanionWidgetCards.swift */; };
 		67F7D1F759EC753D011AC1D6 /* Haptics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 23886767FB82157344134A03 /* Haptics.swift */; };
@@ -78,6 +80,7 @@
 		85F888E4D07CF8B79D5D1199 /* AyahActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3950AABC3C42DC9F093596C0 /* AyahActionSheet.swift */; };
 		8631D1ABCB654F17225338F3 /* CompanionWidgetCollection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43EA20E68A6A4C193D44108A /* CompanionWidgetCollection.swift */; };
 		8B027AC65EB41B1F2D2B4DC9 /* SituationDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35A7453DBF8D8E09E7E9D456 /* SituationDetailView.swift */; };
+		8B43F6F19634F57162B50292 /* ArabicSituationTitles.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE172B97AC73C6323102B583 /* ArabicSituationTitles.swift */; };
 		8B6355859F8D0E0D156095E9 /* PrayerSchedule.swift in Sources */ = {isa = PBXBuildFile; fileRef = 559F960ED9DDC87C9C69D8EC /* PrayerSchedule.swift */; };
 		8C11CCF6BDB0B07CEAD67CDD /* CompanionAssets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DB00823DF2E28F9DFCC13DB5 /* CompanionAssets.xcassets */; };
 		93ED8D8490304DDC5A5CE82A /* quran-transliteration.json in Resources */ = {isa = PBXBuildFile; fileRef = 7EFD5AA0A85E6DDFE8180027 /* quran-transliteration.json */; };
@@ -257,6 +260,7 @@
 		C987C3A68109AC009EEBE541 /* PrayerTimesService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrayerTimesService.swift; sourceTree = "<group>"; };
 		CC07A9B481218431697FE1FB /* QuranCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuranCatalog.swift; sourceTree = "<group>"; };
 		CDE860229139DCEE3B2771D1 /* DailyGoalsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyGoalsView.swift; sourceTree = "<group>"; };
+		CE172B97AC73C6323102B583 /* ArabicSituationTitles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArabicSituationTitles.swift; sourceTree = "<group>"; };
 		CF59A00D0B7D0C36C0870328 /* AyahLibrary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AyahLibrary.swift; sourceTree = "<group>"; };
 		D130ED4CA267C90CA46E8AE1 /* ScholarAvatarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScholarAvatarView.swift; sourceTree = "<group>"; };
 		D193C36D2030BC5749F9F3DF /* YaqeenAppIntents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YaqeenAppIntents.swift; sourceTree = "<group>"; };
@@ -410,6 +414,7 @@
 			isa = PBXGroup;
 			children = (
 				75C9DF2B84425747CEB0944C /* ArabicReflections.swift */,
+				CE172B97AC73C6323102B583 /* ArabicSituationTitles.swift */,
 				3E1ED09D1892E6C7656773C0 /* CompanionArtwork.swift */,
 				DB00823DF2E28F9DFCC13DB5 /* CompanionAssets.xcassets */,
 				C973658D4D60E07B81BABDEA /* CompanionContent.swift */,
@@ -765,9 +770,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8B43F6F19634F57162B50292 /* ArabicSituationTitles.swift in Sources */,
 				E2D24FAD8D7A59B7B638A8B3 /* CompanionArtwork.swift in Sources */,
 				5B9AC312B431D661FD5E8C90 /* CompanionWidgetCards.swift in Sources */,
 				8631D1ABCB654F17225338F3 /* CompanionWidgetCollection.swift in Sources */,
+				354987CA0A6B8320A156C948 /* Localization.swift in Sources */,
 				110248806F05C890C56B77DD /* PrayerSchedule.swift in Sources */,
 				A44FE29C785FF1A9E28099B8 /* QuranCatalog.swift in Sources */,
 				11CC438772F912B44768F2F4 /* SakinaWidgets.swift in Sources */,
@@ -783,6 +790,7 @@
 				AC79D8A65E6500B89A0D3772 /* AdhkarBenefitsView.swift in Sources */,
 				1E9208D4490881F96B16D13D /* AppSettings.swift in Sources */,
 				83D618E0890F94D7DB94867F /* ArabicReflections.swift in Sources */,
+				5E5F25E6ED7FAFE8243C0DD0 /* ArabicSituationTitles.swift in Sources */,
 				85F888E4D07CF8B79D5D1199 /* AyahActionSheet.swift in Sources */,
 				CF92A45A40AFDF8D2748056C /* AyahLibrary.swift in Sources */,
 				C0BF9E8CF54762599471419A /* AyahLibraryView.swift in Sources */,

@@ -17,7 +17,7 @@ struct AdhkarBenefitsView: View {
         ScrollView(showsIndicators: false) {
             VStack(alignment: .leading, spacing: 22) {
                 PageHeader(title: copy("Benefits of adhkar", "فضائل الأذكار"),
-                           subtitle: copy("Eight reasons the tongue should never rest.", "ثمانية أسباب تجعل لسانك لا يفتر."))
+                           subtitle: copy("Eight reasons the tongue should never rest.", "ثمانية فضائل تشجّعك على المداومة على الذكر."))
                     .revealed(0, appeared: appeared, reduceMotion: reduceMotion)
                 definition
                     .revealed(1, appeared: appeared, reduceMotion: reduceMotion)
@@ -51,12 +51,12 @@ struct AdhkarBenefitsView: View {
             VStack(alignment: .leading, spacing: 10) {
                 CapsLabel(text: copy("The word", "الكلمة"))
                 Text(copy("Adhkar is the plural of dhikr: remembrance, or mention.",
-                          "الأذكار جمع ذِكر، ومعناه التذكّر أو الإتيان على الشيء باللسان."))
+                          "الأذكار جمع ذِكر، وهو التذكّر أو ذكر الشيء باللسان."))
                     .font(.yqHeadline)
                     .foregroundStyle(Color.yqInk)
                     .fixedSize(horizontal: false, vertical: true)
                 Text(copy("In practice it means keeping Allah close and often, with the words He and His Messenger ﷺ taught: SubhanAllah, Alhamdulillah, Allahu Akbar, and the rest.",
-                          "وفي العمل: أن تُبقي الله قريبًا وكثيرًا على لسانك وفي قلبك، بالكلمات التي علّمها هو ورسوله ﷺ: سبحان الله، والحمد لله، والله أكبر، وما سواها."))
+                          "والمقصود هنا أن تذكر الله بقلبك ولسانك، بما ورد في القرآن والسنة، مثل: سبحان الله، والحمد لله، والله أكبر."))
                     .font(.yqSubhead)
                     .lineSpacing(4)
                     .foregroundStyle(Color.yqSecondary)
@@ -80,7 +80,7 @@ struct AdhkarBenefitsView: View {
     private var closing: some View {
         VStack(alignment: .leading, spacing: 14) {
             Text(copy("None of this needs a mat, a place or a time. It needs a tongue that moves and a heart that listens.",
-                      "لا يحتاج شيء من هذا إلى سجادة أو مكان أو وقت. يحتاج لسانًا يتحرك وقلبًا يُنصت."))
+                      "يمكنك الإكثار من الذكر خلال يومك دون سجادة أو مكان مخصّص، بلسان ذاكر وقلب حاضر."))
                 .font(.yqBody)
                 .lineSpacing(5)
                 .foregroundStyle(Color.yqInk)
@@ -128,7 +128,7 @@ private struct AdhkarBenefit: Identifiable {
             titleEnglish: "It polishes the heart",
             titleArabic: "يجلو القلب",
             bodyEnglish: "Hearts tarnish quietly: through neglect, through the noise of a day. Remembrance is the cloth you run over them, and the shine returns with every pass.",
-            bodyArabic: "تصدأ القلوب في صمت: بالغفلة، وبضجيج اليوم. والذكر هو الخرقة التي تمرّها عليها، فيعود اللمعان مع كل مسحة.",
+            bodyArabic: "قد تغفل القلوب وسط مشاغل الحياة، فيأتي الذكر ليجدّد حضورها ويوقظها من الغفلة.",
             sourceEnglish: nil, sourceArabic: nil, sourceURL: nil
         ),
         AdhkarBenefit(
@@ -136,7 +136,7 @@ private struct AdhkarBenefit: Identifiable {
             titleEnglish: "It deepens your relationship with Allah",
             titleArabic: "يعمّق صلتك بالله",
             bodyEnglish: "Closeness grows the way any closeness does: by turning up often, and speaking. A few words at the sink, in the car, before sleep. Over months, that becomes a relationship.",
-            bodyArabic: "تنمو القربى كما تنمو أي قربى: بكثرة الحضور والكلام. كلمات قليلة عند المغسلة، وفي السيارة، وقبل النوم. ومع الشهور تصير علاقة.",
+            bodyArabic: "تقوى صلتك بالله حين تداوم على ذكره. كلمات يسيرة في أثناء أعمالك، وفي السيارة، وقبل النوم، تجد لها مكانًا في يومك مع مرور الوقت.",
             sourceEnglish: nil, sourceArabic: nil, sourceURL: nil
         ),
         AdhkarBenefit(
@@ -144,15 +144,15 @@ private struct AdhkarBenefit: Identifiable {
             titleEnglish: "Allah remembers those who remember Him",
             titleArabic: "يذكرك الله إذا ذكرته",
             bodyEnglish: "It is a promise, not a hope: “So remember Me; I will remember you.” Every mention on your tongue is answered by a mention far above it.",
-            bodyArabic: "وعد لا رجاء: «فاذكروني أذكركم». كل ذكر على لسانك يقابله ذكر أعلى منه بكثير.",
+            bodyArabic: "وعد الله من يذكره بقوله: «فاذكروني أذكركم». فتذكّر هذا الوعد كلما ذكرت الله.",
             sourceEnglish: "Qur’an 2:152", sourceArabic: "القرآن ٢:١٥٢", sourceURL: "https://quran.com/2/152"
         ),
         AdhkarBenefit(
             id: 4, symbol: "hands.and.sparkles.fill",
             titleEnglish: "Mindful dhikr is gratitude",
-            titleArabic: "الذكر بوعي شكر",
+            titleArabic: "الذكر بحضور القلب من الشكر",
             bodyEnglish: "The Prophet ﷺ told Mu‘adh to say after every prayer: “O Allah, help me to remember You, to thank You, and to worship You well.” Remembering and thanking sit in one breath.",
-            bodyArabic: "أوصى النبي ﷺ معاذًا أن يقول دبر كل صلاة: «اللهم أعنّي على ذكرك وشكرك وحسن عبادتك». فالذكر والشكر في نَفَس واحد.",
+            bodyArabic: "أوصى النبي ﷺ معاذًا أن يقول دبر كل صلاة: «اللهم أعنّي على ذكرك وشكرك وحسن عبادتك». فجمع هذا الدعاء بين الذكر والشكر وحسن العبادة.",
             sourceEnglish: "Abu Dawud 1522", sourceArabic: "أبو داود ١٥٢٢", sourceURL: "https://sunnah.com/abudawud:1522"
         ),
         AdhkarBenefit(
@@ -160,7 +160,7 @@ private struct AdhkarBenefit: Identifiable {
             titleEnglish: "Daily adhkar are a protection",
             titleArabic: "الأذكار اليومية حماية",
             bodyEnglish: "Recite Ayat al-Kursi before sleep and, in the Prophet’s ﷺ words, “a guardian from Allah will remain with you” until morning. The morning and evening adhkar wrap the rest of the day.",
-            bodyArabic: "اقرأ آية الكرسي قبل النوم، ففي قول النبي ﷺ: «لن يزال عليك من الله حافظ» حتى تصبح. وأذكار الصباح والمساء تلفّ ما بقي من اليوم.",
+            bodyArabic: "اقرأ آية الكرسي قبل النوم، ففي قول النبي ﷺ: «لن يزال عليك من الله حافظ» حتى تصبح. وللصباح والمساء أذكارهما أيضًا.",
             sourceEnglish: "Bukhari 2311", sourceArabic: "البخاري ٢٣١١", sourceURL: "https://sunnah.com/bukhari:2311"
         ),
         AdhkarBenefit(
@@ -168,7 +168,7 @@ private struct AdhkarBenefit: Identifiable {
             titleEnglish: "It is the lightest act of worship",
             titleArabic: "أخفّ العبادات",
             bodyEnglish: "“Two phrases light on the tongue, heavy on the scale, beloved to the Most Merciful.” No wudu, no direction, no set time. Just words, said anywhere.",
-            bodyArabic: "«كلمتان خفيفتان على اللسان، ثقيلتان في الميزان، حبيبتان إلى الرحمن». لا وضوء ولا قبلة ولا وقت. كلمات فقط، تُقال في أي مكان.",
+            bodyArabic: "«كلمتان خفيفتان على اللسان، ثقيلتان في الميزان، حبيبتان إلى الرحمن». ذكر يسير لا يشترط الوضوء أو استقبال القبلة، ويمكنك قوله في أوقات يومك.",
             sourceEnglish: "Bukhari 6406", sourceArabic: "البخاري ٦٤٠٦", sourceURL: "https://sunnah.com/bukhari:6406"
         ),
         AdhkarBenefit(
@@ -176,7 +176,7 @@ private struct AdhkarBenefit: Identifiable {
             titleEnglish: "It holds you back from sin",
             titleArabic: "يصدّك عن الذنب",
             bodyEnglish: "The Qur’an says prayer restrains from wrongdoing, then adds: “and the remembrance of Allah is greater.” A tongue busy with His name finds it harder to say, or do, what it shouldn’t.",
-            bodyArabic: "يقول القرآن إن الصلاة تنهى عن الفحشاء والمنكر، ثم يضيف: «ولذكر الله أكبر». لسان مشغول باسمه يصعب عليه أن يقول أو يفعل ما لا ينبغي.",
+            bodyArabic: "يقول القرآن إن الصلاة تنهى عن الفحشاء والمنكر، ثم يضيف: «ولذكر الله أكبر». والانشغال بذكر الله يعينك على حفظ لسانك وأفعالك مما لا ينبغي.",
             sourceEnglish: "Qur’an 29:45", sourceArabic: "القرآن ٢٩:٤٥", sourceURL: "https://quran.com/29/45"
         ),
         AdhkarBenefit(
@@ -184,7 +184,7 @@ private struct AdhkarBenefit: Identifiable {
             titleEnglish: "It calms the mind",
             titleArabic: "يهدّئ الذهن",
             bodyEnglish: "“Truly, in the remembrance of Allah do hearts find rest.” Not a technique, though it works like one: a steady rhythm, a single focus, and a Listener who never tires of you.",
-            bodyArabic: "«ألا بذكر الله تطمئن القلوب». ليس أسلوبًا للاسترخاء، وإن كان يعمل كأسلوب: إيقاع ثابت، وتركيز واحد، ومستمع لا يملّ منك.",
+            bodyArabic: "«ألا بذكر الله تطمئن القلوب». ردّد الذكر بقلب حاضر، واستحضر معناه وأنت تناجي ربك.",
             sourceEnglish: "Qur’an 13:28", sourceArabic: "القرآن ١٣:٢٨", sourceURL: "https://quran.com/13/28"
         ),
     ]

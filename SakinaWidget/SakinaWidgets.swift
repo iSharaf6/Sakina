@@ -1,6 +1,10 @@
 import WidgetKit
 import SwiftUI
 
+private func widgetLanguage(for locale: Locale = .current) -> AppLanguage {
+    locale.language.languageCode?.identifier == "ar" ? .arabic : .english
+}
+
 // MARK: - Timeline
 
 struct VerseEntry: TimelineEntry {
@@ -112,11 +116,13 @@ private enum PrayerWidgetSide {
 struct VerseWidgetView: View {
     let entry: VerseEntry
     let caption: String
+    let captionArabic: String
+    @Environment(\.locale) private var locale
     var artwork: CompanionArtwork = .quran
     @Environment(\.widgetFamily) private var family
 
     var body: some View {
-        VerseCompanionCard(situation: entry.situation, caption: caption,
+        VerseCompanionCard(situation: entry.situation, caption: widgetLanguage(for: locale).pick(caption, captionArabic),
                            compact: family == .systemSmall, artwork: artwork)
             .containerBackground(CompanionWidgetPalette.canvas, for: .widget)
             .widgetURL(URL(string: "sakina://situation/\(entry.situation.id)"))
@@ -130,6 +136,7 @@ struct PrayerWidgetView: View {
 
     @Environment(\.widgetFamily) private var family
     @Environment(\.locale) private var locale
+    private var language: AppLanguage { widgetLanguage(for: locale) }
 
     private var nextEvent: PrayerEvent? {
         entry.schedule?.nextEvent(after: entry.date)
@@ -174,7 +181,7 @@ struct PrayerWidgetView: View {
                     systemImage: nextEvent.kind.symbolName
                 )
             } else {
-                Label("Open Haneen for prayer times", systemImage: "location")
+                Label(language.pick("Open Haneen for prayer times", "افتح حنين لعرض مواقيت الصلاة"), systemImage: "location")
             }
         }
     }
@@ -223,7 +230,7 @@ struct PrayerWidgetView: View {
                         .monospacedDigit()
                 }
                 if let followingEvent {
-                    Text("Then \(followingEvent.kind.displayName(locale: locale)) · \(timeLabel(followingEvent.time, schedule: schedule))")
+                    Text("\(language.pick("Then", "ثم")) \(followingEvent.kind.displayName(locale: locale))\(language.listSeparator)\(timeLabel(followingEvent.time, schedule: schedule))")
                         .font(.system(size: 10, weight: .medium))
                         .foregroundStyle(.secondary)
                         .lineLimit(1)
@@ -240,7 +247,7 @@ struct PrayerWidgetView: View {
         Group {
             switch family {
             case .accessoryInline:
-                Label("Open Haneen to set prayer times", systemImage: "location")
+                Label(language.pick("Open Haneen to set prayer times", "افتح حنين لضبط مواقيت الصلاة"), systemImage: "location")
             case .accessoryCircular:
                 ZStack {
                     AccessoryWidgetBackground()
@@ -248,9 +255,9 @@ struct PrayerWidgetView: View {
                 }
             case .accessoryRectangular:
                 VStack(alignment: .leading, spacing: 3) {
-                    Text("Prayer times")
+                    Text(language.pick("Prayer times", "مواقيت الصلاة"))
                         .font(.headline)
-                    Text("Open Haneen to choose your location")
+                    Text(language.pick("Open Haneen to choose your location", "افتح حنين لتحديد موقعك"))
                         .font(.caption)
                         .foregroundStyle(.secondary)
                 }
@@ -277,6 +284,7 @@ private struct PrayerScheduleHalfView: View {
     let side: PrayerWidgetSide
 
     @Environment(\.locale) private var locale
+    private var language: AppLanguage { widgetLanguage(for: locale) }
 
     private var nextEvent: PrayerEvent? {
         entry.schedule?.nextEvent(after: entry.date)
@@ -350,9 +358,9 @@ private struct PrayerScheduleHalfView: View {
             Image(systemName: "location.circle")
                 .font(.system(size: 20, weight: .medium))
             VStack(alignment: .leading, spacing: 2) {
-                Text("Prayer times")
+                Text(language.pick("Prayer times", "مواقيت الصلاة"))
                     .font(.system(size: 12, weight: .semibold))
-                Text("Open Haneen to set your location")
+                Text(language.pick("Open Haneen to set your location", "افتح حنين لتحديد موقعك"))
                     .font(.system(size: 9.5, weight: .medium))
                     .foregroundStyle(.secondary)
                     .lineLimit(2)
@@ -374,10 +382,10 @@ private struct PrayerScheduleHalfView: View {
 struct VerseOfDayWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: "SakinaVerseOfDay", provider: DailyProvider()) { entry in
-            VerseWidgetView(entry: entry, caption: "Ayah of the day")
+            VerseWidgetView(entry: entry, caption: "Ayah of the day", captionArabic: "آية اليوم")
         }
-        .configurationDisplayName("Ayah of the Day")
-        .description("A daily ayah from Haneen, refreshed each morning.")
+        .configurationDisplayName(widgetLanguage().pick("Ayah of the Day", "آية اليوم"))
+        .description(widgetLanguage().pick("A daily ayah from Haneen, refreshed each morning.", "آية من حنين تتجدد كل صباح."))
         .supportedFamilies([.systemSmall, .systemMedium])
     }
 }
@@ -385,10 +393,10 @@ struct VerseOfDayWidget: Widget {
 struct PinnedVerseWidget: Widget {
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: "SakinaPinned", provider: PinnedProvider()) { entry in
-            VerseWidgetView(entry: entry, caption: "Reflecting on", artwork: .praise)
+            VerseWidgetView(entry: entry, caption: "Reflecting on", captionArabic: "آية للتأمل", artwork: .praise)
         }
-        .configurationDisplayName("Pinned Situation")
-        .description("Keep a saved ayah on your Home Screen. Pin one from any guidance page in Haneen.")
+        .configurationDisplayName(widgetLanguage().pick("Pinned Situation", "موقف مثبّت"))
+        .description(widgetLanguage().pick("Keep a saved ayah on your Home Screen. Pin one from any guidance page in Haneen.", "احتفظ بآية على شاشتك الرئيسية، وثبّتها من إحدى صفحات الإرشاد في حنين."))
         .supportedFamilies([.systemSmall, .systemMedium])
     }
 }
@@ -398,8 +406,8 @@ struct PrayerTimesWidget: Widget {
         StaticConfiguration(kind: PrayerSchedule.widgetKind, provider: PrayerProvider()) { entry in
             PrayerWidgetView(entry: entry)
         }
-        .configurationDisplayName("Prayer Times")
-        .description("See the next prayer on your Lock Screen or today's full schedule on your Home Screen.")
+        .configurationDisplayName(widgetLanguage().pick("Prayer Times", "مواقيت الصلاة"))
+        .description(widgetLanguage().pick("See the next prayer on your Lock Screen or today's full schedule on your Home Screen.", "اعرض موعد الصلاة القادمة على شاشة القفل، أو مواقيت اليوم كاملة على الشاشة الرئيسية."))
         .supportedFamilies([
             .accessoryInline,
             .accessoryCircular,
@@ -416,8 +424,8 @@ struct EarlyPrayerTimesWidget: Widget {
         StaticConfiguration(kind: Self.kind, provider: PrayerProvider()) { entry in
             PrayerScheduleHalfView(entry: entry, side: .early)
         }
-        .configurationDisplayName("Prayer Times · Fajr–Dhuhr")
-        .description("Place this widget on the left of your Lock Screen for Fajr, Sunrise and Dhuhr.")
+        .configurationDisplayName(widgetLanguage().pick("Prayer Times, Fajr–Dhuhr", "مواقيت الصلاة، من الفجر إلى الظهر"))
+        .description(widgetLanguage().pick("Place this widget on the left of your Lock Screen for Fajr, Sunrise and Dhuhr.", "ضع هذه الأداة على يسار شاشة القفل لعرض مواقيت الفجر والشروق والظهر."))
         .supportedFamilies([.accessoryRectangular])
     }
 }
@@ -429,8 +437,8 @@ struct LatePrayerTimesWidget: Widget {
         StaticConfiguration(kind: Self.kind, provider: PrayerProvider()) { entry in
             PrayerScheduleHalfView(entry: entry, side: .late)
         }
-        .configurationDisplayName("Prayer Times · Asr–Isha")
-        .description("Place this widget on the right of your Lock Screen for Asr, Maghrib and Isha.")
+        .configurationDisplayName(widgetLanguage().pick("Prayer Times, Asr–Isha", "مواقيت الصلاة، من العصر إلى العشاء"))
+        .description(widgetLanguage().pick("Place this widget on the right of your Lock Screen for Asr, Maghrib and Isha.", "ضع هذه الأداة على يمين شاشة القفل لعرض مواقيت العصر والمغرب والعشاء."))
         .supportedFamilies([.accessoryRectangular])
     }
 }
@@ -471,8 +479,8 @@ struct ExtraCompanionWidget: Widget {
         StaticConfiguration(kind: "YaqeenCompanion.\(choice.rawValue)", provider: PrayerProvider()) { entry in
             ExtraCompanionWidgetView(choice: choice, entry: entry)
         }
-        .configurationDisplayName(choice.title)
-        .description(choice.detail)
+        .configurationDisplayName(choice.title(widgetLanguage()))
+        .description(choice.detail(widgetLanguage()))
         .supportedFamilies(choice == .prayerCat ? [.systemSmall, .systemMedium, .accessoryRectangular] : [.systemSmall, .systemMedium])
     }
 }

@@ -241,7 +241,7 @@ struct NearbyPlacesView: View {
             if !service.unavailableSources.isEmpty {
                 sourceWarning
             }
-            SectionHeader(confirmed > 0 ? copy("Confirmed first", "المؤكَّد أولًا") : copy("Nearest first", "الأقرب أولًا")) {
+            SectionHeader(confirmed > 0 ? copy("Confirmed first", "المذكور في المصدرين أولًا") : copy("Nearest first", "الأقرب أولًا")) {
                 Text(countText(places.count, confirmed: confirmed))
                     .font(.yqCaption)
                     .foregroundStyle(Color.yqSecondary)
@@ -290,15 +290,15 @@ struct NearbyPlacesView: View {
     }
 
     private var sourceWarning: some View {
-        let missing = service.unavailableSources.map { $0.title(language) }.sorted().joined(separator: ", ")
+        let missing = service.unavailableSources.map { $0.title(language) }.sorted().joined(separator: language.listSeparator)
         let present = PlaceSource.allCases
             .filter { !service.unavailableSources.contains($0) }
             .map { $0.title(language) }
-            .joined(separator: ", ")
+            .joined(separator: language.listSeparator)
         return HStack(alignment: .top, spacing: 12) {
             IconBadge(symbol: "exclamationmark.triangle.fill", tint: BadgeTint.slate.color, size: 32, style: .tinted)
             Text(copy("\(missing) didn’t respond, so this list comes from \(present) only and may be incomplete. Refresh to try again.",
-                      "لم يستجب \(missing)، لذا هذه القائمة من \(present) فقط وقد تكون ناقصة. حدّث للمحاولة مجددًا."))
+                      "تعذّر الحصول على نتائج من \(missing)، لذا تعرض القائمة نتائج \(present) فقط وقد تكون غير مكتملة. أعد التحديث للمحاولة مجددًا."))
                 .font(.yqCaption)
                 .foregroundStyle(Color.yqSecondary)
                 .fixedSize(horizontal: false, vertical: true)
@@ -317,7 +317,7 @@ struct NearbyPlacesView: View {
             if service.updating { Text(copy("Checking the other map source…", "جارٍ التحقق من مصدر الخريطة الآخر…")) }
             if let updated = service.lastUpdated {
                 let time = updated.formatted(Date.FormatStyle(date: .omitted, time: .shortened).locale(language.locale))
-                Text(copy("Updated \(time).", "حُدِّث في \(time)."))
+                Text(copy("Updated \(time).", "آخر تحديث: \(time)."))
             }
         }
         .font(.yqCaption)
@@ -336,11 +336,12 @@ struct NearbyPlacesView: View {
             case 1: places = "مكان واحد"
             case 2: places = "مكانان"
             case 3...10: places = "\(count) أماكن"
-            default: places = "\(count) مكانًا"
+            case 11...99: places = "\(count) مكانًا"
+            default: places = "عدد الأماكن: \(count)"
             }
         }
         guard confirmed > 0 else { return places }
-        return copy("\(places) · \(confirmed) confirmed", "\(places) · \(confirmed) مؤكَّد")
+        return copy("\(places), \(confirmed) confirmed", "\(places)، في المصدرين: \(confirmed)")
     }
 
     // MARK: Camera
@@ -387,7 +388,7 @@ struct NearbyPlaceRow: View {
     private var subtitle: String {
         var parts = [place.distanceText(language)]
         if let address = place.address, !address.isEmpty { parts.append(address) }
-        return parts.joined(separator: " · ")
+        return parts.joined(separator: language.listSeparator)
     }
 
     var body: some View {
@@ -470,7 +471,7 @@ struct NearbyPlaceDetailSheet: View {
                     .foregroundStyle(Color.yqInk)
                     .fixedSize(horizontal: false, vertical: true)
                     .accessibilityAddTraits(.isHeader)
-                Text(place.distanceText(language) + (place.address.map { " · \($0)" } ?? ""))
+                Text(place.distanceText(language) + (place.address.map { "\(language.listSeparator)\($0)" } ?? ""))
                     .font(.yqSubhead)
                     .foregroundStyle(Color.yqSecondary)
                     .fixedSize(horizontal: false, vertical: true)
@@ -500,7 +501,7 @@ struct NearbyPlaceDetailSheet: View {
                 .accessibilityElement(children: .combine)
             }
             if place.isConfirmedByBothSources {
-                Text(copy("Both sources list a place with this name at this spot.", "يذكر المصدران مكانًا بهذا الاسم في هذا الموضع."))
+                Text(copy("Both sources list a place with this name at this spot.", "يذكر المصدران مكانًا بهذا الاسم في الموقع نفسه."))
                     .font(.yqCaption)
                     .foregroundStyle(Color.yqAccentDeep)
                     .fixedSize(horizontal: false, vertical: true)

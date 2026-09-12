@@ -126,19 +126,22 @@ struct SituationDetailView: View {
                     symbol: "book.closed",
                     count: situation.verses.count,
                     singular: copy("ayah", "آية"),
-                    plural: copy("ayahs", "آيات")
+                    plural: copy("ayahs", "آيات"),
+                    dual: "آيتان"
                 )
                 sourceCount(
                     symbol: "text.book.closed",
                     count: companion.hadiths.count,
                     singular: copy("hadith", "حديث"),
-                    plural: copy("hadith", "أحاديث")
+                    plural: copy("hadith", "أحاديث"),
+                    dual: "حديثان"
                 )
                 sourceCount(
                     symbol: "hands.sparkles",
                     count: companion.supplications.count,
                     singular: copy("du’a", "دعاء"),
-                    plural: copy("du’as", "أدعية")
+                    plural: copy("du’as", "أدعية"),
+                    dual: "دعاءان"
                 )
             }
         }
@@ -150,9 +153,14 @@ struct SituationDetailView: View {
         symbol: String,
         count: Int,
         singular: String,
-        plural: String
+        plural: String,
+        dual: String
     ) -> some View {
-        Text("\(count) \(count == 1 ? singular : plural)")
+        let label = language == .arabic
+            ? ArabicCount.label(count, zero: "لا \(plural)", one: singular, two: dual,
+                                few: plural, many: singular, other: singular)
+            : "\(count) \(count == 1 ? singular : plural)"
+        return Text(label)
             .font(.caption2.weight(.medium))
             .foregroundStyle(Color.sakinaMuted)
             .lineLimit(1)
@@ -164,7 +172,7 @@ struct SituationDetailView: View {
         HStack(spacing: 9) {
             actionButton(
                 symbol: isPlaying ? "pause.fill" : "play.fill",
-                title: isPlaying ? copy("Pause", "إيقاف") : copy("Listen", "استمع"),
+                title: isPlaying ? copy("Pause", "إيقاف مؤقت") : copy("Listen", "استمع"),
                 isActive: isPlaying
             ) {
                 player.toggle(situation: situation)
@@ -285,7 +293,7 @@ struct SituationDetailView: View {
             Spacer()
             if translationVisible {
                 Button { showMeaning.toggle() } label: {
-                    Text(showMeaning ? copy("Read Arabic", "اقرأ العربية") : copy("Read meaning", "اقرأ المعنى"))
+                    Text(showMeaning ? copy("Read Arabic", "اقرأ النص العربي") : copy("Read meaning", "اقرأ المعنى"))
                         .font(.subheadline.weight(.semibold)).frame(minHeight: 44)
                 }
             }
@@ -324,7 +332,7 @@ struct SituationDetailView: View {
                 Task { await scholarStore.loadInsights(forSituationID: situation.id, force: true) }
             } label: {
                 Label(
-                    copy("Couldn’t refresh scholarly insights · Try again", "تعذّر تحديث الإضاءات الشرعية · أعد المحاولة"),
+                    copy("Couldn’t refresh scholarly insights, try again", "تعذّر تحديث الإضاءات الشرعية، أعد المحاولة"),
                     systemImage: "arrow.clockwise"
                 )
                 .font(.caption.weight(.medium))
@@ -620,7 +628,7 @@ struct SituationDetailView: View {
 
             HStack(alignment: .firstTextBaseline) {
                 VStack(alignment: .leading, spacing: 3) {
-                    Text("\(source.collection(language)) · \(source.number)")
+                    Text("\(source.collection(language))\(language.listSeparator)\(source.number)")
                         .font(.caption.weight(.semibold))
                         .foregroundStyle(Color.sakinaInk)
                     Text(source.grade(language))
@@ -705,8 +713,8 @@ struct SituationDetailView: View {
                 HStack(spacing: 9) {
                     Image(systemName: account.isSignedIn ? "checkmark.icloud" : "iphone")
                     Text(account.isSignedIn
-                         ? copy("Backed up after saving", "تُنسخ احتياطيًا بعد الحفظ")
-                         : copy("Saved on this iPhone", "تُحفظ على هذا الهاتف"))
+                         ? copy("Backed up after saving", "يُنسخ تأملك احتياطيًا بعد الحفظ")
+                         : copy("Saved on this iPhone", "يُحفظ تأملك على هذا الهاتف"))
                     Spacer()
                     Button {
                         saveEntry()
@@ -938,8 +946,8 @@ struct VerseShareCard: View {
                     }
 
                     Text(language == .arabic
-                         ? "\(verse.surahNameArabic) · الآية \(verse.ayah)"
-                         : "\(verse.surahName) · Ayah \(verse.ayah)")
+                         ? "\(verse.surahNameArabic)، الآية \(verse.ayah)"
+                         : "\(verse.surahName), Ayah \(verse.ayah)")
                         .font(.system(size: 9.5, weight: .semibold))
                         .foregroundStyle(forest.opacity(0.64))
                 }

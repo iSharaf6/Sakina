@@ -119,7 +119,7 @@ struct AyahActionSheet: View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(spacing: 10) {
                 Tag(text: ayah.reference(language))
-                Text(copy("Juz \(ayah.juz) · Page \(ayah.page)", "الجزء \(QuranAyah.arabicDigits(ayah.juz)) · صفحة \(QuranAyah.arabicDigits(ayah.page))"))
+                Text(copy("Juz \(ayah.juz), page \(ayah.page)", "الجزء \(QuranAyah.arabicDigits(ayah.juz))، صفحة \(QuranAyah.arabicDigits(ayah.page))"))
                     .font(.yqCaption)
                     .foregroundStyle(Color.yqSecondary)
                     .lineLimit(1)
@@ -169,7 +169,7 @@ struct AyahActionSheet: View {
             if let url = URL(string: ayah.canonicalURL) {
                 Link(destination: url) {
                     HStack(spacing: 4) {
-                        Text("\(edition.name) · Quran.com")
+                        Text("\(edition.name)\(language.listSeparator)Quran.com")
                         Image(systemName: "arrow.up.right").font(.system(size: 9, weight: .bold))
                     }
                     .font(.yqCaption)
@@ -190,7 +190,7 @@ struct AyahActionSheet: View {
                 player.toggle(key)
             } label: {
                 ActionTile(symbol: isThisPlaying ? "pause.fill" : "play.fill",
-                           title: isThisPlaying ? copy("Pause", "إيقاف") : copy("Listen", "استمع"),
+                           title: isThisPlaying ? copy("Pause", "إيقاف مؤقت") : copy("Listen", "استمع"),
                            active: isThisPlaying, busy: isThisBuffering)
             }
             .buttonStyle(.yqPress)
@@ -288,7 +288,7 @@ struct AyahActionSheet: View {
                     .environment(\.layoutDirection, translationIsRTL ? .rightToLeft : .leftToRight)
                     .textSelection(.enabled)
                     .id(translationID)
-                Text(copy("\(edition.name) · via Quran.com", "\(edition.name) · عبر Quran.com"))
+                Text(copy("\(edition.name), via Quran.com", "\(edition.name)، عبر Quran.com"))
                     .font(.yqCaption)
                     .foregroundStyle(Color.yqTertiary)
                 if let url = URL(string: ayah.canonicalURL) {
@@ -421,7 +421,7 @@ struct AyahActionSheet: View {
                 .accessibilityLabel(copy("New category", "تصنيف جديد"))
             }
             if library.customCategories.isEmpty {
-                Text(copy("Start with one of these, or make your own.", "ابدأ بأحدها، أو أنشئ تصنيفك."))
+                Text(copy("Start with one of these, or make your own.", "اختر أحد هذه التصنيفات، أو أنشئ تصنيفًا خاصًا بك."))
                     .font(.yqCaption)
                     .foregroundStyle(Color.yqTertiary)
             }
@@ -440,7 +440,7 @@ struct AyahActionSheet: View {
 
     private var feelingsSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            SectionHeader(copy("Add to a feeling", "أضف إلى شعور"))
+            SectionHeader(copy("Add to a feeling", "اربط الآية بشعور"))
                 .padding(.top, 8)
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 8) {
@@ -460,7 +460,7 @@ struct AyahActionSheet: View {
             }
             .padding(.horizontal, -20)
             .animation(motion, value: orderedMoods)
-            Text(copy("Your ayat show up on that feeling's screen.", "تظهر آياتك في شاشة ذلك الشعور."))
+            Text(copy("Your ayat show up on that feeling's screen.", "ستظهر الآيات التي تحفظها في صفحة هذا الشعور."))
                 .font(.yqCaption)
                 .foregroundStyle(Color.yqTertiary)
         }
@@ -482,7 +482,7 @@ struct AyahActionSheet: View {
             }
             ZStack(alignment: .topLeading) {
                 if note.isEmpty {
-                    Text(copy("Why this ayah speaks to you…", "لماذا تلامسك هذه الآية…"))
+                    Text(copy("Why this ayah speaks to you…", "ما الذي تعنيه لك هذه الآية؟"))
                         .font(.yqBody)
                         .foregroundStyle(Color.yqTertiary)
                         .padding(.horizontal, 5)
@@ -586,7 +586,7 @@ struct AyahActionSheet: View {
                 if let url = URL(string: "\(ayah.canonicalURL)/tafsirs/\(tafsirEdition.slug)") {
                     Link(destination: url) {
                         HStack(spacing: 4) {
-                            Text(copy("From Quran.com · \(tafsirEdition.resourceName)", "من Quran.com · \(tafsirEdition.resourceName)"))
+                            Text(copy("From Quran.com, \(tafsirEdition.resourceName)", "من Quran.com، \(tafsirEdition.resourceName)"))
                             Image(systemName: "arrow.up.right").font(.system(size: 9, weight: .bold))
                         }
                         .font(.yqCaption)
@@ -723,7 +723,7 @@ private struct CategorySuggestion: Identifiable {
     func name(_ language: AppLanguage) -> String { language.pick(english, arabic) }
 
     static let all = [
-        CategorySuggestion(id: "sad", english: "Sad", arabic: "حزين", symbol: "cloud.rain.fill", color: .blue),
+        CategorySuggestion(id: "sad", english: "Sad", arabic: "حزن", symbol: "cloud.rain.fill", color: .blue),
         CategorySuggestion(id: "hope", english: "Hope", arabic: "أمل", symbol: "sun.max.fill", color: .orange),
         CategorySuggestion(id: "gratitude", english: "Gratitude", arabic: "امتنان", symbol: "leaf.fill", color: .green)
     ]

@@ -419,7 +419,7 @@ struct MushafView: View {
                                    onTap: selectAyah)
                         .environment(\.layoutDirection, .leftToRight)
                 }
-                Button(copy("Page \(number) · Go to page", "صفحة \(QuranAyah.arabicDigits(number)) · الانتقال لصفحة")) { showPagePicker = true }
+                Button(copy("Page \(number), go to page", "صفحة \(QuranAyah.arabicDigits(number))، الانتقال إلى صفحة")) { showPagePicker = true }
                     .font(.yqCaption).padding(.vertical, 16)
             }
             .padding(.horizontal, 8)
@@ -487,7 +487,7 @@ struct MushafView: View {
             } else if showAyahTip {
                 HStack(spacing: 12) {
                     Image(systemName: "hand.tap").foregroundStyle(readerAccent)
-                    Text(copy("Tap an ayah to listen, save or read more", "اضغط على آية للاستماع أو الحفظ أو القراءة"))
+                    Text(copy("Tap an ayah to listen, save or read more", "اضغط على آية للاستماع إليها أو حفظها أو قراءة المزيد عنها"))
                         .font(.yqSubhead)
                     Button {
                         withAnimation(reduceMotion ? nil : .easeOut(duration: 0.2)) { showAyahTip = false }
@@ -554,9 +554,9 @@ struct MushafView: View {
 
     private func headerDetail(_ surah: QuranSurah) -> String {
         if language == .arabic {
-            return "\(surah.placeName(language)) · \(QuranAyah.arabicDigits(surah.versesCount)) آية"
+            return "\(surah.placeName(language))، \(AyahLibraryCopy.ayatCount(surah.versesCount, language))"
         }
-        return "\(surah.nameSimple) · \(surah.placeName(language)) · \(surah.versesCount) ayat"
+        return "\(surah.nameSimple), \(surah.placeName(language)), \(surah.versesCount) ayat"
     }
 
     private var textBlock: some View {

@@ -48,7 +48,7 @@ struct AboutView: View {
                 }
                 .foregroundStyle(Color.sakinaInk)
 
-                Text(copy("Qur’an and du’a for how you feel", "قرآن ودعاء لما تشعر به"))
+                Text(copy("Qur’an and du’a for how you feel", "آيات وأدعية تناسب ما تشعر به"))
                     .font(.yqBodyMedium)
                     .foregroundStyle(Color.sakinaMuted)
             }
@@ -62,7 +62,7 @@ struct AboutView: View {
             title: copy("The Qur’an is an amanah", "القرآن أمانة"),
             body: copy(
                 "Qur’an passages link to their original references. Du’as and their reported virtues include the supporting narration and its grading, so you can read the source in context.",
-                "ترتبط الآيات بمراجعها الأصلية، وتُذكر مع الأدعية وفضائلها الروايات الدالة عليها ودرجتها، لتقرأ المصدر في سياقه."
+                "تجد مع الآيات روابط إلى مصادرها الأصلية، ومع الأدعية وفضائلها الروايات الواردة فيها ودرجاتها، لتتمكن من قراءة كل نص في سياقه."
             )
         )
     }
@@ -73,7 +73,7 @@ struct AboutView: View {
             title: copy("Private by default", "الخصوصية أولًا"),
             body: copy(
                 "Bookmarks, reflections, and prayer preferences stay on this iPhone unless you deliberately connect a backup option shown in Settings. Prayer coordinates never enter the widget payload. Haneen has no advertising, analytics, or tracking.",
-                "تبقى المحفوظات والتأملات وتفضيلات الصلاة على هذا الهاتف ما لم تربط بنفسك خيار نسخ احتياطي يظهر في الإعدادات. ولا تدخل إحداثيات الصلاة في بيانات الأداة. ولا يستخدم حنين الإعلانات أو التحليلات أو التتبع."
+                "تبقى المحفوظات والتأملات وإعدادات الصلاة على هذا الهاتف ما لم تفعّل بنفسك خيار النسخ الاحتياطي المتاح في الإعدادات. ولا تُشارك إحداثيات موقعك مع أداة الصلاة. ولا يستخدم حنين الإعلانات أو التحليلات أو التتبّع."
             )
         )
     }
@@ -173,7 +173,7 @@ struct AboutView: View {
     }
 
     private var version: some View {
-        Text("Haneen · 1.0")
+        Text(copy("Haneen, 1.0", "حنين، 1.0"))
             .font(.caption2)
             .foregroundStyle(Color.sakinaMuted)
             .frame(maxWidth: .infinity, alignment: .center)

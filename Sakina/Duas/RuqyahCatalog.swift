@@ -74,7 +74,7 @@ enum RuqyahCatalog {
             arabic: passage.ayat.map(\.arabic).joined(separator: " "),
             transliteration: "",
             meaningEnglish: meaning,
-            meaningArabic: "\(passage.titleArabic) · \(passage.referenceArabic)",
+            meaningArabic: "\(passage.titleArabic)، \(passage.referenceArabic)",
             contextEnglish: context.english,
             contextArabic: context.arabic,
             kind: .quranic,

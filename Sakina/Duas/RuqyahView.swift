@@ -21,17 +21,19 @@ struct RuqyahView: View {
         ScrollView(showsIndicators: false) {
             VStack(alignment: .leading, spacing: 22) {
                 PageHeader(title: copy("Ruqyah", "الرقية"),
-                           subtitle: copy("Healing words from the Qur’an and the Sunnah.", "كلمات الشفاء من القرآن والسنة."))
+                           subtitle: copy("Healing words from the Qur’an and the Sunnah.", "آيات وأدعية للرقية من القرآن والسنة."))
                     .revealed(0, appeared: appeared, reduceMotion: reduceMotion)
 
                 VStack(spacing: 12) {
                     sectionCard(eyebrow: copy("From the Qur’an", "من القرآن"),
                                 title: quranTitle,
-                                detail: copy("\(quran.count) passages", "\(quran.count) مقاطع"),
+                                detail: copy("\(quran.count) passages", ArabicCount.label(quran.count,
+                                    zero: "لا مقاطع", one: "مقطع واحد", two: "مقطعان", few: "مقاطع", many: "مقطعًا", other: "مقطع")),
                                 artwork: .healing, entries: quran)
                     sectionCard(eyebrow: copy("From the Sunnah", "من السنة"),
                                 title: sunnahTitle,
-                                detail: copy("\(sunnah.count) du’as", "\(sunnah.count) أدعية"),
+                                detail: copy("\(sunnah.count) du’as", ArabicCount.label(sunnah.count,
+                                    zero: "لا أدعية", one: "دعاء واحد", two: "دعاءان", few: "أدعية", many: "دعاءً", other: "دعاء")),
                                 artwork: .sunnah, entries: sunnah)
                 }
                 .revealed(1, appeared: appeared, reduceMotion: reduceMotion)
@@ -106,7 +108,7 @@ struct RuqyahView: View {
         [
             Etiquette(symbol: "text.book.closed",
                       title: copy("Read with conviction", "اقرأ بيقين"),
-                      detail: copy("Clear Arabic, present heart, certain that healing is from Allah.", "عربية واضحة وقلب حاضر ويقين بأن الشفاء من الله.")),
+                      detail: copy("Clear Arabic, present heart, certain that healing is from Allah.", "اقرأ بوضوح، مع حضور القلب واليقين بأن الشفاء من الله.")),
             Etiquette(symbol: "wind",
                       title: copy("Blow lightly after reciting", "انفث بعد القراءة"),
                       detail: copy("A light breath over the hands or the painful place, as the Prophet ﷺ did.", "نفث خفيف على اليدين أو موضع الألم كما فعل النبي ﷺ.")),
@@ -114,11 +116,11 @@ struct RuqyahView: View {
                       title: copy("Water or oil is fine", "على ماء أو زيت"),
                       detail: copy("You may recite over water or oil to drink or apply.", "يجوز القراءة على ماء أو زيت للشرب أو الدهن.")),
             Etiquette(symbol: "cross.case",
-                      title: copy("With medicine, not instead of it", "مع الدواء لا بدلًا عنه"),
-                      detail: copy("Keep every appointment and prescription. Ruqyah sits beside them.", "التزم بمواعيدك وأدويتك؛ الرقية إلى جانبها.")),
+                      title: copy("With medicine, not instead of it", "مع التداوي"),
+                      detail: copy("Keep every appointment and prescription. Ruqyah sits beside them.", "واصل مراجعاتك الطبية وأخذ أدويتك مع الرقية.")),
             Etiquette(symbol: "hand.raised",
                       title: copy("Avoid anyone who asks odd things", "احذر من يطلب أمورًا غريبة"),
-                      detail: copy("A mother’s name, an amulet, a sacrifice or a fee for secrets: walk away.", "اسم الأم أو تميمة أو ذبيحة أو أجر على أسرار: ابتعد.")),
+                      detail: copy("A mother’s name, an amulet, a sacrifice or a fee for secrets: walk away.", "ابتعد عمّن يطلب اسم الأم أو التمائم أو الذبائح أو مالًا مقابل أسرار مزعومة.")),
         ]
     }
 

@@ -80,10 +80,8 @@ struct SurahPickerSheet: View {
 
     private func row(_ surah: QuranSurah) -> some View {
         let isCurrent = surah.number == current
-        let count = language == .arabic
-            ? "\(QuranAyah.arabicDigits(surah.versesCount)) آية"
-            : "\(surah.versesCount) ayat"
-        let detail = "\(count) · \(surah.placeName(language))"
+        let count = AyahLibraryCopy.ayatCount(surah.versesCount, language)
+        let detail = "\(count)\(language.listSeparator)\(surah.placeName(language))"
         return HStack(spacing: 14) {
             ZStack {
                 Circle().fill(isCurrent ? Color.yqAccent : Color.yqFill)
@@ -138,7 +136,7 @@ struct SurahPickerSheet: View {
     }
 
     private func accessibilityLabel(for surah: QuranSurah) -> String {
-        "\(surah.number). \(surah.name(language)), \(surah.versesCount) \(copy("ayat", "آية")), \(surah.placeName(language))"
+        "\(surah.number). \(surah.name(language))\(language.listSeparator)\(AyahLibraryCopy.ayatCount(surah.versesCount, language))\(language.listSeparator)\(surah.placeName(language))"
     }
 
     private static func fold(_ text: String) -> String {
@@ -238,7 +236,7 @@ struct JuzPickerSheet: View {
         let isCurrent = juz == current
         let title = language == .arabic
             ? Self.arabicName(juz)
-            : "Juz \(juz) · \(Self.arabicName(juz))"
+            : "Juz \(juz), \(Self.arabicName(juz))"
         let subtitle: String = {
             guard let first else { return "" }
             let start = copy("Starts at", "يبدأ من")
@@ -411,8 +409,8 @@ struct PagePickerSheet: View {
             guard let first else { return "" }
             let surahName = QuranStore.shared.surah(first.surah)?.name(language) ?? ""
             return language == .arabic
-                ? "صفحة \(QuranAyah.arabicDigits(first.page)) · \(surahName)"
-                : "Page \(first.page) · \(surahName)"
+                ? "صفحة \(QuranAyah.arabicDigits(first.page))، \(surahName)"
+                : "Page \(first.page), \(surahName)"
         }()
         return HStack(spacing: 14) {
             ZStack {

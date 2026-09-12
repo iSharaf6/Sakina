@@ -98,7 +98,6 @@ targets:
           - ArabicReflections.swift
           - CompanionContent.swift
           - GuidanceCatalog.swift
-          - Localization.swift
     entitlements:
       path: SakinaWidget/SakinaWidget.entitlements
       properties:

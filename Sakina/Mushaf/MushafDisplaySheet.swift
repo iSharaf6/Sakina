@@ -38,7 +38,7 @@ struct MushafDisplaySheet: View {
                                 if option != .indopak { Divider().padding(.leading, 16) }
                             }
                         }.yqCard(cornerRadius: 18)
-                        Text(copy("Tajweed and IndoPak use the flexible Digital view.", "يستخدم التجويد والرسم الهندي العرض الرقمي المرن."))
+                        Text(copy("Tajweed and IndoPak use the flexible Digital view.", "يتوفر رسم التجويد والرسم الهندي في العرض الرقمي المرن."))
                             .font(.yqCaption).foregroundStyle(Color.yqSecondary)
                     }
                     section(copy("Text & meaning", "النص والمعنى")) {
@@ -68,7 +68,7 @@ struct MushafDisplaySheet: View {
                         .font(.yqBodyMedium)
                         .padding(16).yqCard(cornerRadius: 18)
                         Text(copy("These settings are shared with the app. Changing size or reading aids opens Digital; Traditional keeps the printed page.",
-                                  "تتزامن هذه الإعدادات مع التطبيق. تغيير حجم النص أو وسائل القراءة يفتح العرض الرقمي؛ ويحتفظ المصحف بصفحته المطبوعة."))
+                                  "تُطبَّق هذه الإعدادات في أنحاء التطبيق. يؤدي تغيير حجم النص أو تفعيل وسائل المساعدة على القراءة إلى فتح العرض الرقمي، بينما يحتفظ عرض المصحف بتنسيق الصفحة المطبوعة."))
                             .font(.yqCaption).foregroundStyle(Color.yqSecondary)
                     }
                     section(copy("Navigation", "التصفح")) {

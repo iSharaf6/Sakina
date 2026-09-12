@@ -13,7 +13,7 @@ with tempfile.TemporaryDirectory(prefix='haneen-review-') as work:
         ('Sakina/Duas/NamesOfAllahView.swift','struct NamesOfAllahView:','Names.swift')]:
         (work/name).write_text((root/source).read_text().split(marker)[0])
     sources = ['Shared/QuranCatalog.swift','Shared/Localization.swift','Shared/ArabicReflections.swift',
-               'Shared/GuidanceCatalog.swift','Shared/CompanionContent.swift','Sakina/Duas/DuaCollection.swift',
+               'Shared/GuidanceCatalog.swift','Shared/ArabicSituationTitles.swift','Shared/CompanionContent.swift','Sakina/Duas/DuaCollection.swift',
                'Sakina/Duas/DuaLibrary.swift','Sakina/Duas/RuqyahCatalog.swift']
     subprocess.run(['swiftc',*[str(root/s) for s in sources],str(work/'Daily.swift'),str(work/'Names.swift'),str(work/'main.swift'),'-o',str(work/'export')],check=True)
     for resource in ['ruqyah.json','verses.json']:

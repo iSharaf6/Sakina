@@ -96,7 +96,7 @@ struct SettingsView: View {
                     PrayerTimesService.shared.refreshSavedLocation()
                     ReminderScheduler.refresh()
                 }
-            } message: { Text(copy("Appearance, reading, prayer calculation and reminder preferences return to their defaults. Your notes, saved ayat, progress and account stay.", "ستعود إعدادات المظهر والقراءة والصلاة والتذكيرات إلى الوضع الافتراضي. ستبقى ملاحظاتك وآياتك وتقدمك وحسابك.")) }
+            } message: { Text(copy("Appearance, reading, prayer calculation and reminder preferences return to their defaults. Your notes, saved ayat, progress and account stay.", "ستعود إعدادات المظهر والقراءة وحساب مواقيت الصلاة والتذكيرات إلى قيمها الافتراضية. ستبقى ملاحظاتك وآياتك المحفوظة وتقدّمك وحسابك كما هي.")) }
             .sheet(isPresented: $showAbout) { AboutView() }
             .sheet(isPresented: $showReaderAppearance) { MushafDisplaySheet(language: language) }
             .preferredColorScheme(theme.colorScheme)
@@ -152,7 +152,7 @@ struct SettingsView: View {
                             ProgressView().controlSize(.small).tint(.yqAccentDeep)
                         } else {
                             Text(prayerService.schedule == nil
-                                 ? copy("Set", "اضبط")
+                                 ? copy("Set", "تحديد")
                                  : copy("Update", "تحديث"))
                         }
                     }
@@ -215,7 +215,7 @@ struct SettingsView: View {
     // MARK: Reading
 
     private var readingSection: some View {
-        SettingsGroup(title: copy("Reading", "القراءة"), footnote: copy("Text size, translation and transliteration are shared by the Qur’an and du’a readers.", "حجم الخط والترجمة والكتابة اللاتينية مشتركة بين قارئ القرآن والأدعية.")) {
+        SettingsGroup(title: copy("Reading", "القراءة"), footnote: copy("Text size, translation and transliteration are shared by the Qur’an and du’a readers.", "تُطبَّق إعدادات حجم الخط والترجمة والنطق بحروف لاتينية على القرآن والأدعية معًا.")) {
             MenuRow(symbol: "character.bubble.fill", title: copy("App language", "لغة التطبيق"),
                     value: language.nativeName, selection: $languageRaw) {
                 ForEach(AppLanguage.allCases) { Text($0.nativeName).tag($0.rawValue) }
@@ -240,7 +240,7 @@ struct SettingsView: View {
             ToggleRow(symbol: "text.quote", title: copy("English meaning", "المعنى بالإنجليزية"),
                       isOn: $translationVisible)
             RowDivider()
-            ToggleRow(symbol: "textformat.abc", title: copy("Transliteration", "الكتابة بحروف لاتينية"),
+            ToggleRow(symbol: "textformat.abc", title: copy("Transliteration", "النطق بحروف لاتينية"),
                       isOn: $transliterationVisible)
             RowDivider()
             VStack(spacing: 0) {
@@ -293,9 +293,9 @@ struct SettingsView: View {
 
     private var feedbackSection: some View {
         SettingsGroup(
-            title: copy("Feel", "الإحساس"),
+            title: copy("Feel", "استجابة اللمس"),
             footnote: copy("Taps, dhikr counts and finished goals answer back with a small vibration.",
-                           "الضغطات وعدّ الذكر وإتمام الأهداف تردّ عليك باهتزاز خفيف.")
+                           "تشعر باهتزاز خفيف عند الضغط وعدّ الأذكار وإتمام الأهداف.")
         ) {
             ToggleRow(symbol: "hand.tap.fill", title: copy("Haptics", "الاهتزاز"), isOn: $hapticsEnabled)
         }
@@ -410,7 +410,7 @@ struct SettingsView: View {
             ) {
                 BadgeRow(
                     symbol: "lock.shield.fill",
-                    title: copy("Keep your reflections with you", "احتفظ بتأملاتك معك"),
+                    title: copy("Keep your reflections with you", "احتفظ بنسخة من تأملاتك"),
                     subtitle: copy("Optional. Nothing is uploaded until you connect.", "اختياري. لا يُرفع شيء قبل الربط.")
                 ) { EmptyView() }
 
@@ -444,7 +444,7 @@ struct SettingsView: View {
         case .idle:
             if let date = UserDefaults.standard.object(forKey: "googleBackupLastSync") as? Date {
                 let stamp = date.formatted(date: .abbreviated, time: .shortened)
-                return copy("Last backed up \(stamp).", "آخر نسخة احتياطية \(stamp).")
+                return copy("Last backed up \(stamp).", "آخر نسخ احتياطي: \(stamp).")
             }
             return copy("Saved is backed up after every change while connected.",
                         "تُنسخ المحفوظات احتياطيًا بعد كل تغيير أثناء الاتصال.")
@@ -506,7 +506,7 @@ struct SettingsView: View {
         ) {
             Button { showAbout = true } label: {
                 BadgeRow(symbol: "checkmark.shield.fill",
-                         title: copy("Sources, privacy & credits", "المصادر والخصوصية والشكر"))
+                         title: copy("Sources, privacy & credits", "المصادر والخصوصية والشكر والتقدير"))
             }
             .buttonStyle(.yqPress)
 

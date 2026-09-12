@@ -51,3 +51,7 @@ The account page uses compact cards and illustrated actions. Deletion feedback i
 - These simulator navigation checks do not establish physical-device frame rates. The signed build was installed successfully on EZY. Remote launch was blocked because EZY was locked; the updated flow still needs an owner check on that phone.
 
 Final validation for this change: 60 iOS tests passed; dashboard production build and lint passed; 103 guidance entries and backend security invariants passed. Signed Release archive and App Store IPA export succeeded. Arabic About reading direction and standard-size light/dark layouts were visually checked. No App Store upload or submission was performed.
+
+## Arabic copy update
+
+Arabic grammar and phrasing reviewed across the interface and authored explanations. Middle-dot UI separators replaced with Arabic/English commas. Account, onboarding, reminder settings and widgets now include Arabic copy. 61 iOS tests passed; details and scope are recorded in `Design/ContentReview/ArabicCopy-2026-09-12.md`.

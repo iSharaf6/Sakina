@@ -16,7 +16,7 @@ enum NearbyPlaceKind: String, CaseIterable, Identifiable {
     func title(_ language: AppLanguage) -> String {
         switch self {
         case .mosques: return language.pick("Mosques near me", "المساجد القريبة")
-        case .halal: return language.pick("Halal food near me", "الطعام الحلال القريب")
+        case .halal: return language.pick("Halal food near me", "مطاعم حلال قريبة")
         }
     }
 
@@ -24,10 +24,10 @@ enum NearbyPlaceKind: String, CaseIterable, Identifiable {
         switch self {
         case .mosques:
             return language.pick("Cross-checked against Apple Maps and OpenStreetMap.",
-                                 "مُقارَنة بين خرائط Apple وOpenStreetMap.")
+                                 "نقارن النتائج بين خرائط Apple وOpenStreetMap.")
         case .halal:
             return language.pick("Cross-checked against Apple Maps and OpenStreetMap.",
-                                 "مُقارَنة بين خرائط Apple وOpenStreetMap.")
+                                 "نقارن النتائج بين خرائط Apple وOpenStreetMap.")
         }
     }
 
@@ -52,12 +52,12 @@ enum NearbyPlaceKind: String, CaseIterable, Identifiable {
         case .mosques:
             return language.pick(
                 "Results come from Apple Maps and OpenStreetMap. Places found in both are marked. Check prayer times and women’s facilities with the mosque.",
-                "النتائج من خرائط Apple وOpenStreetMap، والأماكن الموجودة في المصدرين معلَّمة. تأكد من مواقيت الصلاة ومصلى النساء مع المسجد."
+                "النتائج من خرائط Apple وOpenStreetMap، ونميّز الأماكن المذكورة في المصدرين معًا. تواصل مع المسجد للتأكد من مواقيت الصلاة وتوفّر مصلى للنساء."
             )
         case .halal:
             return language.pick(
                 "Results come from Apple Maps and OpenStreetMap. Places found in both are marked. Always confirm halal certification with the restaurant before ordering.",
-                "النتائج من خرائط Apple وOpenStreetMap، والأماكن الموجودة في المصدرين معلَّمة. تأكد دائمًا من شهادة الحلال مع المطعم قبل الطلب."
+                "النتائج من خرائط Apple وOpenStreetMap، ونميّز الأماكن المذكورة في المصدرين معًا. اسأل المطعم عن شهادة الحلال قبل الطلب."
             )
         }
     }
@@ -89,9 +89,9 @@ enum HalalEvidence: Hashable {
 
     func title(_ language: AppLanguage) -> String {
         switch self {
-        case .osmTag: return language.pick("Tagged halal on OpenStreetMap", "موسوم حلال في OpenStreetMap")
-        case .name: return language.pick("Name says halal", "الاسم يذكر الحلال")
-        case .unconfirmed: return language.pick("Halal not confirmed — ask first", "الحلال غير مؤكد — اسأل أولًا")
+        case .osmTag: return language.pick("Tagged halal on OpenStreetMap", "مصنَّف حلالًا في OpenStreetMap")
+        case .name: return language.pick("Name says halal", "ترد كلمة حلال في الاسم")
+        case .unconfirmed: return language.pick("Halal not confirmed — ask first", "لم يُؤكَّد أن الطعام حلال، اسأل أولًا")
         }
     }
 }

@@ -23,6 +23,8 @@ struct VerseCompanionCard: View {
     let caption: String
     let compact: Bool
     var artwork: CompanionArtwork = .quran
+    @Environment(\.locale) private var locale
+    private var language: AppLanguage { locale.language.languageCode?.identifier == "ar" ? .arabic : .english }
 
     var body: some View {
         Group {
@@ -44,7 +46,7 @@ struct VerseCompanionCard: View {
                 HStack(spacing: 14) {
                     VStack(spacing: 6) {
                         CompanionIllustration(artwork: artwork, size: 78)
-                        Text("Haneen")
+                        Text(language.pick("Haneen", "حنين"))
                             .font(.system(size: 10, weight: .semibold))
                             .foregroundStyle(CompanionWidgetPalette.accent)
                     }
@@ -71,7 +73,7 @@ struct VerseCompanionCard: View {
     }
 
     private func title(size: CGFloat) -> some View {
-        Text(situation.title)
+        Text(situation.localizedTitle(language))
             .font(.system(size: size, weight: .semibold))
             .lineLimit(compact ? 3 : 2)
             .minimumScaleFactor(0.85)
@@ -102,7 +104,7 @@ struct PrayerCompanionCard: View {
                     HStack(spacing: 10) {
                         CompanionIllustration(artwork: next.kind.artwork, size: 46)
                         VStack(alignment: .leading, spacing: 2) {
-                            Text(isArabic ? "التالي · \(next.kind.displayName(locale: locale))" : "Next · \(next.kind.displayName(locale: locale))")
+                            Text(isArabic ? "التالي، \(next.kind.displayName(locale: locale))" : "Next, \(next.kind.displayName(locale: locale))")
                                 .font(.system(size: 11, weight: .semibold))
                                 .foregroundStyle(CompanionWidgetPalette.accent)
                                 .lineLimit(1)

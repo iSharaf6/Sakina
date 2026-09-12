@@ -29,27 +29,27 @@
     "situation_id": "choosingSpouse",
     "verse_key": "2:221",
     "title_en": "When you're choosing someone to marry",
-    "title_ar": "عندما تختار من تتزوج",
+    "title_ar": "عندما تختار شريك حياتك",
     "context_en": "This verse places faith above every worldly credential. A believing servant is declared better “even though he might please you.” Beauty, wealth, and status may impress, but the Qur'an directs the choice toward iman.",
     "context_ar": "تقدّم هذه الآية الإيمان على كل معيار دنيوي، وتقرر أن العبد المؤمن خير «وَلَوْ أَعْجَبَكُمْ». قد يلفت الجمال والمال والمكانة النظر، لكن القرآن يوجّه الاختيار إلى الإيمان.",
     "surah_name_en": "Al Baqarah",
     "surah_name_ar": "البقرة",
     "verse_ar": "وَلَا تَنكِحُوا۟ ٱلْمُشْرِكَـٰتِ حَتَّىٰ يُؤْمِنَّ ۚ وَلَأَمَةٌ مُّؤْمِنَةٌ خَيْرٌ مِّن مُّشْرِكَةٍ وَلَوْ أَعْجَبَتْكُمْ ۗ وَلَا تُنكِحُوا۟ ٱلْمُشْرِكِينَ حَتَّىٰ يُؤْمِنُوا۟ ۚ وَلَعَبْدٌ مُّؤْمِنٌ خَيْرٌ مِّن مُّشْرِكٍ وَلَوْ أَعْجَبَكُمْ ۗ أُو۟لَـٰٓئِكَ يَدْعُونَ إِلَى ٱلنَّارِ ۖ وَٱللَّهُ يَدْعُوٓا۟ إِلَى ٱلْجَنَّةِ وَٱلْمَغْفِرَةِ بِإِذْنِهِۦ ۖ وَيُبَيِّنُ ءَايَـٰتِهِۦ لِلنَّاسِ لَعَلَّهُمْ يَتَذَكَّرُونَ",
     "verse_en": "And do not marry polytheistic women until they believe. And a believing slave woman is better than a polytheist, even though she might please you. And do not marry polytheistic men [to your women] until they believe. And a believing slave is better than a polytheist, even though he might please you. Those invite [you] to the Fire, but Allāh invites to Paradise and to forgiveness, by His permission. And He makes clear His verses [i.e., ordinances] to the people that perhaps they may remember.",
-    "source_hash": "aadaef355ff056d7f7e32500fab14bfcd903042aa06b8c9c5738fc36055a2e1b"
+    "source_hash": "959cbcf61951f681d8c81d1efae1ae39d5c1a533a12538b017dab363c5fd38ad"
   },
   {
     "situation_id": "waitingForTiming",
     "verse_key": "2:216",
     "title_en": "When you're waiting for Allah's timing",
-    "title_ar": "عندما تنتظر توقيت الله",
+    "title_ar": "عندما تنتظر ما قدّره الله لك",
     "context_en": "This ayah is revealed in the context of fighting, not marriage or delay. Its wider principle is the limit of human knowledge: we do not always see the full good or harm in what we want. It invites humility and trust, without promising that a particular delay will end in a particular outcome.",
     "context_ar": "نزلت هذه الآية في سياق القتال، لا في سياق الزواج أو التأخر. ومبدؤها الأوسع هو محدودية علم الإنسان؛ فنحن لا نرى دائمًا تمام الخير أو الضرر فيما نريده. وهي تدعو إلى التواضع والثقة بالله، من غير أن تعد بأن تأخرًا بعينه سينتهي إلى نتيجة بعينها.",
     "surah_name_en": "Al Baqarah",
     "surah_name_ar": "البقرة",
     "verse_ar": "كُتِبَ عَلَيْكُمُ ٱلْقِتَالُ وَهُوَ كُرْهٌ لَّكُمْ ۖ وَعَسَىٰٓ أَن تَكْرَهُوا۟ شَيْـًٔا وَهُوَ خَيْرٌ لَّكُمْ ۖ وَعَسَىٰٓ أَن تُحِبُّوا۟ شَيْـًٔا وَهُوَ شَرٌّ لَّكُمْ ۗ وَٱللَّهُ يَعْلَمُ وَأَنتُمْ لَا تَعْلَمُونَ",
     "verse_en": "Battle has been enjoined upon you while it is hateful to you. But perhaps you hate a thing and it is good for you; and perhaps you love a thing and it is bad for you. And Allāh knows, while you know not.",
-    "source_hash": "f6d744f4ac62952d3791dcdf771f50df7fe93f90047509e356c358ff9fa7d022"
+    "source_hash": "c9d5b9d81961e0e6c8f1d9bc9e408145f0eab425bacdc55dfa8690bbf07a8dfc"
   },
   {
     "situation_id": "worriedNeverMarry",
@@ -107,14 +107,14 @@
     "situation_id": "treatSpouseKindly",
     "verse_key": "4:19",
     "title_en": "When you need to treat your spouse kindly",
-    "title_ar": "عندما تحتاج إلى حسن معاملة زوجك",
+    "title_ar": "عندما تحتاج إلى الإحسان في معاملة زوجك",
     "context_en": "“And live with them in kindness.” The verse then goes further: even if you dislike them, “perhaps you dislike a thing and Allah makes therein much good.” Kindness is commanded, not conditional on feelings.",
     "context_ar": "«وَعَاشِرُوهُنَّ بِالْمَعْرُوفِ». ثم تمضي الآية أبعد من ذلك: «فَإِن كَرِهْتُمُوهُنَّ فَعَسَىٰ أَن تَكْرَهُوا شَيْئًا وَيَجْعَلَ اللَّهُ فِيهِ خَيْرًا كَثِيرًا». فالإحسان في العشرة مأمور به، وليس مشروطًا بالمشاعر.",
     "surah_name_en": "An Nisa",
     "surah_name_ar": "النساء",
     "verse_ar": "يَـٰٓأَيُّهَا ٱلَّذِينَ ءَامَنُوا۟ لَا يَحِلُّ لَكُمْ أَن تَرِثُوا۟ ٱلنِّسَآءَ كَرْهًا ۖ وَلَا تَعْضُلُوهُنَّ لِتَذْهَبُوا۟ بِبَعْضِ مَآ ءَاتَيْتُمُوهُنَّ إِلَّآ أَن يَأْتِينَ بِفَـٰحِشَةٍ مُّبَيِّنَةٍ ۚ وَعَاشِرُوهُنَّ بِٱلْمَعْرُوفِ ۚ فَإِن كَرِهْتُمُوهُنَّ فَعَسَىٰٓ أَن تَكْرَهُوا۟ شَيْـًٔا وَيَجْعَلَ ٱللَّهُ فِيهِ خَيْرًا كَثِيرًا",
     "verse_en": "O you who have believed, it is not lawful for you to inherit women by compulsion. And do not make difficulties for them in order to take [back] part of what you gave them unless they commit a clear immorality [i.e., adultery]. And live with them in kindness. For if you dislike them - perhaps you dislike a thing and Allāh makes therein much good.",
-    "source_hash": "4b8a5c98301a76360628f0f2f17ee2b7fb0ac48ecc0b6b2e94bb596783447cdd"
+    "source_hash": "04d0ad9d761616d4b32c3e9925d9a3cd738e739bea0f49de08c120cc8eb5f364"
   },
   {
     "situation_id": "becomeBetterSpouse",
@@ -380,27 +380,27 @@
     "situation_id": "trustingPlan",
     "verse_key": "2:216",
     "title_en": "When you're struggling to trust Allah's plan",
-    "title_ar": "عندما يصعب عليك الثقة بتدبير الله",
+    "title_ar": "عندما يصعب عليك الاطمئنان إلى تدبير الله",
     "context_en": "In its original context this ayah addresses fighting. As a general principle, it reminds us that our preferences and knowledge are limited. Trust in Allah belongs alongside responsible action and counsel; the ayah does not label every painful circumstance as good or require remaining in harm.",
-    "context_ar": "تخاطب هذه الآية القتال في سياقها الأصلي. ومن حيث المبدأ العام، تذكّرنا بأن رغباتنا وعلمنا محدودان. والثقة بالله تقترن بالعمل المسؤول والمشورة؛ فالآية لا تصف كل ظرف مؤلم بأنه خير، ولا تلزم بالبقاء في الأذى.",
+    "context_ar": "تتناول هذه الآية القتال في سياقها الأصلي. ومن حيث المبدأ العام، تذكّرنا بأن رغباتنا وعلمنا محدودان. والثقة بالله تقترن بالعمل المسؤول والمشورة؛ فالآية لا تصف كل ظرف مؤلم بأنه خير، ولا تلزم بالبقاء في الأذى.",
     "surah_name_en": "Al Baqarah",
     "surah_name_ar": "البقرة",
     "verse_ar": "كُتِبَ عَلَيْكُمُ ٱلْقِتَالُ وَهُوَ كُرْهٌ لَّكُمْ ۖ وَعَسَىٰٓ أَن تَكْرَهُوا۟ شَيْـًٔا وَهُوَ خَيْرٌ لَّكُمْ ۖ وَعَسَىٰٓ أَن تُحِبُّوا۟ شَيْـًٔا وَهُوَ شَرٌّ لَّكُمْ ۗ وَٱللَّهُ يَعْلَمُ وَأَنتُمْ لَا تَعْلَمُونَ",
     "verse_en": "Battle has been enjoined upon you while it is hateful to you. But perhaps you hate a thing and it is good for you; and perhaps you love a thing and it is bad for you. And Allāh knows, while you know not.",
-    "source_hash": "f8650121f5d8b8d21112579bf85bd8b9d4c600ec6ba770af8484406f3c6b6c2d"
+    "source_hash": "2d238be3211175486ce0f5861a1ce9326966a9dff69a5936a646a6c5bcdd7849"
   },
   {
     "situation_id": "trustingTiming",
     "verse_key": "2:216",
     "title_en": "When you're trusting Allah's timing",
-    "title_ar": "عندما تثق بتوقيت الله",
+    "title_ar": "عندما تصبر حتى يأتي ما قدّره الله لك",
     "context_en": "The ayah's direct context is fighting. Its final words, “Allah knows, while you know not,” can steady the heart when outcomes are unclear, but they do not promise a date or a specific result. Patience here means worship, wise action, and accepting what is beyond your knowledge.",
     "context_ar": "السياق المباشر للآية هو القتال. ويمكن لكلماتها الختامية، «وَاللَّهُ يَعْلَمُ وَأَنتُمْ لَا تَعْلَمُونَ»، أن تثبّت القلب حين تلتبس النتائج، لكنها لا تعد بتاريخ أو نتيجة محددة. والصبر هنا عبادة، وعمل حكيم، وقبول لما خرج عن علمك.",
     "surah_name_en": "Al Baqarah",
     "surah_name_ar": "البقرة",
     "verse_ar": "كُتِبَ عَلَيْكُمُ ٱلْقِتَالُ وَهُوَ كُرْهٌ لَّكُمْ ۖ وَعَسَىٰٓ أَن تَكْرَهُوا۟ شَيْـًٔا وَهُوَ خَيْرٌ لَّكُمْ ۖ وَعَسَىٰٓ أَن تُحِبُّوا۟ شَيْـًٔا وَهُوَ شَرٌّ لَّكُمْ ۗ وَٱللَّهُ يَعْلَمُ وَأَنتُمْ لَا تَعْلَمُونَ",
     "verse_en": "Battle has been enjoined upon you while it is hateful to you. But perhaps you hate a thing and it is good for you; and perhaps you love a thing and it is bad for you. And Allāh knows, while you know not.",
-    "source_hash": "a7fe17b77cc90c18229140b8bf87231f08cf0bc5610901c7c11055a1bf291e99"
+    "source_hash": "b52b7c772d8e4bc57562237c300c7a42571ee2e7a2214c709194c409718149cf"
   },
   {
     "situation_id": "stayOrLeave",
@@ -408,12 +408,12 @@
     "title_en": "When you're deciding whether to stay or leave",
     "title_ar": "عندما تحتار بين البقاء والفراق",
     "context_en": "For serious marital rift, the Qur'an recommends trustworthy arbitration from both sides. This is one possible step, not an order to remain in danger. If there is abuse, coercion, or fear for safety, contact appropriate local support first. For rulings and a decision this weighty, seek qualified, independent counsel.",
-    "context_ar": "يوصي القرآن عند الشقاق الزوجي الشديد بتحكيم موثوق من الجانبين. وهذه خطوة ممكنة، لا أمر بالبقاء في خطر. فإذا وُجد عنف أو إكراه أو خوف على السلامة، فتواصل أولًا مع جهة الدعم المحلية المناسبة. وللأحكام وقرار بهذا الثقل، استشر جهة مستقلة مؤهلة.",
+    "context_ar": "يوصي القرآن عند الشقاق الزوجي الشديد بتحكيم موثوق من الجانبين. وهذه خطوة ممكنة، لا أمر بالبقاء في خطر. فإذا وُجد عنف أو إكراه أو خوف على السلامة، فتواصل أولًا مع جهة الدعم المحلية المناسبة. ولمعرفة الأحكام واتخاذ قرار بهذه الأهمية، استشر جهة مستقلة مؤهلة.",
     "surah_name_en": "An Nisa",
     "surah_name_ar": "النساء",
     "verse_ar": "وَإِنْ خِفْتُمْ شِقَاقَ بَيْنِهِمَا فَٱبْعَثُوا۟ حَكَمًا مِّنْ أَهْلِهِۦ وَحَكَمًا مِّنْ أَهْلِهَآ إِن يُرِيدَآ إِصْلَـٰحًا يُوَفِّقِ ٱللَّهُ بَيْنَهُمَآ ۗ إِنَّ ٱللَّهَ كَانَ عَلِيمًا خَبِيرًا",
     "verse_en": "And if you fear dissension between the two, send an arbitrator from his people and an arbitrator from her people. If they both desire reconciliation, Allāh will cause it between them. Indeed, Allāh is ever Knowing and Aware.",
-    "source_hash": "db9f90e24c0fe5ce9457fb7a5c45cb0c52c9c213e257648412d0a5f5e825de7d"
+    "source_hash": "ba730dc8feb6ed4fff5591f527c5f9ecc78d033647d19998e941a245d269e309"
   },
   {
     "situation_id": "raisingChildren",
@@ -432,14 +432,14 @@
     "situation_id": "prayingForChildren",
     "verse_key": "37:100",
     "title_en": "When you're praying for righteous children",
-    "title_ar": "عندما تدعو بأبناء صالحين",
+    "title_ar": "عندما تسأل الله الذرية الصالحة",
     "context_en": "The du'a of Ibrahim (peace be upon him): “My Lord, grant me [a child] from among the righteous.” He asked not simply for a child, but for righteousness in the child, and Allah answered him with a forbearing boy.",
     "context_ar": "دعاء إبراهيم عليه السلام: «رَبِّ هَبْ لِي مِنَ الصَّالِحِينَ». لم يسأل ولدًا فحسب، بل سأل الصلاح فيه، فبشّره الله بغلام حليم.",
     "surah_name_en": "As Saffat",
     "surah_name_ar": "الصافات",
     "verse_ar": "رَبِّ هَبْ لِى مِنَ ٱلصَّـٰلِحِينَ",
     "verse_en": "My Lord, grant me [a child] from among the righteous.\"",
-    "source_hash": "4974a256803e6a77db8ea33a9a5fc54cf3e337185fb10e44d3469e3d354073df"
+    "source_hash": "cde2d7246e01b6e6298ebe2ff6d48a9a44e85d32ada9b6e767ed70bd52f131a1"
   },
   {
     "situation_id": "infertility",
@@ -484,14 +484,14 @@
     "situation_id": "divorceUnavoidable",
     "verse_key": "65:1",
     "title_en": "When divorce becomes unavoidable",
-    "title_ar": "عندما يصبح الطلاق لا مفر منه",
+    "title_ar": "عندما لا يكون هناك مفرّ من الطلاق",
     "context_en": "Even here, the Qur'an legislates with precision and dignity: the waiting period, keeping count, and not driving her from the home. And it leaves a door open: “You know not; perhaps Allah will bring about after that a [different] matter.” For any actual proceedings, consult a qualified scholar.",
     "context_ar": "حتى هنا يشرّع القرآن بدقة وكرامة: إحصاء العدّة، وألا تُخرج المطلقة من بيتها. ويترك بابًا مفتوحًا: «لَا تَدْرِي لَعَلَّ اللَّهَ يُحْدِثُ بَعْدَ ذَٰلِكَ أَمْرًا». وفي أي إجراءات فعلية، استشر عالمًا مؤهلًا.",
     "surah_name_en": "At Talaq",
     "surah_name_ar": "الطلاق",
     "verse_ar": " يَـٰٓأَيُّهَا ٱلنَّبِىُّ إِذَا طَلَّقْتُمُ ٱلنِّسَآءَ فَطَلِّقُوهُنَّ لِعِدَّتِهِنَّ وَأَحْصُوا۟ ٱلْعِدَّةَ ۖ وَٱتَّقُوا۟ ٱللَّهَ رَبَّكُمْ ۖ لَا تُخْرِجُوهُنَّ مِنۢ بُيُوتِهِنَّ وَلَا يَخْرُجْنَ إِلَّآ أَن يَأْتِينَ بِفَـٰحِشَةٍ مُّبَيِّنَةٍ ۚ وَتِلْكَ حُدُودُ ٱللَّهِ ۚ وَمَن يَتَعَدَّ حُدُودَ ٱللَّهِ فَقَدْ ظَلَمَ نَفْسَهُۥ ۚ لَا تَدْرِى لَعَلَّ ٱللَّهَ يُحْدِثُ بَعْدَ ذَٰلِكَ أَمْرًا",
     "verse_en": "O Prophet, when you [Muslims] divorce women, divorce them for [the commencement of] their waiting period and keep count of the waiting period, and fear Allāh, your Lord. Do not turn them out of their [husbands'] houses, nor should they [themselves] leave [during that period] unless they are committing a clear immorality. And those are the limits [set by] Allāh. And whoever transgresses the limits of Allāh has certainly wronged himself. You know not; perhaps Allāh will bring about after that a [different] matter.",
-    "source_hash": "8bd0f674a28a71f3bf60707519b6d1d6b812125e56e20f5a56ab854f6f04a477"
+    "source_hash": "dcf2fce4caae19805f4e7819964317d4954acd8b0a0c26d3e9438310e58ec9f5"
   },
   {
     "situation_id": "afterDivorce",
@@ -679,14 +679,14 @@
     "situation_id": "fightingTemptation",
     "verse_key": "29:69",
     "title_en": "When you're fighting temptation",
-    "title_ar": "عندما تجاهد الإغراء",
+    "title_ar": "عندما تجاهد نفسك أمام المغريات",
     "context_en": "For those who strive for Him: “We will surely guide them to Our ways.” The promise belongs to the one in the middle of the struggle. Striving itself draws Allah's guidance closer, and the verse ends: “And indeed, Allah is with the doers of good.”",
     "context_ar": "للذين يبذلون جهدهم ابتغاء مرضاته: «وَالَّذِينَ جَاهَدُوا فِينَا لَنَهْدِيَنَّهُمْ سُبُلَنَا». الوعد لمن هو في قلب المجاهدة؛ فالسعي نفسه يقرّب هداية الله، وتختم الآية: «وَإِنَّ اللَّهَ لَمَعَ الْمُحْسِنِينَ».",
     "surah_name_en": "Al 'Ankabut",
     "surah_name_ar": "العنكبوت",
     "verse_ar": "وَٱلَّذِينَ جَـٰهَدُوا۟ فِينَا لَنَهْدِيَنَّهُمْ سُبُلَنَا ۚ وَإِنَّ ٱللَّهَ لَمَعَ ٱلْمُحْسِنِينَ",
     "verse_en": "And those who strive for Us - We will surely guide them to Our ways. And indeed, Allāh is with the doers of good.",
-    "source_hash": "14755bd882ebaa76352c35fc37513f24e1d3e7a2f1c65f20a07a9c8fcaf0d47e"
+    "source_hash": "30fa1c8f02f6ac796c99f0a17609aaa0030f4db4d3a1341e002b6e044f041945"
   },
   {
     "situation_id": "madeAMistake",
@@ -824,12 +824,12 @@
     "title_en": "When you're carrying too many burdens",
     "title_ar": "عندما تحمل أعباء كثيرة",
     "context_en": "“Allah does not charge a soul except [with that within] its capacity.” The load you carry has already been measured against you by the One who made you, and the same verse teaches the du'a asking Him to lighten it.",
-    "context_ar": "«لَا يُكَلِّفُ ٱللَّهُ نَفْسًا إِلَّا وُسْعَهَا». الحمل الذي تحمله قدّره على قدر طاقتك من خلقك، والآية ذاتها تعلّمك الدعاء إليه أن يخففه عنك.",
+    "context_ar": "«لَا يُكَلِّفُ ٱللَّهُ نَفْسًا إِلَّا وُسْعَهَا». مَن خلقك قدّر ما تحمله على قدر طاقتك، والآية ذاتها تعلّمك الدعاء إليه أن يخففه عنك.",
     "surah_name_en": "Al Baqarah",
     "surah_name_ar": "البقرة",
     "verse_ar": "لَا يُكَلِّفُ ٱللَّهُ نَفْسًا إِلَّا وُسْعَهَا ۚ لَهَا مَا كَسَبَتْ وَعَلَيْهَا مَا ٱكْتَسَبَتْ ۗ رَبَّنَا لَا تُؤَاخِذْنَآ إِن نَّسِينَآ أَوْ أَخْطَأْنَا ۚ رَبَّنَا وَلَا تَحْمِلْ عَلَيْنَآ إِصْرًا كَمَا حَمَلْتَهُۥ عَلَى ٱلَّذِينَ مِن قَبْلِنَا ۚ رَبَّنَا وَلَا تُحَمِّلْنَا مَا لَا طَاقَةَ لَنَا بِهِۦ ۖ وَٱعْفُ عَنَّا وَٱغْفِرْ لَنَا وَٱرْحَمْنَآ ۚ أَنتَ مَوْلَىٰنَا فَٱنصُرْنَا عَلَى ٱلْقَوْمِ ٱلْكَـٰفِرِينَ",
     "verse_en": "Allāh does not charge a soul except [with that within] its capacity. It will have [the consequence of] what [good] it has gained, and it will bear [the consequence of] what [evil] it has earned. \"Our Lord, do not impose blame upon us if we have forgotten or erred. Our Lord, and lay not upon us a burden like that which You laid upon those before us. Our Lord, and burden us not with that which we have no ability to bear. And pardon us; and forgive us; and have mercy upon us. You are our protector, so give us victory over the disbelieving people.\"",
-    "source_hash": "4c8a63bbc34c1cef3441018b384998d84971b767cec2bfe3c4f7c5ccdd753c49"
+    "source_hash": "2f8d6599e0fd4fb215e1434a9e96d5a000c09f7ef566f4ea1ddcbe78a7c4f9ef"
   },
   {
     "situation_id": "disappointed",
@@ -1071,12 +1071,12 @@
     "title_en": "When financial burdens feel too heavy",
     "title_ar": "عندما تثقل عليك الأعباء المالية",
     "context_en": "The ayah affirms Allah's justice and ends with a du'a asking not to be burdened beyond capacity. It should not be used to minimize distress or tell someone they must endure harm alone. Seek practical assistance, debt advice, and community support alongside this prayer.",
-    "context_ar": "تؤكد الآية عدل الله، وتُختتم بدعاء ألا نُحمَّل ما لا طاقة لنا به. وينبغي ألا تُستخدم للتهوين من المعاناة أو لإخبار أحد بأنه ملزم بتحمل الضرر وحده. اطلب مع هذا الدعاء عونًا عمليًا، ومشورة مختصة بالديون، وسندًا من المجتمع.",
+    "context_ar": "تؤكد الآية عدل الله، وتُختتم بدعاء ألا نُحمَّل ما لا طاقة لنا به. وينبغي ألا تُستخدم للتهوين من المعاناة أو لإخبار أحد بأنه ملزم بتحمل الضرر وحده. اطلب مع هذا الدعاء عونًا عمليًا، ومشورة من مختص بشؤون الديون، وسندًا من المجتمع.",
     "surah_name_en": "Al Baqarah",
     "surah_name_ar": "البقرة",
     "verse_ar": "لَا يُكَلِّفُ ٱللَّهُ نَفْسًا إِلَّا وُسْعَهَا ۚ لَهَا مَا كَسَبَتْ وَعَلَيْهَا مَا ٱكْتَسَبَتْ ۗ رَبَّنَا لَا تُؤَاخِذْنَآ إِن نَّسِينَآ أَوْ أَخْطَأْنَا ۚ رَبَّنَا وَلَا تَحْمِلْ عَلَيْنَآ إِصْرًا كَمَا حَمَلْتَهُۥ عَلَى ٱلَّذِينَ مِن قَبْلِنَا ۚ رَبَّنَا وَلَا تُحَمِّلْنَا مَا لَا طَاقَةَ لَنَا بِهِۦ ۖ وَٱعْفُ عَنَّا وَٱغْفِرْ لَنَا وَٱرْحَمْنَآ ۚ أَنتَ مَوْلَىٰنَا فَٱنصُرْنَا عَلَى ٱلْقَوْمِ ٱلْكَـٰفِرِينَ",
     "verse_en": "Allāh does not charge a soul except [with that within] its capacity. It will have [the consequence of] what [good] it has gained, and it will bear [the consequence of] what [evil] it has earned. \"Our Lord, do not impose blame upon us if we have forgotten or erred. Our Lord, and lay not upon us a burden like that which You laid upon those before us. Our Lord, and burden us not with that which we have no ability to bear. And pardon us; and forgive us; and have mercy upon us. You are our protector, so give us victory over the disbelieving people.\"",
-    "source_hash": "b8ea9375b0e11023bcb67e9ddde1d3a36e069de227a3fc33b64f52eb6554ad3d"
+    "source_hash": "d2406d490630ee8fa4e0be8e2fd1689b0fff33a12e11b6971149d7c90f09e684"
   },
   {
     "situation_id": "moneyStress",
@@ -1123,12 +1123,12 @@
     "title_en": "When you're working hard but see no results",
     "title_ar": "عندما تعمل ولا ترى نتيجة",
     "context_en": "“And that there is not for man except that [good] for which he strives.” No sincere effort is lost in Allah's ledger, even in the seasons when the results have not yet surfaced.",
-    "context_ar": "«وَأَن لَّيْسَ لِلْإِنسَـٰنِ إِلَّا مَا سَعَىٰ». لا يضيع جهد صادق في ميزان الله، حتى في المواسم التي لم تظهر فيها النتائج بعد.",
+    "context_ar": "«وَأَن لَّيْسَ لِلْإِنسَـٰنِ إِلَّا مَا سَعَىٰ». لا يضيع جهد صادق في ميزان الله، حتى في الفترات التي لم تظهر فيها النتائج بعد.",
     "surah_name_en": "An Najm",
     "surah_name_ar": "النجم",
     "verse_ar": "وَأَن لَّيْسَ لِلْإِنسَـٰنِ إِلَّا مَا سَعَىٰ",
     "verse_en": "And that there is not for man except that [good] for which he strives",
-    "source_hash": "83ebc9d8a9154dab7d5e1d359d65e777bd28de3d97572077ac897dc3fa0a5acd"
+    "source_hash": "b9d2aad5a75229b81ed029deb77601f80a375897b4a210560645850977253e3f"
   },
   {
     "situation_id": "heartAttachedMoney",
@@ -1162,12 +1162,12 @@
     "title_en": "When you think your provision is delayed",
     "title_ar": "عندما تظن أن رزقك تأخر",
     "context_en": "The ayah names Allah as the continual Provider and Possessor of strength. It steadies reliance on Him when provision feels slow, without telling us when or in what form relief will come. Tawakkul includes lawful effort, planning, and asking for help.",
-    "context_ar": "تسمّي الآية الله «ٱلرَّزَّاقُ ذُو ٱلْقُوَّةِ ٱلْمَتِينُ». وهي تثبّت التوكل عليه حين يبدو الرزق بطيئًا، من دون أن تخبرنا متى يأتي الفرج أو في أي صورة. ويشمل التوكل السعي الحلال، والتخطيط، وطلب العون.",
+    "context_ar": "تصف الآية الله بأنه «ٱلرَّزَّاقُ ذُو ٱلْقُوَّةِ ٱلْمَتِينُ». وهي تثبّت التوكل عليه حين يبدو الرزق بطيئًا، من دون أن تخبرنا متى يأتي الفرج أو في أي صورة. ويشمل التوكل السعي الحلال، والتخطيط، وطلب العون.",
     "surah_name_en": "Adh Dhariyat",
     "surah_name_ar": "الذاريات",
     "verse_ar": "إِنَّ ٱللَّهَ هُوَ ٱلرَّزَّاقُ ذُو ٱلْقُوَّةِ ٱلْمَتِينُ",
     "verse_en": "Indeed, it is Allāh who is the [continual] Provider, the firm possessor of strength.",
-    "source_hash": "7b524d41301ac795b0458407421a6826884517ff03feddd347812fb4d6f65a45"
+    "source_hash": "57e52f073e56be235edad61267e01fd1f609d8a71b5c4953bfcc8a1fc96734cc"
   },
   {
     "situation_id": "salaryNotEnough",
@@ -1188,25 +1188,25 @@
     "title_en": "When you're scared to start a business",
     "title_ar": "عندما تخاف من بدء مشروع",
     "context_en": "“And when you have decided, then rely upon Allah. Indeed, Allah loves those who rely [upon Him].” The Qur'an's sequence for a venture: consult, deliberate, decide, then hand the outcome to Him.",
-    "context_ar": "«فَإِذَا عَزَمْتَ فَتَوَكَّلْ عَلَى ٱللَّهِ ۚ إِنَّ ٱللَّهَ يُحِبُّ ٱلْمُتَوَكِّلِينَ». يرسم القرآن تسلسل الإقدام على مشروع: شاور، وتدبّر، واعزم، ثم فوّض النتيجة إليه.",
+    "context_ar": "«فَإِذَا عَزَمْتَ فَتَوَكَّلْ عَلَى ٱللَّهِ ۚ إِنَّ ٱللَّهَ يُحِبُّ ٱلْمُتَوَكِّلِينَ». يرسم القرآن خطوات الإقدام على مشروع: شاور، وتدبّر، واعزم، ثم فوّض النتيجة إليه.",
     "surah_name_en": "Ali 'Imran",
     "surah_name_ar": "آل عمران",
     "verse_ar": "فَبِمَا رَحْمَةٍ مِّنَ ٱللَّهِ لِنتَ لَهُمْ ۖ وَلَوْ كُنتَ فَظًّا غَلِيظَ ٱلْقَلْبِ لَٱنفَضُّوا۟ مِنْ حَوْلِكَ ۖ فَٱعْفُ عَنْهُمْ وَٱسْتَغْفِرْ لَهُمْ وَشَاوِرْهُمْ فِى ٱلْأَمْرِ ۖ فَإِذَا عَزَمْتَ فَتَوَكَّلْ عَلَى ٱللَّهِ ۚ إِنَّ ٱللَّهَ يُحِبُّ ٱلْمُتَوَكِّلِينَ",
     "verse_en": "So by mercy from Allāh, [O Muḥammad], you were lenient with them. And if you had been rude [in speech] and harsh in heart, they would have disbanded from about you. So pardon them and ask forgiveness for them and consult them in the matter. And when you have decided, then rely upon Allāh. Indeed, Allāh loves those who rely [upon Him].",
-    "source_hash": "a83b1566d94a10f1552e4bd0251f35d313991269653d7f1c387355cf95d234e4"
+    "source_hash": "4b533cbfa5f008cffc7dc8ccfdf8f5df90f353f305eb6bc78914052d5074fc00"
   },
   {
     "situation_id": "stuckFinancially",
     "verse_key": "13:11",
     "title_en": "When you feel stuck in the same financial situation",
-    "title_ar": "عندما تشعر أنك عالق ماليًا",
+    "title_ar": "عندما تشعر أن وضعك المالي لا يتحسن",
     "context_en": "This ayah speaks about the moral condition of a people and Allah's dealings with communities; it is not a formula promising personal financial change. It can still prompt honest self-review, while practical financial barriers may also require outside advice and structural support.",
     "context_ar": "تتحدث هذه الآية عن الحال الأخلاقية لقوم وعن سنن الله في المجتمعات؛ وليست معادلة تعد الفرد بتغيّر وضعه المالي. وقد تدعو مع ذلك إلى مراجعة النفس بصدق، بينما قد تستلزم العوائق المالية الواقعية أيضًا مشورة خارجية ودعمًا يعالج الأسباب البنيوية.",
     "surah_name_en": "Ar Ra'd",
     "surah_name_ar": "الرعد",
     "verse_ar": "لَهُۥ مُعَقِّبَـٰتٌ مِّنۢ بَيْنِ يَدَيْهِ وَمِنْ خَلْفِهِۦ يَحْفَظُونَهُۥ مِنْ أَمْرِ ٱللَّهِ ۗ إِنَّ ٱللَّهَ لَا يُغَيِّرُ مَا بِقَوْمٍ حَتَّىٰ يُغَيِّرُوا۟ مَا بِأَنفُسِهِمْ ۗ وَإِذَآ أَرَادَ ٱللَّهُ بِقَوْمٍ سُوٓءًا فَلَا مَرَدَّ لَهُۥ ۚ وَمَا لَهُم مِّن دُونِهِۦ مِن وَالٍ",
     "verse_en": "For him [i.e., each one] are successive [angels] before and behind him who protect him by the decree of Allāh. Indeed, Allāh will not change the condition of a people until they change what is in themselves. And when Allāh intends for a people ill, there is no repelling it. And there is not for them besides Him any patron.",
-    "source_hash": "d5525b024e6ce5047b05167b26071c07cbb0d4c15441d76f33d9c43d2fb256f4"
+    "source_hash": "16ca31821b322a52e18b94d7c7dab23ea569c6440b0e01f389c4b3817c9c8a10"
   },
   {
     "situation_id": "jealousOfSuccess",
@@ -1240,12 +1240,12 @@
     "title_en": "When you're afraid to take a risk",
     "title_ar": "عندما تخاف من المخاطرة",
     "context_en": "These words were spoken to the Children of Israel about entering the Holy Land, not taking a financial risk. Their broader lesson is courageous reliance after a rightful course is clear. A business or investment still requires due diligence, consultation, and an honest assessment of harm.",
-    "context_ar": "قيلت هذه الكلمات لبني إسرائيل في شأن دخول الأرض المقدسة، لا في الإقدام على مخاطرة مالية. ودرسها الأوسع هو شجاعة التوكل بعدما يتضح المسار المشروع. أما العمل التجاري أو الاستثمار فما يزال يحتاج إلى التحقق الواجب، والمشاورة، وتقييم صادق للضرر.",
+    "context_ar": "قيلت هذه الكلمات لبني إسرائيل في شأن دخول الأرض المقدسة، لا في الإقدام على مخاطرة مالية. ودرسها الأوسع هو شجاعة التوكل بعدما يتضح المسار المشروع. أما العمل التجاري أو الاستثمار فما يزال يحتاج إلى التحقق من التفاصيل، والمشاورة، وتقييم صادق للضرر.",
     "surah_name_en": "Al Ma'idah",
     "surah_name_ar": "المائدة",
     "verse_ar": "قَالَ رَجُلَانِ مِنَ ٱلَّذِينَ يَخَافُونَ أَنْعَمَ ٱللَّهُ عَلَيْهِمَا ٱدْخُلُوا۟ عَلَيْهِمُ ٱلْبَابَ فَإِذَا دَخَلْتُمُوهُ فَإِنَّكُمْ غَـٰلِبُونَ ۚ وَعَلَى ٱللَّهِ فَتَوَكَّلُوٓا۟ إِن كُنتُم مُّؤْمِنِينَ",
     "verse_en": "Said two men from those who feared [to disobey] upon whom Allāh had bestowed favor, \"Enter upon them through the gate, for when you have entered it, you will be predominant. And upon Allāh rely, if you should be believers.\"",
-    "source_hash": "4271733f24fac8d1e10ca06aaaaeb3b6b8bae69a18234f49bc34007e9f6c1462"
+    "source_hash": "05a46c6a2995c36a7f387687be93c15c0cbff239f81192372481d85c2b228d3f"
   },
   {
     "situation_id": "majorFinancialDecision",
@@ -1253,12 +1253,12 @@
     "title_en": "When you're making a major financial decision",
     "title_ar": "عندما تتخذ قرارًا ماليًا كبيرًا",
     "context_en": "The ayah's direct context is fighting. Its general reminder is that preference is not perfect knowledge; it does not choose an investment for you. Investigate the facts, avoid prohibited transactions, consult qualified people, pray istikharah, and make a responsible decision.",
-    "context_ar": "سياق الآية المباشر هو القتال. أما تذكيرها العام فهو أن ما نفضله لا يقوم مقام العلم الكامل؛ وهي لا تختار استثمارًا نيابة عنك. تحرَّ الحقائق، وتجنب المعاملات المحرمة، واستشر أهل الاختصاص، وصلِّ الاستخارة، واتخذ قرارًا مسؤولًا.",
+    "context_ar": "سياق الآية المباشر هو القتال. وتذكّرنا بمعنى عام، وهو أن ما نفضله لا يقوم مقام العلم الكامل؛ وهي لا تختار استثمارًا نيابة عنك. تحرَّ الحقائق، وتجنب المعاملات المحرمة، واستشر أهل الاختصاص، وصلِّ الاستخارة، واتخذ قرارًا مسؤولًا.",
     "surah_name_en": "Al Baqarah",
     "surah_name_ar": "البقرة",
     "verse_ar": "كُتِبَ عَلَيْكُمُ ٱلْقِتَالُ وَهُوَ كُرْهٌ لَّكُمْ ۖ وَعَسَىٰٓ أَن تَكْرَهُوا۟ شَيْـًٔا وَهُوَ خَيْرٌ لَّكُمْ ۖ وَعَسَىٰٓ أَن تُحِبُّوا۟ شَيْـًٔا وَهُوَ شَرٌّ لَّكُمْ ۗ وَٱللَّهُ يَعْلَمُ وَأَنتُمْ لَا تَعْلَمُونَ",
     "verse_en": "Battle has been enjoined upon you while it is hateful to you. But perhaps you hate a thing and it is good for you; and perhaps you love a thing and it is bad for you. And Allāh knows, while you know not.",
-    "source_hash": "4988bf2e96edc85788426b6e1c0f63e8b39a0a54b7dff662f63e8e419e59647c"
+    "source_hash": "6cd6a241c8ddc88417c1b587bb412a6df670d626d9d0a87092fdd2cdf54c3505"
   },
   {
     "situation_id": "impatientForResults",
@@ -1292,12 +1292,12 @@
     "title_en": "When you're worried about paying bills",
     "title_ar": "عندما تقلق بشأن سداد الفواتير",
     "context_en": "These words appear in the middle of divorce instructions and promise Allah's care to the person of taqwa who relies on Him. They do not promise that a particular bill will be paid by a particular date. Pair tawakkul with early contact with creditors, budgeting, and community help.",
-    "context_ar": "ترد هذه الكلمات في أثناء أحكام الطلاق، وتعد بعناية الله لمن يتقيه ويتوكل عليه. وهي لا تعد بسداد فاتورة محددة في موعد محدد. اجمع التوكل مع التواصل المبكر مع الدائنين، وإعداد الميزانية، وطلب عون المجتمع.",
+    "context_ar": "ترد هذه الكلمات في أثناء أحكام الطلاق، وتعد بعناية الله لمن يتقيه ويتوكل عليه. وهي لا تعد بسداد فاتورة محددة في موعد محدد. اجمع بين التوكل والتواصل المبكر مع الدائنين، وإعداد الميزانية، وطلب عون المجتمع.",
     "surah_name_en": "At Talaq",
     "surah_name_ar": "الطلاق",
     "verse_ar": "وَيَرْزُقْهُ مِنْ حَيْثُ لَا يَحْتَسِبُ ۚ وَمَن يَتَوَكَّلْ عَلَى ٱللَّهِ فَهُوَ حَسْبُهُۥٓ ۚ إِنَّ ٱللَّهَ بَـٰلِغُ أَمْرِهِۦ ۚ قَدْ جَعَلَ ٱللَّهُ لِكُلِّ شَىْءٍ قَدْرًا",
     "verse_en": "And will provide for him from where he does not expect. And whoever relies upon Allāh - then He is sufficient for him. Indeed, Allāh will accomplish His purpose. Allāh has already set for everything a [decreed] extent.",
-    "source_hash": "38e3ad194f6825bb488932c7b371afa0d3bb39310e98d9738ed3af03d2a3e4d4"
+    "source_hash": "78c2ee73e37a5004dd9ea0b97fff8d77b21af74abcbcde252e254657c3aa47e8"
   },
   {
     "situation_id": "stressedAboutDebt",

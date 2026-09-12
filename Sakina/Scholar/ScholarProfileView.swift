@@ -280,9 +280,9 @@ struct ScholarProfileView: View {
     private var profileTrustText: String {
         switch store.profileSource {
         case .localPlaceholder:
-            return copy("Local placeholder · not verified online", "عنصر محلي مؤقت · غير موثّق عبر الإنترنت")
+            return copy("Local placeholder, not verified online", "عنصر محلي مؤقت، غير موثّق عبر الإنترنت")
         case .cachedVerified:
-            return copy("Previously verified · saved offline", "سبق توثيقه · محفوظ دون اتصال")
+            return copy("Previously verified, saved offline", "سبق توثيقه، محفوظ دون اتصال")
         case .liveVerified:
             return copy("Verified public profile", "ملف عام موثّق")
         }

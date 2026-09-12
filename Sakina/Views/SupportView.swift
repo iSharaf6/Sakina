@@ -32,7 +32,7 @@ enum AppLinks {
     static func shareText(_ language: AppLanguage) -> String {
         let line = language.pick(
             "Haneen: du’a, dhikr and Qur’an for how you feel. Prayer times, ruqyah, a dhikr counter and nothing tracked.",
-            "حنين: دعاء وذكر وقرآن لما تشعر به. مواقيت الصلاة والرقية وعداد الذكر، بلا تتبع."
+            "حنين: أدعية وأذكار وآيات تناسب ما تشعر به، مع مواقيت الصلاة والرقية وعدّاد الأذكار، بلا تتبّع."
         )
         if let appStore { return line + "\n" + appStore.absoluteString }
         return line
@@ -52,18 +52,18 @@ struct FAQView: View {
         [
             (copy("Is Haneen free?", "هل حنين مجاني؟"),
              copy("Yes. There are no ads, subscriptions or tracking.", "نعم. لا إعلانات ولا اشتراكات ولا تتبع.")),
-            (copy("Where does the Qur’an text come from?", "من أين يأتي نص القرآن؟"),
+            (copy("Where does the Qur’an text come from?", "ما مصدر نص القرآن؟"),
              copy("Every ayah is fetched from Quran.com in Uthmani script with the Saheeh International translation, then frozen so it cannot drift.",
-                  "كل آية مأخوذة من Quran.com بالرسم العثماني مع ترجمة صحيح إنترناشونال، ثم تُثبَّت حتى لا تتغير.")),
+                  "نصوص الآيات مأخوذة من Quran.com بالرسم العثماني، مع ترجمة صحيح إنترناشونال. وتُحفظ نسخة ثابتة منها داخل التطبيق.")),
             (copy("Are the du’as authentic?", "هل الأدعية صحيحة؟"),
              copy("Each du’a shows its collection, hadith number and grade, with a link to the source page on Sunnah.com. Excerpts are labelled.",
-                  "يعرض كل دعاء المصدر ورقم الحديث ودرجته مع رابط إلى صفحة المصدر في Sunnah.com، وتُوسم المقتطفات.")),
+                  "يُعرض مع كل دعاء مصدره ورقم الحديث ودرجته، مع رابط إلى صفحة المصدر في Sunnah.com. ويُوضَّح ما إذا كان النص مقتطفًا.")),
             (copy("How are prayer times calculated?", "كيف تُحسب مواقيت الصلاة؟"),
              copy("On your iPhone, from your approximate location, using the calculation method you choose in Settings. Nearby-place searches separately share your search location with map providers.",
                   "على جهازك من موقعك التقريبي وبالطريقة التي تختارها في الإعدادات. ويشارك البحث عن الأماكن القريبة موقع البحث مع مزودي الخرائط بشكل منفصل.")),
-            (copy("Why does a mosque or restaurant look wrong?", "لماذا يبدو مسجد أو مطعم غير صحيح؟"),
+            (copy("Why does a mosque or restaurant look wrong?", "لماذا قد تكون بيانات مسجد أو مطعم غير صحيحة؟"),
              copy("Nearby places come from Apple Maps and OpenStreetMap. Places found in both are marked. Always confirm halal status with the restaurant, and use Report a problem to fix the map data.",
-                  "الأماكن القريبة من خرائط Apple وOpenStreetMap. تُوسم الأماكن الموجودة في المصدرين معًا. تأكد دائمًا من الحلال لدى المطعم، واستخدم الإبلاغ عن مشكلة لتصحيح البيانات.")),
+                  "تأتي بيانات الأماكن القريبة من خرائط Apple وOpenStreetMap، وتُميَّز الأماكن المذكورة في المصدرين معًا. تأكد من المطعم أن الطعام حلال، واستخدم خيار الإبلاغ عن مشكلة لتصحيح البيانات.")),
             (copy("Does the app work offline?", "هل يعمل التطبيق دون اتصال؟"),
              copy("Du’as, Qur’an, prayer times and the dhikr counter all work offline. Recitation audio and nearby places need a connection.",
                   "الأدعية والقرآن ومواقيت الصلاة وعداد الذكر تعمل دون اتصال. أما التلاوة الصوتية والأماكن القريبة فتحتاج إلى اتصال.")),
@@ -176,7 +176,7 @@ struct ContactSupportView: View {
         }
     }
 
-    private var subject: String { "Haneen · \(topic.title(.english))" }
+    private var subject: String { "Haneen, \(topic.title(.english))" }
     private var trimmed: String { message.trimmingCharacters(in: .whitespacesAndNewlines) }
 
     private var messageBody: String {
@@ -185,7 +185,7 @@ struct ContactSupportView: View {
         \(message)
 
         —
-        Haneen \(AppLinks.version) · iOS \(device.systemVersion) · \(device.model) · \(language.rawValue)
+        Haneen \(AppLinks.version), iOS \(device.systemVersion), \(device.model), \(language.rawValue)
         """
     }
 
@@ -236,7 +236,7 @@ struct ContactSupportView: View {
                             }
                         }
                     Text(copy("We attach the app version and iOS version so we can reproduce the issue. Nothing else.",
-                              "نرفق إصدار التطبيق ونظام iOS لنتمكن من إعادة المشكلة، ولا شيء غير ذلك."))
+                              "نرفق إصدار التطبيق ونظام iOS للمساعدة في معرفة سبب المشكلة، دون أي معلومات أخرى."))
                         .font(.yqCaption)
                         .foregroundStyle(Color.yqSecondary)
                 }
@@ -343,7 +343,7 @@ struct AboutUsView: View {
                             Text("Haneen").font(.yqTitle)
                         }
                         .foregroundStyle(Color.yqInk)
-                        Text(copy("Qur’an and du’a for how you feel", "قرآن ودعاء لما تشعر به"))
+                        Text(copy("Qur’an and du’a for how you feel", "آيات وأدعية تناسب ما تشعر به"))
                             .font(.yqSubheadMedium)
                             .foregroundStyle(Color.yqSecondary)
                     }
@@ -353,10 +353,10 @@ struct AboutUsView: View {
 
                 storyCard(
                     symbol: "heart.fill",
-                    title: copy("Why we made it", "لماذا صنعناه"),
+                    title: copy("Why we made it", "لماذا أنشأنا حنين"),
                     body: copy(
                         "Most of us don’t open a du’a book when the day gets heavy. We open our phone. Haneen meets you there: a feeling, one tap, and words from the Qur’an and the Sunnah that were made for that moment.",
-                        "أكثرنا لا يفتح كتاب أدعية حين يثقل اليوم، بل يفتح هاتفه. حنين يلقاك هناك: شعور، ضغطة واحدة، وكلمات من القرآن والسنة صيغت لتلك اللحظة."
+                        "حين تثقل علينا هموم اليوم، يلجأ كثير منا إلى هاتفه. اختر في حنين ما تشعر به لتصل بضغطة واحدة إلى آيات وأدعية من القرآن والسنة تناسب حالك."
                     )
                 )
                 .revealed(1, appeared: appeared, reduceMotion: reduceMotion)
@@ -366,7 +366,7 @@ struct AboutUsView: View {
                     title: copy("What we promise", "ما نعد به"),
                     body: copy(
                         "Every ayah is fetched from Quran.com and frozen. Every hadith shows its collection, number and grade. Nothing you read or write is tracked, sold, or sent anywhere without you choosing it.",
-                        "كل آية مأخوذة من Quran.com ومثبتة. وكل حديث يعرض مصدره ورقمه ودرجته. ولا يُتتبع ما تقرأه أو تكتبه ولا يُباع ولا يُرسل إلى أي مكان إلا باختيارك."
+                        "نصوص الآيات مأخوذة من Quran.com ومحفوظة دون تغيير، ويُعرض مع كل حديث مصدره ورقمه ودرجته. ولا نتتبّع ما تقرأه أو تكتبه، ولا نبيعه أو نرسله إلى أي جهة دون اختيارك."
                     )
                 )
                 .revealed(2, appeared: appeared, reduceMotion: reduceMotion)
@@ -394,7 +394,7 @@ struct AboutUsView: View {
                 }
                 .revealed(4, appeared: appeared, reduceMotion: reduceMotion)
 
-                Text("Haneen · \(AppLinks.version)")
+                Text(copy("Haneen, \(AppLinks.version)", "حنين، \(AppLinks.version)"))
                     .font(.yqCaption)
                     .foregroundStyle(Color.yqTertiary)
                     .frame(maxWidth: .infinity)

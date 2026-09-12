@@ -3,6 +3,9 @@ import AuthenticationServices
 
 /// One welcome screen. The preview uses the same views and Quran renderer as the app.
 struct CompanionOnboarding: View {
+    @AppStorage(SettingsKeys.appLanguage) private var languageRaw = AppLanguage.english.rawValue
+    private var language: AppLanguage { AppLanguage(rawValue: languageRaw) ?? .english }
+    private var copy: AppCopy { AppCopy(language: language) }
     static let completedKey = "companion.onboarding.complete"
     @ObservedObject private var account = CompanionAccount.shared
     @Environment(\.colorScheme) private var colorScheme
@@ -16,8 +19,8 @@ struct CompanionOnboarding: View {
     var allowsDismiss = false
     let onFinish: () -> Void
 
-    private let captions = ["Your daily companion.", "Keep the Qur’an close.", "A moment to remember."]
-    private let details = ["Prayer, Qur’an and du’a. Together.", "Beautiful pages. A clearer meaning.", "Make space for a little dhikr."]
+    private var captions: [String] { [copy("Your daily companion.", "رفيقك كل يوم."), copy("Keep the Qur’an close.", "اجعل القرآن قريبًا منك."), copy("A moment to remember.", "لحظة لذكر الله.")] }
+    private var details: [String] { [copy("Prayer, Qur’an and du’a. Together.", "الصلاة والقرآن والدعاء، في مكان واحد."), copy("Beautiful pages. A clearer meaning.", "صفحات واضحة، ومعانٍ تتأملها."), copy("Make space for a little dhikr.", "خصّص لحظة من يومك للذكر.")] }
     private var ink: Color { colorScheme == .dark ? Color(red: 0.93, green: 0.94, blue: 0.86) : Color(red: 0.12, green: 0.23, blue: 0.17) }
     private var paper: Color { colorScheme == .dark ? Color(red: 0.07, green: 0.12, blue: 0.10) : Color(red: 0.90, green: 0.93, blue: 0.86) }
 
@@ -27,23 +30,23 @@ struct CompanionOnboarding: View {
                 VStack(spacing: 0) {
                     HStack {
                         YaqeenBrandIcon(size: 34)
-                        Text("haneen").font(.system(size: 26, weight: .semibold, design: .rounded)).tracking(-0.8)
+                        Text(copy("haneen", "حنين")).font(.system(size: 26, weight: .semibold, design: .rounded)).tracking(language == .english ? -0.8 : 0)
                         Spacer()
                         if account.signedIn || allowsDismiss {
-                            Button("Done") { if allowsDismiss { onFinish() } else { finish() } }.font(.subheadline.weight(.semibold))
+                            Button(copy("Done", "تم")) { if allowsDismiss { onFinish() } else { finish() } }.font(.subheadline.weight(.semibold))
                         } else {
                             Button { paused.toggle() } label: {
                                 Image(systemName: paused ? "play.fill" : "pause.fill").font(.system(size: 12, weight: .bold))
                                     .frame(width: 40, height: 40).background(ink.opacity(0.07), in: Circle())
-                            }.accessibilityLabel(paused ? "Play app preview" : "Pause app preview")
+                            }.accessibilityLabel(paused ? copy("Play app preview", "تشغيل معاينة التطبيق") : copy("Pause app preview", "إيقاف معاينة التطبيق مؤقتًا"))
                         }
                     }.padding(.horizontal, 26).padding(.top, 8)
 
-                    WelcomeAppPreview(page: page, reduceMotion: reduceMotion || paused)
+                    WelcomeAppPreview(page: page, reduceMotion: reduceMotion || paused, language: language)
                         .frame(height: typeSize.isAccessibilitySize ? 220 : max(225, geometry.size.height - 370))
                         .clipped()
                         .accessibilityElement(children: .ignore)
-                        .accessibilityLabel("App preview: \(details[page])")
+                        .accessibilityLabel(copy("App preview: \(details[page])", "معاينة التطبيق: \(details[page])"))
 
                     VStack(spacing: 8) {
                         Text(captions[page]).font(.system(size: 30, weight: .semibold, design: .serif))
@@ -54,7 +57,7 @@ struct CompanionOnboarding: View {
                                 Button { withAnimation(reduceMotion ? nil : .easeInOut(duration: 0.5)) { page = index } } label: {
                                     Capsule().fill(ink.opacity(page == index ? 0.8 : 0.20)).frame(width: page == index ? 20 : 6, height: 6)
                                         .frame(height: 28)
-                                }.accessibilityLabel("Preview \(index + 1): \(captions[index])")
+                                }.accessibilityLabel(copy("Preview \(index + 1): \(captions[index])", "المعاينة \(index + 1): \(captions[index])"))
                                     .accessibilityAddTraits(page == index ? .isSelected : [])
                             }
                         }
@@ -62,7 +65,7 @@ struct CompanionOnboarding: View {
 
                     VStack(spacing: 12) {
                         if account.signedIn {
-                            Button("Continue to Haneen", action: finish).font(.headline)
+                            Button(copy("Continue to Haneen", "المتابعة إلى حنين"), action: finish).font(.headline)
                                 .frame(maxWidth: .infinity).frame(height: 54)
                                 .foregroundStyle(paper).background(ink, in: Capsule())
                         } else {
@@ -74,30 +77,30 @@ struct CompanionOnboarding: View {
                             Button { Task { await account.google() } } label: {
                                 HStack(spacing: 12) {
                                     Image("GoogleSignInLogo").resizable().frame(width: 20, height: 20)
-                                    Text("Continue with Google").font(.system(size: 17, weight: .medium))
+                                    Text(copy("Continue with Google", "المتابعة باستخدام Google")).font(.system(size: 17, weight: .medium))
                                 }.frame(maxWidth: .infinity).frame(height: 52)
                                     .foregroundStyle(Color(white: 0.24)).background(.white, in: Capsule())
                             }.accessibilityIdentifier("welcome.google")
                             Button { account.message = nil; showEmail = true } label: {
-                                Label("Continue with email", systemImage: "envelope").font(.system(size: 17, weight: .semibold))
+                                Label(copy("Continue with email", "المتابعة بالبريد الإلكتروني"), systemImage: "envelope").font(.system(size: 17, weight: .semibold))
                                     .frame(maxWidth: .infinity).frame(height: 52)
                                     .background(ink.opacity(0.07), in: Capsule())
                                     .overlay(Capsule().strokeBorder(ink.opacity(0.16), lineWidth: 1))
                             }.accessibilityIdentifier("welcome.email")
                         }
                         if !account.signedIn {
-                            Button("Use Haneen without an account") { completeWelcome() }
+                            Button(copy("Use Haneen without an account", "استخدام حنين دون حساب")) { completeWelcome() }
                                 .font(.yqSubheadMedium)
                                 .frame(minHeight: 44)
                                 .accessibilityIdentifier("welcome.guest")
                         }
-                        if account.busy { ProgressView().tint(ink).accessibilityLabel("Signing in") }
+                        if account.busy { ProgressView().tint(ink).accessibilityLabel(copy("Signing in", "جارٍ تسجيل الدخول")) }
                         if let message = account.message, !showEmail {
                             Text(message).font(.footnote).multilineTextAlignment(.center).accessibilityAddTraits(.updatesFrequently)
                         }
                         HStack(spacing: 18) {
-                            Link("Privacy", destination: URL(string: "https://isharaf6.github.io/Sakina/privacy.html")!)
-                            Button("Sources") { showPrivacy = true }
+                            Link(copy("Privacy", "الخصوصية"), destination: URL(string: "https://isharaf6.github.io/Sakina/privacy.html")!)
+                            Button(copy("Sources", "المصادر")) { showPrivacy = true }
                         }.font(.caption).foregroundStyle(ink.opacity(0.65)).padding(.top, 3)
                     }.buttonStyle(.plain).disabled(account.busy).padding(.horizontal, 26).padding(.bottom, 16)
                 }.frame(minHeight: geometry.size.height)
@@ -105,7 +108,7 @@ struct CompanionOnboarding: View {
         }
         .sheet(isPresented: $showEmail) { WelcomeEmailView().presentationDragIndicator(.visible) }
         .sheet(isPresented: $showPrivacy) {
-            NavigationStack { AboutView().toolbar { ToolbarItem(placement: .confirmationAction) { Button("Done") { showPrivacy = false } } } }
+            NavigationStack { AboutView().toolbar { ToolbarItem(placement: .confirmationAction) { Button(copy("Done", "تم")) { showPrivacy = false } } } }
         }
         .task { if account.signedIn && !allowsDismiss { finish() } }
         .onChange(of: account.signedIn) { _, signedIn in if signedIn { finish() } }
@@ -130,6 +133,8 @@ struct CompanionOnboarding: View {
 private struct WelcomeAppPreview: View {
     let page: Int
     let reduceMotion: Bool
+    let language: AppLanguage
+    private var copy: AppCopy { AppCopy(language: language) }
     @Environment(\.colorScheme) private var scheme
     @State private var floating = false
     var body: some View {
@@ -167,11 +172,11 @@ private struct WelcomeAppPreview: View {
                     HomeView(path: .constant(NavigationPath()), openSearch: { _ in }).transition(.opacity)
                 } else if page == 1 {
                     VStack(spacing: 6) {
-                        HStack { Text("Al-Fatihah").font(.headline); Image(systemName: "chevron.down"); Spacer(); Text("Qur’an").font(.subheadline) }.padding(.horizontal, 20).frame(height: 40)
-                        PrintedMushafPage(page: 1, language: .english, onTap: { _ in }, onPageTap: {})
+                        HStack { Text(copy("Al-Fatihah", "الفاتحة")).font(.headline); Image(systemName: "chevron.down"); Spacer(); Text(copy("Qur’an", "القرآن")).font(.subheadline) }.padding(.horizontal, 20).frame(height: 40)
+                        PrintedMushafPage(page: 1, language: language, onTap: { _ in }, onPageTap: {})
                     }.background(MushafPaper.background).transition(.opacity)
                 } else {
-                    NavigationStack { DhikrListView(language: .english) }.transition(.opacity)
+                    NavigationStack { DhikrListView(language: language) }.transition(.opacity)
                 }
             }.frame(maxWidth: .infinity, maxHeight: .infinity).clipped()
             HStack(spacing: 38) {
@@ -185,6 +190,9 @@ private struct WelcomeAppPreview: View {
 }
 
 private struct WelcomeEmailView: View {
+    @AppStorage(SettingsKeys.appLanguage) private var languageRaw = AppLanguage.english.rawValue
+    private var language: AppLanguage { AppLanguage(rawValue: languageRaw) ?? .english }
+    private var copy: AppCopy { AppCopy(language: language) }
     @ObservedObject private var account = CompanionAccount.shared
     @Environment(\.dismiss) private var dismiss
     @State private var email = ""
@@ -196,32 +204,32 @@ private struct WelcomeEmailView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
                     CompanionIllustration(artwork: .privacy, size: 76)
-                    Text(sent ? "Check your inbox." : "Your email. You’re in.")
+                    Text(sent ? copy("Check your inbox.", "تفقّد بريدك الإلكتروني.") : copy("Your email. You’re in.", "سجّل الدخول ببريدك."))
                         .font(.system(size: 32, weight: .semibold, design: .serif))
-                    Text(sent ? "Open the sign-in email sent to \(email), then tap its link on this iPhone." : "New here or returning? Use your email to sign in. No password to remember.")
+                    Text(sent ? copy("Open the sign-in email sent to \(email), then tap its link on this iPhone.", "افتح رسالة تسجيل الدخول المرسلة إلى \(email)، واضغط على الرابط من هذا الهاتف.") : copy("New here or returning? Use your email to sign in. No password to remember.", "سواء كنت جديدًا أو لديك حساب، سجّل الدخول ببريدك الإلكتروني دون الحاجة إلى كلمة مرور."))
                         .font(.body).foregroundStyle(Color.yqSecondary)
                     if sent {
-                        Text("Have a code instead? Enter it below.").font(.footnote).foregroundStyle(Color.yqSecondary)
-                        TextField("Sign-in code", text: $code).textContentType(.oneTimeCode).keyboardType(.numberPad)
+                        Text(copy("Have a code instead? Enter it below.", "هل وصلك رمز تحقق بدلًا من رابط؟ أدخله هنا.")).font(.footnote).foregroundStyle(Color.yqSecondary)
+                        TextField(copy("Sign-in code", "رمز تسجيل الدخول"), text: $code).textContentType(.oneTimeCode).keyboardType(.numberPad)
                             .focused($focused).padding(18).background(Color.yqFill, in: RoundedRectangle(cornerRadius: 16))
                             .accessibilityIdentifier("auth.code")
-                        Button("Sign in") { Task { await account.verify(email: email, code: code) } }
+                        Button(copy("Sign in", "تسجيل الدخول")) { Task { await account.verify(email: email, code: code) } }
                             .buttonStyle(WelcomePrimaryButton()).disabled(code.trimmingCharacters(in: .whitespacesAndNewlines).count < 6)
-                        Button("Use another email") { sent = false; code = ""; account.message = nil; focused = true }
-                        Button("Send another email") { send() }
+                        Button(copy("Use another email", "استخدام بريد إلكتروني آخر")) { sent = false; code = ""; account.message = nil; focused = true }
+                        Button(copy("Send another email", "إرسال الرسالة مجددًا")) { send() }
                     } else {
-                        TextField("Email address", text: $email).textContentType(.emailAddress).keyboardType(.emailAddress)
+                        TextField(copy("Email address", "البريد الإلكتروني"), text: $email).textContentType(.emailAddress).keyboardType(.emailAddress)
                             .textInputAutocapitalization(.never).autocorrectionDisabled().focused($focused)
                             .submitLabel(.go).onSubmit { if validEmail { send() } }
                             .padding(18).background(Color.yqFill, in: RoundedRectangle(cornerRadius: 16))
                             .accessibilityIdentifier("auth.email")
-                        Button("Continue") { send() }.buttonStyle(WelcomePrimaryButton()).disabled(!validEmail)
+                        Button(copy("Continue", "متابعة")) { send() }.buttonStyle(WelcomePrimaryButton()).disabled(!validEmail)
                     }
                     if account.busy { ProgressView() }
                     if let message = account.message { Text(message).font(.footnote).foregroundStyle(Color.yqSecondary) }
                 }.padding(26).disabled(account.busy)
             }.background(Color.yqCanvas).navigationBarTitleDisplayMode(.inline)
-                .toolbar { ToolbarItem(placement: .cancellationAction) { Button("Close") { dismiss() } } }
+                .toolbar { ToolbarItem(placement: .cancellationAction) { Button(copy("Close", "إغلاق")) { dismiss() } } }
         }.tint(.yqAccentDeep).onChange(of: account.signedIn) { _, signedIn in if signedIn { dismiss() } }
     }
     private var validEmail: Bool { CompanionAccount.validEmail(email) }

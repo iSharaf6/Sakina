@@ -132,7 +132,7 @@ enum EmergencyGuidanceCatalog {
         EmergencyGuidancePrompt(
             id: "overwhelmed-responsibilities",
             titleEnglish: "When deadlines and responsibilities feel overwhelming",
-            titleArabic: "عندما تشعرك المواعيد والمسؤوليات بالإنهاك",
+            titleArabic: "عندما ترهقك المواعيد والمسؤوليات",
             situationID: "tooManyBurdens",
             searchAliasesEnglish: [
                 "When you're overwhelmed with deadlines",
@@ -212,7 +212,7 @@ enum EmergencyGuidanceCatalog {
         EmergencyGuidancePrompt(
             id: "effort-feels-unseen",
             titleEnglish: "When your effort feels unseen or produces no result",
-            titleArabic: "عندما تشعر أن جهدك لا يُرى أو لا يثمر",
+            titleArabic: "عندما تشعر أن جهدك لا يُقدَّر أو لا يثمر",
             situationID: "workNoResults",
             searchAliasesEnglish: [
                 "When you feel unseen for your effort",
@@ -222,7 +222,7 @@ enum EmergencyGuidanceCatalog {
         EmergencyGuidancePrompt(
             id: "alone-or-misunderstood",
             titleEnglish: "When you feel alone, invisible, or misunderstood",
-            titleArabic: "عندما تشعر بالوحدة أو أنك غير مرئي أو غير مفهوم",
+            titleArabic: "عندما تشعر بالوحدة أو بأن لا أحد يلاحظك أو يفهمك",
             situationID: "feelAlone",
             searchAliasesEnglish: [
                 "When you're studying alone and it feels lonely",
@@ -341,7 +341,7 @@ enum GuidanceCatalog {
                     titleEnglish: "Growing together",
                     titleArabic: "الحياة معًا",
                     promptEnglish: "What does your marriage need today?",
-                    promptArabic: "ماذا يحتاج زواجك اليوم؟",
+                    promptArabic: "ما الذي تحتاج إليه علاقتكما اليوم؟",
                     situationIDs: [
                         "peaceInMarriage", "treatSpouseKindly", "becomeBetterSpouse",
                         "speakKindly", "decidingTogether", "fairnessInMarriage",
@@ -366,7 +366,7 @@ enum GuidanceCatalog {
                     titleEnglish: "Separation & grief",
                     titleArabic: "الفراق والحزن",
                     promptEnglish: "What are you carrying after the relationship?",
-                    promptArabic: "ما الذي تحمله بعد انتهاء العلاقة؟",
+                    promptArabic: "ما الذي يثقل قلبك بعد انتهاء العلاقة؟",
                     situationIDs: ["divorceUnavoidable", "afterDivorce", "grievingSpouse"]
                 ),
             ]
@@ -374,9 +374,9 @@ enum GuidanceCatalog {
         LifeGroup(
             id: .family,
             titleEnglish: "Family & Parenthood",
-            titleArabic: "الأسرة والأبوة",
+            titleArabic: "الأسرة وتربية الأبناء",
             subtitleEnglish: "Guidance for children, the home, absence, and longing.",
-            subtitleArabic: "هداية للأبناء والبيت والغياب والاشتياق.",
+            subtitleArabic: "إرشاد لحياتك الأسرية وتربية أبنائك والتعامل مع الغياب والاشتياق.",
             symbol: "figure.2.and.child.holdinghands",
             stages: [
                 GuidanceStage(
@@ -384,7 +384,7 @@ enum GuidanceCatalog {
                     titleEnglish: "Children",
                     titleArabic: "الأبناء",
                     promptEnglish: "What are you hoping for as a parent?",
-                    promptArabic: "ما الذي ترجوه بصفتك والدًا؟",
+                    promptArabic: "ما الذي تتمناه لأبنائك وأسرتك؟",
                     situationIDs: ["raisingChildren", "prayingForChildren", "infertility"]
                 ),
                 GuidanceStage(
@@ -392,7 +392,7 @@ enum GuidanceCatalog {
                     titleEnglish: "Home & absence",
                     titleArabic: "البيت والغياب",
                     promptEnglish: "What is your family carrying?",
-                    promptArabic: "ما الذي تحمله أسرتك؟",
+                    promptArabic: "ما الذي يثقل على أسرتك؟",
                     situationIDs: ["spouseAway"]
                 ),
             ]
@@ -410,7 +410,7 @@ enum GuidanceCatalog {
                     titleEnglish: "Connection",
                     titleArabic: "الصلة بالله",
                     promptEnglish: "Where does your heart need anchoring?",
-                    promptArabic: "أين يحتاج قلبك إلى الثبات؟",
+                    promptArabic: "في أي أمر تحتاج إلى الثبات؟",
                     situationIDs: [
                         "needGuidance", "imanLow", "salahConnection", "hardToPray",
                         "losingFocus", "forgettingBlessings", "strugglingGrateful",
@@ -434,7 +434,7 @@ enum GuidanceCatalog {
             titleEnglish: "Worry & Hardship",
             titleArabic: "الهم والابتلاء",
             subtitleEnglish: "For fear, loneliness, hurt, comparison, and uncertain seasons.",
-            subtitleArabic: "للخوف والوحدة والأذى والمقارنة ومواسم عدم اليقين.",
+            subtitleArabic: "للخوف والوحدة والأذى ومقارنة النفس بالآخرين وأوقات الحيرة.",
             symbol: "cloud.sun",
             stages: [
                 GuidanceStage(
@@ -450,13 +450,13 @@ enum GuidanceCatalog {
                     titleEnglish: "Hurt & healing",
                     titleArabic: "الأذى والتعافي",
                     promptEnglish: "What is asking to be healed?",
-                    promptArabic: "ما الذي يحتاج إلى التعافي؟",
+                    promptArabic: "ما الذي تتمنى التعافي منه؟",
                     situationIDs: ["feelAlone", "disappointed", "movingOn", "someoneHurtsYou", "needToForgive"]
                 ),
                 GuidanceStage(
                     id: "wellbeing-worth",
                     titleEnglish: "Worth & comparison",
-                    titleArabic: "القيمة والمقارنة",
+                    titleArabic: "تقدير الذات والمقارنة",
                     promptEnglish: "What is making you doubt yourself?",
                     promptArabic: "ما الذي يجعلك تشك في نفسك؟",
                     situationIDs: ["everyoneAhead", "afraidPeopleThink", "feelingInsecure", "facingRejection"]
@@ -468,7 +468,7 @@ enum GuidanceCatalog {
             titleEnglish: "Work & Provision",
             titleArabic: "العمل والرزق",
             subtitleEnglish: "For money pressure, work, debt, decisions, and tawakkul.",
-            subtitleArabic: "لضغوط المال والعمل والدَّين والقرارات والتوكل.",
+            subtitleArabic: "إرشاد في شؤون المال والعمل والدَّين، واتخاذ القرارات والتوكل على الله.",
             symbol: "briefcase",
             stages: [
                 GuidanceStage(
@@ -510,7 +510,7 @@ enum GuidanceCatalog {
                     titleEnglish: "Decisions & risk",
                     titleArabic: "القرارات والمخاطرة",
                     promptEnglish: "What decision needs clarity?",
-                    promptArabic: "أي قرار يحتاج إلى وضوح؟",
+                    promptArabic: "ما القرار الذي تحاول حسمه؟",
                     situationIDs: ["afraidToRisk", "majorFinancialDecision"]
                 ),
             ]
@@ -650,105 +650,4 @@ enum GuidanceCatalog {
             score += 260
         }
     }
-}
-
-// MARK: - Arabic situation labels
-
-extension Situation {
-    func localizedTitle(_ language: AppLanguage) -> String {
-        language.pick(title, arabicTitle)
-    }
-
-    var arabicTitle: String {
-        ArabicSituationTitles.values[id] ?? title
-    }
-}
-
-private enum ArabicSituationTitles {
-    static let values: [String: String] = [
-        "beforeMarriage": "قبل الزواج",
-        "lookingForSpouse": "عندما تبحث عن شريك صالح",
-        "choosingSpouse": "عندما تختار من تتزوج",
-        "waitingForTiming": "عندما تنتظر توقيت الله",
-        "worriedNeverMarry": "عندما تخشى ألا تتزوج",
-        "strugglingPatience": "عندما يصعب عليك الصبر",
-        "peaceInMarriage": "عندما تطلب السكينة في زواجك",
-        "treatSpouseKindly": "عندما تحتاج إلى حسن معاملة زوجك",
-        "becomeBetterSpouse": "عندما تريد أن تكون زوجًا أفضل",
-        "speakKindly": "عندما تحتاج إلى الكلام بلطف مع زوجك",
-        "decidingTogether": "عندما تتخذان قرارًا معًا",
-        "fairnessInMarriage": "عندما تحتاج إلى العدل في زواجك",
-        "rebuildingTrust": "عندما تحاول إعادة بناء الثقة",
-        "duaForFamily": "عندما تدعو لأسرتك",
-        "feelingDistant": "عندما تشعر بالبعد عن زوجك",
-        "marriageProblems": "عندما تواجه مشكلات زوجية",
-        "constantlyArguing": "عندما يكثر الجدال بينكما",
-        "spouseWrongedYou": "عندما يظلمك زوجك",
-        "loweringAnger": "عندما يصعب عليك كظم الغيظ",
-        "forgivingSpouse": "عندما تحتاج إلى مسامحة زوجك",
-        "temptedToDivorce": "عندما تفكر في الطلاق بسبب خلاف",
-        "marriageTested": "عندما يمر زواجك بابتلاء",
-        "afraidWontLast": "عندما تخشى ألا يستمر زواجك",
-        "questioningChoice": "عندما تراجع اختيارك",
-        "trustingPlan": "عندما يصعب عليك الثقة بتدبير الله",
-        "trustingTiming": "عندما تثق بتوقيت الله",
-        "stayOrLeave": "عندما تحتار بين البقاء والفراق",
-        "raisingChildren": "عندما تربيان أبناءكما معًا",
-        "prayingForChildren": "عندما تدعو بأبناء صالحين",
-        "infertility": "عندما تواجه تأخر الإنجاب",
-        "spouseAway": "عندما يكون زوجك بعيدًا عن البيت",
-        "divorceUnavoidable": "عندما يصبح الطلاق لا مفر منه",
-        "afterDivorce": "عندما تتعافى بعد الطلاق",
-        "grievingSpouse": "عندما تحزن على وفاة زوجك",
-        "needGuidance": "عندما تحتاج إلى الهداية",
-        "imanLow": "عندما يضعف إيمانك",
-        "salahConnection": "عندما لا تجد الخشوع في الصلاة",
-        "hardToPray": "عندما تصعب عليك الصلاة",
-        "losingFocus": "عندما تفقد تركيزك",
-        "forgettingBlessings": "عندما تنسى نعم الله",
-        "strugglingGrateful": "عندما يصعب عليك الشكر",
-        "fightingTemptation": "عندما تجاهد الإغراء",
-        "madeAMistake": "عندما ترتكب خطأ",
-        "forgiveYourself": "عندما يدفعك الخجل إلى اليأس من رحمة الله",
-        "sameSin": "عندما تعود إلى الذنب نفسه",
-        "selfControl": "عندما تجاهد لضبط نفسك",
-        "scaredOfFuture": "عندما تخاف من المستقبل",
-        "afraidOfFailure": "عندما تخاف من الفشل",
-        "worriedTomorrow": "عندما تقلق بشأن الغد",
-        "feelAlone": "عندما تشعر بالوحدة",
-        "tooManyBurdens": "عندما تحمل أعباء كثيرة",
-        "disappointed": "عندما تشعر بخيبة الأمل",
-        "movingOn": "عندما تحاول المضي قدمًا",
-        "everyoneAhead": "عندما يبدو أن الجميع سبقوك",
-        "someoneHurtsYou": "عندما يؤذيك أحد",
-        "needToForgive": "عندما تحتاج إلى العفو",
-        "afraidPeopleThink": "عندما تخاف من كلام الناس",
-        "feelingInsecure": "عندما تشعر بعدم الأمان",
-        "facingRejection": "عندما تواجه الرفض",
-        "worriedAboutRizq": "عندما تقلق بشأن الرزق",
-        "strugglingFinancially": "عندما تمر بضائقة مالية",
-        "hesitantCharity": "عندما تتردد في الصدقة",
-        "comparingFinances": "عندما تقارن مالك بمال غيرك",
-        "financialBurdens": "عندما تثقل عليك الأعباء المالية",
-        "moneyStress": "عندما يسبب لك المال توترًا",
-        "afraidToSpend": "عندما تخاف من الإنفاق في سبيل الله",
-        "tomorrowRizq": "عندما تقلق بشأن رزق الغد",
-        "workNoResults": "عندما تعمل ولا ترى نتيجة",
-        "heartAttachedMoney": "عندما يتعلق قلبك بالمال",
-        "barakahInWealth": "عندما تطلب البركة في مالك",
-        "provisionDelayed": "عندما تظن أن رزقك تأخر",
-        "salaryNotEnough": "عندما لا يكفي راتبك",
-        "scaredStartBusiness": "عندما تخاف من بدء مشروع",
-        "stuckFinancially": "عندما تشعر أنك عالق ماليًا",
-        "jealousOfSuccess": "عندما تغار من نجاح غيرك",
-        "providingForFamily": "عندما تقلق بشأن الإنفاق على أسرتك",
-        "afraidToRisk": "عندما تخاف من المخاطرة",
-        "majorFinancialDecision": "عندما تتخذ قرارًا ماليًا كبيرًا",
-        "impatientForResults": "عندما تستعجل النتائج",
-        "everyoneAheadDuha": "عندما تشعر أن الجميع سبقوك",
-        "payingBills": "عندما تقلق بشأن سداد الفواتير",
-        "stressedAboutDebt": "عندما يرهقك الدَّين",
-        "losingJob": "عندما تخاف من فقدان عملك",
-        "savingsLow": "عندما تقل مدخراتك",
-    ]
 }

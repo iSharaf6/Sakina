@@ -484,7 +484,7 @@ enum CompanionContentCatalog {
             arabic: "مَا نَقَصَتْ صَدَقَةٌ مِنْ مَالٍ وَمَا زَادَ اللَّهُ عَبْدًا بِعَفْوٍ إِلَّا عِزًّا وَمَا تَوَاضَعَ أَحَدٌ لِلَّهِ إِلَّا رَفَعَهُ اللَّهُ",
             english: "Charity does not decrease wealth. Allah increases a servant in honour through pardon, and no one humbles himself for Allah except that Allah raises him.",
             contextEnglish: "The narration joins generosity, pardon, and humility to a deeper kind of increase. Pardon remains a moral choice; it does not erase accountability or require renewed access for someone unsafe.",
-            contextArabic: "يجمع الحديث بين الصدقة والعفو والتواضع وبين زيادة أعمق. ويبقى العفو فضيلة اختيارية، ولا يلغي المحاسبة ولا يوجب إعادة تمكين شخص غير آمن.",
+            contextArabic: "يجمع الحديث بين الصدقة والعفو والتواضع وبين صور مختلفة من الزيادة. ويبقى العفو فضيلة اختيارية، ولا يلغي المحاسبة ولا يوجب إعادة تمكين شخص غير آمن.",
             applicability: supporting(
                 "Direct for charity and supportive for forgiveness and reconciliation.",
                 "مباشر في الصدقة، ومساند في العفو والإصلاح."
@@ -503,7 +503,7 @@ enum CompanionContentCatalog {
             arabic: "الْمُؤْمِنُ الْقَوِيُّ خَيْرٌ وَأَحَبُّ إِلَى اللَّهِ مِنَ الْمُؤْمِنِ الضَّعِيفِ وَفِي كُلٍّ خَيْرٌ احْرِصْ عَلَى مَا يَنْفَعُكَ وَاسْتَعِنْ بِاللَّهِ وَلَا تَعْجِزْ وَإِنْ أَصَابَكَ شَيْءٌ فَلَا تَقُلْ لَوْ أَنِّي فَعَلْتُ كَانَ كَذَا وَكَذَا وَلَكِنْ قُلْ قَدَرُ اللَّهِ وَمَا شَاءَ فَعَلَ فَإِنَّ لَوْ تَفْتَحُ عَمَلَ الشَّيْطَانِ",
             english: "The strong believer is better and more beloved to Allah than the weak believer, though there is good in both. Pursue what benefits you, seek Allah's help, and do not give up. If something befalls you, do not say, ‘If only I had done this or that.’ Say instead, ‘Allah decreed, and He did what He willed,’ for ‘if only’ opens the work of Satan.",
             contextEnglish: "The hadith combines responsible action, seeking Allah's help, and a way to stop counterfactual regret after the outcome.",
-            contextArabic: "يجمع الحديث بين الأخذ بالأسباب والاستعانة بالله، ثم يعلّم إغلاق باب الندم الافتراضي بعد وقوع النتيجة.",
+            contextArabic: "يجمع الحديث بين الأخذ بالأسباب والاستعانة بالله، ثم يعلّم إغلاق باب الندم على ما كان يمكن أن يحدث بعد وقوع النتيجة.",
             applicability: supporting(
                 "A broad principle for decisions, setbacks, work, and recovery.",
                 "مبدأ عام للقرارات والتعثر والعمل والتعافي."
@@ -617,7 +617,7 @@ enum CompanionContentCatalog {
             arabic: "مَا يُصِيبُ الْمُسْلِمَ مِنْ نَصَبٍ وَلَا وَصَبٍ وَلَا هَمٍّ وَلَا حُزْنٍ وَلَا أَذًى وَلَا غَمٍّ حَتَّى الشَّوْكَةِ يُشَاكُهَا، إِلَّا كَفَّرَ اللَّهُ بِهَا مِنْ خَطَايَاهُ",
             english: "No fatigue, illness, anxiety, grief, harm, or distress afflicts a Muslim—even the prick of a thorn—except that Allah removes some sins through it.",
             contextEnglish: "Suffering is seen by Allah and can carry expiation. Seeking medical, psychological, financial, or practical help is fully compatible with patience.",
-            contextArabic: "الألم منظور عند الله وقد يكون كفارة. وطلب العلاج أو الدعم النفسي أو المالي أو العملي لا ينافي الصبر.",
+            contextArabic: "الألم لا يخفى على الله وقد يكون كفارة. وطلب العلاج أو الدعم النفسي أو المالي أو العملي لا ينافي الصبر.",
             applicability: supporting(
                 "A broad consolation for grief, anxiety, illness, and hardship.",
                 "تسلية عامة في الحزن والهم والمرض والابتلاء."
@@ -732,7 +732,7 @@ enum CompanionContentCatalog {
             arabic: "رَبَّنَا لَا تُزِغْ قُلُوبَنَا بَعْدَ إِذْ هَدَيْتَنَا وَهَبْ لَنَا مِن لَّدُنكَ رَحْمَةً ۚ إِنَّكَ أَنتَ ٱلْوَهَّابُ",
             transliteration: "Rabbana la tuzigh qulubana ba'da idh hadaytana wa hab lana min ladunka rahmah; innaka Anta-l-Wahhab.",
             meaningEnglish: "Our Lord, do not let our hearts deviate after You have guided us. Grant us mercy from Yourself; You alone are the Great Giver.",
-            meaningArabic: "يا ربنا، لا تمل قلوبنا عن الحق بعد هدايتك، وهب لنا رحمة من عندك؛ إنك كثير العطاء.",
+            meaningArabic: "يا ربنا، لا تجعل قلوبنا تميل عن الحق بعد هدايتك، وهب لنا رحمة من عندك؛ إنك كثير العطاء.",
             contextEnglish: "Ask for steadiness rather than assuming faith will remain strong without care, worship, and Allah's mercy.",
             contextArabic: "اسأل الثبات بدل أن تفترض بقاء الإيمان قويًا من غير تعاهد وعبادة ورحمة من الله.",
             kind: .quranic,
@@ -751,7 +751,7 @@ enum CompanionContentCatalog {
             meaningEnglish: "My Lord, grant me from Yourself good offspring. You are truly the Hearer of prayer.",
             meaningArabic: "يا رب، هب لي من عندك ذرية صالحة طيبة؛ إنك سميع الدعاء.",
             contextEnglish: "Zakariyya's Qur'anic prayer is appropriate while hoping for children. It does not promise a timeline or remove the legitimacy of medical care and grief support.",
-            contextArabic: "دعاء زكريا القرآني مناسب عند رجاء الذرية، لكنه لا يَعِد بوقت محدد ولا يلغي مشروعية العلاج ودعم الحزن.",
+            contextArabic: "دعاء زكريا القرآني مناسب عند رجاء الذرية، لكنه لا يَعِد بوقت محدد ولا يلغي مشروعية العلاج والدعم في أوقات الحزن.",
             kind: .quranic,
             applicability: direct(
                 "A direct Qur'anic request for good offspring.",
@@ -855,7 +855,7 @@ enum CompanionContentCatalog {
             meaningEnglish: "O Allah, I seek the better choice through Your knowledge, seek ability through Your power, and ask You from Your immense favour. You are able and I am not; You know and I do not; You are the Knower of the unseen. O Allah, if You know this matter is good for me in my religion, livelihood, and outcome—or in its near and distant effects—decree it for me, make it easy, then bless it for me. If You know it is bad for me in my religion, livelihood, and outcome—or in its near and distant effects—turn it away from me and turn me away from it. Decree the good for me wherever it may be, then make me content with it.",
             meaningArabic: "اللهم إني أطلب منك اختيار الخير بعلمك، وأطلب القدرة بقدرتك، وأسألك من فضلك العظيم؛ فأنت تقدر ولا أقدر، وتعلم ولا أعلم، وأنت علام الغيوب. إن كان هذا الأمر خيرًا لي في ديني ومعاشي وعاقبتي، في عاجله وآجله، فاقدره لي ويسره وبارك لي فيه. وإن كان شرًا لي فاصرفه عني واصرفني عنه، واقدر لي الخير حيث كان ثم أرضني به.",
             contextEnglish: "For a genuinely permissible choice, pray two non-obligatory rak'ahs, say the du'a, and name the matter. Then use sound information, consultation, and responsible action. Istikhara does not require a dream and does not make an unsafe or forbidden option permissible.",
-            contextArabic: "في قرار مباح حقًا، صل ركعتين من غير الفريضة، ثم ادع بهذا الدعاء وسمِّ حاجتك. وبعدها خذ بالمعلومات الصحيحة والمشاورة والأسباب المسؤولة. لا تشترط الاستخارة رؤيا، ولا تجعل الخيار المحرم أو غير الآمن مباحًا.",
+            contextArabic: "في قرار مباح حقًا، صل ركعتين من غير الفريضة، ثم ادع بهذا الدعاء وسمِّ حاجتك. وبعدها خذ بالأسباب بحكمة، مستعينًا بالمعلومات الصحيحة والمشاورة. لا تشترط الاستخارة رؤيا، ولا تجعل الخيار المحرم أو غير الآمن مباحًا.",
             kind: .prophetic,
             applicability: direct(
                 "Direct Prophetic guidance for seeking Allah's choice in a permissible decision.",
@@ -969,7 +969,7 @@ enum CompanionContentCatalog {
             meaningEnglish: "We belong to Allah, and to Him we return. O Allah, reward me in my calamity and replace it for me with something better.",
             meaningArabic: "إنا ملك لله وإليه عائدون. اللهم اكتب لي الأجر في مصيبتي، واخلف لي خيرًا منها.",
             contextEnglish: "Umm Salamah was taught these words in bereavement. ‘Better’ belongs to Allah's wisdom and may appear as faith, healing, protection, new good, or reward—not a forced timetable for grief.",
-            contextArabic: "عُلّمت أم سلمة هذه الكلمات عند الفقد. والخير البديل إلى حكمة الله؛ قد يكون إيمانًا أو شفاءً أو حماية أو خيرًا جديدًا أو أجرًا، وليس جدولًا مفروضًا لانتهاء الحزن.",
+            contextArabic: "عُلّمت أم سلمة هذه الكلمات عند الفقد. وأما الخير الذي يعوّض الله به فمرجعه إلى حكمته؛ قد يكون إيمانًا أو شفاءً أو حماية أو خيرًا جديدًا أو أجرًا، وليس جدولًا مفروضًا لانتهاء الحزن.",
             kind: .prophetic,
             applicability: direct(
                 "Directly narrated for a person struck by calamity.",
@@ -1065,7 +1065,7 @@ enum CompanionContentCatalog {
             id: "relationship-qualified-support",
             kind: .specialistSupport,
             titleEnglish: "Choose support that screens for harm",
-            titleArabic: "اختر دعمًا يتحرى عن الأذى",
+            titleArabic: "اطلب دعمًا يراعي مخاطر الأذى",
             messageEnglish: "For repeated conflict without immediate danger, seek a qualified couples counsellor or trusted local scholar who understands safeguarding and speaks to each person privately before joint work. Joint counselling can increase risk where coercive control or abuse is present.",
             messageArabic: "عند تكرر الخلاف من غير خطر مباشر، اطلب مستشارًا أسريًا مؤهلًا أو عالمًا محليًا موثوقًا يفهم إجراءات الحماية ويتحدث مع كل طرف على انفراد قبل الجلسات المشتركة. فقد تزيد الجلسات المشتركة الخطر عند وجود سيطرة قسرية أو إساءة."
         ),

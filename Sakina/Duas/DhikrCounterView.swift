@@ -19,7 +19,7 @@ struct DhikrListView: View {
         ScrollView(showsIndicators: false) {
             VStack(alignment: .leading, spacing: 22) {
                 PageHeader(title: copy("Dhikr counter", "عداد الذكر"),
-                           subtitle: copy("Tap to count. Your phone taps back.", "اضغط لتعدّ، وهاتفك يردّ عليك بنبضة."))
+                           subtitle: copy("Tap to count. Your phone taps back.", "اضغط مع كل ذكر، وستشعر باهتزاز خفيف."))
                     .revealed(0, appeared: appeared, reduceMotion: reduceMotion)
                 summary
                     .revealed(1, appeared: appeared, reduceMotion: reduceMotion)
@@ -44,13 +44,13 @@ struct DhikrListView: View {
                         AdhkarBenefitsView(language: language)
                     } label: {
                         BadgeRow(symbol: "sparkles", title: copy("Benefits of adhkar", "فضائل الأذكار"),
-                                 subtitle: copy("Eight reasons to keep counting.", "ثمانية أسباب تجعلك تواصل."),
+                                 subtitle: copy("Eight reasons to keep counting.", "ثمانية فضائل تشجّعك على المداومة."),
                                  badgeStyle: .tinted)
                     }
                     .buttonStyle(.yqPressSoft)
                 }
                 .revealed(3, appeared: appeared, reduceMotion: reduceMotion)
-                Text(copy("Counts are kept on this phone for thirty days.", "تُحفظ الأعداد على هذا الهاتف لثلاثين يومًا."))
+                Text(copy("Counts are kept on this phone for thirty days.", "يُحفظ سجلّ التكرار على هذا الهاتف لمدة ثلاثين يومًا."))
                     .font(.yqCaption)
                     .foregroundStyle(Color.yqTertiary)
                     .revealed(4, appeared: appeared, reduceMotion: reduceMotion)
@@ -70,20 +70,22 @@ struct DhikrListView: View {
         HStack(spacing: 14) {
             CompanionIllustration(artwork: .anytime, size: 52)
             VStack(alignment: .leading, spacing: 2) {
-                CapsLabel(text: copy("Today", "اليوم"))
+                CapsLabel(text: copy("Today", "إجمالي التكرارات اليوم"))
                 HStack(alignment: .firstTextBaseline, spacing: 6) {
                     Text(todayTotal.formatted(.number.locale(language.locale)))
                         .font(.yqNumber)
                         .foregroundStyle(Color.yqInk)
                         .contentTransition(.numericText())
-                    Text(copy(todayTotal == 1 ? "count" : "counts", "عدّة"))
-                        .font(.yqSubhead)
-                        .foregroundStyle(Color.yqSecondary)
+                    if language == .english {
+                        Text(todayTotal == 1 ? "count" : "counts")
+                            .font(.yqSubhead)
+                            .foregroundStyle(Color.yqSecondary)
+                    }
                 }
             }
             Spacer(minLength: 0)
             Text(todayTotal == 0
-                 ? copy("Begin with one.", "ابدأ بواحدة.")
+                 ? copy("Begin with one.", "ابدأ بذكر واحد.")
                  : copy("Keep going.", "واصل."))
                 .font(.yqSubheadMedium)
                 .foregroundStyle(Color.yqAccentDeep)
@@ -105,7 +107,7 @@ struct DhikrListView: View {
 
     private func rowLabel(for item: DhikrItem) -> String {
         let count = todayCounts[item.id] ?? 0
-        let base = "\(item.transliteration), \(item.meaning(language))"
+        let base = "\(language.pick(item.transliteration, item.arabic))\(language.listSeparator)\(item.meaning(language))"
         return count > 0 ? copy("\(base), \(count) today", "\(base)، \(count) اليوم") : base
     }
 }
@@ -170,9 +172,9 @@ struct DhikrCounterView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar(.visible, for: .navigationBar)
         .toolbar(.hidden, for: .tabBar)
-        .confirmationDialog(copy("Reset today’s count for this dhikr?", "إعادة عدّ اليوم لهذا الذكر؟"),
+        .confirmationDialog(copy("Reset today’s count for this dhikr?", "هل تريد تصفير عدّاد هذا الذكر لليوم؟"),
                             isPresented: $showResetConfirm, titleVisibility: .visible) {
-            Button(copy("Reset", "إعادة"), role: .destructive) { reset() }
+            Button(copy("Reset", "تصفير العدّاد"), role: .destructive) { reset() }
             Button(copy("Cancel", "إلغاء"), role: .cancel) {}
         }
         .alert(copy("Custom target", "هدف مخصص"), isPresented: $showCustomTarget) {
@@ -181,7 +183,7 @@ struct DhikrCounterView: View {
             Button(copy("Set", "تعيين")) { setTarget(customTarget) }
             Button(copy("Cancel", "إلغاء"), role: .cancel) {}
         } message: {
-            Text(copy("How many times do you want to count?", "كم مرة تريد أن تعدّ؟"))
+            Text(copy("How many times do you want to count?", "كم مرة تريد تكرار هذا الذكر؟"))
         }
         .onAppear {
             count = DhikrLog.count(for: item.id, in: dhikrLogRaw)
@@ -232,7 +234,7 @@ struct DhikrCounterView: View {
             ring
             lapTag
             Text(hasTapped
-                 ? copy("Tap anywhere to count", "اضغط في أي مكان لتعدّ")
+                 ? copy("Tap anywhere to count", "اضغط في أي مكان مع كل ذكر")
                  : copy("Tap anywhere to begin", "اضغط في أي مكان لتبدأ"))
                 .font(.yqCaption)
                 .foregroundStyle(Color.yqTertiary)
@@ -252,7 +254,7 @@ struct DhikrCounterView: View {
                 .onEnded { _ in pressing = false }
         )
         .accessibilityElement(children: .ignore)
-        .accessibilityLabel(copy("Count \(item.transliteration)", "عدّ \(item.transliteration)"))
+        .accessibilityLabel(copy("Count \(item.transliteration)", "عدّ \(item.arabic)"))
         .accessibilityValue(copy("\(count) of \(target)", "\(count) من \(target)"))
         .accessibilityAddTraits(.isButton)
         .accessibilityAction { tap() }
@@ -327,7 +329,7 @@ struct DhikrCounterView: View {
             .buttonStyle(.yqPress)
             .disabled(count == 0)
             .opacity(count == 0 ? 0.45 : 1)
-            .accessibilityLabel(copy("Reset today’s count", "إعادة عدّ اليوم"))
+            .accessibilityLabel(copy("Reset today’s count", "تصفير عدّاد اليوم"))
 
             Spacer(minLength: 0)
 
@@ -354,8 +356,8 @@ struct DhikrCounterView: View {
                 HStack(spacing: 6) {
                     Image(systemName: "flag.fill")
                         .font(.system(size: 13, weight: .semibold))
-                    Text(copy("Target · \(target.formatted(.number.locale(language.locale)))",
-                              "الهدف · \(target.formatted(.number.locale(language.locale)))"))
+                    Text(copy("Target, \(target.formatted(.number.locale(language.locale)))",
+                              "الهدف، \(target.formatted(.number.locale(language.locale)))"))
                         .font(.yqSubheadBold)
                         .monospacedDigit()
                 }

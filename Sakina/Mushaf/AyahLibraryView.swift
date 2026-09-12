@@ -129,7 +129,7 @@ struct AyahLibraryView: View {
                 EmptyGuidanceState(
                     title: copy("Make a category for what you're going through", "أنشئ تصنيفًا لما تمرّ به"),
                     detail: copy("Sad, hopeful, grateful. Save ayat under it from the mushaf.",
-                                 "حزين، متفائل، ممتن. احفظ الآيات تحته من المصحف."),
+                                 "حزن، أمل، امتنان. احفظ الآيات في التصنيف من المصحف."),
                     symbol: "folder.badge.plus",
                     artwork: .saved
                 )
@@ -245,7 +245,7 @@ struct AyahListView: View {
             VStack(alignment: .leading, spacing: 16) {
                 if visibleKeys.isEmpty {
                     EmptyGuidanceState(
-                        title: copy("Nothing here yet", "لا يوجد شيء بعد"),
+                        title: copy("Nothing here yet", "لا توجد آيات هنا بعد"),
                         detail: copy("Tap any ayah in the mushaf to save it here.", "اضغط على أي آية في المصحف لحفظها هنا."),
                         symbol: "text.book.closed.fill",
                         artwork: .quran
@@ -436,7 +436,7 @@ struct CategoryEditorSheet: View {
     private var nameField: some View {
         VStack(alignment: .leading, spacing: 10) {
             SectionHeader(copy("Name", "الاسم"))
-            TextField(copy("Sad, hope, gratitude…", "حزين، أمل، امتنان…"), text: $name)
+            TextField(copy("Sad, hope, gratitude…", "حزن، أمل، امتنان…"), text: $name)
                 .font(.yqBody)
                 .foregroundStyle(Color.yqInk)
                 .focused($nameFocused)
@@ -573,13 +573,8 @@ enum AyahLibraryCopy {
     /// "3 ayat" with the Arabic plural forms.
     static func ayatCount(_ count: Int, _ language: AppLanguage) -> String {
         guard language == .arabic else { return count == 1 ? "1 ayah" : "\(count) ayat" }
-        switch count {
-        case 0: return "لا آيات"
-        case 1: return "آية واحدة"
-        case 2: return "آيتان"
-        case 3...10: return "\(count) آيات"
-        default: return "\(count) آية"
-        }
+        return ArabicCount.label(count, zero: "لا آيات", one: "آية واحدة", two: "آيتان",
+                                 few: "آيات", many: "آية", other: "آية")
     }
 
     /// Reference, Arabic, translation and the Quran.com link.

@@ -176,7 +176,7 @@ async function buildManifest(root) {
   const [catalogSource, guidanceSource, reflectionsSource, verseFileSource] =
     await Promise.all([
       readFile(resolve(root, "Shared/QuranCatalog.swift"), "utf8"),
-      readFile(resolve(root, "Shared/GuidanceCatalog.swift"), "utf8"),
+      readFile(resolve(root, "Shared/ArabicSituationTitles.swift"), "utf8"),
       readFile(resolve(root, "Shared/ArabicReflections.swift"), "utf8"),
       readFile(resolve(root, "Shared/Resources/verses.json"), "utf8"),
     ]);

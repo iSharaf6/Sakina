@@ -23,7 +23,7 @@ struct DailyGoalsView: View {
         ScrollView(showsIndicators: false) {
             VStack(alignment: .leading, spacing: 20) {
                 PageHeader(title: copy("Daily goals", "أهداف اليوم"),
-                           subtitle: copy("Small, daily, yours.", "صغيرة، يومية، لك."))
+                           subtitle: copy("Small, daily, yours.", "أهداف بسيطة تختارها ليومك."))
                     .revealed(0, appeared: appeared, reduceMotion: reduceMotion)
                 hero.revealed(1, appeared: appeared, reduceMotion: reduceMotion)
                 today.revealed(2, appeared: appeared, reduceMotion: reduceMotion)
@@ -147,7 +147,7 @@ struct DailyGoalsView: View {
     // MARK: Footer
 
     private var footer: some View {
-        Text(copy("Goals reset every morning. No streaks, no scores.", "تتجدد الأهداف كل صباح. لا سلاسل ولا نقاط."))
+        Text(copy("Goals reset every morning. No streaks, no scores.", "تتجدد الأهداف كل صباح. بلا نقاط أو حساب لأيام المواظبة."))
             .font(.yqCaption)
             .foregroundStyle(Color.yqTertiary)
             .multilineTextAlignment(.center)
@@ -178,7 +178,7 @@ private struct GoalRow: View {
             .buttonStyle(.yqPressSoft)
             .accessibilityLabel(goal.title(language))
             .accessibilityValue(isDone ? copy("Done", "تم") : copy("Not yet", "ليس بعد"))
-            .accessibilityHint(isDone ? copy("Marks it as not done", "يلغي الإتمام") : copy("Marks it as done", "يعلّمه كمُنجز"))
+            .accessibilityHint(isDone ? copy("Marks it as not done", "يلغي تحديد الهدف كمُنجز") : copy("Marks it as done", "يحدّد الهدف كمُنجز"))
 
             if let practice = goal.practice {
                 NavigationLink(value: practice) { label(showsChevron: true) }
@@ -289,7 +289,7 @@ private struct GoalPickerSheet: View {
             ScrollView(showsIndicators: false) {
                 VStack(alignment: .leading, spacing: 12) {
                     Text(copy("Keep the goals that fit your day. You can change this any time.",
-                              "أبقِ الأهداف التي تناسب يومك. يمكنك تغييرها في أي وقت."))
+                              "اختر الأهداف التي تناسب يومك. يمكنك تغييرها في أي وقت."))
                         .font(.yqSubhead)
                         .foregroundStyle(Color.yqSecondary)
                         .fixedSize(horizontal: false, vertical: true)
@@ -373,9 +373,9 @@ struct DailyGoalsCard: View {
     private var subtitle: String {
         if enabled.isEmpty { return copy("Choose a few goals", "اختر بعض الأهداف") }
         guard let next else { return copy("All done today", "تم كل شيء اليوم") }
-        if doneCount == 0 { return copy("Start with: \(next.title(language))", "ابدأ بـ: \(next.title(language))") }
-        return copy("\(doneCount) of \(enabled.count) done · next: \(next.title(language))",
-                    "\(doneCount) من \(enabled.count) · التالي: \(next.title(language))")
+        if doneCount == 0 { return copy("Start with: \(next.title(language))", "هدفك الأول: \(next.title(language))") }
+        return copy("\(doneCount) of \(enabled.count) done, next: \(next.title(language))",
+                    "أُنجز \(doneCount) من \(enabled.count)، التالي: \(next.title(language))")
     }
 
     var body: some View {

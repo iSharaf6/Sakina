@@ -36,17 +36,18 @@ enum CompanionReminderPlan {
         var items: [Item] = []
         if defaults.bool(forKey: SettingsKeys.reminderEnabled) {
             let titles = ["A little room for reflection", "One ayah. A fresh perspective.", "Pause here for a moment", "Something to carry into today", "Your quiet corner is here", "A moment for your heart", "Begin again, gently"]
+            let arabicTitles = ["فسحة للتأمل", "آية تفتح لك أفقًا جديدًا", "خذ لحظة للهدوء", "تأمل يرافق يومك", "ركنك للهدوء بانتظارك", "لحظة لقلبك", "ابدأ من جديد برفق"]
             let hour = allowedHour(defaults.object(forKey: SettingsKeys.reminderHour) as? Int ?? 9)
             let minute = defaults.integer(forKey: SettingsKeys.reminderMinute)
             for day in 1...7 {
-                items.append(Item(id: "yaqeen.guidance.\(day)", title: text(titles[day - 1], "لحظة هادئة مع القرآن"),
+                items.append(Item(id: "yaqeen.guidance.\(day)", title: text(titles[day - 1], arabicTitles[day - 1]),
                                   body: text("An ayah and a small reflection are waiting in Haneen.", "آية وتأمل قصير بانتظارك في حنين."),
                                   destination: "haneen://daily", components: DateComponents(hour: hour, minute: minute, weekday: day), repeats: true, prayer: false))
             }
         }
         for (key, hour, collection, title, body) in [
             (morningKey, 8, "morning", text("Meet the morning with dhikr", "ابدأ صباحك بالذكر"), text("A few quiet minutes for your morning adhkar.", "دقائق هادئة لأذكار الصباح.")),
-            (eveningKey, 18, "evening", text("Let the day soften", "مساء يطمئن فيه القلب"), text("Your evening adhkar are here when you’re ready.", "أذكار المساء بانتظارك متى كنت مستعدًا."))
+            (eveningKey, 18, "evening", text("Let the day soften", "مساء يطمئن فيه القلب"), text("Your evening adhkar are here when you’re ready.", "أذكار المساء بانتظارك حين تكون مستعدًا."))
         ] where defaults.bool(forKey: key) {
             items.append(Item(id: "yaqeen.\(collection)", title: title, body: body, destination: "haneen://collection/\(collection)",
                               components: DateComponents(hour: allowedHour(hour), minute: 0), repeats: true, prayer: false))
@@ -58,7 +59,7 @@ enum CompanionReminderPlan {
                 let name = event.kind.displayName(locale: Locale(identifier: arabic ? "ar" : "en"))
                 var components = calendar.dateComponents([.year, .month, .day, .hour, .minute, .second], from: event.time)
                 components.timeZone = calendar.timeZone
-                items.append(Item(id: "yaqeen.prayer.\(Int(event.time.timeIntervalSince1970))", title: text("It’s time for \(name)", "حان وقت \(name)"),
+                items.append(Item(id: "yaqeen.prayer.\(Int(event.time.timeIntervalSince1970))", title: text("It’s time for \(name)", "حان وقت صلاة \(name)"),
                                   body: schedule.locationLabel, destination: "haneen://prayer-times", components: components, repeats: false, prayer: true))
             }
         }
@@ -96,8 +97,9 @@ final class ReminderCenter: ObservableObject {
             }
             center.removePendingNotificationRequests(withIdentifiers: owned)
             guard status == .authorized || status == .provisional else { return }
-            let open = UNNotificationAction(identifier: "open", title: "Open Haneen", options: .foreground)
-            let later = UNNotificationAction(identifier: "later", title: "In 10 minutes", options: [])
+            let language = AppLanguage(rawValue: UserDefaults.standard.string(forKey: SettingsKeys.appLanguage) ?? "en") ?? .english
+            let open = UNNotificationAction(identifier: "open", title: language.pick("Open Haneen", "افتح حنين"), options: .foreground)
+            let later = UNNotificationAction(identifier: "later", title: language.pick("In 10 minutes", "بعد ١٠ دقائق"), options: [])
             center.setNotificationCategories([UNNotificationCategory(identifier: "companion", actions: [open, later], intentIdentifiers: [])])
             for item in plan {
                 guard !Task.isCancelled else { return }
@@ -118,6 +120,9 @@ final class ReminderCenter: ObservableObject {
 }
 
 struct ReminderSettingsView: View {
+    @AppStorage(SettingsKeys.appLanguage) private var languageRaw = AppLanguage.english.rawValue
+    private var language: AppLanguage { AppLanguage(rawValue: languageRaw) ?? .english }
+    private func copy(_ english: String, _ arabic: String) -> String { language.pick(english, arabic) }
     @ObservedObject private var center = ReminderCenter.shared
     @AppStorage(SettingsKeys.reminderEnabled) private var daily = false
     @AppStorage(SettingsKeys.reminderHour) private var hour = 9
@@ -135,44 +140,53 @@ struct ReminderSettingsView: View {
                 HStack(spacing: 16) {
                     CompanionIllustration(artwork: .reminder, size: 80)
                     VStack(alignment: .leading, spacing: 6) {
-                        Text("A rhythm that fits you").font(.yqTitle2)
-                        Text("Choose the moments you want to make room for.").font(.yqSubhead).foregroundStyle(Color.yqSecondary)
+                        Text(copy("A rhythm that fits you", "تذكيرات تناسب يومك")).font(.yqTitle2)
+                        Text(copy("Choose the moments you want to make room for.", "اختر ما تريد أن تخصّص له وقتًا في يومك.")).font(.yqSubhead).foregroundStyle(Color.yqSecondary)
                     }
                 }
                 if center.status == .notDetermined {
-                    Button("Allow notifications") { Task { await center.enablePermissions() } }.buttonStyle(.borderedProminent)
+                    Button(copy("Allow notifications", "السماح بالإشعارات")) { Task { await center.enablePermissions() } }.buttonStyle(.borderedProminent)
                 } else if center.status == .denied {
-                    Button("Enable notifications in iPhone Settings") { openURL(URL(string: UIApplication.openSettingsURLString)!) }
+                    Button(copy("Enable notifications in iPhone Settings", "فعّل الإشعارات من إعدادات iPhone")) { openURL(URL(string: UIApplication.openSettingsURLString)!) }
                 }
                 RowGroup {
-                    Toggle("Daily reflection", isOn: $daily).padding(16)
+                    Toggle(copy("Daily reflection", "تأمل يومي"), isOn: $daily).padding(16)
                     if daily {
-                        DatePicker("Your time", selection: Binding(get: { Calendar.current.date(from: DateComponents(hour: hour, minute: minute)) ?? .now }, set: {
+                        DatePicker(copy("Your time", "الوقت المناسب لك"), selection: Binding(get: { Calendar.current.date(from: DateComponents(hour: hour, minute: minute)) ?? .now }, set: {
                             let parts = Calendar.current.dateComponents([.hour, .minute], from: $0); hour = parts.hour ?? 9; minute = parts.minute ?? 0
                         }), displayedComponents: .hourAndMinute).padding(16)
                     }
                     RowDivider(inset: 16)
-                    Toggle("Morning adhkar · 8 am", isOn: $morning).padding(16)
+                    Toggle(copy("Morning adhkar, 8 am", "أذكار الصباح، ٨ صباحًا"), isOn: $morning).padding(16)
                     RowDivider(inset: 16)
-                    Toggle("Evening adhkar · 6 pm", isOn: $evening).padding(16)
+                    Toggle(copy("Evening adhkar, 6 pm", "أذكار المساء، ٦ مساءً"), isOn: $evening).padding(16)
                     RowDivider(inset: 16)
-                    Toggle("The five daily prayers", isOn: $prayers).padding(16)
+                    Toggle(copy("The five daily prayers", "الصلوات الخمس"), isOn: $prayers).padding(16)
                 }
-                Text("Prayer alerts follow your saved location and calculation method, including Fajr. Open Haneen at least weekly to refresh the coming days. Sunrise is shown in widgets but doesn’t send an adhan alert.")
+                Text(copy("Prayer alerts follow your saved location and calculation method, including Fajr. Open Haneen at least weekly to refresh the coming days. Sunrise is shown in widgets but doesn’t send an adhan alert.", "تُحدَّد تنبيهات الصلاة، بما فيها الفجر، بحسب موقعك المحفوظ وطريقة الحساب التي اخترتها. افتح حنين مرة أسبوعيًا على الأقل لتحديث مواقيت الأيام القادمة. يظهر موعد الشروق في الأدوات دون إرسال تنبيه للأذان."))
                     .font(.yqCaption).foregroundStyle(Color.yqSecondary)
-                if prayers && SharedStore.prayerSchedule == nil { Text("Set your prayer location in Settings to schedule prayer alerts.").foregroundStyle(Color.yqAccentDeep) }
+                if prayers && SharedStore.prayerSchedule == nil { Text(copy("Set your prayer location in Settings to schedule prayer alerts.", "حدّد موقعك في إعدادات الصلاة لتفعيل تنبيهاتها.")).foregroundStyle(Color.yqAccentDeep) }
                 RowGroup {
-                    Toggle("Notification sound", isOn: $sound).padding(16)
+                    Toggle(copy("Notification sound", "صوت الإشعارات"), isOn: $sound).padding(16)
                     RowDivider(inset: 16)
-                    Picker("Quiet hours begin", selection: $quietStart) { ForEach(0..<24) { Text(String(format: "%02d:00", $0)).tag($0) } }.padding(16)
-                    Picker("Quiet hours end", selection: $quietEnd) { ForEach(0..<24) { Text(String(format: "%02d:00", $0)).tag($0) } }.padding(16)
+                    Picker(copy("Quiet hours begin", "بداية ساعات الهدوء"), selection: $quietStart) { ForEach(0..<24) { Text(hourLabel($0)).tag($0) } }.padding(16)
+                    Picker(copy("Quiet hours end", "نهاية ساعات الهدوء"), selection: $quietEnd) { ForEach(0..<24) { Text(hourLabel($0)).tag($0) } }.padding(16)
                 }
-                Text("Reflections and adhkar move to the end of quiet hours. Prayer alerts stay at the prayer time. Sound uses your iPhone’s notification tone.").font(.yqCaption).foregroundStyle(Color.yqSecondary)
+                Text(copy("Reflections and adhkar move to the end of quiet hours. Prayer alerts stay at the prayer time. Sound uses your iPhone’s notification tone.", "تُؤجَّل تذكيرات التأمل والأذكار إلى نهاية ساعات الهدوء. وتبقى تنبيهات الصلاة في مواعيدها، ويُستخدم صوت الإشعارات المحدّد على iPhone.")).font(.yqCaption).foregroundStyle(Color.yqSecondary)
                 if let error = center.error { Text(error).font(.yqCaption).foregroundStyle(.red) }
             }.padding(20)
-        }.yqScreen().navigationTitle("Your reminders").navigationBarTitleDisplayMode(.inline)
+        }.yqScreen().navigationTitle(copy("Your reminders", "تذكيراتك")).navigationBarTitleDisplayMode(.inline)
+            .yaqeenLanguage(language)
             .task { await center.refreshStatus() }
             .onChange(of: [daily, prayers, morning, evening, sound]) { _, _ in center.refresh() }
             .onChange(of: [hour, minute, quietStart, quietEnd]) { _, _ in center.refresh() }
+    }
+
+    private func hourLabel(_ value: Int) -> String {
+        let formatter = DateFormatter()
+        formatter.locale = language.locale
+        formatter.dateFormat = "HH:mm"
+        let date = Calendar.current.date(from: DateComponents(hour: value, minute: 0)) ?? .now
+        return formatter.string(from: date)
     }
 }
