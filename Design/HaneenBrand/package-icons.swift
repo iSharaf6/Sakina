@@ -1,10 +1,10 @@
 import AppKit
 import ImageIO
 
-// Run from the repository root after the full-bleed cream master is installed.
+// Run from the repository root using the approved Simple Companion master.
 // iOS applies its own icon mask: never add a corner radius or inset here.
 let root = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
-let masterPath = "Design/HaneenBrand/AppIcon-Cream.png"
+let masterPath = "Design/HaneenBrand/AppIcon-SimpleCompanion.png"
 
 func failure(_ message: String) -> NSError {
     NSError(domain: "HaneenIconPackaging", code: 1,
@@ -32,7 +32,7 @@ let isOpaque = pixels.withUnsafeMutableBytes { buffer -> Bool in
     return stride(from: 3, to: bytes.count, by: 4).allSatisfy { bytes[$0] == 255 }
 }
 guard isOpaque else {
-    throw failure("The cream master contains transparency. Supply an opaque, full-bleed square before packaging.")
+    throw failure("The icon master contains transparency. Supply an opaque, full-bleed square before packaging.")
 }
 
 func icon(_ size: Int, _ path: String) throws {

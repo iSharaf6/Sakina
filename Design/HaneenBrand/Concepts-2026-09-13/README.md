@@ -1,16 +1,16 @@
 # Haneen icon directions — 13 September 2026
 
-**Latest direction:** the user clarified that the icon should be much simpler, using name-led and minimal mascot icons as references. See `SIMPLIFIED.md` and `index.html` for the two newer concepts. The recommended direction for that clarified brief is the Arabic wordmark. The three initial concepts below are retained as exploration history, accessible in `earlier-directions.html`.
+**Selected for Haneen:** the user approved **Simple Companion**, `04-simple-companion.png`, as the app icon. Its production master is `../AppIcon-SimpleCompanion.png`, used by the release icon packaging script. The detailed companion artwork inside the app remains unchanged. See `SIMPLIFIED.md` for the final selection and `index.html` for the selected icon alongside the archived wordmark alternative. The three initial concepts below remain exploration history in `earlier-directions.html`.
 
-Three new compositions generated with the built-in image generation tool, using the current cream icon (preserved here as `00-current-icon.png`) only as the character and style reference. Opaque warm cream artwork; no change to the installed app icon during concept review.
+The three initial compositions were generated with the built-in image generation tool, using the then-current cream icon (preserved here as `00-current-icon.png`) only as the character and style reference. They used opaque warm cream artwork and did not replace the installed app icon during their initial review.
 
 Open `earlier-directions.html` for the former icon alongside the initial three concepts, with light and dark 60px previews. The preview uses CSS to approximate iOS rounded masking; the PNG masters remain square.
 
-## Review
+## Initial review, retained as history
 
-Recommended: **1 — Reading companion**. Its broad open olive Qur’an and larger face remain separate and recognisable at 60px. The smaller rehal supports the religious context without dominating the composition. Quiet embrace is the second choice; the larger dark tail adds visual weight. Little sanctuary has the strongest architectural cue, but the book and olive arch merge at small sizes.
+The initial recommendation was **1 — Reading companion**, before the user clarified the simpler direction and ultimately selected Simple Companion. Reading Companion’s broad open olive Qur’an and larger face remained separate and recognisable at 60px. The smaller rehal supports the religious context without dominating the composition. Quiet embrace is the second choice; the larger dark tail adds visual weight. Little sanctuary has the strongest architectural cue, but the book and olive arch merge at small sizes.
 
-Inspected the actual comparison page at 60 CSS pixels on cream and dark-purple backgrounds. All three PNG masters are square, 1254 × 1254 pixels, opaque RGB without an alpha channel. The previews use approximate CSS corner masks, not device screenshots. App asset catalogs and signing files have not changed. No app build is needed for these standalone design concepts.
+Inspected the actual comparison page at 60 CSS pixels on cream and dark-purple backgrounds. All three PNG masters are square, 1254 × 1254 pixels, opaque RGB without an alpha channel. The previews use approximate CSS corner masks, not device screenshots. These observations describe the initial standalone concept review, before the selected Simple Companion was promoted to the release master. The other concepts are retained for reference and are not packaging inputs.
 
 ## Prompt set
 

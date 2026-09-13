@@ -1,13 +1,15 @@
-# Simpler Haneen icon exploration
+# Haneen’s selected Simple Companion icon
 
 The user preferred the direction of the reading companion but found it wrong, then clarified that their reference icons use very simple shapes or names with little visual clutter. The new directions remove the detailed pencil shading, large wooden stand, body and tail, and compare a simple mascot/book symbol against an Arabic name mark.
 
-## Outputs and review
+## Final selection
 
-- `04-simple-companion.png`: simplified cat head and open olive Qur’an.
-- `05-arabic-wordmark.png`: the Arabic app name, حنين. Recommended for the clarified brief: calmer, mature, and immediately readable. The Arabic lettering and dots were independently checked.
+- **Selected by the user: `04-simple-companion.png`**, the simplified cat head and open olive Qur’an. This is the app icon, promoted unchanged to `../AppIcon-SimpleCompanion.png` for release packaging. It retains the familiar cat and the app’s Qur’an purpose with fewer details.
+- `05-arabic-wordmark.png` remains an archived alternative, not the selected icon. Its Arabic lettering, حنين, and dots were independently checked during review.
 
-Both PNGs are 1254 × 1254, square, opaque, with no alpha channel. Built-in image generation; no external API key or CLI generation. App icon replacement is not part of these preview files.
+The detailed pencil-style companion illustrations and transparent brand artwork inside the app remain unchanged.
+
+Both PNGs are 1254 × 1254, square, opaque, with no alpha channel. Built-in image generation; no external API key or CLI generation. The selected Simple Companion master is packaged by `../package-icons.swift` into all required app icon sizes. iOS applies the rounded mask; it is not baked into the PNGs. Other concept files remain design history.
 
 ## Full prompts
 

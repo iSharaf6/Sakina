@@ -210,7 +210,7 @@ Hadith and du’a live in a separate curated catalog with canonical source URLs,
 | `supabase/` | Database migrations, RLS policies, Edge Functions, manifests, and backend deployment notes |
 | `scripts/generate-guidance-manifest.mjs` | Deterministic app-catalog to review-queue manifest generator |
 | `Design/Scholar/` | Accepted dashboard concepts and implementation design specification |
-| `Design/YaqeenAppIcon-1024.png` | Master Haneen icon artwork |
+| `Design/HaneenBrand/AppIcon-SimpleCompanion.png` | Approved Simple Companion app-icon master |
 | `project.yml` | XcodeGen source of truth for targets, packages, plist values, and entitlements |
 
 ## Current interface
