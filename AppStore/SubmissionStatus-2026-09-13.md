@@ -15,7 +15,8 @@ App Store Connect app `6811555262`, bundle `com.islamsharaf.sakina`, version **1
 ## Saved App Store settings
 
 - Owner-approved six English (Australia) screenshots, verified in order after reload.
-- Listing and review notes from `SubmissionMetadata.en-AU.json`, subtitle “Qur’an, Du’a & Prayer”, support URL, copyright and review contact saved. Sign-in is optional.
+- Listing and review notes from `SubmissionMetadata.en-AU.json`, subtitle “Quran, Dua & Prayer Times”, support URL, copyright and review contact saved. Sign-in is optional.
+- Search metadata updated at the owner's request: 25-character subtitle and 100-byte keyword set from the matching JSON and listing files. Both fields saved in App Store Connect and verified after reopening. Keywords cover specific features and routines without repeating subtitle terms; effectiveness must be measured after release.
 - Reference category, free pricing in every region, Australia as base. Public distribution, 175 regions available on release, including future regions. Mac and Vision Pro availability disabled for this iPhone release.
 - Automatic release after App Review approval selected.
 - Privacy policy URL verified publicly and entered. The 11-category supplier-inclusive privacy label from `AppPrivacySubmission.md` is published; all selected types linked, none tracking.

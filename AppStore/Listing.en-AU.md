@@ -6,13 +6,13 @@ English (Australia) draft for the first release. The matching JSON file contains
 Haneen
 
 ## Subtitle
-Qur’an, Du’a & Prayer
+Quran, Dua & Prayer Times
 
 ## Promotional text
 Read Qur’an, find a du’a for the moment you’re in, and keep prayer times close with illustrated widgets. In Arabic and English, with no ads or subscriptions.
 
 ## Keywords
-quran,dua,islam,muslim,dhikr,adhkar,qibla,prayer,adhan,mushaf,tasbih,mosque,hadith,arabic
+dhikr,tasbih,counter,azkar,qibla,compass,widget,muslim,offline,reader,ruqyah,morning,evening,anxiety
 
 ## Description
 Read Qur’an, keep up with prayer, and find words for what you’re feeling. Haneen brings your daily worship together in Arabic and English, with warm illustrations and room to make it your own.
@@ -57,13 +57,14 @@ Confirm the App Store Connect app record, copyright declaration, content-rights 
 - Widget completion reflects recorded morning/evening adhkar activity, not an inferred streak. The listing does not promise every design in every widget size.
 - Qur’an/du’a quotations and third-party translations were not changed for this draft. Source attribution alone does not confirm redistribution rights; content-rights declarations still require the owner’s review.
 - Metadata limits were checked against [Apple’s platform version reference](https://developer.apple.com/help/app-store-connect/reference/app-information/platform-version-information) and [product page guidance](https://developer.apple.com/app-store/product-page/). The keyword field uses ASCII, so its byte and character counts are equal.
+- Search metadata uses the subtitle for Quran, dua and prayer times, reserving keywords for specific features and routines: dhikr/tasbih counter, Qibla compass, widgets, offline reading, ruqyah, morning/evening adhkar and feeling-based readings. The anxiety term describes spiritual readings for that feeling, not a treatment claim. This is a relevance-based launch hypothesis, without measured keyword demand or ranking guarantees. [Apple’s search guidance](https://developer.apple.com/app-store/search/) recommends avoiding subtitle duplicates and measuring search impressions, conversion and downloads after release.
 
 ## Field counts
 | Field | Count | Limit |
 | --- | ---: | ---: |
 | name | 6 | 30 |
-| subtitle | 21 | 30 |
+| subtitle | 25 | 30 |
 | promotionalText | 157 | 170 |
-| keywords | 89 | 100 |
+| keywords | 100 | 100 |
 | description | 1564 | 4000 |
 | reviewNotes | 1953 | 4000 |
