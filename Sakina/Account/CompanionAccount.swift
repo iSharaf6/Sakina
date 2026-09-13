@@ -272,7 +272,7 @@ private struct AccountDeletionSheet: View {
                         .lineLimit(4...7)
                         .onChange(of: feedback) { _, value in if value.count > 1000 { feedback = String(value.prefix(1000)) } }
                 } header: { Text(copy("Optional feedback", "ملاحظات اختيارية")) }
-                  footer: { Text(copy("If you leave feedback, it is sent to Haneen without your account identifier. Please leave out personal details. You can delete without answering.", "إذا أرسلت ملاحظات، فستصل إلى حنين دون معرّف حسابك. يرجى عدم ذكر معلومات شخصية. يمكنك حذف الحساب دون الإجابة.")) }
+                  footer: { Text(copy("Feedback is sent with your authenticated deletion request, then stored without your account identifier. Please leave out personal details. You can delete without answering.", "تُرسل الملاحظات مع طلب الحذف باستخدام جلسة تسجيل دخولك، ثم تُحفظ دون معرّف حسابك. يرجى عدم ذكر معلومات شخصية. يمكنك حذف الحساب دون الإجابة.")) }
                 Section {
                     Button(copy("Delete account", "حذف الحساب"), role: .destructive) { confirm = true }
                         .disabled(account.busy)

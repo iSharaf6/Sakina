@@ -17,52 +17,80 @@ struct PrivacyPolicyView: View {
                         symbol: "hand.raised",
                         title: copy("The short version", "الخلاصة"),
                         body: copy(
-                            "Haneen has no advertising, analytics, cross-app tracking, or sale of personal data. Your bookmarks, reflections, and preferences are local by default.",
-                            "لا يستخدم حنين الإعلانات أو التحليلات أو التتبع بين التطبيقات، ولا يبيع البيانات الشخصية. وتبقى محفوظاتك وتأملاتك وتفضيلاتك على جهازك افتراضيًا."
+                            "Haneen has no advertising or integration that tracks your reading, feelings or other activity for behavioural analytics. Haneen does not track you across apps or sell personal data. Sign-in and online services separately process the technical information described below.",
+                            "لا يعرض حنين إعلانات، ولا يستخدم أدوات تتتبّع قراءتك أو مشاعرك أو نشاطك الآخر لتحليل سلوكك. ولا يتتبّعك عبر التطبيقات أو يبيع بياناتك الشخصية. وتعالج خدمات تسجيل الدخول والخدمات المتصلة بالإنترنت المعلومات التقنية الموضّحة أدناه."
                         )
                     )
                     section(
                         symbol: "iphone",
                         title: copy("Data on this iPhone", "البيانات على هذا الهاتف"),
                         body: copy(
-                            "Bookmarks, written reflections, language, prayer settings, and notification preferences are stored on your device. The prayer widget receives calculated times, a city-level label, and a time zone through Apple’s App Group storage; it never receives your latitude or longitude.",
-                            "تُحفظ الآيات والأدعية التي تحفظها وتأملاتك المكتوبة واختيارات اللغة والصلاة والإشعارات على جهازك. وتتلقى أداة الصلاة المواقيت المحسوبة واسم المدينة والمنطقة الزمنية عبر مساحة التخزين المشتركة App Group من Apple، دون إحداثيات خط العرض أو خط الطول."
+                            "Notes, bookmarks, reflections, reading progress, goals, dhikr progress and preferences are stored on your device. Widgets receive the local progress and prayer information needed for their display through Apple's App Group storage. Prayer information includes calculated times, a city-level label and time zone, without latitude or longitude. Device backups are governed by your Apple device settings.\n\nOptional prayer and reflection reminders are scheduled on your device. You can turn them off in Haneen or iOS Settings.",
+                            "تُحفظ الملاحظات والمحفوظات والتأملات وتقدّم القراءة والأهداف وعدّاد الذكر والتفضيلات على جهازك. وتتلقى الأدوات بيانات التقدّم والصلاة اللازمة للعرض من التخزين المحلي عبر مساحة التخزين المشتركة App Group من Apple. وتشمل بيانات الصلاة المواقيت المحسوبة واسم المدينة والمنطقة الزمنية، دون إحداثيات خط العرض أو خط الطول. وتخضع النسخ الاحتياطية للجهاز لإعدادات جهاز Apple لديك.\n\nتُجدول تذكيرات الصلاة والتأمل الاختيارية على جهازك. ويمكنك إيقافها في حنين أو من إعدادات iOS."
+                        )
+                    )
+                    section(
+                        symbol: "person.crop.circle",
+                        title: copy("Accounts and sign-in", "الحسابات وتسجيل الدخول"),
+                        body: copy(
+                            "Apple, Google and email sign-in use Supabase Authentication. Supabase stores your account identifier, email address, display name when supplied, and the account/session information needed for sign-in. Apple and Google provider tokens are sent to Supabase to verify your sign-in. Apple and Google share account information according to the permissions you grant; Haneen does not receive your Apple or Google password. Signing in does not upload your local notes or bookmarks. You can use Haneen without an account.\n\nAuthentication requests include technical information such as IP addresses and SDK/platform details. Sign-in providers process security and diagnostic information to operate, protect and troubleshoot their services under their own terms. Google states that its sign-in SDK may use a user identifier to record consented access and an IP address to estimate general location for fraud prevention.",
+                            "يستخدم تسجيل الدخول عبر Apple أو Google أو البريد الإلكتروني خدمة Supabase Authentication. وتحفظ Supabase معرّف حسابك وبريدك الإلكتروني واسمك المعروض عند إتاحته، ومعلومات الحساب والجلسة اللازمة لتسجيل الدخول. وتُرسل رموز المصادقة الصادرة عن Apple وGoogle إلى Supabase للتحقق من تسجيل دخولك. وتشارك Apple وGoogle معلومات الحساب وفق الأذونات التي تمنحها، ولا يتلقى حنين كلمة مرور حسابك لدى أيٍّ منهما. ولا يؤدي تسجيل الدخول إلى رفع ملاحظاتك أو محفوظاتك المحلية. ويمكنك استخدام حنين دون حساب.\n\nتتضمن طلبات المصادقة معلومات تقنية، مثل عنوان IP وتفاصيل مكتبة تسجيل الدخول والمنصّة. ويعالج موفّرو تسجيل الدخول معلومات الأمان وتشخيص الأعطال لتشغيل خدماتهم وحمايتها ومعالجة مشكلاتها وفق شروطهم. وتوضح Google أن مكتبة تسجيل الدخول لديها قد تستخدم معرّف المستخدم لتسجيل أذونات الوصول التي وافق عليها، وعنوان IP لتقدير الموقع العام ومنع الاحتيال."
                         )
                     )
                     section(
                         symbol: "location",
-                        title: copy("Location and Qibla", "الموقع والقبلة"),
+                        title: copy("Location and nearby places", "الموقع والأماكن القريبة"),
                         body: copy(
-                            "Location is requested only after you choose a location-based feature. It is used to calculate prayer times and the Qibla direction. Qibla readings are transient. Prayer calculations happen on device; Apple’s location services may provide the city-level place name. Haneen does not retain coordinates in its shared widget data. When you open nearby mosques or halal places, your search location is sent to Apple Maps and OpenStreetMap Overpass services to find nearby results.",
-                            "لا يُطلب الموقع إلا بعد اختيارك ميزة تعتمد عليه. ويُستخدم لحساب مواقيت الصلاة واتجاه القبلة. قراءات القبلة مؤقتة، وتتم حسابات الصلاة على الجهاز، وقد توفر خدمات موقع Apple اسم المدينة. ولا يحتفظ حنين بالإحداثيات ضمن بيانات الأداة المشتركة. وعند فتح المساجد أو المطاعم القريبة، يُرسل موقع البحث إلى خرائط Apple وخدمات OpenStreetMap Overpass لإيجاد النتائج القريبة."
+                            "With your permission, prayer times and Qibla are calculated on your device. Compass readings are temporary, and Apple location services may resolve a place name. Nearby mosque or halal-place searches send precise latitude/longitude and the search category to Apple Maps and the Overpass service at overpass-api.de, which searches OpenStreetMap data. Opening directions sends the destination to the map service you choose. These online services receive ordinary connection information such as your IP address. You can deny or revoke location access in iOS Settings.",
+                            "بعد موافقتك على استخدام الموقع، تُحسب مواقيت الصلاة واتجاه القبلة على جهازك. وتكون قراءات البوصلة مؤقتة، وقد تستخدم خدمات موقع Apple الإحداثيات لتحديد اسم المكان. وعند البحث عن مساجد أو أماكن تقدّم طعامًا حلالًا بالقرب منك، تُرسل إحداثيات الموقع الدقيقة وفئة البحث إلى خرائط Apple وخدمة Overpass على overpass-api.de للبحث في بيانات OpenStreetMap. وعند فتح الاتجاهات، تُرسل الوجهة إلى خدمة الخرائط التي تختارها. وتتلقى هذه الخدمات معلومات الاتصال المعتادة، مثل عنوان IP. ويمكنك رفض إذن الموقع أو سحبه من إعدادات iOS."
                         )
                     )
                     section(
-                        symbol: "icloud.and.arrow.up",
-                        title: copy("Account & optional backup", "الحساب والنسخ الاحتياطي الاختياري"),
+                        symbol: "book",
+                        title: copy("Recitation, tafsir and references", "التلاوة والتفسير والمراجع"),
                         body: copy(
-                            "Signing in with Apple, Google or email creates an account with Supabase. Supabase stores your account identifier, email address and display name when supplied by the provider. Sign-in alone does not upload your notes or bookmarks. A separate Google Drive connection can provide a private app-data backup. Nothing is sent unless that option is visible and you choose to connect it. The backup contains bookmarks and reflections, not prayer coordinates. You can disconnect it from Settings.",
-                            "يُنشئ تسجيل الدخول عبر Apple أو Google أو البريد الإلكتروني حسابًا لدى Supabase، الذي يحفظ معرّف الحساب والبريد الإلكتروني والاسم المعروض إذا أتاحها موفّر الخدمة. لا يرفع تسجيل الدخول وحده ملاحظاتك أو محفوظاتك. ويمكن لاتصال منفصل بـ Google Drive توفير نسخة خاصة في مساحة بيانات التطبيق. ولا يُرسل شيء إلا إذا ظهر هذا الخيار واخترت ربطه. وتحتوي النسخة على المحفوظات والتأملات دون إحداثيات الصلاة، ويمكنك فصلها من الإعدادات."
+                            "Recitation requests go to EveryAyah and identify the requested reciter and ayah. Opening tafsir requests the selected ayah and tafsir edition from Quran.com's API. These services receive the request and ordinary connection information, including your IP address. Source links you open may take you to Quran.com, Sunnah.com or another cited website, whose privacy terms apply to your visit.",
+                            "تُرسل طلبات التلاوة إلى EveryAyah، وتتضمن القارئ الذي تختاره والآية المطلوبة. وعند فتح التفسير، تُطلب الآية وطبعة التفسير المختارتان من خدمة Quran.com. وتتلقى هذه الخدمات الطلب ومعلومات الاتصال المعتادة، ومنها عنوان IP. وقد تنقلك روابط المصادر التي تفتحها إلى Quran.com أو Sunnah.com أو موقع مرجعي آخر، وتخضع زيارتك لسياسة الخصوصية الخاصة بذلك الموقع."
                         )
                     )
                     section(
-                        symbol: "network",
-                        title: copy("Network services", "خدمات الشبكة"),
+                        symbol: "text.bubble",
+                        title: copy("Optional deletion feedback", "ملاحظات اختيارية عند حذف الحساب"),
                         body: copy(
-                            "When configured, Haneen reads public verified-scholar profiles and published scholarly insights from Supabase; it does not send your bookmarks, reflections, searches, prayer location, or backup data there. Recitation audio is streamed from EveryAyah. Source links you open may take you to Quran.com, Sunnah.com, or a cited reference. These services receive normal network information and apply their own privacy terms.",
-                            "عند تهيئة الخدمة، يقرأ حنين ملفات المراجعين الشرعيين العامة الموثّقة والإضاءات الشرعية المنشورة من Supabase، ولا يرسل إليه محفوظاتك أو تأملاتك أو عمليات البحث أو موقع الصلاة أو بيانات النسخ الاحتياطي. ويُبث صوت التلاوة من EveryAyah. وقد تنقلك روابط المصادر إلى Quran.com أو Sunnah.com أو مرجع مذكور، وتتلقى هذه الخدمات معلومات الشبكة المعتادة وتطبق سياسات الخصوصية الخاصة بها."
+                            "If you choose to give a reason or written feedback, it is sent with your authenticated account-deletion request. After account deletion, the feedback is stored in Supabase without your account identifier, together with a random feedback identifier and submission time. It is retained as needed to evaluate feedback and improve the app. The deletion service still authenticates the request, and service logs may contain request/account information. Feedback is optional and never required for deletion; please leave out personal details.",
+                            "إذا اخترت ذكر سبب الحذف أو كتابة ملاحظات، فتُرسل مع طلب حذف حسابك باستخدام جلسة تسجيل دخولك. وبعد حذف الحساب، تُحفظ الملاحظات في Supabase دون معرّف حسابك، مع معرّف عشوائي للملاحظات ووقت إرسالها. ونحتفظ بها ما دامت هناك حاجة إليها لتقييم الملاحظات وتحسين التطبيق. وتتحقق خدمة الحذف من هويتك، وقد تتضمن سجلات الخدمة معلومات عن الطلب أو الحساب. والملاحظات اختيارية وليست شرطًا للحذف، لذا يرجى عدم تضمين تفاصيل شخصية."
                         )
                     )
                     section(
                         symbol: "trash",
-                        title: copy("Your choices", "خياراتك"),
+                        title: copy("Your choices and retention", "خياراتك والاحتفاظ بالبيانات"),
                         body: copy(
-                            "You can delete your sign-in account from Settings → Account → Delete account. You can remove bookmarks and reflections in the app, disable notifications in iOS Settings, deny location access, and disconnect any configured backup. Deleting the app removes its local data, subject to your device backups. Optional deletion feedback is retained in Supabase to improve Haneen, without your account identifier. Please do not include personal details.",
-                            "يمكنك حذف حسابك من الإعدادات ← الحساب ← حذف الحساب، وحذف المحفوظات والتأملات داخل التطبيق، وتعطيل الإشعارات من إعدادات iOS، ورفض إذن الموقع، وفصل أي خدمة نسخ احتياطي ربطتها. ويؤدي حذف التطبيق إلى إزالة بياناته المحلية، مع احتمال بقائها في النسخ الاحتياطية لجهازك. تُحفظ الملاحظات التي تختار إرسالها عند حذف الحساب في Supabase لتحسين حنين دون معرّف حسابك. يرجى عدم تضمين تفاصيل شخصية."
+                            "You can remove notes and bookmarks inside Haneen and delete your sign-in account from Settings → Account → Delete account. Account data is retained to provide sign-in until you delete the account. For an Apple-linked account, deletion requests fresh Apple authorization so Haneen can revoke its access before deleting the Supabase account. Account deletion leaves your separate local library on this iPhone. Deleting the app removes local app data, subject to device backups. You can change location and notification permissions in iOS Settings. Provider security logs and other provider-held data follow the applicable service retention policies.",
+                            "يمكنك حذف الملاحظات والمحفوظات داخل حنين، وحذف حسابك من الإعدادات ← الحساب ← حذف الحساب. ونحتفظ ببيانات الحساب لإتاحة تسجيل الدخول حتى تحذفه. وإذا كان الحساب مرتبطًا بـ Apple، يُطلب تفويض جديد منها ليتمكّن حنين من إلغاء وصوله قبل حذف حساب Supabase. وتبقى مكتبتك المحلية على هذا الهاتف بعد حذف الحساب. ويؤدي حذف التطبيق إلى إزالة بياناته المحلية، مع احتمال بقائها في النسخ الاحتياطية للجهاز. ويمكنك تغيير أذونات الموقع والإشعارات من إعدادات iOS. وتخضع سجلات الأمان وغيرها من البيانات التي يحتفظ بها موفّرو الخدمات لسياسات الاحتفاظ الخاصة بكل خدمة."
+                        )
+                    )
+                    section(
+                        symbol: "lock.shield",
+                        title: copy("Service providers and protections", "موفّرو الخدمات وحماية البيانات"),
+                        body: copy(
+                            "Supabase's published data processing addendum limits processing of customer data to customer instructions and specified service purposes, and requires confidentiality and security measures. Apple's and Google's privacy policies describe their data protection, retention and privacy controls. Providers may process data in other countries under their applicable terms. The online policy below links to these documents.",
+                            "ينصّ ملحق معالجة البيانات المنشور من Supabase على معالجة بيانات العملاء وفق تعليماتهم ولأغراض الخدمة المحدّدة، ويلزمها بالسرية وتدابير الأمان. وتوضح سياستا الخصوصية لدى Apple وGoogle كيفية حماية البيانات والاحتفاظ بها وخيارات الخصوصية. وقد يعالج الموفّرون البيانات في دول أخرى وفق شروطهم. وتتضمن السياسة على الإنترنت أدناه روابط هذه الوثائق."
+                        )
+                    )
+                    section(
+                        symbol: "envelope",
+                        title: copy("Contact", "التواصل"),
+                        body: copy(
+                            "Haneen is developed by Islam Sharaf. Questions or deletion assistance: islamsharaf2005@gmail.com. If you contact support, we receive your email address, message and any details you include. Haneen's support form also includes the app and iOS versions. We retain correspondence as needed to respond and resolve the issue.",
+                            "طوّر إسلام شرف تطبيق حنين. للاستفسار عن الخصوصية أو طلب المساعدة في الحذف، راسل islamsharaf2005@gmail.com. وعند التواصل مع الدعم، نتلقى عنوان بريدك ورسالتك وأي تفاصيل تذكرها. ويتضمن نموذج الدعم في حنين أيضًا إصدارَي التطبيق وiOS. ونحتفظ بالمراسلات بقدر الحاجة إلى الرد ومعالجة المشكلة."
                         )
                     )
 
-                    Text(copy("Effective 12 September 2026", "سارية من 12 سبتمبر 2026"))
+                    Link(copy("Read the online privacy policy", "قراءة سياسة الخصوصية على الإنترنت"), destination: URL(string: "https://isharaf6.github.io/Sakina/privacy.html")!)
+                        .font(.yqSubhead)
+                        .frame(maxWidth: .infinity, alignment: .center)
+
+                    Text(copy("Effective 13 September 2026", "سارية من 13 سبتمبر 2026"))
                         .font(.caption)
                         .foregroundStyle(Color.sakinaMuted)
                         .frame(maxWidth: .infinity, alignment: .center)

@@ -219,9 +219,10 @@ The latest white-and-green redesign uses Mobbin reading/discovery references and
 
 ## Attribution
 
-- [Heroicons](https://github.com/tailwindlabs/heroicons) 2.2.0 is bundled under its MIT license; see `Sakina/Resources/Heroicons-LICENSE.txt`.
 - The locally bundled forest photograph was created with the built-in image generator; provenance and the revised design references are in `Design/Sanctuary/DesignNotes.md`.
 - KFGQPC HAFS Uthmanic Script is bundled for Qur’anic Arabic.
 - Qur’an text and visible translation data are sourced from the [Quran.com API](https://api-docs.quran.com/docs/category/quran.com-api).
 - Recitation audio streams from [EveryAyah](https://everyayah.com/).
 - Prayer times are calculated on-device with [Adhan Swift](https://github.com/batoulapps/adhan-swift).
+
+The current bundled content, font permissions and remaining release provenance questions are documented in [AppStore/ContentRights.md](AppStore/ContentRights.md).

@@ -122,6 +122,14 @@ struct PrayerSchedule: Codable, Hashable, Sendable {
         allEvents.first { $0.time > date }
     }
 
+    /// The calculation day that owns the next event, which can be tomorrow
+    /// after Isha. Use membership rather than the event's civil date because
+    /// a late Isha can occur after midnight of its calculation day.
+    func upcomingDay(after date: Date = .now) -> PrayerDaySchedule? {
+        guard let next = nextEvent(after: date) else { return nil }
+        return days.first { $0.events.contains(next) }
+    }
+
     func followingEvent(after date: Date = .now) -> PrayerEvent? {
         let upcoming = allEvents.lazy.filter { $0.time > date }
         return upcoming.dropFirst().first

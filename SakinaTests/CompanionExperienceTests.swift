@@ -114,3 +114,78 @@ final class CompanionExperienceTests: XCTestCase {
         }
     }
 }
+
+final class PrayerScheduleDayTests: XCTestCase {
+    private var calendar: Calendar {
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = TimeZone(identifier: "Australia/Sydney")!
+        return calendar
+    }
+
+    private func date(_ day: Int, _ hour: Int = 0, _ minute: Int = 0) -> Date {
+        calendar.date(from: DateComponents(year: 2026, month: 9, day: day, hour: hour, minute: minute))!
+    }
+
+    private func schedule(lateIsha: Bool = false) -> PrayerSchedule {
+        let days = (13...14).map { day in
+            PrayerDaySchedule(dayStart: date(day), events: [
+                PrayerEvent(kind: .fajr, time: date(day, 4, day == 13 ? 35 : 34)),
+                PrayerEvent(kind: .sunrise, time: date(day, 5, 58)),
+                PrayerEvent(kind: .dhuhr, time: date(day, 11, 52)),
+                PrayerEvent(kind: .asr, time: date(day, 15, 13)),
+                PrayerEvent(kind: .maghrib, time: date(day, 17, 45)),
+                PrayerEvent(kind: .isha, time: lateIsha ? date(day + 1, 0, 30) : date(day, 19, 3)),
+            ])
+        }
+        return PrayerSchedule(generatedAt: date(13), expiresAt: date(16), locationLabel: "Sydney",
+                              timeZoneIdentifier: calendar.timeZone.identifier,
+                              calculationMethodID: "muslimWorldLeague", asrMethodID: "standard", days: days)
+    }
+
+    func testDaytimeScheduleKeepsTodayAndHighlightsTheActualNextEvent() {
+        let schedule = schedule()
+        let now = date(13, 10)
+        let day = schedule.upcomingDay(after: now)
+        XCTAssertEqual(day?.dayStart, date(13))
+        XCTAssertEqual(schedule.nextEvent(after: now)?.kind, .dhuhr)
+        XCTAssertEqual(day?.events.filter { $0 == schedule.nextEvent(after: now) }.count, 1)
+    }
+
+    func testAfterIshaDisplaysTomorrowsFajrRatherThanTodaysSameNamedPrayer() {
+        let schedule = schedule()
+        let now = date(13, 20)
+        let day = schedule.upcomingDay(after: now)
+        let next = schedule.nextEvent(after: now)
+        XCTAssertEqual(day?.dayStart, date(14))
+        XCTAssertEqual(next?.time, date(14, 4, 34))
+        XCTAssertEqual(day?.time(for: .fajr), next?.time)
+        XCTAssertFalse(schedule.events(on: now).contains { $0 == next })
+        XCTAssertEqual(day?.events.filter { $0 == next }.count, 1)
+    }
+
+    func testLocationMidnightUsesTheNextLocalDayEvenWhenUTCIsStillYesterday() {
+        let schedule = schedule()
+        let now = date(14, 1)
+        var utc = Calendar(identifier: .gregorian)
+        utc.timeZone = TimeZone(secondsFromGMT: 0)!
+        XCTAssertEqual(utc.component(.day, from: now), 13)
+        XCTAssertEqual(schedule.upcomingDay(after: now)?.dayStart, date(14))
+        XCTAssertEqual(schedule.upcomingDay(after: now)?.time(for: .fajr), date(14, 4, 34))
+    }
+
+    func testIshaAfterMidnightStaysWithItsCalculationDay() {
+        let schedule = schedule(lateIsha: true)
+        let now = date(14, 0, 10)
+        let next = schedule.nextEvent(after: now)
+        XCTAssertEqual(next?.kind, .isha)
+        XCTAssertEqual(next?.time, date(14, 0, 30))
+        XCTAssertEqual(schedule.upcomingDay(after: now)?.dayStart, date(13))
+        XCTAssertTrue(schedule.upcomingDay(after: now)?.events.contains { $0 == next } == true)
+        XCTAssertFalse(schedule.events(on: now).contains { $0 == next })
+    }
+
+    func testExhaustedScheduleDoesNotReuseAnOldPrayerDay() {
+        let schedule = schedule()
+        XCTAssertNil(schedule.upcomingDay(after: date(15, 12)))
+    }
+}

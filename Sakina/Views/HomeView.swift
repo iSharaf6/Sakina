@@ -435,11 +435,12 @@ struct NextPrayerCard: View {
 
     var body: some View {
         let next = schedule.nextEvent(after: now)
-        let events = schedule.events(on: next?.time ?? now)
+        let day = schedule.upcomingDay(after: now)
+        let events = day?.events ?? []
         VStack(alignment: .leading, spacing: 16) {
             HStack(alignment: .top) {
                 VStack(alignment: .leading, spacing: 4) {
-                    CapsLabel(text: copy("Next prayer", "الصلاة القادمة"), color: .yqAccentDeep)
+                    CapsLabel(text: nextPrayerHeading(day: day), color: .yqAccentDeep)
                     if let next {
                         let headlineLayout = dynamicTypeSize.isAccessibilitySize
                             ? AnyLayout(VStackLayout(alignment: .leading, spacing: 4))
@@ -472,14 +473,14 @@ struct NextPrayerCard: View {
                             .lineLimit(1)
                             .minimumScaleFactor(0.8)
                         Text(time(event.time))
-                            .font(.system(.caption, weight: event.kind == next?.kind ? .bold : .medium).monospacedDigit())
+                            .font(.system(.caption, weight: event == next ? .bold : .medium).monospacedDigit())
                             .lineLimit(1)
                             .minimumScaleFactor(0.75)
                     }
-                    .foregroundStyle(event.kind == next?.kind ? Color.yqAccentDeep : Color.yqSecondary)
+                    .foregroundStyle(event == next ? Color.yqAccentDeep : Color.yqSecondary)
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 8)
-                    .background(event.kind == next?.kind ? Color.yqAccent.opacity(0.08) : .clear,
+                    .background(event == next ? Color.yqAccent.opacity(0.08) : .clear,
                                 in: RoundedRectangle(cornerRadius: 10, style: .continuous))
                 }
             }
@@ -495,12 +496,22 @@ struct NextPrayerCard: View {
 
     private func accessibilitySummary(events: [PrayerEvent], next: PrayerEvent?) -> String {
         let heading = next.map {
-            "\(copy("Next prayer", "الصلاة القادمة")), \($0.kind.displayName(locale: language.locale)), \(time($0.time)), \(countdown(to: $0.time)). "
+            "\(nextPrayerHeading(day: schedule.upcomingDay(after: now))), \($0.kind.displayName(locale: language.locale)), \(time($0.time)), \(countdown(to: $0.time)). "
         } ?? ""
-        let schedule = events.map {
+        let timetable = events.map {
             "\($0.kind.displayName(locale: language.locale)), \(time($0.time))"
         }.joined(separator: ". ")
-        return heading + schedule
+        return heading + timetable
+    }
+
+    private func nextPrayerHeading(day: PrayerDaySchedule?) -> String {
+        let heading = copy("Next prayer", "الصلاة القادمة")
+        guard let day else { return heading }
+        var calendar = Calendar(identifier: .gregorian)
+        calendar.timeZone = schedule.timeZone
+        guard !calendar.isDate(day.dayStart, inSameDayAs: now) else { return heading }
+        return heading + language.listSeparator
+            + prayerDayLabel(day, relativeTo: now, timeZone: schedule.timeZone, language: language)
     }
 
     private func time(_ date: Date) -> String {
@@ -560,21 +571,29 @@ struct PrayerHeroCard: View {
 
     var body: some View {
         TimelineView(.periodic(from: .now, by: 60)) { context in
-            let events = schedule.events(on: context.date)
             let next = schedule.nextEvent(after: context.date)
+            let day = schedule.upcomingDay(after: context.date)
+            let events = day?.events ?? []
+            if let day {
+                CapsLabel(text: prayerDayLabel(day, relativeTo: context.date,
+                                              timeZone: schedule.timeZone, language: language),
+                          color: .yqSecondary)
+                    .padding(.horizontal, 14)
+                    .padding(.bottom, 10)
+            }
             VStack(alignment: .leading, spacing: 0) {
                 ForEach(Array(events.enumerated()), id: \.element.id) { index, event in
                     HStack(spacing: 14) {
                         CompanionIllustration(artwork: event.kind.artwork, size: 42)
                         Text(event.kind.displayName(locale: language.locale))
-                            .font(event.kind == next?.kind ? .yqBodyMedium : .yqBody)
+                            .font(event == next ? .yqBodyMedium : .yqBody)
                             .foregroundStyle(Color.yqInk)
                         Spacer()
-                        if event.kind == next?.kind {
+                        if event == next {
                             Tag(text: copy("Next", "التالية"))
                         }
                         Text(time(event.time))
-                            .font(.system(.body, weight: event.kind == next?.kind ? .semibold : .regular).monospacedDigit())
+                            .font(.system(.body, weight: event == next ? .semibold : .regular).monospacedDigit())
                             .foregroundStyle(Color.yqInk)
                     }
                     .padding(.horizontal, 14)
@@ -607,6 +626,21 @@ struct PrayerHeroCard: View {
         formatter.timeStyle = .short
         return formatter.string(from: date)
     }
+}
+
+private func prayerDayLabel(_ day: PrayerDaySchedule, relativeTo now: Date,
+                            timeZone: TimeZone, language: AppLanguage) -> String {
+    var calendar = Calendar(identifier: .gregorian)
+    calendar.timeZone = timeZone
+    let offset = calendar.dateComponents([.day], from: calendar.startOfDay(for: now),
+                                         to: day.dayStart).day
+    if offset == 0 { return language.pick("Today", "اليوم") }
+    if offset == 1 { return language.pick("Tomorrow", "غدًا") }
+    let formatter = DateFormatter()
+    formatter.locale = language.locale
+    formatter.timeZone = timeZone
+    formatter.dateStyle = .medium
+    return formatter.string(from: day.dayStart)
 }
 
 struct PrayerPermissionCard: View {
