@@ -8,8 +8,8 @@ import UIKit
 // Everything outward-facing lives here so it can be changed in one place.
 
 enum AppLinks {
-    /// Set once the app is live: the numeric id from App Store Connect.
-    static let appStoreID = ""
+    /// The app's numeric identifier in App Store Connect.
+    static let appStoreID = "6811555262"
     static let supportEmail = "islamsharaf2005@gmail.com"
 
     static var appStore: URL? {
@@ -71,8 +71,8 @@ struct FAQView: View {
              copy("Set a location in Settings, then long-press your Home or Lock Screen, tap +, and search for Haneen.",
                   "حدد الموقع في الإعدادات، ثم اضغط مطولًا على الشاشة الرئيسية أو شاشة القفل، واضغط + وابحث عن حنين.")),
             (copy("Is my data backed up?", "هل تُنسخ بياناتي احتياطيًا؟"),
-             copy("Not unless you choose to. Saved du’as and reflections stay on this iPhone. Google Drive backup is optional and private to the app.",
-                  "لا، إلا إذا اخترت ذلك. تبقى الأدعية المحفوظة والتأملات على هذا الهاتف. والنسخ إلى Google Drive اختياري وخاص بالتطبيق.")),
+             copy("Saved du’as and reflections stay on this iPhone. Account sign-in does not upload them.",
+                  "تبقى الأدعية المحفوظة والتأملات على هذا الهاتف. ولا تُرفع عند تسجيل الدخول.")),
             (copy("Can I turn off vibrations?", "هل يمكن إيقاف الاهتزاز؟"),
              copy("Yes. Settings → Haptics.", "نعم. الإعدادات ← الاهتزاز.")),
         ]

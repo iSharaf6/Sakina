@@ -1,0 +1,29 @@
+IndoPak font and author notice provenance
+Reviewed 13 September 2026
+
+Haneen uses this unchanged font in a free charitable app with no ads or in-app purchases.
+Credits: Ayman Siddiqui and R. Siddiqua for QuranWBW.com and Quran.com.
+The embedded font also credits Al Qalam, Ghandhara and KFGQPC; its original metadata is preserved.
+
+IndoPak.ttf
+Internal version: AlQuran IndoPak by QuranWBW 4.2.1-WL
+SHA-256: 4c8f002e7538ef6351ac676eb0f2c1708ecd17f6f8a5fc4a19dbc8eaf4dddff5
+Byte-identical source verified on 13 September 2026:
+https://github.com/quran/quran.com-frontend-next/blob/74eb4e20f4e78cc11c055a3e130136e8dbb7743e/public/fonts/quran/hafs/nastaleeq/indopak/indopak-nastaleeq-waqf-lazim-v4.2.1.ttf
+
+IndoPak-Author-Notice.txt
+Exact, unmodified original package notice signed Ayman Siddiqui, dated 10.09.2022.
+The notice explicitly names AlQuran-IndoPak-by-QuranWBW.v.4.2.1-WL.ttf.
+Source:
+https://github.com/marwan/indopak-quran-text/blob/1e2042e4159281194ba91bb80aa1f6716e01ec26/%28Important%29%20Readme.txt
+SHA-256: 2f7d40fd219bfd361d5722eaf1c33d810698e77ad4e5c6a629bf343ed15f5cdd
+
+IndoPak-Embedded-Notice.txt
+Verbatim decoded OpenType name ID 13 from the bundled font, supplied alongside the
+original author notice. The same notice remains inside the unchanged font binary.
+The public author notice and embedded notice are retained together; this provenance
+record does not rewrite either of them or claim an unrestricted open-source licence.
+
+Current provider project:
+https://github.com/marwan/indopak-quran-text
+https://quranwbw.com

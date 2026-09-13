@@ -6,8 +6,13 @@
 - Owner approved all six marketing screenshots with the countdown cat tucked into the widget corner. All six are uploaded in their approved order; persistence was verified after reloading App Store Connect.
 - Promotional text, description, keywords, support URL, copyright and review notes are saved. Sign-in is marked optional.
 - The shared countdown layout was rebuilt and checked in English light/dark and Arabic dark; the screenshot uses a fresh native capture.
-- No build is attached, no submission has been made and the app is not released. Rebuild the archive to include the latest widget, prayer and privacy changes before upload. Earlier archive/export results below are historical.
-- Remaining submission work includes review contact information, privacy answers, age rating, category, pricing/availability, applicable account declarations, content-rights resolution and the device checks below. See `ContentRights.md` for the specific unresolved font condition and other permission questions.
+- Fresh version 1.0 (1) archived, exported and uploaded successfully on 13 September at 23:31 Sydney time. Apple finished processing it; build 1 was selected and saved on version 1.0. It has not been submitted for review. The app is not released. Earlier archive/export results below are historical.
+- Review contact information, subtitle, Reference category and calculated age rating are saved. The app is free (Australia base price A$0.00), public, and set for availability in 175 regions after release. Mac and Vision Pro distribution are disabled for this iPhone release.
+- The privacy policy URL and all 11 documented privacy categories are published. See `AppPrivacySubmission.md` for the exact purposes, linkage, supplier evidence and limitations.
+- The exact IndoPak author-issued charitable distribution notice was found, retained in the app, and credited in English/Arabic. The font is unchanged. About/FAQ copy now matches local-only storage; share/review links use the assigned App Store ID.
+- Remaining account/submission decisions: owner EU trader-status answer and content-storage/audio permission evidence. Two unsent requests are prepared in `PermissionsRequests.md`. See `ContentRights.md`; the earlier unsupported assumption that the IndoPak font necessarily must be removed has been resolved by better primary evidence.
+- Automatic release after Apple review approval is selected. No review submission or public release has occurred.
+- Final Apple version validation lists one remaining requirement: Content Rights Information. The current owner/provider permission questions are described above; EU trader status is a separate account availability requirement.
 
 ## Verified
 
@@ -28,14 +33,17 @@
 - [ ] Confirm real-device Qibla heading, location permission changes, prayer notifications across midnight/restart, and Home/Lock Screen widget updates. Simulator checks cannot verify a magnetometer or notification delivery while the device is locked.
 - [ ] Check VoiceOver, largest text sizes, Reduce Motion, recitation on cellular, and installation on the oldest supported iOS version.
 - [x] Create/confirm the App Store Connect record for `com.islamsharaf.sakina`.
-- [ ] Choose the final unique build number and upload the current signed build.
+- [x] Choose the final unique build number and upload the current signed build: 1.0 (1).
 - [x] Upload the six owner-approved screenshots in their approved order.
-- [ ] Add age rating, category, pricing/availability, content-rights declarations and privacy answers matching the shipped binary and services.
+- [x] Add age rating, category, free pricing/availability and documented privacy answers.
+- [ ] Complete the content-rights declaration after resolving the remaining storage/audio permission questions.
 - [x] Enter the public support URL and review notes from the listing.
-- [ ] Enter the privacy URL and review contact information, finish required declarations, then submit for review.
+- [x] Enter the privacy URL and review contact information.
+- [x] Attach the processed build: version 1.0 (1).
+- [ ] Finish required declarations, then submit for review.
 - [ ] Monitor Google's external branding review; approval timing is controlled by Google.
 
-No build has been uploaded or submitted to App Store Connect during this release check.
+The current build has been uploaded successfully. It has not been submitted for review or released.
 
 ## Account-deletion operations
 

@@ -17,6 +17,7 @@ struct AboutView: View {
                         brand
                         trustCard
                         privacyCard
+                        fontCredits
                         dedication
                         links
                         version
@@ -72,8 +73,8 @@ struct AboutView: View {
             symbol: "lock",
             title: copy("Private by default", "الخصوصية أولًا"),
             body: copy(
-                "Bookmarks, reflections, and prayer preferences stay on this iPhone unless you deliberately connect a backup option shown in Settings. Prayer coordinates never enter the widget payload. Haneen has no advertising, analytics, or tracking.",
-                "تبقى المحفوظات والتأملات وإعدادات الصلاة على هذا الهاتف ما لم تفعّل بنفسك خيار النسخ الاحتياطي المتاح في الإعدادات. ولا تُشارك إحداثيات موقعك مع أداة الصلاة. ولا يستخدم حنين الإعلانات أو التحليلات أو التتبّع."
+                "Bookmarks, reflections and prayer preferences stay on this iPhone. Haneen has no ads or behavioural analytics integration. Sign-in and online services process account, request and technical information as described in our privacy policy.",
+                "تبقى المحفوظات والتأملات وإعدادات الصلاة على هذا الهاتف. ولا يتضمن حنين إعلانات أو أدوات لتحليل سلوكك داخل التطبيق. وتعالج خدمات تسجيل الدخول والخدمات المتصلة بالإنترنت بيانات الحساب والطلبات والمعلومات التقنية وفق ما توضحه سياسة الخصوصية."
             )
         )
     }
@@ -113,6 +114,17 @@ struct AboutView: View {
             .strokeBorder(Color.sakinaHairline, lineWidth: 1))
     }
 
+    private var fontCredits: some View {
+        aboutCard(
+            symbol: "textformat",
+            title: copy("Qur’an typography", "خطوط القرآن"),
+            body: copy(
+                "Hafs fonts by the King Fahd Glorious Qur’an Printing Complex. IndoPak font by Ayman Siddiqui and R. Siddiqua for QuranWBW.com and Quran.com. The original fonts and notices are preserved for Haneen’s charitable use.",
+                "خطوط حفص من مجمع الملك فهد لطباعة المصحف الشريف. وخط IndoPak من إعداد Ayman Siddiqui وR. Siddiqua لصالح QuranWBW.com وQuran.com. حُفظت الخطوط الأصلية وإشعاراتها دون تغيير لاستخدامها في حنين بنية الصدقة الجارية."
+            )
+        )
+    }
+
     private func aboutCard(symbol: String, title: String, body: String) -> some View {
         VStack(alignment: .leading, spacing: 12) {
             Label(title, systemImage: symbol)
@@ -147,6 +159,10 @@ struct AboutView: View {
             Divider().padding(.leading, 46)
             Link(destination: URL(string: "https://sunnah.com")!) {
                 sourceRow(copy("Hadith references", "مراجع الحديث"), detail: "Sunnah.com")
+            }
+            Divider().padding(.leading, 46)
+            Link(destination: URL(string: "https://quranwbw.com")!) {
+                sourceRow(copy("IndoPak font", "الخط الهندي"), detail: "QuranWBW.com")
             }
         }
         .background(Color.sakinaElevated, in: RoundedRectangle(cornerRadius: 18, style: .continuous))

@@ -1,39 +1,44 @@
 # Haneen 1.0 — App Store privacy submission
 
-Reviewed 13 September 2026 against app code, `PrivacyPolicy.md`, the website source, and the signed 1.0 (1) archive. This is a proposed submission worksheet, not a record of answers already entered in App Store Connect. No account or backend settings were changed.
+Reviewed 13 September 2026 against the current shipping code, pinned dependencies, bundled privacy manifests, policy and public website. The final 1.0 (1) release archive includes the copy corrections below and was uploaded successfully. **The 11-category answers in this document and the policy URL were entered and published in App Store Connect on 13 September; the page confirmed publication.** This is privacy-label publication, not app review submission or release. Recheck the answers if the dependencies, flags or data practices change.
 
-## Proposed answers
+## Recommended submission answers
 
-**Does this app collect data? Yes.** Account information and optional deletion feedback are retained off device. **Tracking: No** on the available evidence: neither Haneen nor its bundled privacy manifests declares advertising tracking. There is no advertising, attribution or cross-app tracking integration in the app code.
+**Data collection: Yes. Tracking: No for every selected type.** No advertising, attribution or cross-app tracking integration was found. Google's exact bundled manifest also declares no tracking. Do not choose “Data Not Collected.”
 
-Apple distinguishes transmission from retention beyond servicing a request. Include applicable third-party collection, and determine linkage by the actual retained data and protections. Merely omitting an account-ID column does not establish anonymity; merely sending an authentication token does not establish retained linkage either. See [Apple’s App privacy details](https://developer.apple.com/app-store/app-privacy-details/).
+Use the following supplier-inclusive set for this build. The Google rows follow the SDK author's version-specific declaration, not an assertion that Haneen's Swift code reads each field. The distinction and remaining service-side limits are explained below.
 
-| Data type | Proposed purpose | Linked to identity? | Evidence and qualification |
+| App Store data type | Select these purposes | Linked to identity | Basis |
 |---|---|---|---|
-| Name | App Functionality | Yes | Google basic profile/provider account metadata. Apple requests full name, but this implementation does not separately send the returned name to Supabase. |
-| Email Address | App Functionality | Yes | Email-link authentication and Apple/Google identity-token sign-in through Supabase. |
-| User ID | App Functionality | Yes | Supabase and provider account identifiers. Google’s broader SDK manifest additionally declares Analytics; see the unresolved SDK section below. |
-| Coarse Location | App Functionality | Yes, per Google’s SDK declaration | Google documents IP-derived general location for sign-in fraud prevention. This is separate from the nearby-search coordinates. |
-| Precise Location | App Functionality | Not linked by Haneen’s request; provider retention/linkage needs confirmation | Nearby search sends full latitude/longitude to Overpass and an exact search region to Apple Maps. No Haneen account ID or auth token accompanies the Overpass request. Keep Precise Location in the proposed label pending confirmation; do not describe these requests as coarse or on-device-only. |
-| Other User Content | App Functionality; Analytics if feedback informs feature planning | Verify retained linkage before choosing | Optional deletion reason/text is retained in Supabase. The stored row has no account identifier, but submission is authenticated and includes a timestamp. Check service logs/correlation before claiming “Not linked.” No evidence establishes retained linkage either. |
+| Name | App Functionality | Yes | Google basic profile/account metadata and Google's manifest. Apple requests full name, but Haneen does not separately upload Apple's returned name. |
+| Email Address | App Functionality | Yes | Supabase email/Apple/Google account authentication and support replies. |
+| Phone Number | App Functionality | Yes | GoogleSignIn 9.2.0 supplier declaration. Haneen has no phone field or phone scope; see the supplier scope note below. |
+| User ID | App Functionality, Analytics | Yes | Supabase/provider account identifiers; Analytics is Google's declared purpose, not a Haneen reading-events integration. |
+| Device ID | Analytics | Yes | GoogleSignIn 9.2.0 supplier declaration; no Haneen IDFA/IDFV collection found. |
+| Coarse Location | App Functionality | Yes | Google's manifest and its documented IP-derived general location for fraud prevention. |
+| Precise Location | App Functionality | Yes — conservative classification | Nearby Overpass requests contain full coordinates and network identifiers without an anonymization stage. Haneen itself does not attach its account ID. Service retention and any narrower classification remain unverified. |
+| Other Usage Data | Analytics | Yes | GoogleSignIn 9.2.0 supplier declaration. |
+| Other Data Types | App Functionality, Analytics | Yes | GoogleSignIn 9.2.0 supplier declaration. |
+| Other User Content | App Functionality, Analytics | Yes — conservative classification | Deletion feedback is sent in an authenticated request before storage without account ID. It is retained to evaluate feedback and improve the app. There is no demonstrated de-identification before transmission or verified separation from service logs. |
+| Customer Support | App Functionality, Analytics | Yes | User-submitted support/problem/idea messages reach the support mailbox with the sender's email. The app appends version, iOS version, generic device model and app language. Customer support is functional; suggestions used to plan improvements fall within Analytics. |
 
-Do not claim an optional-feedback exemption here: the deletion form does not prominently show the account name alongside the submission. Free-form feedback is Other User Content; do not select every sensitive category a person could voluntarily type. Local reflections, feelings, goals, reading progress and dhikr completion are not uploaded by the shipping configuration.
+Do not select Third-Party Advertising, Developer Advertising/Marketing, Product Personalization or Other Purposes on current evidence. Local-only feelings, reflections, reading progress and goals do not require extra collection categories. Streaming Qur'an files is not collection of the user's recorded voice. Generic feedback does not mean selecting every sensitive type someone might voluntarily type.
 
-## Google SDK discrepancy to resolve
+The feedback/support purposes follow the current policy's stated use for support and improving Haneen. If the owner later uses those records for a different purpose, update the answers. No blanket optional-feedback exemption is being claimed: the deletion form does not prominently display the account name alongside its submission.
 
-The archive includes **GoogleSignIn-iOS 9.2.0**. Its actual `GoogleSignIn_GoogleSignIn.bundle/PrivacyInfo.xcprivacy` declares the following, all linked and all not used for tracking:
+Apple's [App privacy details](https://developer.apple.com/app-store/app-privacy-details/) defines collection by retention beyond servicing the request, requires applicable partner collection, distinguishes local processing, and requires protections before collection for an unlinked classification. The conservative location/feedback rows avoid making an unverified “not linked” promise; they are not proof of actual provider log contents. Apple's [purpose definitions](https://developer.apple.com/documentation/bundleresources/app-privacy-configuration/nsprivacycollecteddatatypes/nsprivacycollecteddatatypepurposes) include feature planning under Analytics and support/security under App Functionality.
 
-| SDK-declared data | SDK-declared purposes |
-|---|---|
-| Name, Email Address, Phone Number, Coarse Location | App Functionality |
-| User ID, Other Data Types | App Functionality and Analytics |
-| Device ID, Other Usage Data | Analytics |
+## GoogleSignIn 9.2.0: resolved submission basis, bounded certainty
 
-This is broader than [Google’s published iOS disclosure guidance](https://developers.google.com/identity/sign-in/ios/app-privacy), which identifies a user identifier for OAuth grants and IP-derived general location for fraud prevention. Haneen invokes basic native sign-in, whose SDK defaults request email/profile. It does not request phone access, extra OIDC claims or configure App Check. No direct phone-number, advertising-ID or vendor-ID collection was found in the invoked app code. SDK token requests do send SDK version and execution-environment logging parameters.
+`Package.resolved` pins **9.2.0**, revision `08d8dcecafb575f98879ffdbb8302c1b9ad65d19`. The local source and bundled manifest declare all eight Google rows above as linked and not tracking. Use [the manifest at that exact revision](https://github.com/google/GoogleSignIn-iOS/blob/08d8dcecafb575f98879ffdbb8302c1b9ad65d19/GoogleSignIn/Sources/Resources/PrivacyInfo.xcprivacy), rather than an unpinned main-branch file. The [9.2.0 release notes](https://github.com/google/GoogleSignIn-iOS/releases/tag/9.2.0) do not provide a feature-specific privacy exception.
 
-Consequently, **do not assert that Haneen definitely collects phone numbers or device IDs solely from this SDK-wide manifest, and do not silently ignore the manifest either**. Preserve it unchanged. Compare the aggregate archive privacy report with version-specific Google guidance before finalizing the additional categories/purposes. Backend uses cannot be proven from client source alone. The table above is a verified baseline with explicit unresolved items, not a complete final checkbox set while this discrepancy remains.
+[Google's current public iOS disclosure page](https://developers.google.com/identity/sign-in/ios/app-privacy) is **unversioned**, last updated 19 May 2025 when checked. It names the OAuth user identifier and IP-derived general location for fraud prevention. It does not explain or retract the broader manifest's Phone Number, Device ID, Other Usage Data, Other Data Types or Analytics declarations. It must not be described as a 9.2-specific exemption.
 
-Evidence: `CompanionAccount.google()` in `Sakina/Account/CompanionAccount.swift`; Google SDK `GIDScopes.m`, `GIDSignInInternalOptions.m`, `GIDSignIn.m`, `GIDSignInPreferences.m`; version pinned in `Sakina.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved`.
+Haneen calls `GIDSignIn.sharedInstance.signIn(withPresenting:)`, then passes the returned ID/access tokens to Supabase. Default scopes are email/profile. No phone scope, extra claims, App Check configuration, or invoked phone/advertising-ID/vendor-ID collection was found. SDK token requests include SDK version and execution-environment parameters. Disabled Google Drive code does not justify adding Drive-content collection.
+
+**Decision:** retain the SDK author's declared collection in the submission. Client-source inspection cannot establish every Google authentication-page or server-side use, so absence of a field in Haneen's callback is insufficient to override the supplier declaration. This is a defensible supplier-based disclosure of data that may be collected, not a measurement that all eight types are collected on every sign-in. A narrower label would require Google to identify which declarations do not apply to this exact default integration. Do not modify the signed SDK manifest to reduce the label. Apple describes using SDK manifests in [its privacy-manifest guidance](https://developer.apple.com/documentation/bundleresources/describing-data-use-in-privacy-manifests).
+
+Evidence paths: `Sakina/Account/CompanionAccount.swift`; `build/DerivedData/SourcePackages/checkouts/GoogleSignIn-iOS/GoogleSignIn/Sources/{GIDScopes.m,GIDSignInInternalOptions.m,GIDSignIn.m,GIDSignInPreferences.m,Resources/PrivacyInfo.xcprivacy}`; `Sakina.xcodeproj/project.xcworkspace/xcshareddata/swiftpm/Package.resolved`.
 
 ## Feature audit
 
@@ -50,14 +55,33 @@ Evidence: `CompanionAccount.google()` in `Sakina/Account/CompanionAccount.swift`
 | Notifications | Local permission and scheduled `UNCalendarNotificationTrigger` reminders; no server push token. `Sakina/App/CompanionReminders.swift`. |
 | Scholar content | **Disabled**: app constructs `ScholarContentStore(client: nil, cache: ... nil)`, and archived scholar Supabase configuration is blank. No scholar-content fetch or previously cached profile load. `Sakina/App/SakinaApp.swift`. |
 
-## Policy and URL corrections before submission
+## Policy and URL corrections completed
 
-1. Replace the absolute “does not include ... analytics” claim in `PrivacyPolicy.md` with a precise statement about Haneen’s own integrations; explain authentication-service processing without claiming unverified SDK behavior.
-2. Remove current-release instructions for connecting/disconnecting Google Drive and references to configured scholar content. Both features are disabled in this archive.
-3. Name the exact nearby-search transmission as **precise coordinates**, identify the actual Overpass service, and obtain its applicable privacy/retention information. Do not invent an operator policy URL.
-4. Explain the native Quran.com tafsir request as well as EveryAyah audio; current text mainly describes external source links. Confirm provider logging before finalizing any additional retained usage/search data answers.
-5. Change the deletion form’s “sent ... without your account identifier” to **“stored without your account identifier.”** Explain authenticated deletion separately. Verify feedback/log retention, and state the actual retention rule; the table currently has no expiry job. Do not promise a deletion period that is not implemented.
-6. Reconcile app and website policy text. `scholar-dashboard/public/privacy.html` contains duplicate location sections, advertises the disabled backup, and differs from `AppStore/PrivacyPolicy.md`. Its Sydney-hosting claim needs dashboard confirmation; code alone does not verify project region.
-7. Publish the corrected text at the configured [public privacy-policy URL](https://isharaf6.github.io/Sakina/privacy.html), then verify it loads without authentication from the submitted URL. This audit read the local website source; live reachability was not verified. Existing provider links are [Supabase](https://supabase.com/privacy), [Apple](https://www.apple.com/legal/privacy/) and [Google](https://policies.google.com/privacy). Contact remains `islamsharaf2005@gmail.com`. A separate Privacy Choices URL is optional, not currently supplied.
+The following are fixed, not remaining pre-submission tasks:
 
-After resolving provider-specific uncertainty, reconcile the App Store answers with the aggregate archive report and Haneen’s own manifest. Do not patch third-party manifests to make the report smaller.
+- Canonical Markdown, public HTML and in-app English/Arabic policy distinguish Haneen's lack of advertising/behavioural-event integration from provider account, security and technical processing.
+- Disabled Google Drive/scholarly features, duplicate Location sections and unverified Sydney hosting claim are removed from current-release policy copy.
+- Precise Overpass coordinates, native Quran.com tafsir requests and EveryAyah audio requests are described.
+- Deletion copy now distinguishes authenticated transmission from storage without account ID. Feedback retention is “as needed to evaluate feedback and improve the app”; there is no invented automatic expiry.
+- About and support FAQ now describe the local-only release. Support/share/review links use the App Store Connect ID verified by the release coordinator, `6811555262`.
+
+Public GET verification on 13 September 2026, without authentication:
+
+| Submitted page | Result |
+|---|---|
+| [Privacy policy](https://isharaf6.github.io/Sakina/privacy.html) | HTTP 200, title “Haneen Privacy Policy”, effective 13 September 2026. 7,311 bytes; byte-for-byte equal to `scholar-dashboard/public/privacy.html`. |
+| [Support / app website](https://isharaf6.github.io/Sakina/app.html) | HTTP 200, title “Haneen — Your daily companion”. 2,597 bytes; byte-for-byte equal to `scholar-dashboard/public/app.html`. Contact address present. |
+
+Privacy SHA-256: `50cbeb5eb2d4f3c8c28975975b18453be1af9109da06dbacad8f19dceaae7000`.
+Support SHA-256: `c0570b2a7a2a9d513c89b4f0f88a99879f21847e615a3fe6141fcdbb5a0f78cc`.
+The separate Privacy Choices URL is optional and is not supplied. Contact: `islamsharaf2005@gmail.com`.
+
+## Facts that public/client evidence cannot certify
+
+These are specific limits, not new copy tasks or proof of a policy violation:
+
+1. **Overpass production logs:** whether `overpass-api.de` retains complete query bodies/coordinates, IP or a reversible client token after a request; for how long; for which uses; and whether records are linked. Upstream [dispatcher source](https://github.com/drolbr/Overpass-API/blob/master/src/overpass_api/dispatch/dispatcher_stub.cc) logs raw query text, but this does not prove the deployed operator's version/configuration or retention. Do not claim transient/anonymous processing or cite the generic OSM Foundation policy as this operator's policy. If complete searches are retained, **Search History** may also need declaration; only the operator/deployed configuration can settle that.
+2. **Content API logs:** whether native Quran.com tafsir requests and EveryAyah reciter/ayah requests are retained and used as a reading/listening history. [Quran.com's policy](https://quran.com/privacy) discusses website log data, but does not specifically settle native API retention. It is not evidence that Haneen sends Quran.com account email or runs the website's analytics JavaScript. Confirm the API/CDN practices before asserting no retained Product Interaction or additional diagnostic data. EveryAyah's public index did not expose applicable retention information in this audit.
+3. **Feedback linkage:** the database has no account-ID column and code does not explicitly log feedback. An authenticated request and timestamp remain; actual Supabase function/access-log settings were not read. A “not linked” answer requires verified handling before collection and no later linkage, not just a schema assertion. Current recommendation is linked, so no unsupported anonymity claim is necessary.
+
+The recommended set resolves the Google supplier discrepancy and gives concrete current answers; it does not certify undisclosed production-provider behaviour. Location/content API retention is the unavoidable provider fact if the release owner needs an exhaustive guarantee about additional retained search/interaction categories. Do not present a missing public policy as evidence that no logs exist. Do not invent provider assurances or claim that the release was submitted merely because this worksheet is complete.
