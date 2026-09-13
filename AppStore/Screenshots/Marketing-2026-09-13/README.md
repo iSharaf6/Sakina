@@ -1,8 +1,8 @@
 # Haneen App Store screenshot review
 
-Six English (Australia) marketing screenshots, created 13 September 2026 for the owner's review. **Not approved or uploaded to App Store Connect.** Open `index.html` for a gallery with full-size inspection, previous/next controls and individual downloads. `overview.png` shows the complete set.
+Six English (Australia) marketing screenshots, created 13 September 2026 for the owner's review. **Owner approved the set on 13 September, with the countdown cat moved into the widget corner. All six were uploaded to Haneen 1.0 in App Store Connect; their order and saved state were verified after reloading the page.** Open `index.html` for a gallery with full-size inspection, previous/next controls and individual downloads. `overview.png` shows the complete set. The app remains in Prepare for Submission; screenshot upload is not app submission or release.
 
-## Upload files, after owner review
+## Approved upload files
 
 All six files in `exports/` are **1242 × 2688**, opaque RGB PNGs, suitable for the portrait iPhone 6.5-inch screenshot slot shown in this app's App Store Connect media manager. These are screenshots, not video app previews. Do not upload the contact sheet, raw captures, HTML or illustration assets.
 
@@ -32,3 +32,5 @@ App screens are original simulator PNGs placed by HTML/CSS. No scripture, transl
 The renderer uses Playwright with the bundled local Chromium. Override `PLAYWRIGHT_MODULE` and `CHROMIUM_PATH` for another machine. It exports the six files from native HTML at 3× resolution, generates the overview, and checks that the review gallery opens and advances between images. Fonts are the macOS system sans-serif; render on macOS for the approved typography. Re-run after updating a source capture.
 
 Checked: image dimensions, opaque RGB output, all images decode, six layouts inspected, headline fit, Qur’an/reward text visibility, clean widget crop, gallery controls. App Store submission remains separate from this review.
+
+The approved widget correction moves the existing edge-cropped countdown pose into the actual widget’s bottom-leading corner; Arabic mirrors the pose with the layout. Both the extension and chooser use this shared layout. The marketing widget card was refreshed from a new native capture after rebuilding the app.

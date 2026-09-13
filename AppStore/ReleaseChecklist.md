@@ -1,4 +1,13 @@
-# Haneen release check — 12 September 2026
+# Haneen release check — updated 13 September 2026
+
+## Current submission status — 13 September
+
+- App Store Connect record created: Haneen, app ID `6811555262`, bundle `com.islamsharaf.sakina`, version 1.0, English (Australia).
+- Owner approved all six marketing screenshots with the countdown cat tucked into the widget corner. All six are uploaded in their approved order; persistence was verified after reloading App Store Connect.
+- Promotional text, description, keywords, support URL, copyright and review notes are saved. Sign-in is marked optional.
+- The shared countdown layout was rebuilt and checked in English light/dark and Arabic dark; the screenshot uses a fresh native capture.
+- No build is attached, no submission has been made and the app is not released. Rebuild the archive to include the latest widget, prayer and privacy changes before upload. Earlier archive/export results below are historical.
+- Remaining submission work includes review contact information, privacy answers, age rating, category, pricing/availability, applicable account declarations, content-rights resolution and the device checks below. See `ContentRights.md` for the specific unresolved font condition and other permission questions.
 
 ## Verified
 
@@ -18,9 +27,12 @@
 - [ ] Complete Apple, Google and email sign-in with real test accounts on a physical device; test sign-out, relaunch, email confirmation and account deletion, including Apple's reauthorization/revocation flow. Provider configuration and automated tests do not replace these checks.
 - [ ] Confirm real-device Qibla heading, location permission changes, prayer notifications across midnight/restart, and Home/Lock Screen widget updates. Simulator checks cannot verify a magnetometer or notification delivery while the device is locked.
 - [ ] Check VoiceOver, largest text sizes, Reduce Motion, recitation on cellular, and installation on the oldest supported iOS version.
-- [ ] Create/confirm the App Store Connect record for `com.islamsharaf.sakina`; choose the final unique build number and upload the signed build.
-- [ ] Add screenshots, age rating, category, pricing/availability, content-rights declarations and privacy answers matching the shipped binary and services.
-- [ ] Enter public support and privacy URLs from the listing, add review notes, then submit for review.
+- [x] Create/confirm the App Store Connect record for `com.islamsharaf.sakina`.
+- [ ] Choose the final unique build number and upload the current signed build.
+- [x] Upload the six owner-approved screenshots in their approved order.
+- [ ] Add age rating, category, pricing/availability, content-rights declarations and privacy answers matching the shipped binary and services.
+- [x] Enter the public support URL and review notes from the listing.
+- [ ] Enter the privacy URL and review contact information, finish required declarations, then submit for review.
 - [ ] Monitor Google's external branding review; approval timing is controlled by Google.
 
 No build has been uploaded or submitted to App Store Connect during this release check.
