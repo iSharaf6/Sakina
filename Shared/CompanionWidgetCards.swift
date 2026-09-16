@@ -105,7 +105,11 @@ struct VerseCompanionCard: View {
                         captionLabel
                         if let verse = situation.primaryVerse {
                             Text(verse.arabic)
-                                .font(.custom("KFGQPC HAFS Uthmanic Script", size: 20))
+                                // Widgets use the verbatim legacy Uthmani
+                                // source, not the QPC display edition. The
+                                // system Arabic face supports its full set
+                                // of recitation marks without placeholders.
+                                .font(.system(size: 20))
                                 .lineLimit(2)
                                 .multilineTextAlignment(.trailing)
                                 .frame(maxWidth: .infinity, alignment: .trailing)

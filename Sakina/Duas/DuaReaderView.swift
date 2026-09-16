@@ -129,7 +129,10 @@ struct DuaReaderView: View {
                     Text("بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ")
                         .font(.arabicProse(proseSize * arabicScale)).frame(maxWidth: .infinity).padding(.vertical, 10)
                 }
-                ShareLink(item: sharedText) { Label(copy("Share du’a", "مشاركة الدعاء"), systemImage: "square.and.arrow.up") }
+                ShareLink(item: sharedText,
+                          preview: SharePreview("\(dua.title(language)) — Haneen", image: Image("YaqeenBrand"))) {
+                    Label(copy("Share du’a", "مشاركة الدعاء"), systemImage: "square.and.arrow.up")
+                }
             }
             .font(.yqBody)
             .tint(.yqAccentDeep)
@@ -236,8 +239,7 @@ struct DuaReaderView: View {
             }
 
             VStack(alignment: .leading, spacing: 18) {
-                Text(entry.arabic)
-                    .font(entry.kind == .quranic ? .arabic(30 * arabicScale) : .arabicProse(proseSize * arabicScale))
+                arabicText(entry)
                     .lineSpacing(entry.kind == .quranic ? 16 * arabicScale : 12 * arabicScale)
                     .foregroundStyle(Color.yqInk)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -289,6 +291,13 @@ struct DuaReaderView: View {
 
 
         }
+    }
+
+    private func arabicText(_ entry: GuidanceSupplication) -> Text {
+        if entry.kind == .quranic {
+            return Text(QuranTextRenderer.swiftUIArabic(entry.arabic, size: 30 * arabicScale))
+        }
+        return Text(entry.arabic).font(.arabicProse(proseSize * arabicScale))
     }
 
     private var anchorRow: some View {
@@ -429,6 +438,7 @@ struct DuaReaderView: View {
         .multilineTextAlignment(.center)
         .padding(.horizontal, 28)
         .padding(.bottom, 20)
+        .haneenReviewAfterCompletion(id: "duas-\(practice?.rawValue ?? mood?.rawValue ?? sequence.first?.id ?? "reading")")
     }
 
     private var completionLine: String {

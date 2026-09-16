@@ -44,6 +44,6 @@ Supabase's published data processing addendum limits processing of customer data
 - [Google privacy policy](https://policies.google.com/privacy)
 
 ## Contact
-Questions or deletion assistance: islamsharaf2005@gmail.com. If you contact support, we receive your email address, message and any details you include. Haneen's support form also includes the app and iOS versions. We retain correspondence as needed to respond and resolve the issue.
+Questions or deletion assistance: haneen.app.contact@gmail.com. If you contact support, we receive your email address, message and any details you include. Haneen's support form also includes the app and iOS versions. We retain correspondence as needed to respond and resolve the issue.
 
 Public policy: https://isharaf6.github.io/Sakina/privacy.html

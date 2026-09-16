@@ -54,6 +54,24 @@ struct HomeView: View {
                     goalsCard.revealed(5, appeared: appeared, reduceMotion: reduceMotion)
                     heart.revealed(6, appeared: appeared, reduceMotion: reduceMotion)
                     todayGrid.revealed(7, appeared: appeared, reduceMotion: reduceMotion)
+                    AppShareLink(language: language) {
+                        HStack(spacing: 14) {
+                            CompanionIllustration(artwork: .share, size: 48)
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(copy("Share Haneen", "شارك حنين"))
+                                    .font(.yqHeadline).foregroundStyle(Color.yqInk)
+                                Text(copy("For someone you care about.", "مع من تحب."))
+                                    .font(.yqSubhead).foregroundStyle(Color.yqSecondary)
+                            }
+                            Spacer(minLength: 0)
+                            Image(systemName: "square.and.arrow.up")
+                                .foregroundStyle(Color.yqAccentDeep)
+                                .accessibilityHidden(true)
+                        }
+                        .padding(16)
+                        .yqCard(cornerRadius: 20)
+                    }
+                    .revealed(8, appeared: appeared, reduceMotion: reduceMotion)
                 }
                 .padding(.horizontal, 20)
                 .padding(.top, 8)

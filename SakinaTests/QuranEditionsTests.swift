@@ -1,6 +1,7 @@
 import XCTest
 import CoreText
 import UIKit
+import SwiftUI
 @testable import Sakina
 
 /// Guards the alternate scripts and the bundled translations. Tajweed is
@@ -191,6 +192,103 @@ extension QuranEditionsTests {
         XCTAssertEqual(pieces.first?.text, "قَالُوا۟")
         XCTAssertEqual(pieces.first?.isMark, true)
         XCTAssertEqual(pieces.last?.isMark, false)
+    }
+
+    @MainActor
+    func testQuranicDuaRenderingPreservesEverySourceScalar() {
+        let entries = DuaCollection.allEntries.filter { $0.kind == .quranic }
+        XCTAssertFalse(entries.isEmpty)
+        for entry in entries {
+            let uiKit = QuranTextRenderer.attributedArabic(entry.arabic, size: 30, ink: .black)
+            let swiftUI = QuranTextRenderer.swiftUIArabic(entry.arabic, size: 30)
+            XCTAssertEqual(Array(uiKit.string.utf8), Array(entry.arabic.utf8), entry.id)
+            XCTAssertEqual(Array(String(swiftUI.characters).utf8), Array(entry.arabic.utf8), entry.id)
+        }
+    }
+
+    @MainActor
+    func testRuqyahRoundedZerosUseOneCompatibleFontForThePassage() throws {
+        let passage = try XCTUnwrap(RuqyahCatalog.quran.first { $0.id == "ruqyah-quran-2-102" })
+        let rendered = QuranTextRenderer.attributedArabic(passage.arabic, size: 30, ink: .black)
+        let source = rendered.string as NSString
+        let words = try NSRegularExpression(pattern: "\\S+").matches(in: rendered.string,
+            range: NSRange(location: 0, length: rendered.length))
+        let markedWords = words.filter {
+            source.substring(with: $0.range).unicodeScalars.contains { $0.value == 0x06DF }
+        }
+        // All six of these signs were visible as large dotted placeholders
+        // in 2:102. The signs must survive and keep their base letters.
+        XCTAssertEqual(markedWords.count, 6)
+        let fullRange = NSRange(location: 0, length: rendered.length)
+        rendered.enumerateAttribute(.font, in: fullRange) { value, range, _ in
+            let font = value as? UIFont
+            XCTAssertEqual(font?.fontName, QuranTextRenderer.markFont(size: 30).fontName)
+            XCTAssertEqual(range, fullRange,
+                           "All words must use the same face while every recitation sign is retained")
+        }
+        let swiftUI = QuranTextRenderer.swiftUIArabic(passage.arabic, size: 30)
+        XCTAssertEqual(swiftUI.runs.count, 1, "SwiftUI must also render the passage with one face")
+    }
+
+    @MainActor
+    func testRuqyahShapingHasNoMissingOrPlaceholderGlyphs() {
+        for entry in RuqyahCatalog.quran {
+            let text = QuranTextRenderer.attributedArabic(entry.arabic, size: 30, ink: .black)
+            let line = CTLineCreateWithAttributedString(text)
+            for run in CTLineGetGlyphRuns(line) as! [CTRun] {
+                let attributes = CTRunGetAttributes(run) as NSDictionary
+                let font = attributes[kCTFontAttributeName] as! CTFont
+                var glyphs = [CGGlyph](repeating: 0, count: CTRunGetGlyphCount(run))
+                CTRunGetGlyphs(run, CFRange(location: 0, length: 0), &glyphs)
+                XCTAssertFalse(glyphs.contains(0), "Missing glyph in \(entry.id)")
+                // A font's cmap can report support while returning a
+                // visible placeholder. Guard the *shaped* glyph stream,
+                // not only whether the source has U+25CC in it.
+                for scalar in [UniChar(0x25CC), UniChar(0x0600)] {
+                    var character = scalar
+                    var placeholder: CGGlyph = 0
+                    if CTFontGetGlyphsForCharacters(font, &character, &placeholder, 1), placeholder != 0 {
+                        XCTAssertFalse(glyphs.contains(placeholder),
+                            "Placeholder U+\(String(scalar, radix: 16)) in \(entry.id), \(CTFontCopyPostScriptName(font))")
+                        if let placeholderPath = CTFontCreatePathForGlyph(font, placeholder, nil) {
+                            for glyph in Set(glyphs) {
+                                // The bundled font assigns distinct glyph IDs
+                                // to 06DF/06E3/06EB but duplicates 0600's
+                                // placeholder outline, so IDs alone miss it.
+                                XCTAssertNotEqual(CTFontCreatePathForGlyph(font, glyph, nil), placeholderPath,
+                                                  "Placeholder outline in \(entry.id)")
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @MainActor
+    func testSharedVerseCardsStayReadableAndBounded() throws {
+        let ordered = SituationCatalog.all.sorted {
+            ($0.primaryVerse?.arabic.count ?? 0) < ($1.primaryVerse?.arabic.count ?? 0)
+        }
+        let shortest = try XCTUnwrap(ordered.first)
+        let longest = try XCTUnwrap(ordered.last)
+        for situation in [shortest, longest] {
+            for language in [AppLanguage.english, .arabic] {
+                let renderer = ImageRenderer(content: VerseShareCard(
+                    situation: situation, language: language, showTranslation: true
+                ).environment(\.dynamicTypeSize, .accessibility5))
+                renderer.scale = 1
+                let image = try XCTUnwrap(renderer.uiImage)
+                XCTAssertEqual(image.size.width, 430, accuracy: 1)
+                XCTAssertGreaterThan(image.size.height, 200)
+                XCTAssertLessThan(image.size.height, 1200,
+                                  "A shared ayah should fit a readable portrait image")
+                let attachment = XCTAttachment(image: image)
+                attachment.name = "Share-\(situation.id)-\(language.rawValue)"
+                attachment.lifetime = .keepAlways
+                add(attachment)
+            }
+        }
     }
 }
 

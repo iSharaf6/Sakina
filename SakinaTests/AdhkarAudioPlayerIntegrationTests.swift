@@ -1,4 +1,5 @@
 import AVFoundation
+import MediaPlayer
 import XCTest
 @testable import Sakina
 
@@ -167,6 +168,102 @@ final class AdhkarAudioPlayerIntegrationTests: XCTestCase {
         XCTAssertFalse(mushaf.isPlaying)
         XCTAssertNil(player.recording)
         XCTAssertEqual(player.duration, 0)
+    }
+
+    func testChapterPublishesItsTitleAndTheHaneenArtwork() async throws {
+        let chapter = try XCTUnwrap(AdhkarRecording.morning.chapters.first)
+        player.play(recording: .morning, startTime: chapter.start, endTime: chapter.end)
+        try await waitUntil("Chapter should prepare its playback metadata") {
+            self.player.duration > 0 && !self.player.isBuffering
+        }
+        let language = AppLanguage(rawValue: UserDefaults.standard.string(forKey: SettingsKeys.appLanguage) ?? "") ?? .english
+        let info = try XCTUnwrap(MPNowPlayingInfoCenter.default().nowPlayingInfo)
+        XCTAssertEqual(info[MPMediaItemPropertyTitle] as? String, chapter.title(language))
+        XCTAssertEqual(info[MPMediaItemPropertyAlbumTitle] as? String, "Haneen")
+        let artwork = try XCTUnwrap(info[MPMediaItemPropertyArtwork] as? MPMediaItemArtwork)
+        XCTAssertGreaterThan(try XCTUnwrap(artwork.image(at: CGSize(width: 300, height: 300))).size.width, 0)
+        XCTAssertNotNil(HaneenNowPlaying.image)
+
+        player.pause()
+        XCTAssertEqual(MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyPlaybackRate] as? Double, 0)
+        player.stop()
+        XCTAssertNil(MPNowPlayingInfoCenter.default().nowPlayingInfo)
+    }
+
+    func testSituationPlaybackPausesWithoutLosingItsReaderAndHandsOffCleanly() async throws {
+        let situation = try XCTUnwrap(SituationCatalog.by(id: "beforeMarriage"))
+        let audio = try XCTUnwrap(Bundle.main.url(forResource: "adhkar-morning", withExtension: "mp3"))
+        let recitation = RecitationPlayer.shared
+        recitation.play(situation: situation, sourceURLs: Array(repeating: audio, count: situation.verses.count))
+        try await waitUntil("Situation recitation should begin from the local test source") {
+            recitation.currentTime > 0.05
+        }
+        XCTAssertEqual(HaneenPlaybackPresence.shared.source, .situation)
+        XCTAssertNotNil(MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPMediaItemPropertyArtwork])
+        recitation.pause()
+        XCTAssertEqual(recitation.playingID, situation.id)
+        XCTAssertEqual(recitation.situation, situation)
+        XCTAssertFalse(recitation.isPlaying)
+        recitation.resume()
+        XCTAssertTrue(recitation.isPlaying)
+
+        player.play(recording: .evening)
+        XCTAssertNil(recitation.playingID, "Only the new playback source may own the session")
+        XCTAssertFalse(recitation.isPlaying)
+        XCTAssertEqual(HaneenPlaybackPresence.shared.source, .adhkar)
+        try await waitUntil("Adhkar should own Now Playing after the switch") {
+            self.player.duration > 0 && !self.player.isBuffering
+        }
+        recitation.stop()
+        XCTAssertNotNil(MPNowPlayingInfoCenter.default().nowPlayingInfo,
+                        "A stale stop on the old source must not erase the new source’s metadata")
+        player.stop()
+        XCTAssertNil(HaneenPlaybackPresence.shared.source)
+    }
+
+    func testFailedMushafAyahStopsRepeatAndKeepsAnActionableError() async throws {
+        let mushaf = MushafPlayer.shared
+        let wasRepeating = mushaf.repeatCurrent
+        defer { mushaf.repeatCurrent = wasRepeating }
+        mushaf.repeatCurrent = true
+        let missing = FileManager.default.temporaryDirectory
+            .appendingPathComponent("missing-quran-\(UUID().uuidString).mp3")
+        mushaf.play(from: "1:1", sourceURL: missing)
+        try await waitUntil("Missing audio should report failure instead of endlessly repeating") {
+            mushaf.errorMessage != nil
+        }
+        XCTAssertNil(mushaf.playingKey)
+        XCTAssertFalse(mushaf.isPlaying)
+        XCTAssertFalse(mushaf.isBuffering)
+        XCTAssertNil(MPNowPlayingInfoCenter.default().nowPlayingInfo)
+        XCTAssertEqual(HaneenPlaybackPresence.shared.failure?.source, .quran)
+        XCTAssertEqual(HaneenPlaybackPresence.shared.failure?.message, mushaf.errorMessage)
+        try await Task.sleep(nanoseconds: 350_000_000)
+        XCTAssertNil(mushaf.playingKey, "A queued callback must not restart the failed ayah")
+        XCTAssertNotNil(mushaf.errorMessage)
+        HaneenPlaybackPresence.shared.clearFailure()
+        XCTAssertNil(mushaf.errorMessage)
+        XCTAssertNil(HaneenPlaybackPresence.shared.failure)
+    }
+
+    func testFailedSituationRecitationIsVisibleAfterItsPlayerDisappears() async throws {
+        let situation = try XCTUnwrap(SituationCatalog.by(id: "beforeMarriage"))
+        let recitation = RecitationPlayer.shared
+        let missing = FileManager.default.temporaryDirectory
+            .appendingPathComponent("missing-situation-\(UUID().uuidString).mp3")
+        recitation.play(situation: situation, sourceURLs: Array(repeating: missing, count: situation.verses.count))
+        try await waitUntil("Missing situation audio should publish its error") {
+            recitation.errorMessage != nil
+        }
+        XCTAssertNil(recitation.playingID)
+        XCTAssertFalse(recitation.isPlaying)
+        XCTAssertNil(MPNowPlayingInfoCenter.default().nowPlayingInfo)
+        XCTAssertNil(HaneenPlaybackPresence.shared.source)
+        XCTAssertEqual(HaneenPlaybackPresence.shared.failure?.source, .situation)
+        XCTAssertEqual(HaneenPlaybackPresence.shared.failure?.message, recitation.errorMessage)
+        HaneenPlaybackPresence.shared.clearFailure()
+        XCTAssertNil(recitation.errorMessage)
+        XCTAssertNil(HaneenPlaybackPresence.shared.failure)
     }
 
     private func assertBundledAsset(_ recording: AdhkarRecording,

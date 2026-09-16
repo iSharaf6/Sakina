@@ -20,6 +20,7 @@ final class MushafPlayer: ObservableObject {
     /// 0...1 through the current ayah.
     @Published private(set) var progress: Double = 0
     @Published private(set) var reciter: Reciter
+    @Published private(set) var errorMessage: String?
 
     /// Stop at the end of this surah when set; otherwise keep going.
     var stopAtSurahEnd = true {
@@ -41,7 +42,7 @@ final class MushafPlayer: ObservableObject {
     /// Bumped on every restart so stale async work can bail out.
     private var generation = 0
     private var suppressQueueEvents = false
-    private var consecutiveFailures = 0
+    private var failedKey: String?
     private var wasPlayingBeforeInterruption = false
 
     private var startTask: Task<Void, Never>?
@@ -69,12 +70,14 @@ final class MushafPlayer: ObservableObject {
     }
 
     /// Start at `key` and continue with the following ayat.
-    func play(from key: String) {
+    func play(from key: String, sourceURL: URL? = nil) {
         guard let ayah = QuranStore.shared.ayah(key) else { return }
+        failedKey = nil
         AdhkarAudioPlayer.shared.stop()
         RecitationPlayer.shared.stop()
-        activateSession()
+        guard activateSession() else { failedKey = key; return }
         resetQueue()
+        errorMessage = nil
 
         playingKey = key
         isPlaying = true
@@ -86,6 +89,13 @@ final class MushafPlayer: ObservableObject {
         let reciter = reciter
         startTask = Task { [weak self] in
             guard let self, !Task.isCancelled, self.generation == generation else { return }
+            // A supplied local URL permits deterministic AVPlayer failure tests.
+            if let sourceURL {
+                self.enqueue(sourceURL, for: ayah.key)
+                if self.isPlaying { self.queue.play() }
+                self.startTask = nil
+                return
+            }
             let url: URL
             let local = await self.cache.localURL(for: ayah, reciter: reciter)
             guard !Task.isCancelled, self.generation == generation else { return }
@@ -117,6 +127,7 @@ final class MushafPlayer: ObservableObject {
         guard playingKey != nil else { return }
         queue.pause()
         isPlaying = false
+        isBuffering = false
         updateNowPlaying()
     }
 
@@ -124,7 +135,7 @@ final class MushafPlayer: ObservableObject {
         guard let key = playingKey else { return }
         AdhkarAudioPlayer.shared.stop()
         RecitationPlayer.shared.stop()
-        activateSession()
+        guard activateSession() else { return }
         if queue.currentItem == nil {
             play(from: key)
             return
@@ -141,12 +152,22 @@ final class MushafPlayer: ObservableObject {
         isBuffering = false
         progress = 0
         wasPlayingBeforeInterruption = false
+        errorMessage = nil
+        failedKey = nil
         removeRemoteCommands()
         if ownsNowPlaying {
             MPNowPlayingInfoCenter.default().nowPlayingInfo = nil
             try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
             ownsNowPlaying = false
         }
+    }
+
+    func clearError() { errorMessage = nil }
+
+    /// A retry is always a new, explicit user action on the same failed ayah.
+    func retryAfterFailure() {
+        guard let key = failedKey else { return }
+        play(from: key)
     }
 
     func playNext() {
@@ -193,7 +214,6 @@ final class MushafPlayer: ObservableObject {
         queue.removeAllItems()
         suppressQueueEvents = false
         entries.removeAll()
-        consecutiveFailures = 0
     }
 
     private func nextKey(after key: String) -> String? {
@@ -256,7 +276,8 @@ final class MushafPlayer: ObservableObject {
             let waiting = player.timeControlStatus == .waitingToPlayAtSpecifiedRate
             Task { @MainActor [weak self] in
                 guard let self, self.playingKey != nil else { return }
-                self.isBuffering = waiting
+                self.isBuffering = self.isPlaying && waiting
+                self.updateNowPlaying()
             }
         }
         let interval = CMTime(seconds: 0.25, preferredTimescale: 600)
@@ -268,6 +289,9 @@ final class MushafPlayer: ObservableObject {
     private func currentItemChanged(to item: AVPlayerItem?) {
         guard !suppressQueueEvents else { return }
         if let item {
+            // A queued KVO callback can outlive an item that already failed or
+            // was replaced. Do not let it erase the retained failure evidence.
+            guard item === queue.currentItem else { return }
             itemStarted(item)
         } else if playingKey != nil {
             // KVO hands us the change on a later run-loop turn, so a "queue
@@ -276,7 +300,11 @@ final class MushafPlayer: ObservableObject {
             // empty queue as the end of the ayah when nothing is being
             // restarted and the queue is really empty right now.
             guard startTask == nil, queue.currentItem == nil, queue.items().isEmpty else { return }
-            advanceAfterQueueEmptied()
+            if entries.keys.contains(where: { $0.status == .failed }) {
+                showPlaybackError()
+            } else {
+                advanceAfterQueueEmptied()
+            }
         }
     }
 
@@ -288,10 +316,9 @@ final class MushafPlayer: ObservableObject {
 
         playingKey = entry.key
         progress = 0
-        isBuffering = item.status != .readyToPlay
+        isBuffering = isPlaying && item.status != .readyToPlay
         observeStatus(of: item)
         updateNowPlaying()
-        prepareUpcoming(after: entry.key, current: item)
     }
 
     private func observeStatus(of item: AVPlayerItem) {
@@ -306,23 +333,28 @@ final class MushafPlayer: ObservableObject {
         guard item === queue.currentItem else { return }
         switch status {
         case .readyToPlay:
-            consecutiveFailures = 0
-            isBuffering = queue.timeControlStatus == .waitingToPlayAtSpecifiedRate
+            isBuffering = isPlaying && queue.timeControlStatus == .waitingToPlayAtSpecifiedRate
             updateNowPlaying()
+            if let key = entries[item]?.key { prepareUpcoming(after: key, current: item) }
         case .failed:
-            consecutiveFailures += 1
             if let entry = entries[item], entry.url.isFileURL {
                 // A damaged download; drop it so the next attempt refetches.
                 try? FileManager.default.removeItem(at: entry.url)
             }
-            if consecutiveFailures >= 3 {
-                stop()
-            } else {
-                queue.advanceToNextItem()
-            }
+            // Do not silently skip an ayah or retry forever when repeat is on.
+            showPlaybackError()
         default:
             break
         }
+    }
+
+    private func showPlaybackError() {
+        let key = playingKey
+        stop()
+        failedKey = key
+        let language = AppLanguage(rawValue: UserDefaults.standard.string(forKey: SettingsKeys.appLanguage) ?? "") ?? .english
+        errorMessage = language.pick("This ayah couldn’t play. Check your connection and try again.",
+                                     "تعذّر تشغيل هذه الآية. تحقّق من اتصالك وحاول مجددًا.")
     }
 
     private func advanceAfterQueueEmptied() {
@@ -344,12 +376,22 @@ final class MushafPlayer: ObservableObject {
 
     // MARK: Audio session
 
-    private func activateSession() {
-        let session = AVAudioSession.sharedInstance()
-        try? session.setCategory(.playback, mode: .spokenAudio)
-        try? session.setActive(true)
-        ownsNowPlaying = true
-        installRemoteCommands()
+    private func activateSession() -> Bool {
+        do {
+            let session = AVAudioSession.sharedInstance()
+            try session.setCategory(.playback, mode: .spokenAudio)
+            try session.setActive(true)
+            ownsNowPlaying = true
+            installRemoteCommands()
+            return true
+        } catch {
+            let key = playingKey
+            stop()
+            failedKey = key
+            let language = AppLanguage(rawValue: UserDefaults.standard.string(forKey: SettingsKeys.appLanguage) ?? "") ?? .english
+            errorMessage = language.pick("Audio couldn’t start. Please try again.", "تعذّر بدء الصوت. يرجى المحاولة مجددًا.")
+            return false
+        }
     }
 
     private func observeSession() {
@@ -417,13 +459,16 @@ final class MushafPlayer: ObservableObject {
             MPMediaItemPropertyArtist: reciter.name(language),
             MPMediaItemPropertyAlbumTitle: "Haneen",
             MPNowPlayingInfoPropertyMediaType: MPNowPlayingInfoMediaType.audio.rawValue,
-            MPNowPlayingInfoPropertyPlaybackRate: isPlaying ? 1.0 : 0.0,
+            MPNowPlayingInfoPropertyPlaybackRate: isPlaying && !isBuffering ? 1.0 : 0.0,
         ]
         if let item = queue.currentItem {
-            if item.duration.isNumeric { info[MPMediaItemPropertyPlaybackDuration] = item.duration.seconds }
-            info[MPNowPlayingInfoPropertyElapsedPlaybackTime] = item.currentTime().seconds
+            if item.duration.isNumeric, item.duration.seconds.isFinite {
+                info[MPMediaItemPropertyPlaybackDuration] = item.duration.seconds
+            }
+            let elapsed = item.currentTime().seconds
+            if elapsed.isFinite { info[MPNowPlayingInfoPropertyElapsedPlaybackTime] = max(0, elapsed) }
         }
-        MPNowPlayingInfoCenter.default().nowPlayingInfo = info
+        HaneenNowPlaying.publish(info)
     }
 
     private func installRemoteCommands() {

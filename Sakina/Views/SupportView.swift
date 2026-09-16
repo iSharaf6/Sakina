@@ -10,7 +10,7 @@ import UIKit
 enum AppLinks {
     /// The app's numeric identifier in App Store Connect.
     static let appStoreID = "6811555262"
-    static let supportEmail = "islamsharaf2005@gmail.com"
+    static let supportEmail = "haneen.app.contact@gmail.com"
 
     static var appStore: URL? {
         guard !appStoreID.isEmpty else { return nil }
@@ -31,8 +31,8 @@ enum AppLinks {
 
     static func shareText(_ language: AppLanguage) -> String {
         let line = language.pick(
-            "Haneen: du’a, dhikr and Qur’an for how you feel. Prayer times, ruqyah, a dhikr counter and nothing tracked.",
-            "حنين: أدعية وأذكار وآيات تناسب ما تشعر به، مع مواقيت الصلاة والرقية وعدّاد الأذكار، بلا تتبّع."
+            "A little room for Qur’an, du’a and dhikr each day. Haneen is free, in Arabic and English.",
+            "فسحة للقرآن والدعاء والذكر كل يوم. حنين تطبيق مجاني بالعربية والإنجليزية."
         )
         if let appStore { return line + "\n" + appStore.absoluteString }
         return line
@@ -65,8 +65,8 @@ struct FAQView: View {
              copy("Nearby places come from Apple Maps and OpenStreetMap. Places found in both are marked. Always confirm halal status with the restaurant, and use Report a problem to fix the map data.",
                   "تأتي بيانات الأماكن القريبة من خرائط Apple وOpenStreetMap، وتُميَّز الأماكن المذكورة في المصدرين معًا. تأكد من المطعم أن الطعام حلال، واستخدم خيار الإبلاغ عن مشكلة لتصحيح البيانات.")),
             (copy("Does the app work offline?", "هل يعمل التطبيق دون اتصال؟"),
-             copy("Du’as, Qur’an, prayer times and the dhikr counter all work offline. Recitation audio and nearby places need a connection.",
-                  "الأدعية والقرآن ومواقيت الصلاة وعداد الذكر تعمل دون اتصال. أما التلاوة الصوتية والأماكن القريبة فتحتاج إلى اتصال.")),
+             copy("Du’as, Qur’an text, saved prayer times, the dhikr counter and morning/evening recordings work offline. Downloaded Qur’an recitations also play offline. New recitations, tafsir and nearby places need a connection.",
+                  "تعمل الأدعية ونص القرآن ومواقيت الصلاة المحفوظة وعدّاد الذكر وتسجيلات أذكار الصباح والمساء دون اتصال، وكذلك التلاوات التي سبق تنزيلها. وتحتاج التلاوات الجديدة والتفسير والأماكن القريبة إلى اتصال.")),
             (copy("How do I add the widget?", "كيف أضيف الأداة؟"),
              copy("Set a location in Settings, then long-press your Home or Lock Screen, tap +, and search for Haneen.",
                   "حدد الموقع في الإعدادات، ثم اضغط مطولًا على الشاشة الرئيسية أو شاشة القفل، واضغط + وابحث عن حنين.")),
@@ -152,6 +152,7 @@ struct ContactSupportView: View {
     @State private var message = ""
     @State private var showComposer = false
     @State private var sent = false
+    @State private var emailUnavailable = false
     @FocusState private var focused: Bool
     private var copy: AppCopy { AppCopy(language: language) }
 
@@ -280,6 +281,14 @@ struct ContactSupportView: View {
             }
             .ignoresSafeArea()
         }
+        .alert(copy("Open your email app", "افتح تطبيق البريد"), isPresented: $emailUnavailable) {
+            Button(copy("Copy email address", "نسخ عنوان البريد")) {
+                UIPasteboard.general.string = AppLinks.supportEmail
+            }
+            Button(copy("Done", "تم"), role: .cancel) { }
+        } message: {
+            Text(copy("You can send your message to \(AppLinks.supportEmail).", "يمكنك إرسال رسالتك إلى \(AppLinks.supportEmail)."))
+        }
     }
 
     private func openMailto() {
@@ -288,8 +297,9 @@ struct ContactSupportView: View {
         components.path = AppLinks.supportEmail
         components.queryItems = [URLQueryItem(name: "subject", value: subject), URLQueryItem(name: "body", value: messageBody)]
         if let url = components.url {
-            openURL(url)
-            sent = true
+            openURL(url) { accepted in
+                if !accepted { emailUnavailable = true }
+            }
         }
     }
 }
@@ -351,38 +361,34 @@ struct AboutUsView: View {
                 .frame(maxWidth: .infinity)
                 .revealed(0, appeared: appeared, reduceMotion: reduceMotion)
 
+                HaneenCreatorCard(language: language)
+                    .revealed(1, appeared: appeared, reduceMotion: reduceMotion)
+
+                HaneenDedicationCard(language: language)
+                    .revealed(2, appeared: appeared, reduceMotion: reduceMotion)
+
                 storyCard(
                     symbol: "heart.fill",
-                    title: copy("Why we made it", "لماذا أنشأنا حنين"),
+                    title: copy("Why I made Haneen", "لماذا أنشأت حنين"),
                     body: copy(
-                        "Most of us don’t open a du’a book when the day gets heavy. We open our phone. Haneen meets you there: a feeling, one tap, and words from the Qur’an and the Sunnah that were made for that moment.",
-                        "حين تثقل علينا هموم اليوم، يلجأ كثير منا إلى هاتفه. اختر في حنين ما تشعر به لتصل بضغطة واحدة إلى آيات وأدعية من القرآن والسنة تناسب حالك."
+                        "When a day feels heavy, many of us reach for our phone. I wanted Haneen to offer something helpful there: a way to find Qur’an passages and authentic du’as, keep a daily practice, and pause for remembrance.",
+                        "حين تثقل علينا هموم اليوم، يلجأ كثير منا إلى هاتفه. أردت أن يكون حنين بابًا للنفع: للوصول إلى آيات وأدعية مأثورة، والمحافظة على ورد يومي، والتوقف قليلًا لذكر الله."
                     )
                 )
-                .revealed(1, appeared: appeared, reduceMotion: reduceMotion)
+                .revealed(3, appeared: appeared, reduceMotion: reduceMotion)
 
                 storyCard(
                     symbol: "checkmark.shield.fill",
                     title: copy("What we promise", "ما نعد به"),
                     body: copy(
-                        "Every ayah is fetched from Quran.com and frozen. Every hadith shows its collection, number and grade. Nothing you read or write is tracked, sold, or sent anywhere without you choosing it.",
-                        "نصوص الآيات مأخوذة من Quran.com ومحفوظة دون تغيير، ويُعرض مع كل حديث مصدره ورقمه ودرجته. ولا نتتبّع ما تقرأه أو تكتبه، ولا نبيعه أو نرسله إلى أي جهة دون اختيارك."
+                        "Qur’an passages and du’as include source references. Your saved notes and reflections stay on your iPhone. Haneen has no ads or behavioural analytics; the privacy policy explains its account and online services.",
+                        "تُرفق الآيات والأدعية بمراجعها، وتبقى ملاحظاتك وتأملاتك المحفوظة على هاتفك. لا يتضمن حنين إعلانات أو أدوات لتحليل سلوكك، وتوضح سياسة الخصوصية خدمات الحساب والخدمات المتصلة بالإنترنت."
                     )
                 )
-                .revealed(2, appeared: appeared, reduceMotion: reduceMotion)
-
-                storyCard(
-                    symbol: "person.fill",
-                    title: copy("Who we are", "من نحن"),
-                    body: copy(
-                        "Haneen is independently built and shaped by your feedback. If it helps you, tell a friend.",
-                        "حنين تطبيق مستقل تسهم ملاحظاتكم في تطويره. إن نفعك، فأخبر صديقًا."
-                    )
-                )
-                .revealed(3, appeared: appeared, reduceMotion: reduceMotion)
+                .revealed(4, appeared: appeared, reduceMotion: reduceMotion)
 
                 RowGroup {
-                    ShareLink(item: AppLinks.shareText(language)) {
+                    AppShareLink(language: language) {
                         BadgeRow(symbol: "square.and.arrow.up.fill", title: copy("Share Haneen", "شارك حنين"))
                     }
                     .buttonStyle(.yqPressSoft)
@@ -392,7 +398,7 @@ struct AboutUsView: View {
                     }
                     .buttonStyle(.yqPressSoft)
                 }
-                .revealed(4, appeared: appeared, reduceMotion: reduceMotion)
+                .revealed(5, appeared: appeared, reduceMotion: reduceMotion)
 
                 Text(copy("Haneen, \(AppLinks.version)", "حنين، \(AppLinks.version)"))
                     .font(.yqCaption)
@@ -428,13 +434,11 @@ struct AboutUsView: View {
 }
 
 enum AppRating {
-    /// Asks for the native review prompt; falls back to the App Store page when it can’t show one.
+    /// An explicit button must reliably open the App Store. Automatic requests
+    /// use RequestReviewAction separately at an eligible completed-session break.
     @MainActor static func request(fallback openURL: OpenURLAction) {
-        Haptics.thud()
-        if let scene = UIApplication.shared.connectedScenes.first(where: { $0.activationState == .foregroundActive }) as? UIWindowScene {
-            SKStoreReviewController.requestReview(in: scene)
-        } else if let url = AppLinks.writeReview {
-            openURL(url)
-        }
+        guard let url = AppLinks.writeReview else { return }
+        Haptics.press()
+        openURL(url)
     }
 }

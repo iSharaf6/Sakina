@@ -354,8 +354,8 @@ enum QuranTextRenderer {
 
     // MARK: Pieces
 
-    /// A run split further by font: `isMark` pieces are drawn in the
-    /// system font because the KFGQPC glyph is broken.
+    /// A run split further by font: `isMark` pieces contain a complete
+    /// word requiring the system Arabic font, never a detached mark.
     struct Piece: Equatable {
         let text: String
         let color: UIColor?
@@ -397,6 +397,18 @@ enum QuranTextRenderer {
     }
 
     // MARK: UIKit
+
+    /// Verbatim Uthmani Arabic outside the mushaf (ruqyah, du'a, guidance
+    /// and share cards). These sources use the legacy Unicode edition,
+    /// unlike the QPC display encoding paired with the bundled font.
+    /// Keep every source scalar and use one compatible face for the whole
+    /// passage if it needs legacy marks. Mixing faces within a paragraph
+    /// made affected words visibly heavier than their neighbours.
+    static func attributedArabic(_ text: String, size: CGFloat, ink: UIColor) -> NSAttributedString {
+        let font = text.unicodeScalars.contains(where: isFallbackMark)
+            ? markFont(size: size) : uthmaniFont(size: size)
+        return NSAttributedString(string: text, attributes: [.font: font, .foregroundColor: ink])
+    }
 
     struct Style {
         var script: QuranScript
@@ -479,6 +491,21 @@ enum QuranTextRenderer {
     }
 
     // MARK: SwiftUI
+
+    /// The verbatim-text counterpart of `swiftUI(_:script:size:)` for
+    /// sourced excerpts which do not have a single `QuranAyah` identity.
+    /// Do not apply `.font(.arabic(...))` to these strings directly: that
+    /// face maps some legacy recitation signs to a placeholder glyph.
+    static func swiftUIArabic(_ text: String, size: CGFloat, ink: Color = .yqInk,
+                              scalesWithDynamicType: Bool = true) -> AttributedString {
+        let scaled = scalesWithDynamicType
+            ? UIFontMetrics(forTextStyle: textStyle(for: size)).scaledValue(for: size) : size
+        var result = AttributedString(text)
+        result.font = text.unicodeScalars.contains(where: isFallbackMark)
+            ? .system(size: scaled) : .custom(uthmaniFontName, fixedSize: scaled)
+        result.foregroundColor = ink
+        return result
+    }
 
     /// The same content for `Text(...)`, built with SwiftUI attributes
     /// (SwiftUI's `Text` ignores UIKit-scoped fonts and colours, so the

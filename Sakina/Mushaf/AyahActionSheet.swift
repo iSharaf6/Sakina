@@ -232,7 +232,7 @@ struct AyahActionSheet: View {
             }
             .buttonStyle(.yqPress)
 
-            ShareLink(item: sharedText) {
+            ShareLink(item: sharedText, preview: SharePreview(copy("An ayah from Haneen", "آية من حنين"), image: Image("YaqeenBrand"))) {
                 ActionTile(symbol: "square.and.arrow.up", title: copy("Share", "مشاركة"))
             }
             .buttonStyle(.yqPress)

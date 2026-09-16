@@ -74,7 +74,7 @@ Public GET verification on 13 September 2026, without authentication:
 
 Privacy SHA-256: `50cbeb5eb2d4f3c8c28975975b18453be1af9109da06dbacad8f19dceaae7000`.
 Support SHA-256: `c0570b2a7a2a9d513c89b4f0f88a99879f21847e615a3fe6141fcdbb5a0f78cc`.
-The separate Privacy Choices URL is optional and is not supplied. Contact: `islamsharaf2005@gmail.com`.
+The separate Privacy Choices URL is optional and is not supplied. Contact: `haneen.app.contact@gmail.com`.
 
 ## Facts that public/client evidence cannot certify
 

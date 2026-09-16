@@ -15,10 +15,11 @@ struct AboutView: View {
                 ScrollView(showsIndicators: false) {
                     VStack(alignment: .leading, spacing: 28) {
                         brand
+                        HaneenCreatorCard(language: language)
+                        HaneenDedicationCard(language: language)
                         trustCard
                         privacyCard
                         fontCredits
-                        dedication
                         links
                         version
                     }
@@ -79,41 +80,6 @@ struct AboutView: View {
         )
     }
 
-    private var dedication: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            Image(uiImage: CompanionImage.image(.dedication))
-                .resizable()
-                .scaledToFit()
-                .frame(maxWidth: .infinity, maxHeight: 220)
-                .accessibilityHidden(true)
-
-            Text(copy("For those who came before us", "وفاءً لمن سبقونا"))
-                .font(.yqSubheadBold)
-                .foregroundStyle(Color.sakinaInk)
-            Text(copy(
-                "Haneen was created with the intention of sadaqah jariyah for my late grandparents, on both my mother’s and father’s sides.",
-                "أُنشئ حنين بنية الصدقة الجارية عن أجدادي وجدّاتي المتوفَّين من جهة أمي وأبي."
-            ))
-            .font(.yqSubhead)
-            .foregroundStyle(Color.sakinaMuted)
-            .lineSpacing(5)
-            .fixedSize(horizontal: false, vertical: true)
-
-            Text(copy(
-                "May Allah forgive them, have mercy on them, and make the good this app brings a lasting benefit for them. Ameen.",
-                "اللهم اغفر لهم وارحمهم، واجعل ما ينفع به هذا التطبيق في ميزان حسناتهم. آمين."
-            ))
-            .font(.yqSubhead)
-            .foregroundStyle(Color.sakinaInk)
-            .lineSpacing(5)
-            .fixedSize(horizontal: false, vertical: true)
-        }
-        .padding(20)
-        .background(Color.sakinaElevated, in: RoundedRectangle(cornerRadius: 20, style: .continuous))
-        .overlay(RoundedRectangle(cornerRadius: 20, style: .continuous)
-            .strokeBorder(Color.sakinaHairline, lineWidth: 1))
-    }
-
     private var fontCredits: some View {
         aboutCard(
             symbol: "textformat",
@@ -147,6 +113,14 @@ struct AboutView: View {
 
     private var links: some View {
         VStack(spacing: 0) {
+            AppShareLink(language: language) {
+                sourceRow(copy("Share Haneen", "شارك حنين"), detail: copy("Pass it on", "انشر الخير"))
+            }
+            Divider().padding(.leading, 46)
+            NavigationLink { ContactSupportView(language: language) } label: {
+                sourceRow(copy("Feedback & support", "الملاحظات والدعم"), detail: copy("Get in touch", "تواصل معنا"))
+            }
+            Divider().padding(.leading, 46)
             NavigationLink {
                 PrivacyPolicyView()
             } label: {
@@ -189,7 +163,7 @@ struct AboutView: View {
     }
 
     private var version: some View {
-        Text(copy("Haneen, 1.0", "حنين، 1.0"))
+        Text(copy("Haneen, \(AppLinks.version)", "حنين، \(AppLinks.version)"))
             .font(.caption2)
             .foregroundStyle(Color.sakinaMuted)
             .frame(maxWidth: .infinity, alignment: .center)

@@ -1,6 +1,6 @@
 # Haneen release preparation — 17 September 2026
 
-This is the current preparation record for Haneen 1.0 (2). It supersedes older pending-state descriptions where explicitly stated below. It does not claim a submitted replacement build, a sent review reply, completed physical-device testing or App Store approval.
+**Historical build-2 preparation record.** The current build-3 preparation and live email/contact results are in [ReleasePolish-2026-09-17.md](ReleasePolish-2026-09-17.md). The earlier blocked-email and pending-state observations below are retained as historical evidence, not current status. No completed physical-device recording, resubmission or approval is implied.
 
 ## Confirmed live configuration
 

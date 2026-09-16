@@ -1,44 +1,45 @@
 # Haneen — response to Guideline 2.1 information request
 
-Prepared 17 September 2026 for Haneen 1.0 (2). This is the replacement response text for the corrected build, not evidence that it has been uploaded or selected. The copy below matches the current unified email flow and bundled audio; its 3,961-character notes are saved in App Store Connect, while the review response is still unsent. No physical-device test, production email delivery test or completed video is claimed.
+Updated 17 September 2026 for planned **Haneen 1.0 (3)**. Current state: [ReleasePolish-2026-09-17.md](ReleasePolish-2026-09-17.md). This draft is not evidence that build 3 has been uploaded, selected or submitted. The contact email and earlier notes were updated live; the build-3 copy below is a local draft until separately saved in App Store Connect.
 
-Before sending: confirm the corrected build is selected, verify production email delivery and the account lifecycle on the physical iPhone, attach the real walkthrough, and replace the `VIDEO EVIDENCE PENDING` paragraph with its verified attachment/link and timestamps. Brevo custom SMTP was saved and rechecked on 17 September, but the delivery test returned SMTP 535 (authentication failed). The owner is correcting the SMTP credentials; successful delivery remains unverified. Keep the response draft unsent until those checks are complete. Public source references do not certify third-party rights.
+Production email now delivers, and a returning email code created a session successfully; sign-out returned HTTP 204. That backend check does not establish a completed physical-iPhone account lifecycle. Apple's actual 14 September Guideline 2.1 message still requests physical-device recording, and no waiver has been received. Keep this response unsent until the selected build and physical evidence are ready. Replace `VIDEO EVIDENCE PENDING` only with verified evidence. The owner declined sending the prepared content-provider permission questions; they remain unsent and the scope questions unconfirmed.
 
 ## Response text / App Review notes
 
 ```text
-Haneen 1.0 (2) — App Review information
+Haneen 1.0 (3) — App Review information
 
 1. Physical-device demonstration
-VIDEO EVIDENCE PENDING: attach the requested physical-iPhone walkthrough before resubmission, showing launch, setup, core features, registration, returning sign-in and deletion. The recording and device checks are not yet complete.
+VIDEO EVIDENCE PENDING: attach the requested physical-iPhone walkthrough on the latest released OS, showing launch, setup, core use, registration, returning sign-in and account deletion. Recording and physical-device account checks are not yet complete.
 
 2. Purpose and access
-Haneen is a free Arabic/English Islamic companion for Qur'an, sourced duas/hadith and prayer/dhikr routines. At launch, select "Use Haneen without an account". All core features are available as a guest, without credentials, membership, invitation or payment. It is not a medical or counselling service.
+Haneen is a free Arabic/English Islamic companion for Qur'an, sourced duas/hadith and daily prayer/dhikr. Choose "Use Haneen without an account" at launch. All core features work as a guest, without credentials, membership, invitation or payment. It is not a medical or counselling service.
 
 3. Feature walkthrough
-Open Qur'an, choose a surah and tap an ayah for Listen, Save and More. More opens translation, tafsir, highlights and notes. Saved > My ayat opens saved ayat/notes.
-Du'as contains collections, including Morning and Evening. Both have a full offline Abu Islam recording, play/pause, seeking and 15-second skips. Fifteen matched readings also offer an individual excerpt, including Surah an-Nas. Excerpt playback does not advance the repetition counter.
+Qur'an > choose a surah > tap an ayah for Listen, Save and More. More opens translation, tafsir, highlights and notes. Saved > My ayat opens saved ayat/notes.
+Du'as > Morning or Evening offers a full offline Abu Islam recording, play/pause, seeking and 15-second skips. Fifteen matched readings have individual excerpts, including Surah an-Nas. Playback does not advance the repetition counter.
+Audio continues after leaving its reader, with an in-app mini-player and iOS media controls showing Haneen artwork. Settings > About Haneen includes the creator and grandparents' dedication; Settings also offers optional sharing, feedback and rating.
 Home > All feelings opens related readings. Explore contains life situations and nearby mosque/halal-place searches.
-For prayer times, use Home > Use my location and allow location access. Settings contains calculation settings. Home > Qibla uses the physical iPhone compass. Reading, duas and local saving work if location is denied. Notifications are optional. Add widgets through the iOS widget gallery after configuring prayer times.
+For prayer times, Home > Use my location; Settings contains calculation options. Home > Qibla uses the physical compass. Reading and local saving still work if location is denied. Notifications are optional. Add widgets through the iOS gallery after setting a location.
 
 4. Optional accounts and deletion
-Settings > Account offers Apple, Google and email. New and returning email users enter an email and tap Continue with email, then open the email link on this iPhone or enter its code and tap Verify & continue. No password or separate Sign up choice is needed. The welcome email sheet uses Continue and Sign in for the same process.
-Account > Delete account offers optional feedback: leave Prefer not to say selected and feedback blank, tap Delete account and confirm. Apple-linked deletion may request fresh Apple authorisation. Signing out/deleting the account leaves the separate local library on the iPhone. Sign-in does not upload or sync notes/bookmarks.
+Settings > Account offers Apple, Google and email. New and returning email users enter their email, tap Continue with email, then open its link on this iPhone or enter its code and tap Verify & continue. No password or separate Sign up selector. The welcome email sheet uses Continue and Sign in for this same process.
+Account > Delete account: feedback is optional. Leave Prefer not to say and the feedback blank, tap Delete account, then confirm. Apple-linked deletion may require fresh Apple authorisation. Sign-out/deletion keeps the separate local library; sign-in does not upload or sync notes/bookmarks.
 
 5. Services, data and regions
-Supabase Authentication handles account identity/session data and optional deletion feedback. Brevo delivers sign-in emails. EveryAyah supplies streamed/cached Quran recitation; Quran.com's API supplies online tafsir. Nearby searches send location/category to Apple Maps and OpenStreetMap Overpass (overpass-api.de). Apple location services resolve place names.
-Quran text, the dua/hadith catalog and morning/evening recordings are bundled. Adhkar playback is offline; optional SoundCloud source links open externally only when tapped. No SoundCloud SDK, API or embedded player is used.
-Notes, progress, settings and dhikr counts are local. Prayer calculations use Adhan on-device; reminders are local notifications. There are no payments, subscriptions, ads, public UGC, messaging or runtime AI service. Sharing uses the iOS share sheet; illustrations are static.
-Mainland China is excluded. In Apple-required regions, a system age-range check may appear after setup. Haneen processes the response on-device without storing or uploading age data. Other features are the same in offered regions. Users choose Arabic/English. Prayer times depend on location/time zone/settings; online provider availability varies. There are no regional paid tiers.
+Supabase handles identity/session data and optional deletion feedback; Brevo delivers sign-in emails. EveryAyah supplies streamed/cached Quran audio; Quran.com's API supplies online tafsir. Nearby searches send location/category to Apple Maps and OpenStreetMap Overpass (overpass-api.de). Apple location services resolve place names.
+Quran text, dua/hadith content and morning/evening recordings are bundled. Optional SoundCloud source links open externally only when tapped; no SoundCloud SDK, API or embedded player is used.
+Notes, progress, preferences, dhikr counts and review-prompt timing are local. Prayer calculations use Adhan on-device; reminders are local notifications. No payments, subscriptions, ads, public UGC, messaging or runtime AI. Sharing uses the iOS share sheet; ratings use StoreKit without score filtering.
+Mainland China is excluded. In Apple-required regions, a system age-range check may appear after setup. Its response is processed on-device, not stored or uploaded. Core features are otherwise the same across offered regions. Users choose Arabic/English. Prayer times depend on location/time zone/settings; online availability varies.
 
 6. Content and contact
-Sources and font credits: Settings > Sources, privacy & credits.
-Quran Foundation terms: https://api-docs.quran.com/legal/developer-terms/
-Hadith references: https://sunnah.com/about
-Abu Islam permitted the developer to include his recordings and is credited in the player.
+Sources/font credits: Settings > Sources, privacy & credits.
+Quran Foundation: https://api-docs.quran.com/legal/developer-terms/
+Hadith: https://sunnah.com/about
+The developer reports Abu Islam's permission to include his recordings; the player credits him.
 Privacy: https://isharaf6.github.io/Sakina/privacy.html
 Support: https://isharaf6.github.io/Sakina/app.html
-Contact: islamsharaf2005@gmail.com
+Contact: haneen.app.contact@gmail.com
 ```
 
 ## Internal evidence and submission checks
@@ -52,7 +53,7 @@ Contact: islamsharaf2005@gmail.com
 - Local prayer calculations: `Sakina/Prayer/PrayerTimesService.swift`; local notifications: `Sakina/App/CompanionReminders.swift`.
 - Google Drive backup requires `HaneenGoogleBackupEnabled == true`; the release configuration does not enable that key. Do not describe the account as synchronising notes. `Sakina/Account/GoogleBackupService.swift` contains future/disabled backup code.
 - Scholar content is disabled at the root with a nil client and no disk cache. Do not present the separate private editorial dashboard as a shipped feature or public UGC platform.
-- No runtime AI provider/API or payment flow was found in the app/shared/widget source and dependencies. `StoreKit` use in `SupportView.swift` requests an App Store rating, not a purchase. Static development-generated illustrations do not constitute an AI chat/generation feature in the app.
+- No runtime AI provider/API or payment flow was found in the app/shared/widget source and dependencies. `StoreKit` use in `CompletionReviewPrompt.swift` requests an App Store rating, not a purchase. The explicit Settings rating button opens the App Store review URL. Static development-generated illustrations do not constitute an AI chat/generation feature in the app.
 - Mainland China is excluded from store availability. Other core features are consistent across offered regions; Apple may require the regional age-range check described below. Provider availability still varies by country.
 - The feature and backend descriptions must match the exact build selected in App Store Connect. The video is still required even though no credentials are needed for guest review.
 

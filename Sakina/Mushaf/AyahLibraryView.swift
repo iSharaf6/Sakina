@@ -273,7 +273,7 @@ struct AyahListView: View {
                                             Label(copy("Remove from this list", "إزالة من هذه القائمة"), systemImage: "minus.circle")
                                         }
                                     }
-                                    ShareLink(item: AyahLibraryCopy.shareText(for: ayah, language: language)) {
+                                    ShareLink(item: AyahLibraryCopy.shareText(for: ayah, language: language), preview: SharePreview(copy("An ayah from Haneen", "آية من حنين"), image: Image("YaqeenBrand"))) {
                                         Label(copy("Share", "مشاركة"), systemImage: "square.and.arrow.up")
                                     }
                                 }

@@ -67,12 +67,12 @@ Hadith references: https://sunnah.com/about
 Abu Islam permitted the developer to include his recordings and is credited in the player.
 Privacy: https://isharaf6.github.io/Sakina/privacy.html
 Support: https://isharaf6.github.io/Sakina/app.html
-Contact: islamsharaf2005@gmail.com
+Contact: haneen.app.contact@gmail.com
 
 ## Public links and contact
 - Support: https://isharaf6.github.io/Sakina/app.html
 - Privacy policy: https://isharaf6.github.io/Sakina/privacy.html
-- Support email: islamsharaf2005@gmail.com
+- Support email: haneen.app.contact@gmail.com
 
 ## Submission fields still to complete
 Before sending, select the corrected build, verify review contact details, finish any account/program declarations, and attach the requested physical-device recording. Confirm production email delivery and the account lifecycle on that build. The saved description is for build 2; do not pair it with the old build 1. Verify the public policy and support copy after publication. Store status and completed tests must be established separately.

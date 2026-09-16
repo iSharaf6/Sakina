@@ -37,8 +37,15 @@ struct SituationDetailView: View {
     private var companion: SituationCompanionContent { CompanionContentCatalog.content(for: situation) }
     private var isBookmarked: Bool { bookmarks.contains { $0.situationID == situation.id } }
     private var entries: [JournalEntry] { allEntries.filter { $0.situationID == situation.id } }
-    private var isPlaying: Bool { player.playingID == situation.id }
+    private var isPlaying: Bool { player.playingID == situation.id && player.isPlaying }
     private var draftTrimmed: String { draft.trimmingCharacters(in: .whitespacesAndNewlines) }
+    private func supplicationArabic(_ supplication: GuidanceSupplication) -> Text {
+        if supplication.kind == .quranic {
+            return Text(QuranTextRenderer.swiftUIArabic(supplication.arabic, size: 25 * arabicScale, ink: .sakinaInk))
+        }
+        return Text(supplication.arabic).font(.system(size: arabicProseSize * arabicScale, weight: .regular))
+    }
+
     private var reciterName: String {
         Reciter(rawValue: reciterRaw)?.displayName ?? Reciter.alafasy.displayName
     }
@@ -95,7 +102,6 @@ struct SituationDetailView: View {
         .task(id: situation.id) {
             await scholarStore.loadInsights(forSituationID: situation.id)
         }
-        .onDisappear { player.stopIfPlaying(id: situation.id) }
         .onChange(of: selectedSection) { _, _ in contentIndex = 0 }
         .animation(reduceMotion ? nil : .easeInOut(duration: 0.18), value: selectedSection)
     }
@@ -196,7 +202,9 @@ struct SituationDetailView: View {
             if let shareImage {
                 ShareLink(
                     item: shareImage,
-                    preview: SharePreview(situation.localizedTitle(language), image: shareImage)
+                    subject: Text(situation.localizedTitle(language)),
+                    message: Text(AppLinks.shareText(language)),
+                    preview: SharePreview("\(situation.localizedTitle(language)) — Haneen", image: shareImage)
                 ) {
                     actionLabel(symbol: "square.and.arrow.up", title: copy("Share", "شارك"))
                 }
@@ -366,8 +374,7 @@ struct SituationDetailView: View {
             Divider().overlay(Color.sakinaHairline)
 
             if !showMeaning || !translationVisible {
-            Text(verse.arabic)
-                .font(.arabic(27 * arabicScale))
+            Text(QuranTextRenderer.swiftUIArabic(verse.arabic, size: 27 * arabicScale, ink: .sakinaInk))
                 .lineSpacing(15 * arabicScale)
                 .foregroundStyle(Color.sakinaInk)
                 .multilineTextAlignment(.center)
@@ -521,12 +528,7 @@ struct SituationDetailView: View {
                 }
             }
 
-            Text(supplication.arabic)
-                .font(
-                    supplication.kind == .quranic
-                        ? .arabic(25 * arabicScale)
-                        : .system(size: arabicProseSize * arabicScale, weight: .regular)
-                )
+            supplicationArabic(supplication)
                 .lineSpacing(14 * arabicScale)
                 .foregroundStyle(Color.sakinaInk)
                 .multilineTextAlignment(.trailing)
@@ -834,6 +836,7 @@ struct SituationDetailView: View {
 
     @MainActor
     private func renderShareCard() {
+        shareImage = nil
         let renderer = ImageRenderer(
             content: VerseShareCard(
                 situation: situation,
@@ -899,7 +902,9 @@ private extension GuidanceSafetyNoticeKind {
 
 // MARK: - Share card
 
-/// A fixed light rendition designed for sharing without exposing user data.
+/// One complete ayah with its source, designed for a readable share image.
+/// A situation may contain many passages; sharing its first ayah prevents
+/// an enormous stitched card, without truncating or altering any verse.
 struct VerseShareCard: View {
     let situation: Situation
     let language: AppLanguage
@@ -909,15 +914,15 @@ struct VerseShareCard: View {
     private let ivory = Color(red: 0.98, green: 0.965, blue: 0.925)
 
     var body: some View {
-        VStack(spacing: 24) {
+        VStack(spacing: 22) {
             HStack(spacing: 12) {
                 YaqeenBrandIcon(size: 39)
                 VStack(alignment: .leading, spacing: 1) {
                     Text("Haneen  حنين")
                         .font(.system(size: 18, weight: .bold))
-                    Text("CERTAINTY IN EVERY STEP")
-                        .font(.system(size: 7, weight: .semibold))
-                        .tracking(1.4)
+                    Text(language.pick("Qur’an, du’a & daily remembrance", "القرآن والدعاء والأذكار اليومية"))
+                        .font(.system(size: 10, weight: .medium))
+                        .foregroundStyle(forest.opacity(0.7))
                 }
                 .foregroundStyle(forest)
                 Spacer()
@@ -927,14 +932,15 @@ struct VerseShareCard: View {
                 .fill(forest.opacity(0.15))
                 .frame(height: 1)
 
-            ForEach(situation.verses) { verse in
+            if let verse = situation.primaryVerse {
                 VStack(spacing: 15) {
-                    Text(verse.arabic)
-                        .font(.custom(QuranTextRenderer.uthmaniFontName, size: 25))
-                        .lineSpacing(13)
+                    Text(QuranTextRenderer.swiftUIArabic(verse.arabic, size: 25, ink: forest,
+                                                        scalesWithDynamicType: false))
+                        .lineSpacing(10)
                         .foregroundStyle(forest)
                         .multilineTextAlignment(.center)
                         .frame(maxWidth: .infinity)
+                        .fixedSize(horizontal: false, vertical: true)
                         .environment(\.layoutDirection, .rightToLeft)
 
                     if showTranslation {
@@ -943,6 +949,11 @@ struct VerseShareCard: View {
                             .lineSpacing(5)
                             .foregroundStyle(forest.opacity(0.84))
                             .multilineTextAlignment(.center)
+                            .fixedSize(horizontal: false, vertical: true)
+                            .environment(\.layoutDirection, .leftToRight)
+                        Text("Saheeh International")
+                            .font(.system(size: 9, weight: .medium))
+                            .foregroundStyle(forest.opacity(0.64))
                     }
 
                     Text(language == .arabic
@@ -958,9 +969,19 @@ struct VerseShareCard: View {
                 .foregroundStyle(forest)
                 .multilineTextAlignment(.center)
                 .padding(.top, 2)
+
+            if let appStore = AppLinks.appStore {
+                Text(appStore.absoluteString.replacingOccurrences(of: "https://", with: ""))
+                    .font(.system(size: 9, weight: .medium))
+                    .foregroundStyle(forest.opacity(0.6))
+                    .environment(\.layoutDirection, .leftToRight)
+            }
         }
         .padding(34)
         .frame(width: 430)
         .background(ivory)
+        .environment(\.dynamicTypeSize, .large)
+        .environment(\.colorScheme, .light)
+        .environment(\.layoutDirection, language.layoutDirection)
     }
 }

@@ -482,8 +482,6 @@ struct MushafView: View {
                                  onClose: {
                     withAnimation(reduceMotion ? nil : .easeOut(duration: 0.2)) { self.activeAyah = nil }
                 })
-            } else if player.playingKey != nil {
-                MushafPlayerBar(language: language) { key in open(key: key, pulse: true) }
             } else if showAyahTip {
                 HStack(spacing: 12) {
                     Image(systemName: "hand.tap").foregroundStyle(readerAccent)

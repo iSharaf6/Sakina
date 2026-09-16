@@ -2,7 +2,7 @@
 
 Prepared 16 September 2026 for Apple's Guideline 2.1 information request. This is the recording script, not a completed QA report. Apple requested a physical device running the latest released OS; simulator captures and marketing screenshots do not meet that request.
 
-This draft now describes **Haneen 1.0 (2)**, including unified email sign-in and bundled morning/evening adhkar audio. Build 2 is not yet uploaded. The replacement build-2 review instructions are saved in App Store Connect, with video evidence still marked pending. The response remains unsent. Brevo custom SMTP was saved and rechecked on 17 September. Actual email delivery and physical account-flow verification remain pending.
+This script now targets planned **Haneen 1.0 (3)**. See [ReleasePolish-2026-09-17.md](ReleasePolish-2026-09-17.md) for current build, email and review status. Production email delivery and returning OTP/session/sign-out have passed at the backend. Build 3 has not yet been uploaded, and physical-device account verification and recording remain pending. The review response remains unsent.
 
 ## Recording setup
 

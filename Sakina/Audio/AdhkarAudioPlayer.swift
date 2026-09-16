@@ -47,6 +47,15 @@ final class AdhkarAudioPlayer: ObservableObject {
     @Published private(set) var errorMessage: String?
     var isFullRecording: Bool { startTime == 0 && endTime == nil }
 
+    func playbackTitle(_ language: AppLanguage) -> String {
+        guard let recording else { return "" }
+        if !isFullRecording,
+           let chapter = recording.chapters.first(where: { $0.start == startTime && $0.end == endTime }) {
+            return chapter.title(language)
+        }
+        return recording.title(language)
+    }
+
     private let player = AVPlayer()
     private var playbackRange: AdhkarPlaybackRange?
     private var loadingTask: Task<Void, Never>?
@@ -77,6 +86,7 @@ final class AdhkarAudioPlayer: ObservableObject {
                 guard let self, self.recording != nil else { return }
                 self.isBuffering = self.isPlaying &&
                     (self.loadingTask != nil || self.player.timeControlStatus == .waitingToPlayAtSpecifiedRate)
+                self.updateNowPlaying()
             }
         }
         observeAudioSession()
@@ -310,17 +320,16 @@ final class AdhkarAudioPlayer: ObservableObject {
     }
 
     private func updateNowPlaying() {
-        guard ownsNowPlaying, let recording else { return }
+        guard ownsNowPlaying, recording != nil else { return }
         let language = AppLanguage(rawValue: UserDefaults.standard.string(forKey: SettingsKeys.appLanguage) ?? "") ?? .english
-        MPNowPlayingInfoCenter.default().nowPlayingInfo = [
-            MPMediaItemPropertyTitle: recording.title(language),
+        HaneenNowPlaying.publish([
+            MPMediaItemPropertyTitle: playbackTitle(language),
             MPMediaItemPropertyArtist: language.pick("Abu Islam", "أبو إسلام"),
-            MPMediaItemPropertyAlbumTitle: "Haneen",
             MPMediaItemPropertyPlaybackDuration: duration,
             MPNowPlayingInfoPropertyElapsedPlaybackTime: currentTime,
             MPNowPlayingInfoPropertyMediaType: MPNowPlayingInfoMediaType.audio.rawValue,
-            MPNowPlayingInfoPropertyPlaybackRate: isPlaying ? 1.0 : 0.0
-        ]
+            MPNowPlayingInfoPropertyPlaybackRate: isPlaying && !isBuffering ? 1.0 : 0.0
+        ])
     }
 
     private func installRemoteCommands() {

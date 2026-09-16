@@ -97,8 +97,8 @@ struct PrivacyPolicyView: View {
                         symbol: "envelope",
                         title: copy("Contact", "التواصل"),
                         body: copy(
-                            "Haneen is developed by Islam Sharaf. Questions or deletion assistance: islamsharaf2005@gmail.com. If you contact support, we receive your email address, message and any details you include. Haneen's support form also includes the app and iOS versions. We retain correspondence as needed to respond and resolve the issue.",
-                            "طوّر إسلام شرف تطبيق حنين. للاستفسار عن الخصوصية أو طلب المساعدة في الحذف، راسل islamsharaf2005@gmail.com. وعند التواصل مع الدعم، نتلقى عنوان بريدك ورسالتك وأي تفاصيل تذكرها. ويتضمن نموذج الدعم في حنين أيضًا إصدارَي التطبيق وiOS. ونحتفظ بالمراسلات بقدر الحاجة إلى الرد ومعالجة المشكلة."
+                            "Haneen is developed by Islam Sharaf. Questions or deletion assistance: haneen.app.contact@gmail.com. If you contact support, we receive your email address, message and any details you include. Haneen's support form also includes the app and iOS versions. We retain correspondence as needed to respond and resolve the issue.",
+                            "طوّر إسلام شرف تطبيق حنين. للاستفسار عن الخصوصية أو طلب المساعدة في الحذف، راسل haneen.app.contact@gmail.com. وعند التواصل مع الدعم، نتلقى عنوان بريدك ورسالتك وأي تفاصيل تذكرها. ويتضمن نموذج الدعم في حنين أيضًا إصدارَي التطبيق وiOS. ونحتفظ بالمراسلات بقدر الحاجة إلى الرد ومعالجة المشكلة."
                         )
                     )
 

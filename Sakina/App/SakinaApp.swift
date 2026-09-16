@@ -99,6 +99,11 @@ struct RootView: View {
                 .tabItem { tabLabel(copy("Saved", "المحفوظات"), symbol: "bookmark", tab: .saved) }
                 .tag(Tab.saved)
         }
+        .haneenPlaybackAccessory(language: language, onOpenQuran: { key in
+            quranKey = key
+            quranPath = NavigationPath()
+            selection = .quran
+        }, onOpenSituation: { open($0) })
         .tint(.yqAccent)
         .yaqeenLanguage(language)
         .preferredColorScheme(theme.colorScheme)

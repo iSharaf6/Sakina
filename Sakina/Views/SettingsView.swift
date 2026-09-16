@@ -317,7 +317,8 @@ struct SettingsView: View {
             .buttonStyle(.yqPressSoft)
             RowDivider()
             NavigationLink { AboutUsView(language: language) } label: {
-                BadgeRow(symbol: "person.2.fill", title: copy("About us", "من نحن"))
+                BadgeRow(symbol: "person.2.fill", title: copy("About Haneen", "عن حنين"),
+                         subtitle: copy("The story & the person behind it", "حكاية التطبيق ومن وراءه"))
             }
             .buttonStyle(.yqPressSoft)
         }
@@ -327,7 +328,7 @@ struct SettingsView: View {
 
     private var communitySection: some View {
         SettingsGroup(title: copy("Spread the word", "انشر الخير")) {
-            ShareLink(item: AppLinks.shareText(language)) {
+            AppShareLink(language: language) {
                 BadgeRow(symbol: "square.and.arrow.up.fill", title: copy("Share Haneen", "شارك حنين"),
                          subtitle: copy("Send it to someone who’d use it", "أرسله لمن ينتفع به"))
             }
@@ -498,7 +499,7 @@ struct SettingsView: View {
 
     private var aboutSection: some View {
         SettingsGroup(
-            title: copy("Sources & privacy", "المصادر والخصوصية"),
+            title: copy("About & sources", "عن التطبيق ومصادره"),
             footnote: copy(
                 "Read the original references and learn about Haneen.",
                 "اقرأ المراجع الأصلية وتعرّف على حنين."
