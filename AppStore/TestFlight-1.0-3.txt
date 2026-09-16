@@ -1,0 +1,15 @@
+Please test Haneen 1.0 (3) on your physical iPhone running the latest released iOS.
+
+New in this build: creator credit and grandparents' dedication in About Haneen; the new support email; smoother Arabic rendering in Ruqyah without changing the Qur'an text; optional sharing and occasional system rating requests; an in-app player that stays available across navigation, with Haneen artwork in iOS media controls.
+
+Check:
+- Launch and use the app without an account. Open All feelings and a reading, and check Qur'an and Ruqyah navigation.
+- Play morning/evening adhkar, leave the reader, switch tabs, pause/resume, and open the full player again. Check Lock Screen playback, the artwork, headphones and interruptions.
+- Switch between adhkar and Qur'an playback. Only one source should play. If streamed audio fails, it should stop and offer an explicit retry without skipping ayat.
+- Try the Arabic language and both appearance modes. Check About Haneen and Share Haneen.
+- Verify new-user and returning-user email, Apple and Google sign-in. Production email delivery and OTP verification passed backend checks; physical-device account checks still need completion.
+- Use a disposable test account for account deletion. Feedback is optional.
+
+App Review specifically requests a physical-iPhone screen recording beginning with launch, showing normal use, registration/sign-in and deletion. Record this exact build after checking those flows. This is a review candidate, not a claim that physical-device checks or App Review requirements are complete. Automatic StoreKit rating prompts do not appear in TestFlight; the manual review button is available in Settings.
+
+Contact: haneen.app.contact@gmail.com
