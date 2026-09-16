@@ -11,8 +11,11 @@ This is the current preparation record for Haneen 1.0 (2). It supersedes older p
 - **Availability:** Mainland China is **Not Available**; 174 regions remain selected. This records the verified App Store Connect setting, not legal certification for all selected countries.
 - **Listing saved:** the updated English (Australia) description and 3,961-character review notes are saved in App Store Connect. The review reply remains an unsent draft; the physical-device video is still absent.
 - **Screenshots saved:** all six corrected exports were uploaded, saved and checked in the console in this order: Daily companion (01), Widgets (06), Prayer times (05), Daily dhikr (04), Quran (02), Feelings (03).
-- The last verified App Store Connect review state was the rejected build 1. No replacement-build selection, sent review response or resubmission is asserted here.
-- **Build 1.0 (2) uploaded:** the final signed archive passed and Xcode reported `Upload succeeded` at 00:46 AEST on 17 September. Apple processing was pending at that point. The existing My Testers internal group contains the owner and distributes Xcode builds automatically.
+- **Build 1.0 (2) processed and selected:** the final signed archive passed and Xcode reported `Upload succeeded` at 00:46 AEST on 17 September. App Store Connect subsequently showed Complete / Ready to Submit. Build 2 is saved as the replacement review candidate; the submission still has its earlier unresolved 2.1 rejection and has not been resubmitted.
+- **TestFlight:** build 2 is assigned to My Testers, the existing internal group containing only the owner. Physical-device test instructions are saved. Installation and the account/video checks are still pending.
+- **Review response draft:** the old separate Sign up/Sign in wording has been replaced with the same 3,961-character current notes, verified saved as Continue Draft. No reply was sent, and the video placeholder remains.
+- **Website published:** commit `6c730b6` was pushed to main; Pages run `35111003622` completed successfully. Both public app.html and privacy.html returned HTTP 200 and exactly matched the committed source bytes.
+- **Auth redirects:** the persisted Site URL is the public Haneen app page and the permitted callback is `yaqeen://auth-callback`.
 
 ## Prepared changes
 
@@ -38,8 +41,8 @@ This is the current preparation record for Haneen 1.0 (2). It supersedes older p
 ## Before resubmission
 
 1. Correct the SMTP key/login as needed; send a real email to a consenting non-team test address, verify its unmodified link/code, and complete new-user/returning sign-in, sign-out and controlled test-account deletion on the physical iPhone.
-2. Wait for Apple processing, select uploaded build 1.0 (2), and install that exact build for the physical-device walkthrough.
-3. Publish the corrected website/privacy pages and verify the deployed content. The description, review notes and all six corrected screenshots are already saved in App Store Connect; the local gallery mirrors the verified uploaded order. Update the review notes again only when real video evidence can replace their pending paragraph.
+2. Install processed build 1.0 (2) from TestFlight for the physical-device walkthrough. The build is already selected for review.
+3. The website is published and verified; description, review notes and all six corrected screenshots are saved. Update the notes and saved response draft when real video evidence can replace their pending paragraph.
 4. Inspect and attach the actual physical-device walkthrough requested by Apple. Record the app build, device/iOS version and useful timestamps. Remove the pending marker only after that evidence is available.
 5. Resolve the exact remaining content-source conditions using applicable public grants or existing permission evidence, and include the relevant documentation with the review response. Do not infer universal clearance or require bespoke contracts for every item without examining the source's public grant.
 6. Send the final reply and resubmit only when the required evidence and functioning build are present. Apple's approval remains its decision.

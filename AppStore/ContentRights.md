@@ -171,6 +171,8 @@ These drafts are prepared for the owner. No message has been sent, and no reply 
 
 ### Quran Foundation — exact offline-storage scope
 
+Verified destination: `developers@quran.com`, the developer contact listed by Quran Foundation's [published documentation](https://qf-api-docs.pages.dev/docs/quickstart/). Sending approval is pending; no correspondence has been sent.
+
 Subject: Haneen: storage permission for a free charitable Quran app
 
 Hello Quran Foundation team,
@@ -186,6 +188,8 @@ Thank you.
 This question deliberately excludes the separately sourced KFGQPC Hafs Smart dataset and independently licensed font binaries: QF cannot be assumed to grant rights to unrelated copies. Their provenance is recorded above.
 
 ### EveryAyah — streaming and local playback cache
+
+Verified destination: [Submit a support request](https://quran.zendesk.com/hc/en-us/requests/new), reached through the Contact Us link on [EveryAyah's own page](https://everyayah.com/old_index.html). This provider-linked help centre is used rather than an invented EveryAyah email address. Sending approval is pending.
 
 Subject: Permission scope for EveryAyah playback in Haneen
 
