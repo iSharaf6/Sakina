@@ -16,6 +16,7 @@ This is the current preparation record for Haneen 1.0 (2). It supersedes older p
 - **Review response draft:** the old separate Sign up/Sign in wording has been replaced with the same 3,961-character current notes, verified saved as Continue Draft. No reply was sent, and the video placeholder remains.
 - **Website published:** commit `6c730b6` was pushed to main; Pages run `35111003622` completed successfully. Both public app.html and privacy.html returned HTTP 200 and exactly matched the committed source bytes.
 - **Auth redirects:** the persisted Site URL is the public Haneen app page and the permitted callback is `yaqeen://auth-callback`.
+- **Provider correspondence:** the owner declined sending the two prepared permission-scope questions. Both remain unsent; the underlying scope questions are unconfirmed, not recorded as clearance or as proof of infringement.
 
 ## Prepared changes
 
