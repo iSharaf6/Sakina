@@ -123,6 +123,7 @@ struct DhikrCounterView: View {
     @AppStorage private var target: Int
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.dynamicTypeSize) private var typeSize
+    @ScaledMetric(relativeTo: .title) private var arabicSize = 30.0
 
     @State private var count = 0
     @State private var pressing = false
@@ -160,11 +161,14 @@ struct DhikrCounterView: View {
     }
 
     var body: some View {
-        VStack(spacing: 0) {
-            header
-                .padding(.horizontal, 20)
-                .padding(.top, 8)
-            tapArea
+        Group {
+            if typeSize.isAccessibilitySize {
+                ScrollView {
+                    counterContent
+                }
+            } else {
+                counterContent
+            }
         }
         .safeAreaInset(edge: .bottom) { controls }
         .yqScreen()
@@ -197,16 +201,26 @@ struct DhikrCounterView: View {
         }
     }
 
+    private var counterContent: some View {
+        VStack(spacing: 0) {
+            header
+                .padding(.horizontal, 20)
+                .padding(.top, 8)
+            tapArea
+                .frame(minHeight: typeSize.isAccessibilitySize ? 360 : nil)
+        }
+    }
+
     // MARK: Header
 
     private var header: some View {
         VStack(spacing: 8) {
             Text(item.arabic)
-                .font(.arabicProse(30))
+                .font(.arabicProse(arabicSize))
                 .foregroundStyle(Color.yqInk)
                 .multilineTextAlignment(.center)
                 .environment(\.layoutDirection, .rightToLeft)
-                .lineLimit(3)
+                .lineLimit(typeSize.isAccessibilitySize ? nil : 3)
                 .minimumScaleFactor(0.75)
                 .fixedSize(horizontal: false, vertical: true)
             Text(item.transliteration)

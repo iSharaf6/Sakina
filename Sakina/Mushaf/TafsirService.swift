@@ -1,5 +1,6 @@
 import Combine
 import Foundation
+import UIKit
 
 /// Fetches tafsir for one ayah from Quran.com and keeps it, as plain text,
 /// in memory and under Caches/tafsir. The Qur'an text itself never passes
@@ -56,7 +57,7 @@ final class TafsirService: ObservableObject {
         }
     }
 
-    enum Failure: LocalizedError {
+    enum Failure: LocalizedError, Equatable {
         case offline
         case timedOut
         case badResponse
@@ -65,8 +66,8 @@ final class TafsirService: ObservableObject {
         func message(_ language: AppLanguage) -> String {
             switch self {
             case .offline:
-                return language.pick("You're offline. Tafsir needs a connection the first time.",
-                                     "لا يوجد اتصال. يحتاج التفسير إلى الإنترنت في المرة الأولى.")
+                return language.pick("Connect to the internet to load or refresh this tafsir.",
+                                     "اتصل بالإنترنت لتحميل هذا التفسير أو تحديثه.")
             case .timedOut:
                 return language.pick("Quran.com took too long to answer.", "استغرق Quran.com وقتًا طويلًا للرد.")
             case .badResponse:
@@ -81,17 +82,35 @@ final class TafsirService: ObservableObject {
     }
 
     static let timeout: TimeInterval = 15
+    // Quran Foundation's developer terms permit an ordinary content cache
+    // for at most one week. Reading a cached entry never extends its lifetime.
+    nonisolated static let maximumCacheAge: TimeInterval = 7 * 24 * 60 * 60
 
-    private var memory: [String: String] = [:]
-    private var inFlight: [String: Task<String, Error>] = [:]
+    private struct CacheEntry: Codable {
+        let text: String
+        let fetchedAt: Date
+
+        func isFresh(at date: Date) -> Bool {
+            let age = date.timeIntervalSince(fetchedAt)
+            return !text.isEmpty && age >= 0 && age < TafsirService.maximumCacheAge
+        }
+    }
+
+    private var memory: [String: CacheEntry] = [:]
+    private var inFlight: [String: Task<CacheEntry, Error>] = [:]
     private let session: URLSession
     private let cacheRoot: URL
+    private let now: () -> Date
+    private var expirationTimer: Timer?
+    private var foregroundObserver: AnyCancellable?
 
-    init(session: URLSession? = nil, cacheRoot: URL? = nil) {
+    init(session: URLSession? = nil, cacheRoot: URL? = nil, now: @escaping () -> Date = Date.init) {
         if let session {
             self.session = session
         } else {
-            let configuration = URLSessionConfiguration.default
+            let configuration = URLSessionConfiguration.ephemeral
+            configuration.urlCache = nil
+            configuration.requestCachePolicy = .reloadIgnoringLocalCacheData
             configuration.timeoutIntervalForRequest = Self.timeout
             configuration.timeoutIntervalForResource = Self.timeout
             configuration.waitsForConnectivity = false
@@ -99,17 +118,41 @@ final class TafsirService: ObservableObject {
         }
         let caches = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!
         self.cacheRoot = cacheRoot ?? caches.appendingPathComponent("tafsir", isDirectory: true)
+        self.now = now
+        if cacheRoot == nil {
+            // Earlier builds also allowed raw responses into Foundation's
+            // shared HTTP cache, which has no API for enumerating just this
+            // service's entries. Retire that legacy cache once on upgrade.
+            let migrationKey = "tafsir.legacyHTTPCacheRetired.v2"
+            if !UserDefaults.standard.bool(forKey: migrationKey) {
+                URLCache.shared.removeAllCachedResponses()
+                UserDefaults.standard.set(true, forKey: migrationKey)
+            }
+        }
+        purgeExpiredCache()
+        foregroundObserver = NotificationCenter.default.publisher(for: UIApplication.didBecomeActiveNotification)
+            .sink { [weak self] _ in self?.purgeExpiredCache() }
     }
+
+    deinit { expirationTimer?.invalidate() }
 
     // MARK: Reading
 
-    /// Whatever is already cached, without touching the network.
+    /// Only content fetched within the past week, without touching the network.
     func cached(for key: String, edition: Edition) -> String? {
         let id = cacheKey(key, edition)
-        if let text = memory[id] { return text }
-        guard let text = try? String(contentsOf: fileURL(key, edition), encoding: .utf8), !text.isEmpty else { return nil }
-        memory[id] = text
-        return text
+        let date = now()
+        if let entry = memory[id], entry.isFresh(at: date) { return entry.text }
+        memory[id] = nil
+        let file = fileURL(key, edition)
+        guard let data = try? Data(contentsOf: file),
+              let entry = try? JSONDecoder().decode(CacheEntry.self, from: data),
+              entry.isFresh(at: date) else {
+            try? FileManager.default.removeItem(at: file)
+            return nil
+        }
+        memory[id] = entry
+        return entry.text
     }
 
     /// Plain-text tafsir for `key` ("2:255") in `edition`, from cache when
@@ -117,10 +160,10 @@ final class TafsirService: ObservableObject {
     func tafsir(for key: String, edition: Edition) async throws -> String {
         if let text = cached(for: key, edition: edition) { return text }
         let id = cacheKey(key, edition)
-        if let running = inFlight[id] { return try await running.value }
-        let task = Task<String, Error> { [session, cacheRoot] in
+        if let running = inFlight[id] { return try await running.value.text }
+        let task = Task<CacheEntry, Error> { [session, cacheRoot, now] in
             let url = URL(string: "https://api.quran.com/api/v4/tafsirs/\(edition.resourceID)/by_ayah/\(key)")!
-            var request = URLRequest(url: url)
+            var request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData)
             request.timeoutInterval = Self.timeout
             request.setValue("application/json", forHTTPHeaderField: "Accept")
             let data: Data
@@ -145,16 +188,51 @@ final class TafsirService: ObservableObject {
             }
             let text = Self.plainText(fromHTML: envelope.tafsir.text ?? "")
             guard !text.isEmpty else { throw Failure.empty }
+            let entry = CacheEntry(text: text, fetchedAt: now())
             let file = Self.fileURL(root: cacheRoot, key: key, edition: edition)
             try? FileManager.default.createDirectory(at: file.deletingLastPathComponent(), withIntermediateDirectories: true)
-            try? text.write(to: file, atomically: true, encoding: .utf8)
-            return text
+            if let data = try? JSONEncoder().encode(entry) { try? data.write(to: file, options: .atomic) }
+            return entry
         }
         inFlight[id] = task
         defer { inFlight[id] = nil }
-        let text = try await task.value
-        memory[id] = text
-        return text
+        let entry = try await task.value
+        memory[id] = entry
+        purgeExpiredCache()
+        return entry.text
+    }
+
+    /// Evict stale and pre-expiry-format files at launch, foreground and expiry.
+    /// iOS may suspend the process; the foreground sweep runs before reuse.
+    private func purgeExpiredCache() {
+        let date = now()
+        memory = memory.filter { $0.value.isFresh(at: date) }
+        var nextExpiry = memory.values.map { $0.fetchedAt.addingTimeInterval(Self.maximumCacheAge) }.min()
+        if let files = FileManager.default.enumerator(at: cacheRoot, includingPropertiesForKeys: [.isRegularFileKey]) {
+            for case let file as URL in files {
+                guard (try? file.resourceValues(forKeys: [.isRegularFileKey]).isRegularFile) == true else { continue }
+                guard file.pathExtension == "json",
+                      let data = try? Data(contentsOf: file),
+                      let entry = try? JSONDecoder().decode(CacheEntry.self, from: data),
+                      entry.isFresh(at: date) else {
+                    // Legacy .txt files have no reliable fetch date; never
+                    // assign them a fresh timestamp during migration.
+                    try? FileManager.default.removeItem(at: file)
+                    continue
+                }
+                let expiry = entry.fetchedAt.addingTimeInterval(Self.maximumCacheAge)
+                nextExpiry = min(nextExpiry ?? expiry, expiry)
+            }
+        }
+        expirationTimer?.invalidate()
+        expirationTimer = nil
+        if let nextExpiry {
+            let timer = Timer(timeInterval: max(0.01, nextExpiry.timeIntervalSince(date)), repeats: false) { [weak self] _ in
+                Task { @MainActor [weak self] in self?.purgeExpiredCache() }
+            }
+            RunLoop.main.add(timer, forMode: .common)
+            expirationTimer = timer
+        }
     }
 
     // MARK: Cache paths
@@ -165,12 +243,12 @@ final class TafsirService: ObservableObject {
         Self.fileURL(root: cacheRoot, key: key, edition: edition)
     }
 
-    /// Caches/tafsir/{resource id}/{key}.txt. The colon in "2:255" is kept
+    /// Caches/tafsir/{resource id}/{key}.json. The colon in "2:255" is kept
     /// out of the file name.
     nonisolated private static func fileURL(root: URL, key: String, edition: Edition) -> URL {
         root.appendingPathComponent(String(edition.resourceID), isDirectory: true)
             .appendingPathComponent(key.replacingOccurrences(of: ":", with: "-"))
-            .appendingPathExtension("txt")
+            .appendingPathExtension("json")
     }
 
     // MARK: Decoding

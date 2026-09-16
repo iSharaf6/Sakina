@@ -1,5 +1,7 @@
 # Haneen App Review follow-up — 16 September 2026
 
+Historical 16 September record; see `ReleasePreparation-2026-09-17.md` for the newer saved metadata, SMTP status, regional declarations and verification.
+
 App `6811555262`, version 1.0 (1), submission `9894af1a-0c12-4ee2-9e6d-3ff16eb4b613`.
 
 ## Current status verified in App Store Connect

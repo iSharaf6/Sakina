@@ -44,6 +44,7 @@ targets:
     entitlements:
       path: Sakina/Sakina.entitlements
       properties:
+        com.apple.developer.declared-age-range: true
         com.apple.developer.applesignin:
           - Default
         com.apple.security.application-groups:

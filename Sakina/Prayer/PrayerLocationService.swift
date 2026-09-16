@@ -17,15 +17,21 @@ enum PrayerLocationError: LocalizedError {
     case locationUnavailable
 
     var errorDescription: String? {
+        message(language: .english)
+    }
+
+    func message(language: AppLanguage) -> String {
         switch self {
         case .permissionDenied:
-            return "Location access is off. Choose a city manually or enable location in Settings."
+            return language.pick("Location access is off. Enable it in Settings to update prayer times.",
+                                 "الوصول إلى الموقع متوقف. فعّله في الإعدادات لتحديث مواقيت الصلاة.")
         case .permissionRestricted:
-            return "Location access is restricted on this device. Choose a city manually instead."
+            return language.pick("Location access is restricted on this device. Check Screen Time or device management settings.",
+                                 "الوصول إلى الموقع مقيّد على هذا الجهاز. راجع إعدادات مدة استخدام الجهاز أو إدارة الجهاز.")
         case .requestAlreadyInProgress:
-            return "A location request is already in progress."
+            return language.pick("A location request is already in progress.", "يجري تحديد موقعك بالفعل.")
         case .locationUnavailable:
-            return "Your location could not be determined. Please try again or choose a city manually."
+            return language.pick("Your location could not be determined. Please try again.", "تعذّر تحديد موقعك. حاول مرة أخرى.")
         }
     }
 }
@@ -41,6 +47,14 @@ final class PrayerLocationService: NSObject, ObservableObject, @preconcurrency C
     private let manager: CLLocationManager
     private let geocoder = CLGeocoder()
     private var continuation: CheckedContinuation<PrayerCalculationLocation, Error>?
+
+    var permissionError: PrayerLocationError? {
+        switch authorizationStatus {
+        case .denied: return .permissionDenied
+        case .restricted: return .permissionRestricted
+        default: return nil
+        }
+    }
 
     override init() {
         let manager = CLLocationManager()

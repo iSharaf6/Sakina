@@ -20,7 +20,7 @@ Use the following supplier-inclusive set for this build. The Google rows follow 
 | Other Usage Data | Analytics | Yes | GoogleSignIn 9.2.0 supplier declaration. |
 | Other Data Types | App Functionality, Analytics | Yes | GoogleSignIn 9.2.0 supplier declaration. |
 | Other User Content | App Functionality, Analytics | Yes — conservative classification | Deletion feedback is sent in an authenticated request before storage without account ID. It is retained to evaluate feedback and improve the app. There is no demonstrated de-identification before transmission or verified separation from service logs. |
-| Customer Support | App Functionality, Analytics | Yes | User-submitted support/problem/idea messages reach the support mailbox with the sender's email. The app appends version, iOS version, generic device model and app language. Customer support is functional; suggestions used to plan improvements fall within Analytics. |
+| Customer Support | App Functionality, Analytics | Yes | User-submitted support/problem/idea messages reach the support mailbox with the sender's email. The app appends the app and iOS versions. Generic device model and app language were removed from the support message on 17 September. Customer support is functional; suggestions used to plan improvements fall within Analytics. |
 
 Do not select Third-Party Advertising, Developer Advertising/Marketing, Product Personalization or Other Purposes on current evidence. Local-only feelings, reflections, reading progress and goals do not require extra collection categories. Streaming Qur'an files is not collection of the user's recorded voice. Generic feedback does not mean selecting every sensitive type someone might voluntarily type.
 
@@ -85,3 +85,15 @@ These are specific limits, not new copy tasks or proof of a policy violation:
 3. **Feedback linkage:** the database has no account-ID column and code does not explicitly log feedback. An authenticated request and timestamp remain; actual Supabase function/access-log settings were not read. A “not linked” answer requires verified handling before collection and no later linkage, not just a schema assertion. Current recommendation is linked, so no unsupported anonymity claim is necessary.
 
 The recommended set resolves the Google supplier discrepancy and gives concrete current answers; it does not certify undisclosed production-provider behaviour. Location/content API retention is the unavoidable provider fact if the release owner needs an exhaustive guarantee about additional retained search/interaction categories. Do not present a missing public policy as evidence that no logs exist. Do not invent provider assurances or claim that the release was submitted merely because this worksheet is complete.
+
+## Build 2 copy update — 17 September 2026
+
+The public and Markdown policies now cover authentication-email processing: Brevo receives the recipient address, sign-in message and delivery/failure records through Supabase's custom SMTP integration. Custom SMTP was saved and rechecked in Supabase on 17 September; actual delivery remains unverified. Email Address / App Functionality / Linked remains applicable; review any actual provider tracking before retaining the No Tracking answers. The SMTP setup requires no marketing subscription. The in-app English/Arabic policy includes the same explanation.
+
+Full morning and evening recordings and fifteen matched excerpts are bundled for offline playback. Playback makes no SoundCloud request; optional source links open externally. No new collection category is inferred from local playback itself.
+
+The earlier public-page byte counts/hashes describe the 13 September publication only and must not be used to certify the updated pages. Verify deployed pages after publication. This document does not claim that revised console declarations have been saved.
+
+The app-owned privacy manifest was also aligned on 17 September with the conservative current label choices for precise location, optional feedback and customer support. These entries describe Haneen's own data flows; the Google SDK's manifest remains separate. The support composer includes app/iOS versions only. These code changes do not by themselves publish revised App Store Connect declarations.
+
+The regional Apple age-range check processes its response only on the device, discards age/category values, and keeps only the completion state in process memory. Haneen does not upload or persist these values, so this implementation does not by itself add developer-collected age or date-of-birth data to the label. Apple's account/parental settings remain governed by Apple. Manual device/Sandbox verification remains separate.

@@ -49,6 +49,7 @@ struct RootView: View {
     @State private var exploreQuery = ""
     @State private var showQibla = false
     @State private var showOnboarding = false
+    @State private var initialPresentationReady = false
     @State private var prayerRequest = 0
     @State private var settingsRequest = 0
     @StateObject private var router = NotificationRouter.shared
@@ -103,7 +104,7 @@ struct RootView: View {
         .preferredColorScheme(theme.colorScheme)
         .environmentObject(scholarStore)
         .sensoryFeedback(.selection, trigger: selection)
-        .fullScreenCover(isPresented: $showOnboarding) {
+        .fullScreenCover(isPresented: $showOnboarding, onDismiss: { initialPresentationReady = true }) {
             CompanionOnboarding {
                 showOnboarding = false
                 selection = .home
@@ -124,6 +125,8 @@ struct RootView: View {
                     }
             }
         }
+        .haneenAgeAssurance(language: language,
+                           canPresent: initialPresentationReady && !showOnboarding && !showQibla && debugAyah == nil && scenePhase == .active)
         .task {
             await Task.detached(priority: .utility) { GuidanceCatalog.prepareSearch() }.value
             await scholarStore.loadProfileAndPublishedInsights()
@@ -131,6 +134,7 @@ struct RootView: View {
         .onAppear {
             Haptics.prepare()
             QuranStore.warmUp()
+            _ = TafsirService.shared
             QuranScriptStore.warmUp()
             HafsSmartStore.warmUp()
             QuranTranslationStore.warmUp()
@@ -143,6 +147,7 @@ struct RootView: View {
             applyDebugRoute()
             let args = ProcessInfo.processInfo.arguments
             if args.contains("-yqOnboarding") || (!UserDefaults.standard.bool(forKey: CompanionOnboarding.completedKey) && !args.contains("-yqScreen") && ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] == nil) { showOnboarding = true }
+            initialPresentationReady = !showOnboarding
         }
         .onChange(of: scenePhase) { _, phase in
             if phase == .active {

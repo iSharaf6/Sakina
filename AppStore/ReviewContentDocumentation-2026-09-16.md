@@ -1,6 +1,6 @@
 # Haneen: third-party content documentation
 
-Prepared 16 September 2026 for the App Review information request concerning protected third-party content. App: Haneen, Apple ID 6811555262, version 1.0. This records public permission evidence and actual use; it does not claim private provider correspondence. The owner has personally completed the affirmative Content Rights declaration in App Store Connect.
+Updated 17 September 2026 for the App Review information request concerning protected third-party content. App: Haneen, Apple ID 6811555262, version 1.0. This records public permission evidence and actual use; it does not claim private provider correspondence. The owner has personally completed the affirmative Content Rights declaration in App Store Connect.
 
 ## Public permissions and attribution evidence
 
@@ -16,16 +16,18 @@ In the submitted app, Settings → About includes Quran.com and Sunnah.com sourc
 
 ## September 14 change and remaining implementation conditions
 
-QF §3.1 now expressly allows bundled fonts and Mushaf images obtained through its APIs/documented CDNs with an active developer account and accessible QF credit. That newly published route does not automatically cover Quran/translation JSON. The existing author/publisher notices remain the recorded basis for Haneen's current fonts.
+QF §3.1 now expressly allows bundled fonts and Mushaf images obtained through its APIs/documented CDNs with an active developer account and accessible QF credit. That newly published route does not automatically cover Quran/translation JSON. The independent author/publisher notices remain the recorded basis for Haneen's current fonts, so an active QF account is not an additional requirement solely for those independently permitted font copies.
 
-QF §3.1.3 still requires expiry within one week unless longer retention is expressly allowed or eligible content uses approved sync with changes applied at least every seven days. An individual permission email is not universally required. The current bundled snapshots and non-expiring tafsir cache do not implement that public retention route. No endpoint-specific exemption or owner-held longer-storage document is included in this packet.
+QF §3.1.3 still requires expiry within one week unless longer retention is expressly allowed or eligible content uses approved sync with changes applied at least every seven days. An individual permission email is not universally required. The tafsir cache now enforces this ordinary limit. The frozen bundled snapshots are a separate storage-scope question; no endpoint-specific exemption or owner-held longer-storage document is included in this packet.
 
-## Exact engineering remedies if the owner is relying only on the public grants
+## Completed remedy and remaining scoped questions
 
-These are findings and proposed changes, **not changes already made**:
+The cache fix below is implemented in source. The remaining alternatives are described precisely without claiming that missing paperwork proves infringement:
 
-1. **Tafsir cache:** `Sakina/Mushaf/TafsirService.swift` returns memory/disk entries indefinitely. Record the fetch time; discard expired disk and memory entries and request fresh content. Do not reset freshness on reads or serve expired content after a failed refresh. This fixes that cache only.
+1. **Tafsir cache — completed:** `Sakina/Mushaf/TafsirService.swift` records fetch time, expires memory/disk entries after seven days, removes legacy caches and fetches expired content again. Reads do not reset freshness, and failed refreshes do not serve stale content. Cleanup runs on startup, foreground and scheduled expiry while the process can run. Focused cache tests cover reuse, expiry, migration, offline failure and future timestamps. This fixes that cache only.
 2. **Bundled Quran resources:** adding a timestamp to fixed JSON or refreshing only the binary at release does not update an installed app. The provider's [Content Sync guide](https://api-docs.quran.com/docs/tutorials/content-sync/getting-started/) supports Mushaf rows, translations, word transliterations and tafsir. A real implementation needs authenticated bootstrap, atomic snapshot/change application, deletion handling and persisted sync checkpoints, followed by periodic successful sync. App Group/widget copies and selected-passage bundles must use the same refreshed source. Scripture rendering and alignment require regression checks. Alternatively, migrate the affected data to an independently licensed source; changing an attribution label is insufficient.
 3. **EveryAyah:** `RecitationCache.swift` uses size eviction, not age expiry. No verified EveryAyah retention duration was found, so copying QF's seven-day rule onto this service would be arbitrary. Streaming-only would reduce persistent copying but would not itself establish a recording permission. Document an existing applicable grant, or select an audio service with documented app-use terms and implement its conditions.
 
 This packet provides the permission evidence actually located. It does not infer prohibition from missing paperwork, does not claim that Apple always requires bespoke permission letters, and does not certify unresolved implementation conditions as satisfied.
+
+The owner can use the unsent drafts in `AppStore/ContentRights.md`, section 7, to clarify legacy-QF offline storage and EveryAyah recording/cache permission. No provider correspondence has been sent. A fresh comparison of six Tanzil translation downloads found no complete exact replacement for the current editions; canonical content has not been altered during release preparation.

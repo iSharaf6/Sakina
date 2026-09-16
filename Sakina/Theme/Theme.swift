@@ -35,7 +35,7 @@ extension Color {
     // Text
     static let yqInk = Color(uiColor: .dynamic(light: 0x101714, dark: 0xF2F5F3))
     static let yqSecondary = Color(uiColor: .dynamic(light: 0x616B66, dark: 0xA2ACA6))
-    static let yqTertiary = Color(uiColor: .dynamic(light: 0x98A19C, dark: 0x929E96))
+    static let yqTertiary = Color(uiColor: .dynamic(light: 0x616D65, dark: 0x929E96))
 
     // The accent
     static let yqAccent = Color(uiColor: .dynamic(light: 0x16A34A, dark: 0x8ECBA2))

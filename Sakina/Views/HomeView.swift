@@ -17,6 +17,7 @@ struct HomeView: View {
     @AppStorage(DuaCollection.lastReadKey) private var lastReadID = ""
     @AppStorage(HeartLog.key) private var heartLogRaw = ""
     @ObservedObject private var prayerService = PrayerTimesService.shared
+    @ScaledMetric(relativeTo: .title3) private var duaPreviewSize = 22.0
     @State private var query = ""
     @State private var sheet: HomeSheet?
     @State private var showBreathing = false
@@ -183,10 +184,13 @@ struct HomeView: View {
 
     @ViewBuilder private var prayerSheetCard: some View {
         if let schedule = prayerService.schedule, !schedule.isStale() {
-            PrayerHeroCard(schedule: schedule, language: language, isRefreshing: prayerService.isRefreshing, refresh: refreshPrayerTimes)
+            PrayerHeroCard(schedule: schedule, language: language, isRefreshing: prayerService.isRefreshing,
+                           errorMessage: prayerService.errorMessage, locationService: prayerService.locationService,
+                           refresh: refreshPrayerTimes)
         } else {
             PrayerPermissionCard(language: language, isRefreshing: prayerService.isRefreshing,
-                                 errorMessage: prayerService.errorMessage, action: refreshPrayerTimes)
+                                 errorMessage: prayerService.errorMessage, locationService: prayerService.locationService,
+                                 action: refreshPrayerTimes)
         }
     }
 
@@ -208,7 +212,7 @@ struct HomeView: View {
                         .lineLimit(1)
                 }
                 Text(duaToday.arabic)
-                    .font(.arabicProse(22))
+                    .font(.arabicProse(duaPreviewSize))
                     .lineSpacing(8)
                     .foregroundStyle(Color.yqInk)
                     .lineLimit(2)
@@ -566,8 +570,13 @@ struct PrayerHeroCard: View {
     let schedule: PrayerSchedule
     let language: AppLanguage
     let isRefreshing: Bool
+    let errorMessage: String?
+    @ObservedObject var locationService: PrayerLocationService
     let refresh: () -> Void
+    @Environment(\.openURL) private var openURL
     private var copy: AppCopy { AppCopy(language: language) }
+    private var needsSettings: Bool { locationService.permissionError != nil }
+    private var displayedError: String? { locationService.permissionError?.message(language: language) ?? errorMessage }
 
     var body: some View {
         TimelineView(.periodic(from: .now, by: 60)) { context in
@@ -602,12 +611,21 @@ struct PrayerHeroCard: View {
                 }
             }
             .yqCard()
-            Button(action: refresh) {
+            if let displayedError {
+                Text(displayedError)
+                    .font(.yqCaption)
+                    .foregroundStyle(Color.yqSecondary)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .padding(.horizontal, 14)
+                    .padding(.top, 12)
+            }
+            Button(action: updateLocation) {
                 HStack(spacing: 8) {
                     if isRefreshing { ProgressView().controlSize(.small) } else { CompanionIllustration(artwork: .lost, size: 30) }
                     Text(schedule.locationLabel).lineLimit(1)
                     Spacer()
-                    Text(copy("Update", "تحديث")).foregroundStyle(Color.yqAccentDeep)
+                    Text(needsSettings ? copy("Settings", "الإعدادات") : copy("Update", "تحديث"))
+                        .foregroundStyle(Color.yqAccentDeep)
                 }
                 .font(.yqSubheadMedium)
                 .foregroundStyle(Color.yqSecondary)
@@ -616,6 +634,20 @@ struct PrayerHeroCard: View {
             }
             .buttonStyle(.yqPressSoft)
             .disabled(isRefreshing)
+        }
+        .onChange(of: locationService.authorizationStatus) { oldStatus, newStatus in
+            if (oldStatus == .denied || oldStatus == .restricted),
+               (newStatus == .authorizedWhenInUse || newStatus == .authorizedAlways) {
+                refresh()
+            }
+        }
+    }
+
+    private func updateLocation() {
+        if needsSettings, let url = URL(string: UIApplication.openSettingsURLString) {
+            openURL(url)
+        } else {
+            refresh()
         }
     }
 
@@ -647,8 +679,12 @@ struct PrayerPermissionCard: View {
     let language: AppLanguage
     let isRefreshing: Bool
     let errorMessage: String?
+    @ObservedObject var locationService: PrayerLocationService
     let action: () -> Void
+    @Environment(\.openURL) private var openURL
     private var copy: AppCopy { AppCopy(language: language) }
+    private var needsSettings: Bool { locationService.permissionError != nil }
+    private var displayedError: String? { locationService.permissionError?.message(language: language) ?? errorMessage }
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -657,27 +693,42 @@ struct PrayerPermissionCard: View {
                 Text(copy("Prayer times, where you are", "مواقيت الصلاة حيث أنت"))
                     .font(.yqTitle2)
                     .foregroundStyle(Color.yqInk)
-                Text(copy("Calculated privately on your iPhone. Your coordinates never leave the device.",
-                          "تُحسب على جهازك بخصوصية، ولا تغادر إحداثياتك الجهاز."))
+                Text(copy("Prayer times are calculated on your iPhone. Apple location services may use your coordinates to look up your city.",
+                          "تُحسب مواقيت الصلاة على هاتفك. وقد تستخدم خدمات الموقع من Apple إحداثياتك لتحديد اسم مدينتك."))
                     .font(.yqSubhead)
                     .foregroundStyle(Color.yqSecondary)
                     .fixedSize(horizontal: false, vertical: true)
             }
-            if let errorMessage {
-                Label(errorMessage, systemImage: "exclamationmark.circle")
+            if let displayedError {
+                Label(displayedError, systemImage: "exclamationmark.circle")
                     .font(.yqCaption)
                     .foregroundStyle(.red)
                     .fixedSize(horizontal: false, vertical: true)
             }
-            Button(action: action) {
-                PrimaryButton(title: isRefreshing ? copy("Finding your city…", "جارٍ تحديد مدينتك…") : copy("Use my location", "استخدم موقعي"),
-                              symbol: isRefreshing ? nil : "location.fill")
+            Button(action: updateLocation) {
+                PrimaryButton(title: isRefreshing ? copy("Finding your city…", "جارٍ تحديد مدينتك…")
+                              : needsSettings ? copy("Open Settings", "فتح الإعدادات") : copy("Use my location", "استخدم موقعي"),
+                              symbol: isRefreshing ? nil : needsSettings ? "gearshape" : "location.fill")
             }
             .buttonStyle(.yqPress)
             .disabled(isRefreshing)
         }
         .padding(20)
         .yqCard()
+        .onChange(of: locationService.authorizationStatus) { oldStatus, newStatus in
+            if (oldStatus == .denied || oldStatus == .restricted),
+               (newStatus == .authorizedWhenInUse || newStatus == .authorizedAlways) {
+                action()
+            }
+        }
+    }
+
+    private func updateLocation() {
+        if needsSettings, let url = URL(string: UIApplication.openSettingsURLString) {
+            openURL(url)
+        } else {
+            action()
+        }
     }
 }
 

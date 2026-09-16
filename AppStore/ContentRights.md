@@ -1,8 +1,16 @@
 # Haneen content provenance and release rights
 
-Reviewed 13 September 2026 against the current working tree. This records the actual bundled files, their acquisition history and the permissions found. It is evidence for the owner's App Store Connect declaration, not a declaration already made on their behalf.
+Updated 17 September 2026 against the current working tree. This records the actual bundled files, their acquisition history and the permissions found. The owner has personally completed the Content Rights declaration in App Store Connect. Historical investigations below are retained as provenance, not as a claim that every unresolved question requires an individual permission letter.
 
 **Third-party content is present.** Two fonts have an embedded conditional distribution grant, and Sunnah.com permits selected educational quotations. The IndoPak font is retained unchanged with author-signed package terms supporting charitable distribution with credits, both notices bundled and visible attribution added; see the follow-up below. Permission for the exact permanently bundled Quran.com API snapshots, and EveryAyah streaming/cache use, is not fully established by the records reviewed. “Unconfirmed” here does not mean infringement.
+
+## Current release assessment
+
+- **Public permission evidence exists:** unchanged KFGQPC fonts, credited unchanged charitable IndoPak use, selected educational Sunnah.com quotations, and conditional QF in-app content display. No new bespoke permission is presumed necessary for those uses.
+- **Live tafsir retention is fixed in source:** timestamped entries expire after seven days, reads do not extend their lifetime, stale content is not returned offline, and legacy caches are removed. Foreground cleanup handles time spent suspended. This does not refresh frozen Quran/translation bundles.
+- **Two focused scope questions remain:** the storage route for the exact frozen legacy-QF datasets, and provider/recording-owner coverage for EveryAyah audio streaming and caching. The current evidence does not establish infringement or prove that nine separate translation-publisher contracts are required.
+- **No font-account blocker:** QF's newer font/image permission requires an active Developer Console account when relying on that permission. Haneen's existing font distribution basis is the independent embedded/author notices above; it does not depend on adopting QF's alternative grant.
+- **Canonical text is unchanged.** Fresh Tanzil comparisons below found no complete byte-identical translation replacement. Draft provider questions are in section 7; neither has been sent.
 
 ## 1. Bundled fonts
 
@@ -43,7 +51,7 @@ The public-API generator strips HTML footnote markers and tags, decodes entities
 
 ### The QF terms question: established facts and remaining scope uncertainty
 
-The [QF Developer Terms](https://api-docs.quran.com/legal/developer-terms/), updated 26 August 2026, permit in-app display under conditions and reserve source-specific rights. Section 3.1.3 limits storage to one week unless QF expressly permits longer retention or the applicable Content Sync exception is used with updates at least every seven days. The [FAQ](https://api-docs.quran.com/docs/tutorials/faq/) confirms this storage rule.
+The [QF Developer Terms](https://api-docs.quran.com/legal/developer-terms/), updated 14 September 2026, permit in-app display under conditions and reserve source-specific rights. Section 3.1.3 limits storage to one week unless QF expressly permits longer retention or the applicable Content Sync exception is used with updates at least every seven days. The [FAQ](https://api-docs.quran.com/docs/tutorials/faq/) confirms this storage rule. The new font/Mushaf-image exception does not itself cover Quran or translation JSON.
 
 **Applicability to these exact legacy endpoints needs confirmation.** The terms broadly define QF APIs and contain no authenticated-only limitation, but the current [v4 reference](https://api-docs.quran.com/docs/content_apis_versioned/4.0.0/content-apis/) documents OAuth headers, unlike Haneen's acquisition scripts. No explicit legacy-endpoint exemption, Haneen-specific storage permission or earlier open-data licence was found. Therefore the one-week rule is a concrete potential mismatch, not a proven finding that a different authenticated API contract necessarily governs these snapshots. Acquisition was after the current terms' stated update date.
 
@@ -69,7 +77,7 @@ Edition names and IDs above come from `translations.json` and `QuranScripts.swif
 
 | Content | Actual use | Rights evidence and status |
 | --- | --- | --- |
-| Ibn Kathir (Abridged), English, resource 169; Tafsir Muyassar, Arabic, resource 16 | `Sakina/Mushaf/TafsirService.swift` requests the public legacy `/tafsirs/{id}/by_ayah/{key}` endpoint and keeps plain-text memory/disk caches. These books are not bundled in full. | No edition-specific permission record was found. The same legacy-API scope question applies. The cache currently has no age expiry; confirm permitted retention or make storage comply with the applicable grant. |
+| Ibn Kathir (Abridged), English, resource 169; Tafsir Muyassar, Arabic, resource 16 | `Sakina/Mushaf/TafsirService.swift` requests the public legacy `/tafsirs/{id}/by_ayah/{key}` endpoint. Commentary is cached with a seven-day maximum age; these books are not bundled in full. | QF's conditional in-app display grant is the public basis. The 17 September source fix enforces the ordinary retention limit and refreshes expired entries on demand. It does not claim a separate private publisher letter. |
 | Quran recitation from EveryAyah | `Sakina/Audio/RecitationCache.swift` and `RecitationPlayer.swift` use `https://everyayah.com/data/{folder}/{ayah}.mp3`. The app has 34 reciter/style variants in `Sakina/App/AppSettings.swift`; audio is streamed and cached locally, not bundled in the application. | The [EveryAyah index](https://everyayah.com/) and [audio directory](https://everyayah.com/data/) expose the recordings, but no explicit reuse licence or streaming/cache terms were found in those pages, the recitation page or `recitations.js`. Access working is not a rights grant. Provider/recording permission remains unconfirmed. QF's API terms are not automatically applied to this separate EveryAyah delivery path. |
 | Selected hadith and prophetic supplications | Arabic/English selections, references and source links occur in `Shared/CompanionContent.swift`, `Shared/GuidanceCatalog.swift`, `Sakina/Duas/DuaLibrary.swift`, `DailyDuaCatalog.swift` and `RuqyahCatalog.swift`. Bilingual reward summaries and references are in `Shared/Resources/dua-rewards.json`. | [Sunnah.com About, section 8](https://sunnah.com/about) permits individual or selected hadith for teaching/presentation while prohibiting scraping and mass reproduction of whole collections. This supports Haneen's selected educational quotations with their source links; it is not an open licence for the complete database. Preserve the citations and wording. |
 | Quran.com / Sunnah.com source buttons | Open the original cited page in the browser | A source link is attribution and context. It should not be confused with permission for separately bundled full translations or a whole database. |
@@ -88,15 +96,19 @@ Haneen's authored situation titles, reflections, Arabic interface copy and rewar
 
 [Tanzil's Arabic-text licence](https://tanzil.net/docs/Text_License) explicitly permits verbatim application use and distribution under CC BY 3.0 with its stated unmodified-text, attribution, link and notice requirements. Its [translation download terms](https://tanzil.net/trans/) permit non-commercial use; other use requires translator/publisher permission, and applications using more than three listed translations must link back to the translation page. The Arabic CC BY notice does not make all its translations CC BY.
 
-Downloads were compared in memory with all 6,236 bundled ayah keys on 13 September; no app data was changed:
+Arabic was compared on 13 September; translation downloads were freshly compared with all 6,236 bundled ayah keys on 17 September. No app data was changed:
 
 | Alternative download | Exact matches against current bundle | Consequence |
 | --- | ---: | --- |
 | Tanzil Uthmani v1.1, via the [official download page](https://tanzil.net/download/) | 1,935 / 6,236 Arabic strings | A different digital orthography/encoding. Needs full text, font, alignment and printed-layout checks; cannot be silently substituted or used to relicense the existing file. |
 | [Tanzil Saheeh International](https://tanzil.net/trans/en.sahih) | 3,128 / 6,236 English strings | Same named translation, different supplied text. Needs a reviewed edition migration and consistent replacement of selected excerpts, not just a source-label change. |
-| [Tanzil Pickthall](https://tanzil.net/trans/en.pickthall) | 6,230 / 6,236 English strings | Closest tested alternative. Differences are at 2:96, 4:1, 5:107, 31:14, 64:13 and 114:3. A verbatim import with its source notice and six reviewed differences is a bounded option for this edition. |
+| [Tanzil Pickthall](https://tanzil.net/trans/en.pickthall) | 6,230 / 6,236 English strings | Differences at 2:96, 4:1, 5:107, 31:14, 64:13 and 114:3 include wording/typographic problems, not just whitespace. In particular the downloaded 31:14 substitutes a different family-relation word. Do not import blindly to resolve paperwork. |
+| [Tanzil Yusuf Ali](https://tanzil.net/trans/en.yusufali) | 6,217 / 6,236 | Nineteen differences; not the exact bundled digital edition. |
+| [Tanzil Hilali & Khan](https://tanzil.net/trans/en.hilali) | 1,185 / 6,236 | Substantial edition differences. |
+| [Tanzil Maududi](https://tanzil.net/trans/en.maududi) | 5,550 / 6,236 | 686 differences; not an attribution-only substitution. |
+| [Tanzil Junagarhi](https://tanzil.net/trans/ur.junagarhi) | 349 / 6,236 | Widespread punctuation/edition differences; not identical. |
 
-The counts are literal string comparisons, not a claim that non-identical ayat are wrong or that their meanings differ. Trimming leading/trailing whitespace did not increase these counts. A free download price by itself should not be used to infer that every future monetisation model meets a non-commercial licence.
+The counts are literal string comparisons, not a blanket claim that non-identical ayat are wrong. Even normalising Latin diacritics and whitespace gives only 4,643 Saheeh matches; substantive wording differences remain. Neither Abdel Haleem, T. Usmani nor Bridges was established as the same available download on that page. A free download price does not establish that every future monetisation model meets a non-commercial licence.
 
 For the present API snapshots, the least disruptive route is an existing written grant covering the specific endpoints, resources, offline storage and distribution. If no such record exists, clarify the legacy/API scope or adopt an approved sync path or independently licensed datasets. No provider has been contacted and no account or service has been changed in this audit.
 
@@ -152,3 +164,74 @@ The first-party [timing-files disclaimer](https://everyayah.com/data/timings_fil
 - If no grants can be established, the technical fallback is a separately scoped, verified source migration or removal of only the uncertain content paths. The existing Tanzil/approved-sync candidates above require real integration and validation; do not re-label current files or silently substitute Quran text during release preparation.
 
 This audit supplies the evidence and exact questions. It does not assert that unknown rights imply infringement, and it does not supply an unsupported affirmative declaration for the unchanged complete content bundle.
+
+## 7. Unsent provider clarification drafts
+
+These drafts are prepared for the owner. No message has been sent, and no reply or new permission is claimed.
+
+### Quran Foundation — exact offline-storage scope
+
+Subject: Haneen: storage permission for a free charitable Quran app
+
+Hello Quran Foundation team,
+
+I am preparing Haneen, a free iPhone app for Quran reading, prayer and supplications. It has no advertisements, payments or subscriptions. It includes attribution and edition names and does not offer a dataset, download API or separate content package.
+
+The current app contains snapshots fetched on 10–11 September 2026 through your legacy `api.quran.com/api/v4` endpoints: Uthmani and IndoPak text, tajweed spans, 604-page QPC word/line layouts, word transliteration, and translations 20, 85, 22, 19, 203, 84, 95, 149 and 54. Selected Quran passages also appear in guidance and widgets. Those resources are presently bundled for offline use, rather than using Content Sync. On-demand tafsir 169/16 now has a seven-day maximum cache age.
+
+Could you confirm whether the public display grant and a permitted storage route cover these exact legacy snapshots in an integrated free app? If indefinite offline bundling needs express permission, may Haneen retain these resources, or must we adopt Content Sync and weekly updates? Please identify any resource-specific exception or attribution required, particularly for those translation IDs. I am not requesting a licence to sell or redistribute the data separately.
+
+Thank you.
+
+This question deliberately excludes the separately sourced KFGQPC Hafs Smart dataset and independently licensed font binaries: QF cannot be assumed to grant rights to unrelated copies. Their provenance is recorded above.
+
+### EveryAyah — streaming and local playback cache
+
+Subject: Permission scope for EveryAyah playback in Haneen
+
+Hello EveryAyah team,
+
+I am preparing Haneen, a free charitable iPhone app with no advertisements, purchases or subscriptions. Its Quran player requests your original, unmodified per-ayah MP3 files directly from `https://everyayah.com/data/`. It keeps a reclaimable playback cache on the user's own device, capped at 300 MB and trimmed to 260 MB. Recordings are not included in the app download, resold, rehosted, edited or exposed through a separate audio service. Users can clear the cache. The app names the selected reciter and credits the source.
+
+Does your provider/recording permission allow this streaming and local caching use? Please send the applicable recording licence or written confirmation, including required attribution, any retention limit and any excluded reciter folders. The timing-files notice links to a full licence page that I could not retrieve, so I am not treating that timing notice as permission for the recordings themselves.
+
+Thank you.
+
+Exact current folder selection, extracted from `Reciter` in `Sakina/App/AppSettings.swift` on 17 September 2026; attach this list to the request and assess the response against it:
+
+```text
+Alafasy_128kbps
+Husary_128kbps
+Abdul_Basit_Murattal_192kbps
+Abdurrahmaan_As-Sudais_192kbps
+Saood_ash-Shuraym_128kbps
+MaherAlMuaiqly128kbps
+Minshawy_Murattal_128kbps
+Hudhaify_128kbps
+Abu_Bakr_Ash-Shaatree_128kbps
+ahmed_ibn_ali_al_ajamy_128kbps
+Hani_Rifai_192kbps
+Yasser_Ad-Dussary_128kbps
+Nasser_Alqatami_128kbps
+Ghamadi_40kbps
+Muhammad_Ayyoub_128kbps
+Muhammad_Jibreel_128kbps
+Mohammad_al_Tablaway_128kbps
+Abdullah_Basfar_192kbps
+Muhsin_Al_Qasim_128kbps
+Abdullaah_3awwaad_Al-Juhaynee_128kbps
+Salaah_AbdulRahman_Bukhatir_128kbps
+Ali_Jaber_64kbps
+Fares_Abbad_64kbps
+khalefa_al_tunaiji_64kbps
+Ayman_Sowaid_64kbps
+Yaser_Salamah_128kbps
+Sahl_Yassin_128kbps
+Akram_AlAlaqimy_128kbps
+Ibrahim_Akhdar_32kbps
+mahmoud_ali_al_banna_32kbps
+Abdul_Basit_Mujawwad_128kbps
+Minshawy_Mujawwad_192kbps
+Mustafa_Ismail_48kbps
+Husary_Muallim_128kbps
+```

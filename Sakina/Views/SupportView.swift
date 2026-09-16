@@ -185,7 +185,7 @@ struct ContactSupportView: View {
         \(message)
 
         —
-        Haneen \(AppLinks.version), iOS \(device.systemVersion), \(device.model), \(language.rawValue)
+        Haneen \(AppLinks.version), iOS \(device.systemVersion)
         """
     }
 

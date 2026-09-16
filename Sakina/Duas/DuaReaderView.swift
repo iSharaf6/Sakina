@@ -127,7 +127,7 @@ struct DuaReaderView: View {
                     Slider(value: $arabicScale, in: MushafPreferences.fontScaleRange, step: 0.05)
                         .accessibilityLabel(copy("Arabic text size", "حجم النص العربي"))
                     Text("بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ")
-                        .font(.arabicProse(28 * arabicScale)).frame(maxWidth: .infinity).padding(.vertical, 10)
+                        .font(.arabicProse(proseSize * arabicScale)).frame(maxWidth: .infinity).padding(.vertical, 10)
                 }
                 ShareLink(item: sharedText) { Label(copy("Share du’a", "مشاركة الدعاء"), systemImage: "square.and.arrow.up") }
             }

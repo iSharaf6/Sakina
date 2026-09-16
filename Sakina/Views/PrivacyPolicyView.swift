@@ -38,6 +38,22 @@ struct PrivacyPolicyView: View {
                         )
                     )
                     section(
+                        symbol: "envelope",
+                        title: copy("Sign-in emails", "رسائل تسجيل الدخول"),
+                        body: copy(
+                            "Supabase sends Haneen's email sign-in messages through Brevo. The delivery provider processes your recipient email address, the sign-in message including its one-time link or code, and delivery or failure records needed to send and troubleshoot the message. These messages are for authentication, not a marketing subscription. Provider-held delivery and security records follow the provider's retention policies.",
+                            "تُرسل Supabase رسائل تسجيل الدخول إلى حنين عبر Brevo. ويعالج موفّر الإرسال عنوان بريدك الإلكتروني ورسالة تسجيل الدخول، بما فيها الرابط أو الرمز المخصّص للاستخدام مرة واحدة، وسجلات نجاح التسليم أو فشله اللازمة لإرسال الرسالة ومعالجة مشكلات وصولها. وهذه الرسائل للتحقق من تسجيل الدخول، ولا تعني الاشتراك في رسائل تسويقية. وتخضع سجلات التسليم والأمان التي يحتفظ بها الموفّر لسياسات الاحتفاظ الخاصة به."
+                        )
+                    )
+                    section(
+                        symbol: "person.crop.circle.badge.checkmark",
+                        title: copy("Age-range checks", "التحقق من الفئة العمرية"),
+                        body: copy(
+                            "Where Apple requires an age-range check, Haneen asks for the range through Apple's system interface after setup. Haneen uses the response on your device and discards it without saving your age, date of birth or age category, or sending that information to Haneen's servers. Only the check's completion state stays in memory during the current app session. Apple manages the associated Apple Account and parental-consent settings under its own privacy terms.",
+                            "في المناطق التي تتطلب فيها Apple التحقق من الفئة العمرية، يطلب حنين هذه المعلومات عبر واجهة النظام بعد إعداد التطبيق. ويعالج حنين الإجابة على جهازك ثم يتخلّص منها، دون حفظ عمرك أو تاريخ ميلادك أو فئتك العمرية أو إرسال هذه المعلومات إلى خوادم حنين. ولا تبقى في الذاكرة خلال جلسة الاستخدام الحالية إلا حالة اكتمال التحقق. وتدير Apple إعدادات حساب Apple وموافقة وليّ الأمر ذات الصلة وفق شروط الخصوصية الخاصة بها."
+                        )
+                    )
+                    section(
                         symbol: "location",
                         title: copy("Location and nearby places", "الموقع والأماكن القريبة"),
                         body: copy(
@@ -90,7 +106,7 @@ struct PrivacyPolicyView: View {
                         .font(.yqSubhead)
                         .frame(maxWidth: .infinity, alignment: .center)
 
-                    Text(copy("Effective 13 September 2026", "سارية من 13 سبتمبر 2026"))
+                    Text(copy("Updated 17 September 2026", "آخر تحديث: 17 سبتمبر 2026"))
                         .font(.caption)
                         .foregroundStyle(Color.sakinaMuted)
                         .frame(maxWidth: .infinity, alignment: .center)

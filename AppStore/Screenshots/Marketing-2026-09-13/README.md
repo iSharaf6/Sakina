@@ -1,19 +1,19 @@
 # Haneen App Store screenshot review
 
-Six English (Australia) marketing screenshots, created 13 September 2026 for the owner's review. **Owner approved the set on 13 September, with the countdown cat moved into the widget corner. All six were uploaded to Haneen 1.0 in App Store Connect; their order and saved state were verified after reloading the page.** Open `index.html` for a gallery with full-size inspection, previous/next controls and individual downloads. `overview.png` shows the complete set. The app remains in Prepare for Submission; screenshot upload is not app submission or release.
+Six English (Australia) marketing screenshots, created 13 September 2026 for the owner's review. **Owner approved the set on 13 September, with the countdown cat moved into the widget corner. All six were uploaded to Haneen 1.0 in App Store Connect; their order and saved state were verified after reloading the page.** Open `index.html` for a gallery with full-size inspection, previous/next controls and individual downloads. `overview.png` shows the complete set. This paragraph records the original September 13 approval. The corrected set was uploaded and saved on September 17; screenshot upload is not app submission or release.
 
-## Approved upload files
+## Saved upload files — order verified 17 September
 
 All six files in `exports/` are **1242 × 2688**, opaque RGB PNGs, suitable for the portrait iPhone 6.5-inch screenshot slot shown in this app's App Store Connect media manager. These are screenshots, not video app previews. Do not upload the contact sheet, raw captures, HTML or illustration assets.
 
 | Order | Export | Source |
 | --- | --- | --- |
 | 1 | `01-daily-companion.png` | Original `../en-AU/01-home.png` |
-| 2 | `02-quran.png` | Original `../en-AU/02-quran.png` |
-| 3 | `03-feelings.png` | Original `../en-AU/07-all-feelings.png` |
+| 2 | `06-widgets.png` | Three intact widget previews clipped from `../en-AU/06-widget-collection.png` |
+| 3 | `05-prayer.png` | Original `../en-AU/05-prayer-times.png` |
 | 4 | `04-dhikr.png` | Original `../en-AU/04-morning-adhkar-dark.png` |
-| 5 | `05-prayer.png` | Original `../en-AU/05-prayer-times.png` |
-| 6 | `06-widgets.png` | Three intact widget previews clipped from `../en-AU/06-widget-collection.png` |
+| 5 | `02-quran.png` | Original `../en-AU/02-quran.png` |
+| 6 | `03-feelings.png` | Original `../en-AU/07-all-feelings.png` |
 
 ## Design and fidelity
 
@@ -23,7 +23,7 @@ Cream `#FCF3E3`, muted olive and one forest-green panel follow the existing app.
 
 `assets/peek-companion.png` is a newly generated transparent illustration matching the app's cream cat, dark eye patch and olive scarf. It is decorative art outside the captured UI. Generated using the built-in image tool with `Companion-widgetEvening` as character/style reference. The original generation is retained in the Codex generated-images directory, and the project copy is included here.
 
-App screens are original simulator PNGs placed by HTML/CSS. No scripture, translation, source citation, progress, prayer time or interface element was AI-generated or redrawn. The full Al-Fatihah passage and the complete shown dhikr reward/citation remain visible. On the larger Home/Feelings/Prayer layouts, the bottom of the physical phone continues beyond the canvas. Widget cards use the shipping chooser's own sample values; they are not a claimed live personal schedule. See the raw-source README for capture conditions.
+App screens are original simulator PNGs placed by HTML/CSS. No scripture, translation, source citation, progress, prayer time or interface element was AI-generated or redrawn. The full Al-Fatihah passage and the complete shown dhikr reward/citation remain visible. On 17 September, the Home/Feelings/Prayer captures were reduced slightly so the complete handset frame fits within the canvas; the original captured UI and approved palette, copy and artwork were retained. Widget cards use the shipping chooser's own sample values; they are not a claimed live personal schedule. See the raw-source README for capture conditions.
 
 ## Rebuild
 
@@ -34,3 +34,7 @@ The renderer uses Playwright with the bundled local Chromium. Override `PLAYWRIG
 Checked: image dimensions, opaque RGB output, all images decode, six layouts inspected, headline fit, Qur’an/reward text visibility, clean widget crop, gallery controls. App Store submission remains separate from this review.
 
 The approved widget correction moves the existing edge-cropped countdown pose into the actual widget’s bottom-leading corner; Arabic mirrors the pose with the layout. Both the extension and chooser use this shared layout. The marketing widget card was refreshed from a new native capture after rebuilding the app.
+
+## Local correction — 17 September 2026
+
+The Home, Feelings and Prayer compositions now show their complete handset frames rather than cropping the bottom edge. The six exports and overview were regenerated from the original captures. The release coordinator uploaded all six corrected exports to App Store Connect, saved them and verified the order on 17 September: 01, 06, 05, 04, 02, 03. The gallery mirrors that saved order. This does not mean the app has been resubmitted or approved.

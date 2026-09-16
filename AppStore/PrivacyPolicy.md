@@ -1,6 +1,6 @@
 # Haneen Privacy Policy
 
-Effective 13 September 2026
+Updated 17 September 2026
 
 This policy covers Haneen 1.0, developed by Islam Sharaf. Haneen has no advertising or integration that tracks your reading, feelings or other activity for behavioural analytics. Haneen does not track you across apps or sell personal data. Sign-in and online services separately process the technical information described below.
 
@@ -11,6 +11,11 @@ Notes, bookmarks, reflections, reading progress, goals, dhikr progress and prefe
 Apple, Google and email sign-in use Supabase Authentication. Supabase stores your account identifier, email address, display name when supplied, and the account/session information needed for sign-in. Apple and Google provider tokens are sent to Supabase to verify your sign-in. Apple and Google share account information according to the permissions you grant; Haneen does not receive your Apple or Google password. Signing in does not upload your local notes or bookmarks. You can use Haneen without an account.
 
 Authentication requests include technical information such as IP addresses and SDK/platform details. Sign-in providers process security and diagnostic information to operate, protect and troubleshoot their services under their own terms. Google states that its sign-in SDK may use a user identifier to record consented access and an IP address to estimate general location for fraud prevention. See [Google's sign-in disclosure](https://developers.google.com/identity/sign-in/ios/app-privacy).
+
+Supabase sends Haneen's email sign-in messages through Brevo. The delivery provider processes your recipient email address, the sign-in message including its one-time link or code, and delivery or failure records needed to send and troubleshoot the message. These messages are for authentication, not a marketing subscription. Provider-held delivery and security records follow the provider's retention policies.
+
+## Age-range checks
+Where Apple requires an age-range check, Haneen asks for the range through Apple's system interface after setup. Haneen uses the response on your device and discards it without saving your age, date of birth or age category, or sending that information to Haneen's servers. Only the check's completion state stays in memory during the current app session. Apple manages the associated Apple Account and parental-consent settings under its own privacy terms.
 
 ## Location and nearby places
 With your permission, prayer times and Qibla are calculated on your device. Compass readings are temporary, and Apple location services may resolve a place name. Nearby mosque or halal-place searches send precise latitude/longitude and the search category to Apple Maps and the Overpass service at overpass-api.de, which searches OpenStreetMap data. Opening directions sends the destination to the map service you choose. These online services receive ordinary connection information such as your IP address. You can deny or revoke location access in iOS Settings.
@@ -34,6 +39,7 @@ Supabase's published data processing addendum limits processing of customer data
 
 - [Supabase data processing addendum](https://supabase.com/legal/customer-resources/data-processing-addendum)
 - [Supabase privacy policy](https://supabase.com/privacy)
+- [Brevo privacy policy](https://www.brevo.com/legal/privacypolicy/)
 - [Apple privacy policy](https://www.apple.com/legal/privacy/)
 - [Google privacy policy](https://policies.google.com/privacy)
 

@@ -1,6 +1,6 @@
 # Haneen authentication email setup
 
-**Status, 16 September 2026:** template prepared locally. Brevo account/phone checks, the Haneen sender verification and creation of a dedicated SMTP key are complete. Custom SMTP is not yet saved in Supabase: its sender email, SMTP username and password fields remain empty after browser-controlled entry and need direct entry by the owner. Delivery has not been verified. No secret credentials are stored in these files.
+**Status, 17 September 2026:** Brevo custom SMTP is enabled and saved in Supabase; the coordinator reloaded the page and verified the persisted Brevo host, port 587 and Haneen sender. The owner entered the secret credentials directly. Brevo account/phone checks, sender verification and the dedicated SMTP key are complete. Both Confirm signup and Magic Link templates are saved in Supabase with the branded bilingual copy and intact `{{ .ConfirmationURL }}` / `{{ .Token }}` placeholders. A production delivery attempt returned **SMTP 535 (authentication failed)**. The owner is correcting the SMTP credentials. Successful email delivery and the physical account lifecycle have not yet been verified. No secret credentials are stored in these files.
 
 ## Sender and SMTP
 
@@ -23,4 +23,4 @@ The dedicated SMTP key's displayed expiry is **16 September 2027**. Brevo also s
 
 Use a tester's consenting address outside the Supabase project team. Request a fresh email from the app, check its inbox and spam folder, and check the Supabase/Brevo delivery logs without recording tokens. Inspect the actual From address, tracking pixels and whether the sign-in link was rewritten. Open the link on the same iPhone and confirm the account becomes signed in. Request a separate fresh email and test its code in Haneen; using a link consumes that message's one-time credential. Confirm that an expired or previously used code is rejected. Separately verify new-user signup, returning-user sign-in, sign-out and deletion of a controlled test account. Until delivery and these account flows work, keep this setup marked incomplete.
 
-Once SMTP is connected, add Brevo's processing of recipient addresses, sign-in message content and delivery records to the in-app and public privacy policies and the App Review services list. Do not claim that email delivery or physical-device testing passed before those checks are complete.
+The in-app English/Arabic policy, Markdown/public policies and review-notes draft now disclose Brevo's processing of recipient addresses, sign-in message content and delivery records. Publish the updated public pages and review notes with the correct build. Do not claim that email delivery or physical-device testing passed before those checks are complete.
