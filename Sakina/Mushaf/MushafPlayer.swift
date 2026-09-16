@@ -51,6 +51,8 @@ final class MushafPlayer: ObservableObject {
     private var itemStatusObserver: NSKeyValueObservation?
     private var timeObserver: Any?
     private var notificationTokens: [NSObjectProtocol] = []
+    private var remoteCommandTargets: [(MPRemoteCommand, Any)] = []
+    private var ownsNowPlaying = false
 
     private init() {
         let stored = UserDefaults.standard.string(forKey: SettingsKeys.reciter) ?? ""
@@ -58,7 +60,6 @@ final class MushafPlayer: ObservableObject {
         queue.actionAtItemEnd = .advance
         observeQueue()
         observeSession()
-        installRemoteCommands()
     }
 
     // MARK: Public API
@@ -70,6 +71,7 @@ final class MushafPlayer: ObservableObject {
     /// Start at `key` and continue with the following ayat.
     func play(from key: String) {
         guard let ayah = QuranStore.shared.ayah(key) else { return }
+        AdhkarAudioPlayer.shared.stop()
         RecitationPlayer.shared.stop()
         activateSession()
         resetQueue()
@@ -83,9 +85,11 @@ final class MushafPlayer: ObservableObject {
         let generation = generation
         let reciter = reciter
         startTask = Task { [weak self] in
-            guard let self else { return }
+            guard let self, !Task.isCancelled, self.generation == generation else { return }
             let url: URL
-            if let local = await self.cache.localURL(for: ayah, reciter: reciter) {
+            let local = await self.cache.localURL(for: ayah, reciter: reciter)
+            guard !Task.isCancelled, self.generation == generation else { return }
+            if let local {
                 url = local
             } else {
                 guard let remote = RecitationCache.remoteURL(for: ayah, reciter: reciter) else { return }
@@ -95,7 +99,7 @@ final class MushafPlayer: ObservableObject {
             }
             guard !Task.isCancelled, self.generation == generation else { return }
             self.enqueue(url, for: ayah.key)
-            self.queue.play()
+            if self.isPlaying { self.queue.play() }
             self.startTask = nil
         }
     }
@@ -109,6 +113,7 @@ final class MushafPlayer: ObservableObject {
     }
 
     func pause() {
+        wasPlayingBeforeInterruption = false
         guard playingKey != nil else { return }
         queue.pause()
         isPlaying = false
@@ -117,6 +122,8 @@ final class MushafPlayer: ObservableObject {
 
     func resume() {
         guard let key = playingKey else { return }
+        AdhkarAudioPlayer.shared.stop()
+        RecitationPlayer.shared.stop()
         activateSession()
         if queue.currentItem == nil {
             play(from: key)
@@ -133,8 +140,13 @@ final class MushafPlayer: ObservableObject {
         isPlaying = false
         isBuffering = false
         progress = 0
-        MPNowPlayingInfoCenter.default().nowPlayingInfo = nil
-        try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+        wasPlayingBeforeInterruption = false
+        removeRemoteCommands()
+        if ownsNowPlaying {
+            MPNowPlayingInfoCenter.default().nowPlayingInfo = nil
+            try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+            ownsNowPlaying = false
+        }
     }
 
     func playNext() {
@@ -336,6 +348,8 @@ final class MushafPlayer: ObservableObject {
         let session = AVAudioSession.sharedInstance()
         try? session.setCategory(.playback, mode: .spokenAudio)
         try? session.setActive(true)
+        ownsNowPlaying = true
+        installRemoteCommands()
     }
 
     private func observeSession() {
@@ -369,8 +383,9 @@ final class MushafPlayer: ObservableObject {
     private func handleInterruption(_ type: AVAudioSession.InterruptionType, shouldResume: Bool) {
         switch type {
         case .began:
-            wasPlayingBeforeInterruption = isPlaying
+            let shouldResume = isPlaying
             if isPlaying { pause() }
+            wasPlayingBeforeInterruption = shouldResume
         case .ended:
             if wasPlayingBeforeInterruption, shouldResume { resume() }
             wasPlayingBeforeInterruption = false
@@ -389,6 +404,7 @@ final class MushafPlayer: ObservableObject {
     // MARK: Now playing and remote commands
 
     private func updateNowPlaying() {
+        guard ownsNowPlaying else { return }
         guard let key = playingKey, let ayah = QuranStore.shared.ayah(key) else {
             MPNowPlayingInfoCenter.default().nowPlayingInfo = nil
             return
@@ -411,32 +427,41 @@ final class MushafPlayer: ObservableObject {
     }
 
     private func installRemoteCommands() {
+        guard remoteCommandTargets.isEmpty else { return }
         let center = MPRemoteCommandCenter.shared()
-        center.playCommand.addTarget { [weak self] _ in
-            Task { @MainActor [weak self] in self?.resume() }
-            return .success
+        center.playCommand.isEnabled = true
+        center.pauseCommand.isEnabled = true
+        center.togglePlayPauseCommand.isEnabled = true
+        center.nextTrackCommand.isEnabled = true
+        center.previousTrackCommand.isEnabled = true
+        center.skipForwardCommand.isEnabled = false
+        center.skipBackwardCommand.isEnabled = false
+        addRemoteTarget(center.playCommand) { $0.resume() }
+        addRemoteTarget(center.pauseCommand) { $0.pause() }
+        addRemoteTarget(center.togglePlayPauseCommand) {
+            if $0.isPlaying { $0.pause() } else { $0.resume() }
         }
-        center.pauseCommand.addTarget { [weak self] _ in
-            Task { @MainActor [weak self] in self?.pause() }
-            return .success
-        }
-        center.togglePlayPauseCommand.addTarget { [weak self] _ in
-            Task { @MainActor [weak self] in
-                guard let self else { return }
-                if self.isPlaying { self.pause() } else { self.resume() }
-            }
-            return .success
-        }
-        center.nextTrackCommand.addTarget { [weak self] _ in
-            Task { @MainActor [weak self] in self?.playNext() }
-            return .success
-        }
-        center.previousTrackCommand.addTarget { [weak self] _ in
-            Task { @MainActor [weak self] in self?.playPrevious() }
-            return .success
-        }
+        addRemoteTarget(center.nextTrackCommand) { $0.playNext() }
+        addRemoteTarget(center.previousTrackCommand) { $0.playPrevious() }
         center.changePlaybackPositionCommand.isEnabled = false
         center.seekForwardCommand.isEnabled = false
         center.seekBackwardCommand.isEnabled = false
+    }
+
+    private func addRemoteTarget(_ command: MPRemoteCommand,
+                                 action: @escaping @MainActor (MushafPlayer) -> Void) {
+        let target = command.addTarget { [weak self] _ in
+            Task { @MainActor [weak self] in
+                guard let self, self.ownsNowPlaying else { return }
+                action(self)
+            }
+            return .success
+        }
+        remoteCommandTargets.append((command, target))
+    }
+
+    private func removeRemoteCommands() {
+        for (command, target) in remoteCommandTargets { command.removeTarget(target) }
+        remoteCommandTargets.removeAll()
     }
 }

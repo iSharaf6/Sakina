@@ -1,0 +1,223 @@
+{
+  "method": "Local whisper.cpp small-q5_1 Arabic ASR locates content only; no ASR text is used as a religious source. Waveform RMS identifies quiet boundaries. No claims of human auditory review. Conservative single-recitation selection for repeated surahs. Each playback should leave app repetition counts unchanged.",
+  "candidates": [
+    {
+      "recording": "evening",
+      "id": "evening-morning-ayat-al-kursi",
+      "titleEnglish": "The verse of the Throne",
+      "titleArabic": "آية الكرسي",
+      "duaID": "morning-ayat-al-kursi",
+      "start": 7.7,
+      "end": 59.09,
+      "verified": "Complete first recitation identified from Arabic local ASR against existing canonical app text. Start/end selected in measured low-volume pauses. Surahs include the basmalah. No narration/reward speech or subsequent repetitions included. Boundary candidate, not an independent religious-text transcription.",
+      "confidence": "high",
+      "recitations": 1
+    },
+    {
+      "recording": "evening",
+      "id": "evening-morning-surah-al-ikhlas",
+      "titleEnglish": "Surah al-Ikhlas",
+      "titleArabic": "سورة الإخلاص",
+      "duaID": "morning-surah-al-ikhlas",
+      "start": 74.05,
+      "end": 89.55,
+      "verified": "Complete first recitation identified from Arabic local ASR against existing canonical app text. Start/end selected in measured low-volume pauses. Surahs include the basmalah. No narration/reward speech or subsequent repetitions included. Boundary candidate, not an independent religious-text transcription.",
+      "confidence": "high",
+      "recitations": 1
+    },
+    {
+      "recording": "evening",
+      "id": "evening-morning-surah-al-falaq",
+      "titleEnglish": "Surah al-Falaq",
+      "titleArabic": "سورة الفلق",
+      "duaID": "morning-surah-al-falaq",
+      "start": 89.55,
+      "end": 113.94,
+      "verified": "Complete first recitation identified from Arabic local ASR against existing canonical app text. Start/end selected in measured low-volume pauses. Surahs include the basmalah. No narration/reward speech or subsequent repetitions included. Boundary candidate, not an independent religious-text transcription.",
+      "confidence": "high",
+      "recitations": 1
+    },
+    {
+      "recording": "evening",
+      "id": "evening-morning-surah-an-nas",
+      "titleEnglish": "Surah an-Nas",
+      "titleArabic": "سورة الناس",
+      "duaID": "morning-surah-an-nas",
+      "start": 113.94,
+      "end": 144.36,
+      "verified": "Complete first recitation identified from Arabic local ASR against existing canonical app text. Start/end selected in measured low-volume pauses. Surahs include the basmalah. No narration/reward speech or subsequent repetitions included. Boundary candidate, not an independent religious-text transcription.",
+      "confidence": "high",
+      "recitations": 1
+    },
+    {
+      "recording": "evening",
+      "id": "evening-morning-afini-fi-badani",
+      "titleEnglish": "Wellbeing in body, hearing and sight",
+      "titleArabic": "اللهم عافني في بدني",
+      "duaID": "morning-afini-fi-badani",
+      "start": 588.33,
+      "end": 604.53,
+      "verified": "Complete first recitation identified against existing Arabic app entry using independent short-crop ASR plus full-recording context. Quiet boundaries checked on audio waveform; no following citation/reward narration or next repeated recitation included. Same recitation found in both recordings by 10 ms RMS envelope correlation (0.969); evening offset derived from that matching audio, not missing long-form ASR text.",
+      "confidence": "high",
+      "recitations": 1
+    },
+    {
+      "recording": "evening",
+      "id": "evening-morning-hasbiyallah",
+      "titleEnglish": "Allah is enough for me",
+      "titleArabic": "حسبي الله لا إله إلا هو",
+      "duaID": "morning-hasbiyallah",
+      "start": 681.13,
+      "end": 690.41,
+      "verified": "Complete first recitation identified against existing Arabic app entry using independent short-crop ASR plus full-recording context. Quiet boundaries checked on audio waveform; no following citation/reward narration or next repeated recitation included. Same recitation found in both recordings by 10 ms RMS envelope correlation (0.974); evening offset derived from that matching audio, not missing long-form ASR text.",
+      "confidence": "high",
+      "recitations": 1
+    },
+    {
+      "recording": "evening",
+      "id": "evening-morning-ya-hayyu-ya-qayyum",
+      "titleEnglish": "O Ever-Living, O Sustainer",
+      "titleArabic": "يا حي يا قيوم برحمتك أستغيث",
+      "duaID": "morning-ya-hayyu-ya-qayyum",
+      "start": 938.68,
+      "end": 952.77,
+      "verified": "Complete first recitation identified against existing Arabic app entry using independent short-crop ASR plus full-recording context. Quiet boundaries checked on audio waveform; no following citation/reward narration or next repeated recitation included. Same recitation found in both recordings by 10 ms RMS envelope correlation (0.874); evening offset derived from that matching audio, not missing long-form ASR text.",
+      "confidence": "high",
+      "recitations": 1
+    },
+    {
+      "recording": "evening",
+      "id": "evening-evening-kalimat-allah-tammat",
+      "titleEnglish": "Refuge in Allah’s perfect words",
+      "titleArabic": "أعوذ بكلمات الله التامات",
+      "duaID": "evening-kalimat-allah-tammat",
+      "start": 1194.22,
+      "end": 1200.75,
+      "verified": "Complete first recitation identified against existing Arabic app entry using independent short-crop ASR plus full-recording context. Quiet boundaries checked on audio waveform; no following citation/reward narration or next repeated recitation included.",
+      "confidence": "high",
+      "recitations": 1
+    },
+    {
+      "recording": "morning",
+      "id": "morning-morning-ayat-al-kursi",
+      "titleEnglish": "The verse of the Throne",
+      "titleArabic": "آية الكرسي",
+      "duaID": "morning-ayat-al-kursi",
+      "start": 5.3,
+      "end": 56.69,
+      "verified": "Complete first recitation identified from Arabic local ASR against existing canonical app text. Start/end selected in measured low-volume pauses. Surahs include the basmalah. No narration/reward speech or subsequent repetitions included. Boundary candidate, not an independent religious-text transcription.",
+      "confidence": "high",
+      "recitations": 1
+    },
+    {
+      "recording": "morning",
+      "id": "morning-morning-surah-al-ikhlas",
+      "titleEnglish": "Surah al-Ikhlas",
+      "titleArabic": "سورة الإخلاص",
+      "duaID": "morning-surah-al-ikhlas",
+      "start": 71.65,
+      "end": 87.15,
+      "verified": "Complete first recitation identified from Arabic local ASR against existing canonical app text. Start/end selected in measured low-volume pauses. Surahs include the basmalah. No narration/reward speech or subsequent repetitions included. Boundary candidate, not an independent religious-text transcription.",
+      "confidence": "high",
+      "recitations": 1
+    },
+    {
+      "recording": "morning",
+      "id": "morning-morning-surah-al-falaq",
+      "titleEnglish": "Surah al-Falaq",
+      "titleArabic": "سورة الفلق",
+      "duaID": "morning-surah-al-falaq",
+      "start": 87.15,
+      "end": 111.54,
+      "verified": "Complete first recitation identified from Arabic local ASR against existing canonical app text. Start/end selected in measured low-volume pauses. Surahs include the basmalah. No narration/reward speech or subsequent repetitions included. Boundary candidate, not an independent religious-text transcription.",
+      "confidence": "high",
+      "recitations": 1
+    },
+    {
+      "recording": "morning",
+      "id": "morning-morning-surah-an-nas",
+      "titleEnglish": "Surah an-Nas",
+      "titleArabic": "سورة الناس",
+      "duaID": "morning-surah-an-nas",
+      "start": 111.54,
+      "end": 141.96,
+      "verified": "Complete first recitation identified from Arabic local ASR against existing canonical app text. Start/end selected in measured low-volume pauses. Surahs include the basmalah. No narration/reward speech or subsequent repetitions included. Boundary candidate, not an independent religious-text transcription.",
+      "confidence": "high",
+      "recitations": 1
+    },
+    {
+      "recording": "morning",
+      "id": "morning-morning-afini-fi-badani",
+      "titleEnglish": "Wellbeing in body, hearing and sight",
+      "titleArabic": "اللهم عافني في بدني",
+      "duaID": "morning-afini-fi-badani",
+      "start": 566.06,
+      "end": 582.26,
+      "verified": "Complete first recitation identified against existing Arabic app entry using independent short-crop ASR plus full-recording context. Quiet boundaries checked on audio waveform; no following citation/reward narration or next repeated recitation included. Same recitation found in both recordings by 10 ms RMS envelope correlation (0.969); evening offset derived from that matching audio, not missing long-form ASR text.",
+      "confidence": "high",
+      "recitations": 1
+    },
+    {
+      "recording": "morning",
+      "id": "morning-morning-hasbiyallah",
+      "titleEnglish": "Allah is enough for me",
+      "titleArabic": "حسبي الله لا إله إلا هو",
+      "duaID": "morning-hasbiyallah",
+      "start": 658.86,
+      "end": 668.14,
+      "verified": "Complete first recitation identified against existing Arabic app entry using independent short-crop ASR plus full-recording context. Quiet boundaries checked on audio waveform; no following citation/reward narration or next repeated recitation included. Same recitation found in both recordings by 10 ms RMS envelope correlation (0.974); evening offset derived from that matching audio, not missing long-form ASR text.",
+      "confidence": "high",
+      "recitations": 1
+    },
+    {
+      "recording": "morning",
+      "id": "morning-morning-ya-hayyu-ya-qayyum",
+      "titleEnglish": "O Ever-Living, O Sustainer",
+      "titleArabic": "يا حي يا قيوم برحمتك أستغيث",
+      "duaID": "morning-ya-hayyu-ya-qayyum",
+      "start": 916.68,
+      "end": 930.77,
+      "verified": "Complete first recitation identified against existing Arabic app entry using independent short-crop ASR plus full-recording context. Quiet boundaries checked on audio waveform; no following citation/reward narration or next repeated recitation included. Same recitation found in both recordings by 10 ms RMS envelope correlation (0.874); evening offset derived from that matching audio, not missing long-form ASR text.",
+      "confidence": "high",
+      "recitations": 1
+    }
+  ],
+  "omitted": [
+    {
+      "duaID": "morning-bika-asbahna",
+      "reason": "Different narrated ending: app follows Tirmidhi 3391 al-masir; recording follows the morning an-nushur variant. App is correctly sourced; do not overwrite its text from audio."
+    },
+    {
+      "duaID": "evening-bika-amsayna",
+      "reason": "No confidently isolated matching complete entry in full ASR; no segment invented."
+    },
+    {
+      "duaID": "morning-alim-al-ghayb",
+      "reason": "Recording includes an additional final phrase outside the current app entry. No clean independently confirmed cut before that ending."
+    },
+    {
+      "duaID": "morning-refuge-kufr-faqr",
+      "reason": "Recording uses a different connection into the second invocation; omitted rather than silently label wording as identical."
+    },
+    {
+      "duaID": "all-other-morning-evening-entries",
+      "reason": "Not enough consistent opening, ending and pause evidence to create exact clips. The full recordings remain available; this does not assert that every app entry appears in them."
+    }
+  ],
+  "sourceNotes": [
+    "The cited Tirmidhi 3391 app version uses morning al-masir and evening an-nushur. Recording morning an-nushur is a different narration, not proof of an app error. https://sunnah.com/tirmidhi:3391; https://sunnah.com/abudawud:5068"
+  ],
+  "verificationEvidence": {
+    "firstThreeSurahs": "Independent 70–145 second morning crop detected first an-Nas basmalah at 111.46 and ending 141.98, agreeing with measured final clip 111.54–141.96. Quran first passage shared between morning/evening; waveform matches give +2.39 to +2.40 second offset, correlation Ayat .918 and Ikhlas .953.",
+    "wellbeing": "Independent 563–598 second morning crop contains body/hearing/sight ending la ilaha illa anta before the next refuge invocation; shared audio correlation gives evening +22.27 seconds.",
+    "hasbiyallah": "Independent 657–670 second morning crop identifies the entire first recitation ending rabb al-arsh al-azim; shared audio correlation gives evening +22.27 seconds.",
+    "yaHayyu": "Independent evening 937–958 crop includes the entire invocation from ya hayyu ya qayyum to tarfata ayn, followed by rawa al-hakim; evening-morning envelope match gives +22.00 seconds.",
+    "kalimat": "Independent evening 1192–1219 crop explicitly identifies three successive complete repetitions. Only first selected; before second repetition. Boundaries are quiet waveform intervals 1193.94–1194.36 and 1200.67–1200.83."
+  },
+  "limitations": [
+    "These are practical content/boundary checks with local ASR and waveform data, not a claim of independent human listening or scholarly verification.",
+    "First recitation only for each entry. Do not increment completion counters for three/100 repetitions based on this one play.",
+    "Many recording passages differ in wording or include spoken commentary. Full recordings preserve those passages; per-entry clips are intentionally limited.",
+    "Whisper Arabic output has numerous spelling errors, dropped repetitions, and occasional timestamp drift. It must never replace canonical displayed Arabic."
+  ]
+}

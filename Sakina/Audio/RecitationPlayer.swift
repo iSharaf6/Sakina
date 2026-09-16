@@ -25,6 +25,8 @@ final class RecitationPlayer: ObservableObject {
 
     func play(situation: Situation) {
         stop()
+        MushafPlayer.shared.stop()
+        AdhkarAudioPlayer.shared.stop()
 
         let folder = UserDefaults.standard.string(forKey: SettingsKeys.reciter)
             ?? Reciter.alafasy.rawValue

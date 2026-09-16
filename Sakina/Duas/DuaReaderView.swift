@@ -104,6 +104,12 @@ struct DuaReaderView: View {
             advanceTask?.cancel()
             count = 0
             rememberPlace()
+            // A single-dua excerpt should not continue over a different page.
+            if let practice, let recording = AdhkarRecording(practice: practice),
+               AdhkarAudioPlayer.shared.recording == recording,
+               !AdhkarAudioPlayer.shared.isFullRecording {
+                AdhkarAudioPlayer.shared.stop()
+            }
         }
         .onDisappear { advanceTask?.cancel() }
     }
@@ -223,6 +229,11 @@ struct DuaReaderView: View {
                 .tracking(-0.3)
                 .foregroundStyle(Color.yqInk)
                 .fixedSize(horizontal: false, vertical: true)
+
+            if let practice, let recording = AdhkarRecording(practice: practice),
+               let chapter = recording.chapter(for: entry.id) {
+                AdhkarExcerptButton(recording: recording, chapter: chapter, language: language)
+            }
 
             VStack(alignment: .leading, spacing: 18) {
                 Text(entry.arabic)

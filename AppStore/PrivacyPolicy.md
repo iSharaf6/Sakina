@@ -18,7 +18,7 @@ With your permission, prayer times and Qibla are calculated on your device. Comp
 ## Recitation, tafsir and references
 Recitation requests go to EveryAyah and identify the requested reciter and ayah. Opening tafsir requests the selected ayah and tafsir edition from Quran.com's API. These services receive the request and ordinary connection information, including your IP address. Source links you open may take you to Quran.com, Sunnah.com or another cited website, whose privacy terms apply to your visit.
 
-Morning and evening collections include optional links to recordings on SoundCloud. Only when you tap “Listen on SoundCloud” does the recording open in the SoundCloud app or your browser, where [SoundCloud's privacy policy](https://soundcloud.com/pages/privacy) and [cookie policy](https://soundcloud.com/pages/cookies) apply. Haneen does not load a SoundCloud player, stream those recordings inside the app, or download them.
+The full morning and evening adhkar recordings by Abu Islam are bundled with Haneen and play offline on your device. Playing them does not contact SoundCloud. An optional source link opens the original recording in SoundCloud or your browser only when you tap it; [SoundCloud's privacy policy](https://soundcloud.com/pages/privacy) and [cookie policy](https://soundcloud.com/pages/cookies) apply to that visit. Haneen does not use a SoundCloud SDK, API or embedded player.
 
 ## Notifications
 Optional prayer and reflection reminders are scheduled on your device. You can turn them off in Haneen or iOS Settings.
