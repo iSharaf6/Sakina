@@ -1,5 +1,7 @@
 # Haneen release check — updated 13 September 2026
 
+> Status update, 16 September: the owner submitted version 1.0 (1). Apple returned a Guideline 2.1 information request. See `ReviewStatus-2026-09-16.md` for the current state; the submission status below is historical.
+
 ## Current submission status — 13 September
 
 - App Store Connect record created: Haneen, app ID `6811555262`, bundle `com.islamsharaf.sakina`, version 1.0, English (Australia).

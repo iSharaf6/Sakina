@@ -1,5 +1,7 @@
 # Haneen submission status — 13 September 2026
 
+> Superseded status: the owner submitted on 14 September, and Apple requested additional review information. See `ReviewStatus-2026-09-16.md`. The preparation and validation results below describe 13 September.
+
 App Store Connect app `6811555262`, bundle `com.islamsharaf.sakina`, version **1.0 (1)**.
 
 ## Build
