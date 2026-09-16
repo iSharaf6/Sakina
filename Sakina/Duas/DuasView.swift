@@ -458,6 +458,15 @@ struct PracticeDestination: View {
             NamesOfAllahView(language: language)
         } else if let first = practice.entries.first {
             DuaReaderView(dua: first, sequence: practice.entries, collectionTitle: practice.title(language), practice: practice)
+                .safeAreaInset(edge: .top, spacing: 0) {
+                    if let recording = AdhkarRecording(practice: practice) {
+                        AdhkarRecordingCard(recording: recording, language: language)
+                            .padding(.horizontal, 20)
+                            .padding(.top, 6)
+                            .padding(.bottom, 8)
+                            .background(Color.yqCanvas)
+                    }
+                }
                 // Different collection links need their own progress and transient reader state.
                 .id(practice)
         } else {

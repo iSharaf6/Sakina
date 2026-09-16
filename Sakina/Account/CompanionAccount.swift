@@ -7,20 +7,24 @@ import GoogleSignIn
 
 @MainActor
 final class CompanionAccount: ObservableObject {
-    static let shared = CompanionAccount()
+    static let shared = CompanionAccount(client: configuredClient())
     @Published private(set) var email: String?
     @Published private(set) var signedIn = false
-    @Published var busy = false
+    @Published private(set) var busy = false
     @Published var message: String?
     private(set) var client: SupabaseClient?
     private var nonce: String?
     private var stateTask: Task<Void, Never>?
+    private enum Operation { case email, verification, google, apple, callback, signOut, deletion }
+    private var operation: Operation?
+    private var pendingEmailCallback: URL?
+    private var completedEmailCallback: URL?
     var configured: Bool { client != nil }
     private var copy: AppCopy {
         AppCopy(language: AppLanguage(rawValue: UserDefaults.standard.string(forKey: SettingsKeys.appLanguage) ?? "") ?? .english)
     }
 
-    private init() {
+    private static func configuredClient() -> SupabaseClient? {
         func value(_ name: String) -> String? {
             guard let value = Bundle.main.object(forInfoDictionaryKey: name) as? String,
                   !value.isEmpty, !value.contains("$(") else { return nil }
@@ -28,15 +32,53 @@ final class CompanionAccount: ObservableObject {
         }
         if let urlString = value("YaqeenAuthSupabaseURL"), let key = value("YaqeenAuthSupabaseKey"),
            let url = URL(string: urlString), url.scheme == "https" {
-            client = SupabaseClient(supabaseURL: url, supabaseKey: key)
+            return SupabaseClient(supabaseURL: url, supabaseKey: key)
         }
-        if let client {
+        return nil
+    }
+
+    // An isolated client also lets tests exercise real Auth responses without using production.
+    init(client: SupabaseClient?, observeAuthState: Bool = true) {
+        self.client = client
+        synchronizeSession()
+        if let client, observeAuthState {
             stateTask = Task { [weak self] in
-                for await (_, session) in client.auth.authStateChanges {
-                    self?.signedIn = session != nil
-                    self?.email = session?.user.email
+                for await _ in client.auth.authStateChanges {
+                    guard !Task.isCancelled else { break }
+                    // An initial/refresh event can arrive after a newer sign-in or sign-out.
+                    // Read the SDK's current session rather than replaying stale event payloads.
+                    self?.synchronizeSession()
                 }
             }
+        }
+    }
+
+    deinit { stateTask?.cancel() }
+
+    private func synchronizeSession() {
+        let session = client?.auth.currentSession
+        email = session?.user.email
+        signedIn = session != nil
+    }
+
+    private func begin(_ next: Operation) -> SupabaseClient? {
+        guard !busy else { return nil }
+        guard let client else {
+            message = copy("Sign-in is temporarily unavailable. Please try again shortly.", "تسجيل الدخول غير متاح مؤقتًا. حاول مرة أخرى بعد قليل.")
+            return nil
+        }
+        operation = next
+        busy = true
+        message = nil
+        return client
+    }
+
+    private func finishOperation() {
+        operation = nil
+        busy = false
+        if let url = pendingEmailCallback {
+            pendingEmailCallback = nil
+            if !signedIn { Task { await handle(url) } }
         }
     }
 
@@ -45,32 +87,54 @@ final class CompanionAccount: ObservableObject {
         return value.range(of: #"^[^\s@]+@[^\s@]+\.[^\s@]+$"#, options: .regularExpression) != nil
     }
 
+    /// Accept pasted separators and Arabic decimal digits without silently discarding other text.
+    nonisolated static func normalizedEmailCode(_ value: String) -> String? {
+        let compact = value.filter { !$0.isWhitespace && $0 != "-" }
+        guard (6...10).contains(compact.count) else { return nil }
+        var digits = ""
+        for character in compact {
+            guard character.unicodeScalars.allSatisfy({ CharacterSet.decimalDigits.contains($0) }),
+                  let digit = character.wholeNumberValue, (0...9).contains(digit) else { return nil }
+            digits.append(String(digit))
+        }
+        return digits
+    }
+
     /// One path for new and returning people: Supabase creates the account on first use, so
     /// nobody has to know whether they already have one.
     func sendCode(email: String) async -> Bool {
-        guard let client else { message = copy("Sign-in is temporarily unavailable. Please try again shortly.", "تسجيل الدخول غير متاح مؤقتًا. حاول مرة أخرى بعد قليل."); return false }
+        guard let client = begin(.email) else { return false }
+        defer { finishOperation() }
         guard Self.validEmail(email) else { message = copy("Enter a valid email address.", "أدخل عنوان بريد إلكتروني صحيحًا."); return false }
-        busy = true; message = nil; defer { busy = false }
         do {
             try await client.auth.signInWithOTP(email: email.trimmingCharacters(in: .whitespacesAndNewlines), redirectTo: URL(string: "yaqeen://auth-callback"), shouldCreateUser: true)
             message = copy("Check your email for your sign-in link or code.", "افتح بريدك الإلكتروني للاطلاع على رابط أو رمز تسجيل الدخول.")
             return true
         } catch {
-            message = authMessage(error, fallback: copy("The sign-in email couldn’t be sent. Please try again.", "تعذّر إرسال رسالة تسجيل الدخول. حاول مرة أخرى."))
+            message = authMessage(error, emailFlow: true, fallback: copy("The sign-in email couldn’t be sent. Please try again.", "تعذّر إرسال رسالة تسجيل الدخول. حاول مرة أخرى."))
             return false
         }
     }
 
     func verify(email: String, code: String) async {
-        guard let client else { return }
-        busy = true; message = nil; defer { busy = false }
-        do { _ = try await client.auth.verifyOTP(email: email.trimmingCharacters(in: .whitespacesAndNewlines), token: code.trimmingCharacters(in: .whitespacesAndNewlines), type: .email) }
-        catch { message = authMessage(error, fallback: copy("That code didn’t work. Check it and try again, or send another email.", "لم يعمل هذا الرمز. تحقق منه وحاول مرة أخرى، أو أرسل رسالة جديدة.")) }
+        guard let client = begin(.verification) else { return }
+        defer { finishOperation() }
+        guard Self.validEmail(email) else { message = copy("Enter a valid email address.", "أدخل عنوان بريد إلكتروني صحيحًا."); return }
+        guard let code = Self.normalizedEmailCode(code) else {
+            message = copy("Enter the complete code from your latest sign-in email.", "أدخل الرمز كاملًا من أحدث رسالة لتسجيل الدخول."); return
+        }
+        do {
+            let response = try await client.auth.verifyOTP(email: email.trimmingCharacters(in: .whitespacesAndNewlines), token: code, type: .email)
+            guard response.session != nil else {
+                message = copy("Sign-in isn’t complete yet. Open the link in your latest email, or request a new one.", "لم يكتمل تسجيل الدخول بعد. افتح الرابط في أحدث رسالة، أو اطلب رسالة جديدة."); return
+            }
+            synchronizeSession()
+        } catch { message = authMessage(error, emailFlow: true, fallback: copy("That code didn’t work. Check it and try again, or send another email.", "لم يعمل هذا الرمز. تحقق منه وحاول مرة أخرى، أو أرسل رسالة جديدة.")) }
     }
 
     func google() async {
-        guard let client else { return }
-        busy = true; message = nil; defer { busy = false }
+        guard let client = begin(.google) else { return }
+        defer { finishOperation() }
         do {
             guard let presenter = Self.topViewController() else {
                 message = copy("Google’s sign-in screen couldn’t open. Please try again.", "تعذّر فتح شاشة تسجيل الدخول عبر Google. حاول مرة أخرى."); return
@@ -83,6 +147,7 @@ final class CompanionAccount: ObservableObject {
                 message = copy("Google couldn’t complete sign-in. Please try again.", "تعذّر إكمال تسجيل الدخول عبر Google. حاول مرة أخرى."); return
             }
             _ = try await client.auth.signInWithIdToken(credentials: .init(provider: .google, idToken: token, accessToken: result.user.accessToken.tokenString, nonce: raw))
+            synchronizeSession()
         } catch {
             let nsError = error as NSError
             if nsError.domain == kGIDSignInErrorDomain, nsError.code == GIDSignInError.canceled.rawValue { return }
@@ -91,6 +156,7 @@ final class CompanionAccount: ObservableObject {
     }
 
     func prepareApple(_ request: ASAuthorizationAppleIDRequest) {
+        guard begin(.apple) != nil else { return }
         let raw = Self.randomNonce()
         nonce = raw
         request.requestedScopes = [.email, .fullName]
@@ -118,27 +184,57 @@ final class CompanionAccount: ObservableObject {
     }
 
     func completeApple(_ result: Result<ASAuthorization, Error>) async {
-        guard let client else { return }
-        busy = true; message = nil; defer { busy = false; nonce = nil }
+        guard operation == .apple, let client, let rawNonce = nonce else { return }
+        // Consume the challenge once, before the first suspension point.
+        nonce = nil
+        defer { finishOperation() }
         do {
             let authorization = try result.get()
             guard let credential = authorization.credential as? ASAuthorizationAppleIDCredential,
-                  let data = credential.identityToken, let token = String(data: data, encoding: .utf8), let nonce else {
+                  let data = credential.identityToken, let token = String(data: data, encoding: .utf8) else {
                 message = copy("Apple couldn’t complete sign-in. Please try again.", "تعذّر إكمال تسجيل الدخول عبر Apple. حاول مرة أخرى."); return
             }
-            _ = try await client.auth.signInWithIdToken(credentials: .init(provider: .apple, idToken: token, nonce: nonce))
-        } catch { if (error as NSError).code != ASAuthorizationError.canceled.rawValue { message = error.localizedDescription } }
+            _ = try await client.auth.signInWithIdToken(credentials: .init(provider: .apple, idToken: token, nonce: rawNonce))
+            synchronizeSession()
+        } catch {
+            if Self.isAppleCancellation(error) { return }
+            message = authMessage(error, fallback: copy("Apple sign-in couldn’t finish. Please try again.", "تعذّر إكمال تسجيل الدخول عبر Apple. حاول مرة أخرى."))
+        }
     }
 
     func handle(_ url: URL) async {
-        guard url.scheme == "yaqeen", url.host == "auth-callback", let client else { return }
-        do { _ = try await client.auth.session(from: url) } catch { message = error.localizedDescription }
+        guard url.scheme == "yaqeen", url.host == "auth-callback", completedEmailCallback != url else { return }
+        if busy {
+            if operation == .email || operation == .verification || operation == .callback {
+                pendingEmailCallback = url
+            } else {
+                message = copy("Finish the current account action, then open the sign-in link again.", "أكمل الإجراء الحالي للحساب، ثم افتح رابط تسجيل الدخول مرة أخرى.")
+            }
+            return
+        }
+        guard let client = begin(.callback) else { return }
+        defer { finishOperation() }
+        do {
+            _ = try await client.auth.session(from: url)
+            completedEmailCallback = url
+            synchronizeSession()
+        } catch {
+            message = authMessage(error, emailFlow: true, fallback: copy("That sign-in link couldn’t be used. Request a new email and open its link on this iPhone, or enter its code.", "تعذّر استخدام رابط تسجيل الدخول. اطلب رسالة جديدة وافتح رابطها على هذا الهاتف، أو أدخل رمزها."))
+        }
     }
 
     func signOut() async {
-        guard let client else { return }
-        do { try await client.auth.signOut(scope: .local) } catch { message = error.localizedDescription }
-        clearGoogleSession()
+        guard let client = begin(.signOut) else { return }
+        defer { finishOperation() }
+        do { try await client.auth.signOut(scope: .local) }
+        catch {
+            // The SDK clears local credentials before asking the server to revoke the session.
+            if client.auth.currentSession != nil {
+                message = copy("Sign-out couldn’t finish. Please try again.", "تعذّر إكمال تسجيل الخروج. حاول مرة أخرى.")
+            }
+        }
+        synchronizeSession()
+        if !signedIn { clearGoogleSession(); completedEmailCallback = nil }
     }
 
     /// The optional Drive backup shares Google's SDK session; only drop it when backup is not connected,
@@ -147,57 +243,78 @@ final class CompanionAccount: ObservableObject {
         if !GoogleAccountManager.shared.isSignedIn { GIDSignIn.sharedInstance.signOut() }
     }
 
-    func deleteAccount(reason: String = "", feedback: String = "") async {
-        guard let client else { return }
-        busy = true; message = nil; defer { busy = false }
+    @discardableResult
+    func deleteAccount(reason: String = "", feedback: String = "") async -> Bool {
+        guard let client = begin(.deletion) else { return false }
+        defer { finishOperation() }
         do {
             guard let user = (try? await client.auth.user()) ?? client.auth.currentUser else {
                 try? await client.auth.signOut(scope: .local)
-                message = copy("Please sign in again, then delete your account.", "سجّل الدخول مرة أخرى، ثم احذف حسابك."); return
+                synchronizeSession()
+                message = copy("Please sign in again, then delete your account.", "سجّل الدخول مرة أخرى، ثم احذف حسابك."); return false
             }
             var body: [String: String] = ["reason": reason, "feedback": String(feedback.prefix(1000))]
             if user.identities?.contains(where: { $0.provider == "apple" }) == true {
                 body["appleAuthorizationCode"] = try await AppleDeletionAuthorization().authorize()
             }
-            try await client.functions.invoke("delete-account", options: .init(body: body))
+            let response: DeletionResponse = try await client.functions.invoke("delete-account", options: .init(body: body))
+            guard response.deleted else {
+                message = copy("Account deletion wasn’t confirmed. Please try again.", "لم يُؤكَّد حذف الحساب. حاول مرة أخرى."); return false
+            }
             clearGoogleSession()
             // The server already removed the account; the logout call is only for the local session.
             try? await client.auth.signOut(scope: .local)
+            synchronizeSession()
+            completedEmailCallback = nil
+            return true
         } catch {
-            if let error = error as? ASAuthorizationError, error.code == .canceled { return }
+            if Self.isAppleCancellation(error) { return false }
             if case let FunctionsError.httpError(code, data) = error {
                 let reason = (try? JSONDecoder().decode([String: String].self, from: data))?["error"] ?? ""
                 switch (code, reason) {
                 case (401, _):
                     try? await client.auth.signOut(scope: .local)
+                    synchronizeSession()
                     message = copy("Your session had expired, so nothing was deleted. Sign in again, then delete your account.", "انتهت جلستك، ولم يُحذف شيء. سجّل الدخول مرة أخرى، ثم احذف حسابك.")
                 case (_, "apple_authorization_required"), (_, "apple_revocation_failed"), (_, "apple_identity_unavailable"):
-                    message = copy("Apple didn’t confirm the Apple ID linked to this account, so nothing was deleted. Try again and choose the same Apple ID.", "لم تؤكد Apple حساب Apple المرتبط بهذا الحساب، ولم يُحذف شيء. حاول مرة أخرى واختر حساب Apple نفسه.")
+                    message = copy("Apple’s connection couldn’t be removed, so nothing was deleted. Try again with the same Apple ID. If this continues, contact support from Settings.", "تعذّر إلغاء الاتصال بحساب Apple، ولم يُحذف شيء. حاول مرة أخرى باستخدام حساب Apple نفسه. إذا استمرت المشكلة، تواصل مع الدعم من الإعدادات.")
                 case (503, _):
                     message = copy("Account deletion is temporarily unavailable. Please try again shortly.", "حذف الحساب غير متاح مؤقتًا. حاول مرة أخرى بعد قليل.")
                 default:
                     message = copy("Account deletion couldn’t finish. Please try again.", "تعذّر إكمال حذف الحساب. حاول مرة أخرى.")
                 }
-                return
+                return false
             }
             message = copy("Account deletion couldn’t finish. Check your connection and try again.", "تعذّر إكمال حذف الحساب. تحقق من الاتصال وحاول مرة أخرى.")
+            return false
         }
     }
 
-    /// Turns Supabase's error codes into short bilingual copy; unknown codes fall back to the server text.
-    private func authMessage(_ error: Error, fallback: String) -> String {
-        guard case let AuthError.api(serverMessage, code, _, _) = error else { return fallback }
+    private struct DeletionResponse: Decodable { let deleted: Bool }
+
+    private static func isAppleCancellation(_ error: Error) -> Bool {
+        let error = error as NSError
+        return error.domain == ASAuthorizationError.errorDomain && error.code == ASAuthorizationError.canceled.rawValue
+    }
+
+    /// Keep provider diagnostics out of the UI, including callback URLs carrying tokens or codes.
+    private func authMessage(_ error: Error, emailFlow: Bool = false, fallback: String) -> String {
+        if let error = error as? URLError,
+           [.notConnectedToInternet, .networkConnectionLost, .timedOut, .cannotConnectToHost].contains(error.code) {
+            return copy("Check your connection and try again.", "تحقق من الاتصال وحاول مرة أخرى.")
+        }
+        guard case let AuthError.api(_, code, _, _) = error else { return fallback }
         switch code.rawValue {
         case "over_email_send_rate_limit", "over_request_rate_limit":
             return copy("Too many attempts for now. Wait a few minutes, then try again.", "محاولات كثيرة في الوقت الحالي. انتظر بضع دقائق ثم حاول مرة أخرى.")
         case "otp_expired":
             return copy("That code or link has expired. Send a new email and try again.", "انتهت صلاحية هذا الرمز أو الرابط. أرسل رسالة جديدة وحاول مرة أخرى.")
-        case "email_address_invalid", "validation_failed":
+        case "email_address_invalid":
             return copy("Enter a valid email address.", "أدخل عنوان بريد إلكتروني صحيحًا.")
         case "signup_disabled", "email_provider_disabled", "otp_disabled":
-            return copy("Email sign-in isn’t available right now. Please continue with Apple or Google.", "تسجيل الدخول بالبريد الإلكتروني غير متاح حاليًا. تابع باستخدام Apple أو Google.")
+            return emailFlow ? copy("Email sign-in isn’t available right now. Please continue with Apple or Google.", "تسجيل الدخول بالبريد الإلكتروني غير متاح حاليًا. تابع باستخدام Apple أو Google.") : fallback
         default:
-            return serverMessage.isEmpty ? fallback : serverMessage
+            return fallback
         }
     }
 }
@@ -244,6 +361,7 @@ struct CompanionAccountView: View {
         .background(Color.yqSurface.ignoresSafeArea())
         .navigationTitle(copy("Account", "الحساب")).navigationBarTitleDisplayMode(.inline)
         .onChange(of: email) { _, _ in sent = false; code = "" }
+        .onChange(of: account.signedIn) { _, _ in sent = false; code = "" }
         .sheet(isPresented: $showDelete) { AccountDeletionSheet() }
     }
 
@@ -271,7 +389,7 @@ struct CompanionAccountView: View {
                     Image(systemName: "chevron.forward").font(.caption)
                 }.padding(16).yqCard(cornerRadius: 20)
             }.buttonStyle(.plain)
-            Button { showDelete = true } label: {
+            Button { account.message = nil; showDelete = true } label: {
                 Text(copy("Delete account", "حذف الحساب")).font(.yqSubhead).foregroundStyle(.red).frame(minHeight: 44)
             }.frame(maxWidth: .infinity, alignment: .leading)
         }
@@ -279,7 +397,7 @@ struct CompanionAccountView: View {
 
     private var signInContent: some View {
         VStack(spacing: 16) {
-            Text(copy("New or returning, one tap signs you in.", "سواء كنت جديدًا أو عائدًا، ضغطة واحدة تكفي لتسجيل الدخول."))
+            Text(copy("New or returning, use the same sign-in options.", "سواء كنت جديدًا أو عائدًا، استخدم خيارات تسجيل الدخول نفسها."))
                 .font(.yqSubhead).foregroundStyle(Color.yqSecondary).frame(maxWidth: .infinity, alignment: .leading)
             SignInWithAppleButton(.continue, onRequest: account.prepareApple) { result in
                 Task { await account.completeApple(result) }
@@ -300,9 +418,9 @@ struct CompanionAccountView: View {
                 TextField(copy("Email code", "رمز التحقق المرسل إلى بريدك"), text: $code).textContentType(.oneTimeCode).keyboardType(.numberPad)
                     .padding(16).background(Color.yqFill, in: RoundedRectangle(cornerRadius: 14))
                 Button(copy("Verify & continue", "التحقق والمتابعة")) { Task { await account.verify(email: email, code: code) } }
-                    .buttonStyle(.borderedProminent).disabled(code.count < 6)
+                    .buttonStyle(.borderedProminent).disabled(CompanionAccount.normalizedEmailCode(code) == nil)
             }
-            Button { Task { sent = await account.sendCode(email: email) } } label: {
+            Button { Task { if await account.sendCode(email: email) { sent = true; code = "" } } } label: {
                 Text(sent ? copy("Send another email", "إرسال الرسالة مجددًا") : copy("Continue with email", "المتابعة بالبريد الإلكتروني")).font(.yqHeadline)
                     .frame(maxWidth: .infinity).frame(height: 52)
                     .background(Color.yqAccentDeep, in: RoundedRectangle(cornerRadius: 14)).foregroundStyle(Color.yqOnAccent)
@@ -353,11 +471,11 @@ private struct AccountDeletionSheet: View {
                 .toolbar { ToolbarItem(placement: .cancellationAction) { Button(copy("Cancel", "إلغاء")) { dismiss() }.disabled(account.busy) } }
                 .confirmationDialog(copy("Permanently delete your account?", "هل تريد حذف حسابك نهائيًا؟"), isPresented: $confirm, titleVisibility: .visible) {
                     Button(copy("Delete account", "حذف الحساب"), role: .destructive) { Task {
-                        await account.deleteAccount(reason: reason, feedback: feedback)
-                        if account.message == nil { dismiss() }
+                        if await account.deleteAccount(reason: reason, feedback: feedback) { dismiss() }
                     } }
                 }
         }
+        .interactiveDismissDisabled(account.busy)
     }
 }
 

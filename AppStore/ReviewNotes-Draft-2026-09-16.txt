@@ -1,20 +1,20 @@
-Thank you for reviewing Haneen. The requested information follows.
+DRAFT for Haneen 1.0 (2), not yet uploaded. App Store Connect still has the previous notes for build 1.
 
 1. Physical-device demonstration
-Physical-device recording is being prepared and will be attached before resubmission. It will show launch, setup, core features, registration, sign-in and account deletion.
+Physical-device recording is being prepared and will be attached before resubmission. It will show launch, setup, core features, registration, sign-in and deletion. Email delivery setup and physical account-flow checks remain pending.
 
 2. Purpose, audience and value
-Haneen is a free Arabic/English daily Islamic companion for Qur'an reading, sourced supplications/hadith references, and prayer/dhikr routines. It combines a full Qur'an reader, readings by feeling/life situation, morning/evening adhkar, a dhikr counter, goals, private saved readings/notes, prayer times, Qibla, nearby places and widgets. It is not a medical or counselling service.
+Haneen is a free Arabic/English Islamic companion for Qur'an reading, sourced duas/hadith and daily prayer/dhikr. It includes readings by feeling/life situation, adhkar, counters, goals, private notes, prayer times, Qibla, nearby places and widgets. It is not a medical or counselling service.
 
 3. Setup and feature access
 At launch, select "Use Haneen without an account". All core features are available as a guest; no credentials, membership, invitation or payment are required.
-Open Qur'an, choose a surah, and tap an ayah for Listen, Save and More. More opens translation, tafsir, highlights and notes. Du'as contains the collections; Home > All feelings and Explore > Start with a feeling open relevant readings. Explore also contains life-situation readings and nearby mosque/halal-place searches. Saved > My ayat opens saved ayat and notes.
+Open Qur'an, choose a surah, and tap an ayah for Listen, Save and More. More opens translation, tafsir, highlights and notes. Du'as contains collections; Home > All feelings opens related readings. Explore contains life situations and nearby searches. Saved > My ayat opens saved ayat/notes.
 For prayer times, use Home > Use my location and allow location access. Calculation settings are in Settings. Home > Qibla uses the iPhone compass. Reading, duas and local saving remain available if location is denied. Notifications are optional. Add widgets using the iOS widget gallery; configure prayer times first.
-Optional accounts are at Settings > Account: Apple, Google, or email sign-in link. New and returning email users use Sign up/Sign in respectively. No password is created. Account > Delete account offers optional feedback; leave "Prefer not to say" and feedback blank, tap Delete account and confirm. Apple-linked deletion may request fresh Apple authorisation. Signing out/deleting the account leaves the separate local library on the iPhone.
+Settings > Account offers Apple, Google and email. New and returning users both choose Continue with email, then open the email link on this iPhone or enter its code and tap Verify & continue. No password or separate Sign up choice is needed. Account > Delete account offers optional feedback; leave "Prefer not to say" and feedback blank, tap Delete account and confirm. Apple-linked deletion may request fresh Apple authorisation. Signing out/deleting the account leaves the separate local library on the iPhone.
 
 4. External services and data
-Supabase Authentication supports Apple, Google and email sign-in and account deletion. Account identity/session data and optional deletion feedback go to Supabase; sign-in does not upload notes or bookmarks. EveryAyah supplies streamed/cached recitation. Quran.com's API supplies online tafsir. Nearby searches send location/category to Apple Maps and OpenStreetMap Overpass (overpass-api.de). Apple location services resolve place names. Source links open Quran.com, Sunnah.com and other cited sites.
-Qur'an text and the dua/hadith catalog are bundled. Notes, reading progress, preferences and dhikr counts are local. Prayer calculations use the on-device Adhan library; reminders are local notifications. There are no payments, subscriptions, ads, public posts/comments, chat, user-to-user messaging or runtime AI service. Static illustrations are bundled assets. Sharing uses the iOS share sheet.
+Supabase Authentication supports Apple, Google and email sign-in and account deletion. Account identity/session data and optional deletion feedback go to Supabase; sign-in does not upload notes or bookmarks. EveryAyah supplies streamed/cached recitation. Quran.com's API supplies online tafsir. Nearby searches send location/category to Apple Maps and OpenStreetMap Overpass (overpass-api.de). Apple location services resolve place names. Other source links open cited websites. Morning/evening collections offer Listen on SoundCloud: a user-tapped link to the original recording in SoundCloud or the browser. These recordings are not played or downloaded inside Haneen.
+Qur'an text and the dua/hadith catalog are bundled. Notes, reading progress, preferences and dhikr counts are local. Prayer calculations use the on-device Adhan library; reminders are local notifications. No payments, subscriptions, ads, public UGC, messaging or runtime AI service. Illustrations are static; sharing uses the iOS share sheet.
 
 5. Regional differences
 Features are the same across regions. Users choose Arabic/English. Prayer times vary by location, time zone and calculation settings; nearby results and online availability depend on provider coverage. There are no regional paid tiers.
@@ -24,6 +24,6 @@ Sources and font credits are in Settings > Sources, privacy & credits. Relevant 
 Quran Foundation terms: https://api-docs.quran.com/legal/developer-terms/
 Selected hadith: https://sunnah.com/about
 IndoPak author notice: https://github.com/marwan/indopak-quran-text/blob/1e2042e4159281194ba91bb80aa1f6716e01ec26/%28Important%29%20Readme.txt
-These references do not claim Haneen-specific permission letters or that every third-party use has been cleared.
+These are public source/terms references, not a claim that every third-party use has been cleared.
 Privacy: https://isharaf6.github.io/Sakina/privacy.html
 Support: islamsharaf2005@gmail.com

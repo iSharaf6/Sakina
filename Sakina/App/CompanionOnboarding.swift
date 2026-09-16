@@ -16,6 +16,7 @@ struct CompanionOnboarding: View {
     @State private var showEmail = false
     @State private var showPrivacy = false
     @State private var paused = false
+    @State private var finished = false
     var allowsDismiss = false
     let onFinish: () -> Void
 
@@ -74,19 +75,20 @@ struct CompanionOnboarding: View {
                             }.signInWithAppleButtonStyle(colorScheme == .dark ? .white : .black)
                                 .frame(height: 52).clipShape(Capsule())
                                 .accessibilityIdentifier("welcome.apple")
+                                .disabled(!account.configured)
                             Button { Task { await account.google() } } label: {
                                 HStack(spacing: 12) {
                                     Image("GoogleSignInLogo").resizable().frame(width: 20, height: 20)
                                     Text(copy("Continue with Google", "المتابعة باستخدام Google")).font(.system(size: 17, weight: .medium))
                                 }.frame(maxWidth: .infinity).frame(height: 52)
                                     .foregroundStyle(Color(white: 0.24)).background(.white, in: Capsule())
-                            }.accessibilityIdentifier("welcome.google")
+                            }.accessibilityIdentifier("welcome.google").disabled(!account.configured)
                             Button { account.message = nil; showEmail = true } label: {
                                 Label(copy("Continue with email", "المتابعة بالبريد الإلكتروني"), systemImage: "envelope").font(.system(size: 17, weight: .semibold))
                                     .frame(maxWidth: .infinity).frame(height: 52)
                                     .background(ink.opacity(0.07), in: Capsule())
                                     .overlay(Capsule().strokeBorder(ink.opacity(0.16), lineWidth: 1))
-                            }.accessibilityIdentifier("welcome.email")
+                            }.accessibilityIdentifier("welcome.email").disabled(!account.configured)
                         }
                         if !account.signedIn {
                             Button(copy("Use Haneen without an account", "استخدام حنين دون حساب")) { completeWelcome() }
@@ -106,12 +108,18 @@ struct CompanionOnboarding: View {
                 }.frame(minHeight: geometry.size.height)
             }.background(paper.ignoresSafeArea()).foregroundStyle(ink)
         }
-        .sheet(isPresented: $showEmail) { WelcomeEmailView().presentationDragIndicator(.visible) }
+        .sheet(isPresented: $showEmail, onDismiss: { if account.signedIn { finish() } }) {
+            WelcomeEmailView().presentationDragIndicator(.visible)
+        }
         .sheet(isPresented: $showPrivacy) {
             NavigationStack { AboutView().toolbar { ToolbarItem(placement: .confirmationAction) { Button(copy("Done", "تم")) { showPrivacy = false } } } }
         }
         .task { if account.signedIn && !allowsDismiss { finish() } }
-        .onChange(of: account.signedIn) { _, signedIn in if signedIn { finish() } }
+        .onChange(of: account.signedIn) { _, signedIn in
+            guard signedIn else { return }
+            // Dismiss the email sheet before dismissing its presenting welcome screen.
+            if showEmail { showEmail = false } else { finish() }
+        }
         .task(id: "\(paused)-\(reduceMotion)-\(scenePhase)-\(showEmail)-\(showPrivacy)") {
             guard !paused, !reduceMotion, scenePhase == .active, !showEmail, !showPrivacy else { return }
             while !Task.isCancelled {
@@ -125,6 +133,8 @@ struct CompanionOnboarding: View {
         completeWelcome()
     }
     private func completeWelcome() {
+        guard !finished else { return }
+        finished = true
         UserDefaults.standard.set(true, forKey: Self.completedKey)
         onFinish()
     }
@@ -214,7 +224,7 @@ private struct WelcomeEmailView: View {
                             .focused($focused).padding(18).background(Color.yqFill, in: RoundedRectangle(cornerRadius: 16))
                             .accessibilityIdentifier("auth.code")
                         Button(copy("Sign in", "تسجيل الدخول")) { Task { await account.verify(email: email, code: code) } }
-                            .buttonStyle(WelcomePrimaryButton()).disabled(code.trimmingCharacters(in: .whitespacesAndNewlines).count < 6)
+                            .buttonStyle(WelcomePrimaryButton()).disabled(CompanionAccount.normalizedEmailCode(code) == nil)
                         Button(copy("Use another email", "استخدام بريد إلكتروني آخر")) { sent = false; code = ""; account.message = nil; focused = true }
                         Button(copy("Send another email", "إرسال الرسالة مجددًا")) { send() }
                     } else {
@@ -229,11 +239,11 @@ private struct WelcomeEmailView: View {
                     if let message = account.message { Text(message).font(.footnote).foregroundStyle(Color.yqSecondary) }
                 }.padding(26).disabled(account.busy)
             }.background(Color.yqCanvas).navigationBarTitleDisplayMode(.inline)
-                .toolbar { ToolbarItem(placement: .cancellationAction) { Button(copy("Close", "إغلاق")) { dismiss() } } }
-        }.tint(.yqAccentDeep).onChange(of: account.signedIn) { _, signedIn in if signedIn { dismiss() } }
+                .toolbar { ToolbarItem(placement: .cancellationAction) { Button(copy("Close", "إغلاق")) { dismiss() }.disabled(account.busy) } }
+        }.tint(.yqAccentDeep).interactiveDismissDisabled(account.busy)
     }
     private var validEmail: Bool { CompanionAccount.validEmail(email) }
-    private func send() { Task { if await account.sendCode(email: email) { sent = true; focused = true } } }
+    private func send() { Task { if await account.sendCode(email: email) { sent = true; code = ""; focused = true } } }
 }
 
 private struct WelcomePrimaryButton: ButtonStyle {

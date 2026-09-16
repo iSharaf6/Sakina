@@ -30,6 +30,7 @@
 		21781B05AC4291600DB51998 /* DhikrCounterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70A94B4461A20383BBBB9A06 /* DhikrCounterView.swift */; };
 		232C56BA4CFF724D6DCA40A2 /* WidgetSituationTitles.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFB54AAAD40715114555A231 /* WidgetSituationTitles.swift */; };
 		23907591AE08CA0034018149 /* QuranIntegrityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B74A482AD1781F0EA256BB8 /* QuranIntegrityTests.swift */; };
+		261CE9E8446B33BE73884518 /* CompanionAccountTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AB152DCD120331C5F2225C4 /* CompanionAccountTests.swift */; };
 		265ED6CE70F604491EF637A1 /* ScholarContentStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0C6CD8FCAA959C4F43A36DBD /* ScholarContentStore.swift */; };
 		26A57449A3396F90FF00842A /* PrayerLocationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349FECB8CEDBA04B288591DB /* PrayerLocationService.swift */; };
 		2905A9C05FE88ACD92AB75D9 /* QuranCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC07A9B481218431697FE1FB /* QuranCatalog.swift */; };
@@ -103,6 +104,7 @@
 		AC79D8A65E6500B89A0D3772 /* AdhkarBenefitsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A59B3928F6DF7DE45F54EFA /* AdhkarBenefitsView.swift */; };
 		AD738641AE3454FF9383E46B /* DuaReaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 90FD9BF64F072510814F514F /* DuaReaderView.swift */; };
 		AF324F299C71B947BA74BA27 /* MushafPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F10243832D3AA95A34E071CC /* MushafPlayer.swift */; };
+		AF6CFCBD9ED56075A2F0BE39 /* AdhkarRecording.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA03A31E8036925CE0E5E510 /* AdhkarRecording.swift */; };
 		B0BAC370820CBB3EFBD6708E /* WidgetCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FA82190C9CFDC6D6E8CA9C4C /* WidgetCollectionView.swift */; };
 		B301F8E0C12014A55226A101 /* CompanionAccount.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6A50076D5F21B54562528153 /* CompanionAccount.swift */; };
 		B52CCE130043C3E5E055F83D /* IndoPak-Author-Notice.txt in Resources */ = {isa = PBXBuildFile; fileRef = 94675C84A6ECD9806564E523 /* IndoPak-Author-Notice.txt */; };
@@ -187,6 +189,7 @@
 		091EF70E03B8E1FAE35CF613 /* DuaCollectionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DuaCollectionTests.swift; sourceTree = "<group>"; };
 		09DCBC0B6FE330B25F3B29ED /* QiblaView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QiblaView.swift; sourceTree = "<group>"; };
 		09FE0BD71D545F31615C7C98 /* IndoPak-Provenance.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "IndoPak-Provenance.txt"; sourceTree = "<group>"; };
+		0AB152DCD120331C5F2225C4 /* CompanionAccountTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompanionAccountTests.swift; sourceTree = "<group>"; };
 		0C6CD8FCAA959C4F43A36DBD /* ScholarContentStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScholarContentStore.swift; sourceTree = "<group>"; };
 		10407D749116AC62072CC482 /* IndoPak-Embedded-Notice.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = "IndoPak-Embedded-Notice.txt"; sourceTree = "<group>"; };
 		11E64B3D2B2CFAC3B5817B80 /* PrivacyPolicyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyPolicyView.swift; sourceTree = "<group>"; };
@@ -290,6 +293,7 @@
 		DFB54AAAD40715114555A231 /* WidgetSituationTitles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetSituationTitles.swift; sourceTree = "<group>"; };
 		DFCBD69B0913648D27A8A02D /* AppIcon60x60@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "AppIcon60x60@3x.png"; sourceTree = "<group>"; };
 		E3D2AA171C71838421481B0E /* QiblaDirection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QiblaDirection.swift; sourceTree = "<group>"; };
+		EA03A31E8036925CE0E5E510 /* AdhkarRecording.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdhkarRecording.swift; sourceTree = "<group>"; };
 		EC9746D7D1E2D0B74D8B6312 /* dua-rewards.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = "dua-rewards.json"; sourceTree = "<group>"; };
 		ECB5E2EF7CA4516C16784B48 /* MushafPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MushafPageView.swift; sourceTree = "<group>"; };
 		ED29127BA467D63045423033 /* HafsSmart.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = HafsSmart.ttf; sourceTree = "<group>"; };
@@ -327,6 +331,7 @@
 		0B0686EE7B77AE81B240CB33 /* SakinaTests */ = {
 			isa = PBXGroup;
 			children = (
+				0AB152DCD120331C5F2225C4 /* CompanionAccountTests.swift */,
 				6C729585E6BCB69CF1C53D80 /* CompanionExperienceTests.swift */,
 				08BCB593D183591E26DE5FB7 /* ContentIntegrityTests.swift */,
 				091EF70E03B8E1FAE35CF613 /* DuaCollectionTests.swift */,
@@ -407,6 +412,7 @@
 		38A2A38FC8AA0501536C7A44 /* Audio */ = {
 			isa = PBXGroup;
 			children = (
+				EA03A31E8036925CE0E5E510 /* AdhkarRecording.swift */,
 				906B8ED6831DC00BB8842680 /* RecitationCache.swift */,
 				D1EFDB8F8C78374354ED876F /* RecitationPlayer.swift */,
 			);
@@ -781,6 +787,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				261CE9E8446B33BE73884518 /* CompanionAccountTests.swift in Sources */,
 				C5FD390540CCA5C7ECFD5B44 /* CompanionExperienceTests.swift in Sources */,
 				2B2C96A6903E9C8219325E58 /* ContentIntegrityTests.swift in Sources */,
 				F80D8D20BAECC03475FEA5C4 /* DuaCollectionTests.swift in Sources */,
@@ -817,6 +824,7 @@
 			files = (
 				E4DACF7F33F1A2DEB05EC6D9 /* AboutView.swift in Sources */,
 				AC79D8A65E6500B89A0D3772 /* AdhkarBenefitsView.swift in Sources */,
+				AF6CFCBD9ED56075A2F0BE39 /* AdhkarRecording.swift in Sources */,
 				1E9208D4490881F96B16D13D /* AppSettings.swift in Sources */,
 				83D618E0890F94D7DB94867F /* ArabicReflections.swift in Sources */,
 				5E5F25E6ED7FAFE8243C0DD0 /* ArabicSituationTitles.swift in Sources */,
@@ -988,7 +996,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = U9Z36KR28N;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -1070,7 +1078,7 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = U9Z36KR28N;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
