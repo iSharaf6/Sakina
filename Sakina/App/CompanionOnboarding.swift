@@ -206,7 +206,7 @@ private struct WelcomeEmailView: View {
                     CompanionIllustration(artwork: .privacy, size: 76)
                     Text(sent ? copy("Check your inbox.", "تفقّد بريدك الإلكتروني.") : copy("Your email. You’re in.", "سجّل الدخول ببريدك."))
                         .font(.system(size: 32, weight: .semibold, design: .serif))
-                    Text(sent ? copy("Open the sign-in email sent to \(email), then tap its link on this iPhone.", "افتح رسالة تسجيل الدخول المرسلة إلى \(email)، واضغط على الرابط من هذا الهاتف.") : copy("New here or returning? Use your email to sign in. No password to remember.", "سواء كنت جديدًا أو لديك حساب، سجّل الدخول ببريدك الإلكتروني دون الحاجة إلى كلمة مرور."))
+                    Text(sent ? copy("Open the email sent to \(email). Tap its link on this iPhone, or enter the code below.", "افتح الرسالة المرسلة إلى \(email). اضغط على الرابط من هذا الهاتف، أو أدخل الرمز أدناه.") : copy("New here or returning? Use your email to sign in. No password to remember.", "سواء كنت جديدًا أو لديك حساب، سجّل الدخول ببريدك الإلكتروني دون الحاجة إلى كلمة مرور."))
                         .font(.body).foregroundStyle(Color.yqSecondary)
                     if sent {
                         Text(copy("Have a code instead? Enter it below.", "هل وصلك رمز تحقق بدلًا من رابط؟ أدخله هنا.")).font(.footnote).foregroundStyle(Color.yqSecondary)
@@ -233,7 +233,7 @@ private struct WelcomeEmailView: View {
         }.tint(.yqAccentDeep).onChange(of: account.signedIn) { _, signedIn in if signedIn { dismiss() } }
     }
     private var validEmail: Bool { CompanionAccount.validEmail(email) }
-    private func send() { Task { if await account.sendCode(email: email, creating: true) { sent = true; focused = true } } }
+    private func send() { Task { if await account.sendCode(email: email) { sent = true; focused = true } } }
 }
 
 private struct WelcomePrimaryButton: ButtonStyle {
