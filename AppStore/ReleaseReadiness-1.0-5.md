@@ -53,3 +53,7 @@ The metadata-audit.py script audited the explicit build-5 JSON fields: zero crit
 - Supabase library migration is deployed. `supabase/tests/account_library_isolation.sql` passed against that backend in a rolled-back subtransaction, covering own-account operations, stale revisions, cross-account reads/writes and identity assertions, anonymous access, invalid payloads, and deletion cascade. No synthetic users or documents were retained.
 - Live simulator: Sources & privacy stays open from Your space; the signed-out gate exposes Apple, Google and email with privacy/sources links and no guest entry; dark widget preview has an intact transparent silhouette. Existing automated coverage also checks widget alpha borders and localized sharing metadata.
 - These checks do not claim a real two-iPhone authenticated sync walkthrough, an App Store upload, an updated App Store privacy declaration, or review submission. Those remain separate release gates above.
+
+## Signed build and phone installation
+
+Release archive and release-testing export succeeded without compiler warnings. The exported app passed strict codesign verification and reports version 1.0 (5). Build 5 was installed on EZY at 15:44 AEST on 17 September 2026. Archive: `build/Haneen-1.0-5.xcarchive`; device export: `build/Haneen-1.0-5-Device/Haneen.ipa`. Physical installation is not evidence that the owner has completed the new migration/sign-in/sync walkthrough. This build has not been uploaded to App Store Connect or submitted for review.
