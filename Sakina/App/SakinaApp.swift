@@ -12,6 +12,9 @@ struct SakinaApp: App {
             } else if ProcessInfo.processInfo.arguments.contains("-yqWidgetCollection") {
                 NavigationStack { WidgetCollectionView() }
                     .preferredColorScheme(ProcessInfo.processInfo.arguments.contains("-yqDarkPreview") ? .dark : .light)
+            } else if ProcessInfo.processInfo.arguments.contains("-yqAccountWelcome") {
+                AccountWelcomeView(language: .english, name: "Islam Sharaf", email: "name@example.com", isBusy: false,
+                                   onContinue: {}, onSwitchAccount: {}, onSources: {})
             } else if ProcessInfo.processInfo.arguments.contains("-yqPrayerCards") {
                 CompanionPrayerCardGallery()
             } else if ProcessInfo.processInfo.arguments.contains("-yqScreen") || ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil {
@@ -45,7 +48,7 @@ struct RootView: View {
     @Environment(\.scenePhase) private var scenePhase
     @AppStorage(SettingsKeys.appLanguage) private var languageRaw = AppLanguage.english.rawValue
     @AppStorage(PracticeLog.key) private var practiceLogRaw = ""
-    @AppStorage(MushafPreferences.themeKey) private var theme: MushafPreferences.Theme = .system
+    @AppStorage(MushafPreferences.themeKey) private var theme: MushafPreferences.Theme = .light
     @State private var selection: Tab = .home
     @State private var homePath = NavigationPath()
     @State private var explorePath = NavigationPath()
@@ -104,6 +107,11 @@ struct RootView: View {
             LibraryView()
                 .tabItem { tabLabel(copy("Saved", "المحفوظات"), symbol: "bookmark", tab: .saved) }
                 .tag(Tab.saved)
+        }
+        .environment(\.openQuranTab) { key in
+            if let key { quranKey = key }
+            quranPath = NavigationPath()
+            selection = .quran
         }
         .haneenPlaybackAccessory(language: language, onOpenQuran: { key in
             quranKey = key

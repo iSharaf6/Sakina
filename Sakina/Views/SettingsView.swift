@@ -29,7 +29,7 @@ struct SettingsView: View {
     @AppStorage(SettingsKeys.prayerHighLatitude) private var highLatitudeRaw = PrayerHighLatitudePreference.automatic.rawValue
     @AppStorage(Haptics.enabledKey) private var hapticsEnabled = true
 
-    @AppStorage(MushafPreferences.themeKey) private var theme: MushafPreferences.Theme = .system
+    @AppStorage(MushafPreferences.themeKey) private var theme: MushafPreferences.Theme = .light
     @State private var showReaderAppearance = false
     @State private var showAbout = false
     @State private var resetConfirmation = false

@@ -502,9 +502,7 @@ struct DuaListRow: View {
             }
             Spacer(minLength: 0)
             if saved {
-                Image(systemName: "bookmark.fill")
-                    .font(.system(size: 13, weight: .semibold))
-                    .foregroundStyle(Color.yqAccent)
+                CompanionIllustration(artwork: .saved, size: 26)
             }
             Chevron()
         }

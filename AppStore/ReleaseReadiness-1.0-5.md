@@ -57,3 +57,9 @@ The metadata-audit.py script audited the explicit build-5 JSON fields: zero crit
 ## Signed build and phone installation
 
 Release archive and release-testing export succeeded without compiler warnings. The exported app passed strict codesign verification and reports version 1.0 (5). Build 5 was installed on EZY at 15:44 AEST on 17 September 2026. Archive: `build/Haneen-1.0-5.xcarchive`; device export: `build/Haneen-1.0-5-Device/Haneen.ipa`. Physical installation is not evidence that the owner has completed the new migration/sign-in/sync walkthrough. This build has not been uploaded to App Store Connect or submitted for review.
+
+## Build 6 (17 September 2026, evening)
+
+Changes since build 5: companion illustrations replace the remaining semantic SF Symbols (category symbols, du'a reader save/text-size, Sources & privacy, privacy policy, reward labels); light appearance is the default; Home's Mushaf tile opens the full Qur'an tab reader; complete Qur'anic adhkar draw from the bundled mushaf text with ayah-number markers; `sleep-ayat-al-kursi` had two missing fathas and now matches quran.json; first sign-in shows an animated welcome with the backup disclosure; the sign-in email template was redesigned with the logo (not yet pasted into Supabase, logo not yet deployed).
+
+Evidence: simulator build passed; 165 of 166 tests passed, the one failure being `testPersonalHubObservesLocalLibraryLanguageAndSignOut`, which also fails on the committed build-5 source. Release archive `build/Haneen-1.0-6.xcarchive` succeeded and reports 1.0 (6). Not exported, uploaded, installed on a phone or submitted. All open gates in the table above still apply.

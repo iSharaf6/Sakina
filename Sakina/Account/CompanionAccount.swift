@@ -108,6 +108,22 @@ final class CompanionAccount: ObservableObject {
         return digits
     }
 
+    /// App Review cannot receive a one-time email, so this single address signs in with the password
+    /// supplied in App Review Information. Nobody else is shown a password field.
+    nonisolated static let reviewEmail = "haneen.app.contact+review@gmail.com"
+    nonisolated static func isReviewEmail(_ value: String) -> Bool {
+        value.trimmingCharacters(in: .whitespacesAndNewlines).lowercased() == reviewEmail
+    }
+
+    func signInReviewer(email: String, password: String) async {
+        guard Self.isReviewEmail(email), !password.isEmpty, let client = begin(.verification) else { return }
+        defer { finishOperation() }
+        do {
+            _ = try await client.auth.signIn(email: Self.reviewEmail, password: password)
+            synchronizeSession()
+        } catch { message = authMessage(error, emailFlow: true, fallback: copy("That password didn’t work. Check it and try again.", "كلمة المرور غير صحيحة. تحقق منها وحاول مرة أخرى.")) }
+    }
+
     /// One path for new and returning people: Supabase creates the account on first use, so
     /// nobody has to know whether they already have one.
     func sendCode(email: String) async -> Bool {

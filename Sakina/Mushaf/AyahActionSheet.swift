@@ -788,14 +788,12 @@ struct AyahSelectionBar: View {
 /// Keep library actions in the same illustrated family as the rest of Haneen.
 private func ayahArtwork(for symbol: String) -> CompanionArtwork {
     switch symbol {
-    case "cloud.rain.fill": return .sad
-    case "sun.max.fill": return .hopeful
-    case "leaf.fill": return .grateful
     case "heart", "heart.fill": return .happy
     case "play.fill", "pause.fill", "speaker.wave.2.fill": return .reciter
     case "square.and.arrow.up": return .share
     case "square.and.pencil", "note.text", "pencil", "plus": return .journal
     case "ellipsis": return .help
-    default: return CompanionArtwork.badge(for: symbol) ?? .saved
+    case "bookmark", "bookmark.fill": return .saved
+    default: return AyahCategorySymbols.all.contains(symbol) ? .category(for: symbol) : (CompanionArtwork.badge(for: symbol) ?? .saved)
     }
 }

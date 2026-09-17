@@ -63,9 +63,7 @@ struct HaneenCreatorCard: View {
         HStack(spacing: 12) {
             Text(title).font(.yqSubheadBold)
             Spacer(minLength: 12)
-            Image(systemName: symbol)
-                .font(.system(size: 14, weight: .semibold))
-                .accessibilityHidden(true)
+            CompanionIllustration(artwork: CompanionArtwork.badge(for: symbol) ?? .social, size: 28)
         }
         .foregroundStyle(Color.yqAccentDeep)
         .padding(.vertical, 13)

@@ -41,7 +41,7 @@ struct MushafView: View {
     @ObservedObject private var player = MushafPlayer.shared
 
     @AppStorage(MushafPreferences.presentationKey) private var presentation: MushafPreferences.Presentation = .traditional
-    @AppStorage(MushafPreferences.themeKey) private var theme: MushafPreferences.Theme = .system
+    @AppStorage(MushafPreferences.themeKey) private var theme: MushafPreferences.Theme = .light
     @AppStorage(SettingsKeys.transliterationVisible) private var showTransliteration = true
     @AppStorage("yaqeen.mushaf.didSelectAyah") private var didSelectAyah = false
     @AppStorage(MushafPreferences.layoutKey) private var layout: MushafPreferences.Layout = .page

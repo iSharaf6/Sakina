@@ -76,14 +76,13 @@ struct DuaReaderView: View {
                 }
                 ToolbarItemGroup(placement: .topBarTrailing) {
                     Button { showReadingOptions = true } label: {
-                        Image(systemName: "textformat.size")
+                        CompanionToolbarIcon(artwork: .textSize)
                     }
                     .accessibilityLabel(copy("Du’a display options", "خيارات عرض الدعاء"))
                     Button {
                         savedRaw = DuaCollection.toggling(dua.id, in: savedRaw)
                     } label: {
-                        Image(systemName: isSaved ? "bookmark.fill" : "bookmark")
-                            .contentTransition(.symbolEffect(.replace))
+                        CompanionToolbarIcon(artwork: .saved, active: isSaved)
                     }
                     .accessibilityLabel(isSaved ? copy("Remove saved du’a", "إلغاء حفظ الدعاء") : copy("Save du’a", "حفظ الدعاء"))
                 }
@@ -295,6 +294,7 @@ struct DuaReaderView: View {
 
     private func arabicText(_ entry: GuidanceSupplication) -> Text {
         if entry.kind == .quranic {
+            if let passage = QuranTextRenderer.swiftUIPassage(for: entry, size: 30 * arabicScale) { return Text(passage) }
             return Text(QuranTextRenderer.swiftUIArabic(entry.arabic, size: 30 * arabicScale))
         }
         return Text(entry.arabic).font(.arabicProse(proseSize * arabicScale))

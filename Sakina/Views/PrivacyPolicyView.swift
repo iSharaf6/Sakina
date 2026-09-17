@@ -155,7 +155,7 @@ struct PrivacyPolicyView: View {
 
     private func section(symbol: String, title: String, body: String) -> some View {
         VStack(alignment: .leading, spacing: 10) {
-            Label(title, systemImage: symbol)
+            CompanionLabel(title: title, artwork: CompanionArtwork.badge(for: symbol) ?? .help)
                 .font(.yqSubheadBold)
                 .foregroundStyle(Color.sakinaInk)
             Text(body)

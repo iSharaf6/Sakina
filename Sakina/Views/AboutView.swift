@@ -123,7 +123,7 @@ struct AboutView: View {
 
     private func aboutCard(symbol: String, title: String, body: String) -> some View {
         VStack(alignment: .leading, spacing: 12) {
-            Label(title, systemImage: symbol)
+            CompanionLabel(title: title, artwork: CompanionArtwork.badge(for: symbol) ?? .help)
                 .font(.yqSubheadBold)
                 .foregroundStyle(Color.sakinaInk)
             Text(body)

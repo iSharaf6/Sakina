@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="color-scheme" content="light">
     <meta name="supported-color-schemes" content="light">
-    <title>Sign in to Haneen | تسجيل الدخول إلى حنين</title>
+    <title>Confirm it’s you | تأكيد هويتك</title>
   </head>
   <body style="margin:0;padding:0;background-color:#f3f5f4;color:#101714;font-family:-apple-system,BlinkMacSystemFont,'SF Pro Text','Segoe UI',Arial,sans-serif;">
-    <div style="display:none;max-height:0;overflow:hidden;opacity:0;">Your one-time Haneen sign-in code: {{ .Token }} · رمز تسجيل الدخول إلى حنين</div>
+    <div style="display:none;max-height:0;overflow:hidden;opacity:0;">Your Haneen verification code: {{ .Token }} · رمز التحقق في حنين</div>
     <table role="presentation" width="100%" style="width:100%;border-collapse:collapse;background-color:#f3f5f4;">
       <tr>
         <td align="center" style="padding:32px 16px;">
@@ -21,22 +21,15 @@
             </tr>
             <tr>
               <td align="center" style="padding:26px 28px 0;">
-                <h1 style="margin:0;font-size:26px;line-height:1.25;font-weight:800;letter-spacing:-0.4px;color:#101714;">Your sign-in code</h1>
-                <p lang="ar" dir="rtl" style="margin:6px 0 0;font-size:20px;line-height:1.6;font-weight:700;color:#101714;">رمز تسجيل الدخول</p>
+                <h1 style="margin:0;font-size:26px;line-height:1.25;font-weight:800;letter-spacing:-0.4px;color:#101714;">Confirm it’s you</h1>
+                <p lang="ar" dir="rtl" style="margin:6px 0 0;font-size:20px;line-height:1.6;font-weight:700;color:#101714;">تأكيد هويتك</p>
               </td>
             </tr>
             <tr>
               <td align="center" style="padding:20px 28px 0;">
                 <p dir="ltr" style="margin:0;padding:20px 8px;border-radius:18px;background-color:#e6f6ec;color:#15803d;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:34px;line-height:1.2;font-weight:800;letter-spacing:6px;white-space:nowrap;">{{ .Token }}</p>
-                <p style="margin:12px 0 0;font-size:15px;line-height:1.6;color:#616b66;">Enter it in Haneen, or tap the button on your iPhone.</p>
-                <p lang="ar" dir="rtl" style="margin:2px 0 0;font-size:15px;line-height:1.8;color:#616b66;">أدخله في حنين، أو اضغط الزر من هاتفك.</p>
-              </td>
-            </tr>
-            <tr>
-              <td align="center" style="padding:22px 28px 0;">
-                <a href="{{ .ConfirmationURL }}" style="display:block;padding:17px 20px;border-radius:16px;background-color:#16a34a;color:#ffffff;text-align:center;text-decoration:none;font-size:17px;line-height:1.5;font-weight:700;">
-                  Sign in to Haneen &nbsp;·&nbsp; <span lang="ar" dir="rtl">تسجيل الدخول</span>
-                </a>
+                <p style="margin:12px 0 0;font-size:15px;line-height:1.6;color:#616b66;">Enter this code in Haneen to continue. If you didn’t start this, someone else may be using your account.</p>
+                <p lang="ar" dir="rtl" style="margin:2px 0 0;font-size:15px;line-height:1.8;color:#616b66;">أدخل هذا الرمز في حنين للمتابعة. إذا لم تبدأ هذا الإجراء فقد يستخدم شخص آخر حسابك.</p>
               </td>
             </tr>
             <tr>
@@ -44,12 +37,12 @@
                 <table role="presentation" width="100%" style="width:100%;border-collapse:collapse;border-top:1px solid #e6eae8;">
                   <tr>
                     <td style="padding:18px 0 0;">
-                      <p style="margin:0;font-size:13px;line-height:1.65;color:#616b66;">The code and link work once and expire soon. Keep them private. If you didn’t ask for this email, you can ignore it.</p>
+                      <p style="margin:0;font-size:13px;line-height:1.65;color:#616b66;">The code works once and expires soon. Keep it private. If you didn’t ask for this email, you can ignore it.</p>
                     </td>
                   </tr>
                   <tr>
                     <td lang="ar" dir="rtl" style="padding:8px 0 30px;text-align:right;">
-                      <p style="margin:0;font-size:14px;line-height:1.85;color:#616b66;">الرمز والرابط صالحان لمرة واحدة ولمدة قصيرة، فلا تشاركهما مع أحد. إذا لم تطلب هذه الرسالة فيمكنك تجاهلها.</p>
+                      <p style="margin:0;font-size:14px;line-height:1.85;color:#616b66;">الرمز صالح لمرة واحدة ولمدة قصيرة، فلا تشاركه مع أحد. إذا لم تطلب هذه الرسالة فيمكنك تجاهلها.</p>
                     </td>
                   </tr>
                 </table>

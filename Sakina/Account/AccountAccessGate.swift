@@ -21,7 +21,7 @@ enum AccountAccessState: Equatable {
 struct AccountAccessGate: View {
     @Environment(\.modelContext) private var context
     @AppStorage(SettingsKeys.appLanguage) private var languageRaw = AppLanguage.english.rawValue
-    @AppStorage(MushafPreferences.themeKey) private var theme: MushafPreferences.Theme = .system
+    @AppStorage(MushafPreferences.themeKey) private var theme: MushafPreferences.Theme = .light
     @ObservedObject private var account: CompanionAccount
     @ObservedObject private var sync: AccountLibrarySync
     @State private var activationFinishedID: UUID?
@@ -54,7 +54,15 @@ struct AccountAccessGate: View {
                 case .ready:
                     RootView().id(account.userID)
                 case .importChoice:
-                    preparationScreen(isImportChoice: true, isBusy: resolvingImport)
+                    if sync.hasPreviousDeviceLibrary {
+                        preparationScreen(isImportChoice: true, isBusy: resolvingImport)
+                    } else {
+                        AccountWelcomeView(language: language, name: account.displayName, email: account.email,
+                                           isBusy: resolvingImport || account.busy,
+                                           onContinue: { resolveImport(include: false) },
+                                           onSwitchAccount: { Task { await account.signOut() } },
+                                           onSources: { showSources = true })
+                    }
                 case .preparing:
                     preparationScreen(isImportChoice: false, isBusy: true)
                 case .unavailable:
@@ -176,5 +184,126 @@ struct AccountAccessGate: View {
             await sync.resolveLegacyImport(include: include)
             resolvingImport = false
         }
+    }
+}
+
+
+/// The first screen after a new sign-in: a short animated welcome that also
+/// carries the backup disclosure the account needs before its library opens.
+struct AccountWelcomeView: View {
+    let language: AppLanguage
+    let name: String?
+    let email: String?
+    let isBusy: Bool
+    let onContinue: () -> Void
+    let onSwitchAccount: () -> Void
+    let onSources: () -> Void
+
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
+    @State private var stage = 0
+    @State private var floating = false
+
+    private var copy: AppCopy { AppCopy(language: language) }
+    private var firstName: String? {
+        name?.split(separator: " ").first.map(String.init).flatMap { $0.isEmpty ? nil : $0 }
+    }
+    private var promises: [(CompanionArtwork, String)] {
+        [(.saved, copy("Your ayat, du’as and notes stay with your account", "آياتك وأدعيتك وملاحظاتك محفوظة مع حسابك")),
+         (.backup, copy("Synced across your devices", "تتزامن بين أجهزتك")),
+         (.privacy, copy("No ads, no tracking", "بلا إعلانات ولا تتبّع"))]
+    }
+
+    var body: some View {
+        VStack(spacing: 0) {
+            Spacer(minLength: 24)
+            ZStack {
+                Circle().fill(Color.yqAccentTint)
+                    .frame(width: 190, height: 190)
+                    .scaleEffect(stage >= 1 ? 1 : 0.4)
+                    .opacity(stage >= 1 ? 1 : 0)
+                CompanionIllustration(artwork: .happy, size: 168)
+                    .scaleEffect(stage >= 1 ? 1 : 0.6)
+                    .opacity(stage >= 1 ? 1 : 0)
+                    .offset(y: floating ? -5 : 5)
+            }
+            .accessibilityHidden(true)
+
+            VStack(spacing: 8) {
+                Text(copy("Assalamu alaykum", "السلام عليكم") + (firstName.map { language == .arabic ? "، \($0)" : ", \($0)" } ?? ""))
+                    .font(.yqTitle2).foregroundStyle(Color.yqInk)
+                    .multilineTextAlignment(.center)
+                    .accessibilityAddTraits(.isHeader)
+                Text(copy("Welcome to Haneen. Your library is ready.", "أهلًا بك في حنين. محفوظاتك جاهزة."))
+                    .font(.yqBody).foregroundStyle(Color.yqSecondary)
+                    .multilineTextAlignment(.center)
+            }
+            .padding(.top, 22)
+            .opacity(stage >= 2 ? 1 : 0)
+            .offset(y: stage >= 2 ? 0 : 14)
+
+            VStack(alignment: .leading, spacing: 4) {
+                ForEach(Array(promises.enumerated()), id: \.offset) { index, promise in
+                    HStack(spacing: 10) {
+                        CompanionIllustration(artwork: promise.0, size: 40)
+                        Text(promise.1).font(.yqSubheadMedium).foregroundStyle(Color.yqInk)
+                            .fixedSize(horizontal: false, vertical: true)
+                        Spacer(minLength: 0)
+                    }
+                    .opacity(stage >= 3 + index ? 1 : 0)
+                    .offset(x: stage >= 3 + index ? 0 : (language == .arabic ? -18 : 18))
+                }
+            }
+            .padding(14)
+            .yqCard(cornerRadius: 20)
+            .padding(.top, 26)
+            .opacity(stage >= 3 ? 1 : 0)
+
+            Spacer(minLength: 20)
+
+            VStack(spacing: 10) {
+                Button(action: onContinue) {
+                    ZStack {
+                        PrimaryButton(title: isBusy ? "" : copy("Begin", "ابدأ"),
+                                      symbol: isBusy ? nil : (language == .arabic ? "arrow.left" : "arrow.right"))
+                        if isBusy { ProgressView().tint(Color.yqOnAccent) }
+                    }
+                }
+                .buttonStyle(.yqPress)
+                .disabled(isBusy)
+                .accessibilityIdentifier("account.start-library")
+
+                Text(copy("Cloud backups are not end-to-end encrypted. You can delete your account and its library any time in Your space.",
+                          "النسخ السحابية ليست مشفّرة من طرف إلى طرف. يمكنك حذف حسابك ومحفوظاته في أي وقت من «مساحتك»."))
+                    .font(.yqCaption).foregroundStyle(Color.yqSecondary)
+                    .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
+
+                HStack(spacing: 18) {
+                    Button(email.map { copy("Not \($0)?", "لست \($0)؟") } ?? copy("Use another account", "استخدام حساب آخر"),
+                           action: onSwitchAccount).disabled(isBusy)
+                        .lineLimit(1).minimumScaleFactor(0.8)
+                    Link(copy("Privacy", "الخصوصية"), destination: URL(string: "https://isharaf6.github.io/Sakina/privacy.html")!)
+                    Button(copy("Sources", "المصادر"), action: onSources)
+                }
+                .font(.yqCaption).frame(minHeight: 44)
+            }
+            .opacity(stage >= 6 ? 1 : 0)
+        }
+        .padding(.horizontal, 26)
+        .frame(maxWidth: 520).frame(maxWidth: .infinity, maxHeight: .infinity)
+        .yqScreen()
+        .tint(.yqAccentDeep)
+        .accessibilityIdentifier("account.import-choice")
+        .task { await reveal() }
+    }
+
+    private func reveal() async {
+        guard !reduceMotion else { stage = 6; return }
+        for step in 1...6 {
+            withAnimation(.spring(response: 0.5, dampingFraction: step == 1 ? 0.62 : 0.85)) { stage = step }
+            if step == 1 { Haptics.press() }
+            try? await Task.sleep(for: .milliseconds(step == 1 ? 420 : 160))
+        }
+        withAnimation(.easeInOut(duration: 2.4).repeatForever(autoreverses: true)) { floating = true }
     }
 }

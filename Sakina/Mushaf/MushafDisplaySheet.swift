@@ -4,7 +4,7 @@ import SwiftUI
 struct MushafDisplaySheet: View {
     let language: AppLanguage
     @AppStorage(MushafPreferences.presentationKey) private var presentation: MushafPreferences.Presentation = .traditional
-    @AppStorage(MushafPreferences.themeKey) private var theme: MushafPreferences.Theme = .system
+    @AppStorage(MushafPreferences.themeKey) private var theme: MushafPreferences.Theme = .light
     @AppStorage(MushafPreferences.layoutKey) private var layout: MushafPreferences.Layout = .page
     @AppStorage(MushafPreferences.directionKey) private var direction: MushafPreferences.Direction = .horizontal
     @AppStorage(MushafPreferences.scriptKey) private var script: QuranScript = .uthmani

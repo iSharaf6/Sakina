@@ -71,15 +71,6 @@ struct CompanionOnboarding: View {
                     }.multilineTextAlignment(.center).padding(.horizontal, 20)
 
                     VStack(spacing: 12) {
-                        if !account.signedIn {
-                            VStack(spacing: 6) {
-                                Text(copy("Your library, wherever you return", "محفوظاتك معك أينما عدت"))
-                                    .font(.subheadline.weight(.semibold))
-                                Text(copy("Sign in to keep your saved ayat, du’as, notes, reflections and reading place together across your devices. New or returning, choose the same Continue option.",
-                                          "سجّل الدخول لتبقى آياتك وأدعيتك وملاحظاتك وتأملاتك وموضع قراءتك معك عبر أجهزتك. سواء كنت جديدًا أو عائدًا، اختر طريقة المتابعة نفسها."))
-                                    .font(.footnote).foregroundStyle(ink.opacity(0.76))
-                            }.multilineTextAlignment(.center).padding(.bottom, 4)
-                        }
                         if account.signedIn {
                             Button(copy("Continue to Haneen", "المتابعة إلى حنين"), action: finish).font(.headline)
                                 .frame(maxWidth: .infinity).frame(height: 54)
@@ -109,9 +100,10 @@ struct CompanionOnboarding: View {
                         if let message = account.message, !showEmail {
                             Text(message).font(.footnote).multilineTextAlignment(.center).accessibilityAddTraits(.updatesFrequently)
                         }
-                        Text(copy("Your library is stored securely with your account on Haneen’s servers. Cloud backups are not end-to-end encrypted. Daily goals, dhikr counts and prayer settings stay on this iPhone.",
-                                  "تُحفظ محفوظاتك بأمان مع حسابك على خوادم حنين. النسخ السحابية ليست مشفّرة من طرف إلى طرف. وتبقى أهداف اليوم وعدّادات الذكر وإعدادات الصلاة على هذا الهاتف."))
-                            .font(.caption).foregroundStyle(ink.opacity(0.72)).multilineTextAlignment(.center)
+                        if !account.signedIn {
+                            Text(copy("Sign in to keep your saved library with you.", "سجّل الدخول لتبقى محفوظاتك معك."))
+                                .font(.caption).foregroundStyle(ink.opacity(0.65)).multilineTextAlignment(.center)
+                        }
                         HStack(spacing: 18) {
                             Link(copy("Privacy", "الخصوصية"), destination: URL(string: "https://isharaf6.github.io/Sakina/privacy.html")!)
                             Button(copy("Sources", "المصادر")) { showPrivacy = true }
@@ -244,6 +236,7 @@ private struct WelcomeEmailView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var email = ""
     @State private var code = ""
+    @State private var password = ""
     @State private var sent = false
     @FocusState private var focused: Bool
     var body: some View {
@@ -267,10 +260,18 @@ private struct WelcomeEmailView: View {
                     } else {
                         TextField(copy("Email address", "البريد الإلكتروني"), text: $email).textContentType(.emailAddress).keyboardType(.emailAddress)
                             .textInputAutocapitalization(.never).autocorrectionDisabled().focused($focused)
-                            .submitLabel(.go).onSubmit { if validEmail { send() } }
+                            .submitLabel(.go).onSubmit { if validEmail, !CompanionAccount.isReviewEmail(email) { send() } }
                             .padding(18).background(Color.yqFill, in: RoundedRectangle(cornerRadius: 16))
                             .accessibilityIdentifier("auth.email")
-                        Button(copy("Continue", "متابعة")) { send() }.buttonStyle(WelcomePrimaryButton()).disabled(!validEmail)
+                        if CompanionAccount.isReviewEmail(email) {
+                            SecureField(copy("Password", "كلمة المرور"), text: $password).textContentType(.password)
+                                .padding(18).background(Color.yqFill, in: RoundedRectangle(cornerRadius: 16))
+                                .accessibilityIdentifier("auth.review-password")
+                            Button(copy("Sign in", "تسجيل الدخول")) { Task { await account.signInReviewer(email: email, password: password) } }
+                                .buttonStyle(WelcomePrimaryButton()).disabled(password.isEmpty)
+                        } else {
+                            Button(copy("Continue", "متابعة")) { send() }.buttonStyle(WelcomePrimaryButton()).disabled(!validEmail)
+                        }
                     }
                     if account.busy { ProgressView() }
                     if let message = account.message { Text(message).font(.footnote).foregroundStyle(Color.yqSecondary) }

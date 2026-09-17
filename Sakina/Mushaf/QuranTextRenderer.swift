@@ -575,6 +575,58 @@ enum QuranTextRenderer {
     }
 }
 
+// MARK: - Passages quoted outside the reader
+
+extension QuranTextRenderer {
+    /// Qur'an passages whose entry is sourced to the hadith that prescribes
+    /// them, so the reference is not in `source.number`.
+    private static let passageByEntry: [String: String] = [
+        "healing-fatihah-as-ruqyah": "1:1-7",
+        "healing-three-quls": "112:1-114:6", "afterSalah-three-quls": "112:1-114:6",
+        "healing-ayat-al-kursi": "2:255", "afterSalah-ayat-al-kursi": "2:255",
+    ]
+
+    /// Ayah keys for "2:255", "3:190-194" or "112:1-114:6"; nil for anything else.
+    static func passageKeys(_ reference: String) -> [String]? {
+        let ends = reference.split(separator: "-", maxSplits: 1).map(String.init)
+        func pair(_ text: String, surah fallback: Int?) -> (Int, Int)? {
+            let parts = text.split(separator: ":").compactMap { Int($0) }
+            if parts.count == 2, text.split(separator: ":").count == 2 { return (parts[0], parts[1]) }
+            if parts.count == 1, !text.contains(":"), let fallback { return (fallback, parts[0]) }
+            return nil
+        }
+        guard let first = ends.first, let start = pair(first, surah: nil) else { return nil }
+        let end = ends.count == 2 ? pair(ends[1], surah: start.0) : start
+        guard let end, end.0 >= start.0, end.0 - start.0 <= 3 else { return nil }
+        var keys: [String] = []
+        for surah in start.0...end.0 {
+            let ayat = QuranStore.shared.ayat(in: surah)
+            let from = surah == start.0 ? start.1 : 1
+            let to = surah == end.0 ? end.1 : ayat.count
+            guard from >= 1, to >= from, to <= ayat.count else { return nil }
+            keys += (from...to).map { "\(surah):\($0)" }
+        }
+        return keys
+    }
+
+    /// A complete Qur'anic entry drawn ayah by ayah from the bundled mushaf
+    /// text, each with its ayah-number marker, exactly as the reader draws it.
+    /// Excerpts (part of an ayah) return nil and keep their verbatim text.
+    static func swiftUIPassage(for entry: GuidanceSupplication, size: CGFloat, ink: Color = .yqInk) -> AttributedString? {
+        guard entry.kind == .quranic, entry.source.textForm == .complete,
+              let keys = passageKeys(passageByEntry[entry.id] ?? entry.source.number), !keys.isEmpty else { return nil }
+        var result = AttributedString()
+        var previousSurah: Int?
+        for key in keys {
+            guard let ayah = QuranStore.shared.ayah(key) else { return nil }
+            if let previousSurah { result.append(AttributedString(previousSurah == ayah.surah ? " " : "\n")) }
+            result.append(swiftUI(ayah, script: .uthmani, size: size, ink: ink))
+            previousSurah = ayah.surah
+        }
+        return result
+    }
+}
+
 private extension UIColor {
     convenience init(hex: UInt32) {
         self.init(red: CGFloat((hex >> 16) & 0xFF) / 255,

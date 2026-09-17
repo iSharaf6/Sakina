@@ -40,7 +40,7 @@ struct DuaRewardCard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Label(language.pick("Reward & virtue", "الأجر والفضل"), systemImage: "sparkle")
+            CompanionLabel(title: language.pick("Reward & virtue", "الأجر والفضل"), artwork: .praise, size: 30)
                 .font(.yqSubheadBold)
                 .foregroundStyle(Color.yqAccentDeep)
             rewardText(summary: reward.summaryArabic, conditions: reward.conditionsArabic, direction: .rightToLeft)

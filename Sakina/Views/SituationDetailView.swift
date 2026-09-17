@@ -40,6 +40,7 @@ struct SituationDetailView: View {
     private var draftTrimmed: String { draft.trimmingCharacters(in: .whitespacesAndNewlines) }
     private func supplicationArabic(_ supplication: GuidanceSupplication) -> Text {
         if supplication.kind == .quranic {
+            if let passage = QuranTextRenderer.swiftUIPassage(for: supplication, size: 25 * arabicScale, ink: .sakinaInk) { return Text(passage) }
             return Text(QuranTextRenderer.swiftUIArabic(supplication.arabic, size: 25 * arabicScale, ink: .sakinaInk))
         }
         return Text(supplication.arabic).font(.system(size: arabicProseSize * arabicScale, weight: .regular))

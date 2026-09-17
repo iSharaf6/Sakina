@@ -200,9 +200,7 @@ struct CategoryBadge: View {
         ZStack {
             RoundedRectangle(cornerRadius: size * 0.27, style: .continuous)
                 .fill(tint.opacity(0.12))
-            Image(systemName: symbol)
-                .font(.system(size: size * 0.46, weight: .semibold))
-                .foregroundStyle(tint)
+            CompanionIllustration(artwork: .category(for: symbol), size: size * 0.92)
         }
         .frame(width: size, height: size)
         .accessibilityHidden(true)
@@ -335,10 +333,10 @@ private struct AyahLibraryRow: View {
                     .font(.yqCaptionBold)
                     .foregroundStyle(Color.yqSecondary)
                 if mark?.bookmarked == true {
-                    Image(systemName: "bookmark.fill").font(.system(size: 10, weight: .semibold)).foregroundStyle(Color.yqTertiary)
+                    CompanionIllustration(artwork: .saved, size: 20)
                 }
                 if mark?.favourite == true {
-                    Image(systemName: "heart.fill").font(.system(size: 10, weight: .semibold)).foregroundStyle(Color.yqTertiary)
+                    CompanionIllustration(artwork: .happy, size: 20)
                 }
                 Spacer(minLength: 8)
                 Chevron()
@@ -458,12 +456,12 @@ struct CategoryEditorSheet: View {
                         Haptics.press()
                         symbol = candidate
                     } label: {
-                        Image(systemName: candidate)
-                            .font(.system(size: 18, weight: .semibold))
-                            .foregroundStyle(selected ? Color.yqOnAccent : Color.yqInk)
+                        CompanionIllustration(artwork: .category(for: candidate), size: 42)
                             .frame(maxWidth: .infinity)
-                            .frame(height: 46)
-                            .background(selected ? Color.yqAccent : Color.yqFill, in: RoundedRectangle(cornerRadius: 13, style: .continuous))
+                            .frame(height: 50)
+                            .background(selected ? Color.yqAccentTint : Color.yqFill, in: RoundedRectangle(cornerRadius: 13, style: .continuous))
+                            .overlay(RoundedRectangle(cornerRadius: 13, style: .continuous)
+                                .strokeBorder(selected ? Color.yqAccent : .clear, lineWidth: 2))
                             .contentShape(RoundedRectangle(cornerRadius: 13, style: .continuous))
                     }
                     .buttonStyle(.plain)

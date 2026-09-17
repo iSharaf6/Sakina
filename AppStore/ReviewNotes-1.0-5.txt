@@ -2,7 +2,7 @@ Haneen 1.0 (5) — App Review information DRAFT
 
 1. Evidence and reviewer access
 VIDEO EVIDENCE PENDING: Apple's Guideline 2.1 request asks for a physical-iPhone walkthrough on the latest released OS, including launch, registration, returning sign-in and deletion. No waiver has been received.
-REVIEWER ACCESS PENDING: this build requires an account. Provide verified, repeatable reviewer access in App Review Information before submission; no demo credentials are supplied by this draft. Do not rely on the previous guest-access instructions.
+REVIEWER ACCESS: this build requires an account. Tap Continue with email, enter haneen.app.contact+review@gmail.com, then enter the password given in App Review Information > Sign-In Information and tap Sign in. The password field appears only for this review address; every other email receives a one-time link or code. OWNER STEP PENDING: create this user in Supabase and enter its password in App Store Connect before submitting.
 
 2. Purpose and accounts
 Haneen is a free Arabic/English companion for Qur'an, sourced duas/hadith and prayer/dhikr. It is not a medical or counselling service. Apple, Google and email are offered to new and returning users. Email uses a one-time link or code, without a password or separate Sign up selector.

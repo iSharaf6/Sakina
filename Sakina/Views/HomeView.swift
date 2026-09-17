@@ -64,9 +64,7 @@ struct HomeView: View {
                                     .font(.yqSubhead).foregroundStyle(Color.yqSecondary)
                             }
                             Spacer(minLength: 0)
-                            Image(systemName: "square.and.arrow.up")
-                                .foregroundStyle(Color.yqAccentDeep)
-                                .accessibilityHidden(true)
+                            CompanionIllustration(artwork: .share, size: 40)
                         }
                         .padding(16)
                         .yqCard(cornerRadius: 20)
@@ -754,6 +752,7 @@ struct PrayerPermissionCard: View {
 private struct HomePracticeSection: View {
     let language: AppLanguage
     @Environment(\.dynamicTypeSize) private var typeSize
+    @Environment(\.openQuranTab) private var openQuranTab
     @AppStorage(ReadingPlace.key) private var placesRaw = ""
     @AppStorage(PracticeLog.key) private var practiceLogRaw = ""
     private var copy: AppCopy { AppCopy(language: language) }
@@ -859,7 +858,9 @@ private struct HomePracticeSection: View {
                           detail: copy("The benefits of adhkar", "فوائد الأذكار"), artwork: .praise)
             }
             .buttonStyle(.yqPress)
-            NavigationLink { MushafView(language: language, showsTabBar: false) } label: {
+            // The Qur'an tab owns the full reader (pickers, My ayat, player);
+            // a pushed copy inside Home's stack loses those routes.
+            Button { Haptics.press(); openQuranTab(nil) } label: {
                 BadgeTile(symbol: "book.closed.fill", tint: .yqAccent,
                           title: copy("Mushaf", "المصحف"),
                           detail: AyahLibrary.shared.lastReadKey.flatMap { QuranStore.shared.ayah($0)?.reference(language) }
@@ -875,4 +876,16 @@ private struct HomePracticeSection: View {
         }
     }
 
+}
+
+private struct OpenQuranTabKey: EnvironmentKey {
+    static let defaultValue: (String?) -> Void = { _ in }
+}
+
+extension EnvironmentValues {
+    /// Switches to the Qur'an tab, optionally at an ayah key.
+    var openQuranTab: (String?) -> Void {
+        get { self[OpenQuranTabKey.self] }
+        set { self[OpenQuranTabKey.self] = newValue }
+    }
 }

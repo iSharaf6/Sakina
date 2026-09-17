@@ -69,6 +69,55 @@ extension LifeGroup {
     }
 }
 
+/// The twelve category symbols keep their stored names (they sync with the
+/// account library) and draw as twelve distinct companion poses.
+extension CompanionArtwork {
+    static func category(for symbol: String) -> CompanionArtwork {
+        switch symbol {
+        case "folder.fill": return .saved
+        case "heart.fill": return .happy
+        case "cloud.rain.fill": return .sad
+        case "sun.max.fill": return .hopeful
+        case "leaf.fill": return .grateful
+        case "moon.stars.fill": return .sleep
+        case "sparkles": return .praise
+        case "hand.raised.fill": return .istighfar
+        case "drop.fill": return .grieving
+        case "flame.fill": return .angry
+        case "star.fill": return .confident
+        case "bolt.heart.fill": return .hurt
+        default: return badge(for: symbol) ?? .saved
+        }
+    }
+}
+
+/// A section title led by a companion drawing, replacing symbol labels.
+struct CompanionLabel: View {
+    let title: String
+    let artwork: CompanionArtwork
+    var size: CGFloat = 34
+
+    var body: some View {
+        HStack(spacing: 8) {
+            CompanionIllustration(artwork: artwork, size: size)
+            Text(title)
+        }
+    }
+}
+
+/// Toolbar-sized companion; a saved or active state gains the accent ring.
+struct CompanionToolbarIcon: View {
+    let artwork: CompanionArtwork
+    var active = false
+
+    var body: some View {
+        CompanionIllustration(artwork: artwork, size: 30)
+            .background(active ? Color.yqAccentTint : .clear, in: Circle())
+            .overlay(Circle().strokeBorder(active ? Color.yqAccent : .clear, lineWidth: 1.5))
+            .animation(.easeOut(duration: 0.15), value: active)
+    }
+}
+
 // Explicit artwork assignments for legacy badge call sites. Small native controls
 // (back, close, selection, playback) keep their familiar functional glyphs.
 extension CompanionArtwork {
@@ -123,6 +172,21 @@ extension CompanionArtwork {
         case "wind": return .breathe
         case "safari", "location.north.circle.fill": return .qibla
         case "exclamationmark.circle": return .help
+        case "checkmark.shield": return .verified
+        case "lock", "lock.shield", "iphone": return .privacy
+        case "textformat", "textformat.size.smaller", "textformat.size.larger": return .textSize
+        case "person.crop.circle": return .confident
+        case "icloud": return .backup
+        case "square.and.arrow.up": return .share
+        case "envelope": return .social
+        case "location", "location.circle": return .lost
+        case "book", "text.book.closed.fill", "character.book.closed", "books.vertical": return .quran
+        case "text.bubble": return .journal
+        case "trash": return .deleteAccount
+        case "folder.badge.plus", "folder.fill": return .saved
+        case "sparkle": return .praise
+        case "wifi.slash", "network.slash", "exclamationmark.arrow.triangle.2.circlepath": return .help
+        case "info.circle": return .help
         default: return nil
         }
     }
