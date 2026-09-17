@@ -92,8 +92,7 @@ struct HomeView: View {
                 }
             }
             .navigationDestination(for: DhikrItem.self) { DhikrCounterView(item: $0, language: language) }
-            .navigationDestination(for: Situation.self) { SituationDetailView(situation: $0) }
-            .navigationDestination(for: LifeGroup.self) { LifeGroupView(group: $0) }
+            .guidanceDestinations()
             .toolbar(.hidden, for: .navigationBar)
             .sheet(item: $sheet) { item in
                 switch item {

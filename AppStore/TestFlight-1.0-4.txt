@@ -1,0 +1,9 @@
+Haneen 1.0 (4) — Your space and Explore
+
+Settings > Your space now opens your reading shortcut, today's goals, saved ayat/notes, du'as, moments and reflections. Check the displayed counts against your Saved tab. These tools work as a guest; signing in does not upload or sync your local library. Account sign-in, sign-out and deletion remain under the Account section lower on the page.
+
+In Explore > Where are you in life?, open topics in Marriage, Family & Parenthood, Faith & Worship, Worry & Hardship, and Work & Livelihood. Confirm that each reading stays open and Back returns to its group. Check both the first stage and later stages, then switch tabs and return.
+
+Try English/Arabic, light/dark appearance and larger text. From Your space, open Daily goals and a morning/evening practice, and open saved content before returning to the hub. If signed in, sign out and confirm that your local saved items remain. Delete only a disposable test account.
+
+This build does not complete Apple's requested physical-iPhone walkthrough. App Store submission and the recording remain separate from these checks.

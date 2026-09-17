@@ -1,5 +1,64 @@
 import SwiftUI
 
+/// Life-navigation identity is the catalog ID, not a copy of all its
+/// localized titles, stages and verses. Register these destinations once
+/// at each stack root; child lists only emit values into that same stack.
+enum GuidanceRoute: Hashable, Codable {
+    case group(LifeGroupID)
+    case situation(String)
+    case quickGuidance
+
+    var group: LifeGroup? {
+        guard case .group(let id) = self else { return nil }
+        return GuidanceCatalog.groups.first { $0.id == id }
+    }
+
+    var situation: Situation? {
+        guard case .situation(let id) = self else { return nil }
+        return SituationCatalog.by(id: id)
+    }
+}
+
+/// Also accept the model-value routes used by existing widget/deep links.
+/// Keep this registration on the root, outside conditional/lazy rows.
+extension View {
+    func guidanceDestinations() -> some View {
+        navigationDestination(for: GuidanceRoute.self) { route in
+            GuidanceRouteDestination(route: route)
+        }
+        .navigationDestination(for: LifeGroup.self) { LifeGroupView(group: $0) }
+        .navigationDestination(for: Situation.self) { SituationDetailView(situation: $0) }
+    }
+}
+
+private struct GuidanceRouteDestination: View {
+    let route: GuidanceRoute
+    @AppStorage(SettingsKeys.appLanguage) private var languageRaw = AppLanguage.english.rawValue
+
+    var body: some View {
+        switch route {
+        case .group:
+            if let group = route.group { LifeGroupView(group: group) }
+            else { unavailable }
+        case .situation:
+            if let situation = route.situation { SituationDetailView(situation: situation) }
+            else { unavailable }
+        case .quickGuidance:
+            QuickGuidanceView()
+        }
+    }
+
+    private var unavailable: some View {
+        let language = AppLanguage(rawValue: languageRaw) ?? .english
+        return ContentUnavailableView(
+            language.pick("Reading unavailable", "القراءة غير متاحة"),
+            systemImage: "book.closed",
+            description: Text(language.pick("Go back and choose another topic.", "عُد واختر موضوعًا آخر."))
+        )
+        .toolbar(.visible, for: .navigationBar)
+    }
+}
+
 struct ExploreView: View {
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Binding var path: NavigationPath
@@ -41,8 +100,7 @@ struct ExploreView: View {
             }
             .scrollDismissesKeyboard(.interactively)
             .yqScreen()
-            .navigationDestination(for: LifeGroup.self) { LifeGroupView(group: $0) }
-            .navigationDestination(for: Situation.self) { SituationDetailView(situation: $0) }
+            .guidanceDestinations()
             .navigationDestination(for: DuaRoute.self) { route in
                 switch route {
                 case .feelings: FeelingsView(language: language)
@@ -63,7 +121,7 @@ struct ExploreView: View {
     // MARK: Sections
 
     private var ayahNow: some View {
-        NavigationLink { QuickGuidanceView() } label: {
+        NavigationLink(value: GuidanceRoute.quickGuidance) {
             HStack(spacing: 14) {
                 CompanionIllustration(artwork: .quran, size: 56)
                 VStack(alignment: .leading, spacing: 3) {
@@ -89,13 +147,13 @@ struct ExploreView: View {
         VStack(alignment: .leading, spacing: 12) {
             SectionHeader(copy("Near you", "بالقرب منك"))
             RowGroup {
-                NavigationLink { NearbyPlacesView(kind: .mosques, language: language) } label: {
+                NavigationLink(value: NearbyPlaceKind.mosques) {
                     BadgeRow(symbol: "building.columns.fill", title: copy("Mosques near me", "مساجد قريبة"),
                              subtitle: copy("Apple Maps and OpenStreetMap, cross-checked", "نتائج من خرائط Apple وOpenStreetMap بعد مطابقتها"))
                 }
                 .buttonStyle(.yqPressSoft)
                 RowDivider()
-                NavigationLink { NearbyPlacesView(kind: .halal, language: language) } label: {
+                NavigationLink(value: NearbyPlaceKind.halal) {
                     BadgeRow(symbol: "fork.knife", title: copy("Halal food near me", "مطاعم حلال قريبة"),
                              subtitle: copy("Confirm with the restaurant before you order", "اسأل المطعم عن توفر الطعام الحلال قبل الطلب"))
                 }
@@ -109,7 +167,7 @@ struct ExploreView: View {
             SectionHeader(copy("Where are you in life?", "ما الذي تمرّ به في حياتك؟"))
             RowGroup {
                 ForEach(Array(GuidanceCatalog.groups.enumerated()), id: \.element.id) { index, group in
-                    NavigationLink(value: group) {
+                    NavigationLink(value: GuidanceRoute.group(group.id)) {
                         BadgeRow(symbol: group.badgeSymbol, tint: group.tint, title: group.title(language),
                                  subtitle: group.stages.prefix(2).map { $0.title(language) }.joined(separator: language.listSeparator),
                                  artwork: group.artwork, subtitleLines: 1) {
@@ -122,6 +180,7 @@ struct ExploreView: View {
                         }
                     }
                     .buttonStyle(.yqPressSoft)
+                    .accessibilityIdentifier("explore.group.\(group.id.rawValue)")
                     if index < GuidanceCatalog.groups.count - 1 { RowDivider() }
                 }
             }
@@ -182,10 +241,11 @@ struct ExploreView: View {
             } else {
                 RowGroup {
                     ForEach(Array(results.enumerated()), id: \.element.id) { index, situation in
-                        NavigationLink(value: situation) {
+                        NavigationLink(value: GuidanceRoute.situation(situation.id)) {
                             SituationRow(situation: situation, language: language)
                         }
                         .buttonStyle(.yqPressSoft)
+                        .accessibilityIdentifier("explore.situation.\(situation.id)")
                         if index < results.count - 1 { RowDivider(inset: 58) }
                     }
                 }
@@ -229,10 +289,11 @@ struct LifeGroupView: View {
                         }
                         RowGroup {
                             ForEach(Array(stage.situations.enumerated()), id: \.element.id) { position, situation in
-                                NavigationLink(value: situation) {
+                                NavigationLink(value: GuidanceRoute.situation(situation.id)) {
                                     SituationRow(situation: situation, language: language, tint: group.tint, showsBadge: false)
                                 }
                                 .buttonStyle(.yqPressSoft)
+                                .accessibilityIdentifier("life.\(group.id.rawValue).\(situation.id)")
                                 if position < stage.situations.count - 1 { RowDivider(inset: 14) }
                             }
                         }
@@ -248,7 +309,6 @@ struct LifeGroupView: View {
             .padding(.bottom, 28)
         }
         .yqScreen()
-        .navigationDestination(for: Situation.self) { SituationDetailView(situation: $0) }
         .navigationBarTitleDisplayMode(.inline)
         .toolbar(.visible, for: .navigationBar)
         .toolbar(.hidden, for: .tabBar)

@@ -53,7 +53,7 @@ struct SettingsView: View {
                     PageHeader(title: copy("Settings", "الإعدادات"))
                         .revealed(0, appeared: appeared, reduceMotion: reduceMotion)
                     RowGroup {
-                        NavigationLink { CompanionAccountView() } label: { BadgeRow(symbol: "person.fill", title: copy("Account", "الحساب"), subtitle: copy("Sign in or create an account", "تسجيل الدخول أو إنشاء حساب"), artwork: .privacy) }
+                        NavigationLink(value: AccountHubRoute.space) { BadgeRow(symbol: "person.fill", title: copy("Your space", "مساحتك"), subtitle: copy("Your library, reading & daily goals", "محفوظاتك وقراءتك وأهدافك اليومية"), artwork: .privacy) }
                         RowDivider()
                         NavigationLink { WidgetCollectionView() } label: { BadgeRow(symbol: "square.grid.2x2", title: copy("Widget collection", "مجموعة الأدوات"), subtitle: copy("10 companions for your screens", "١٠ تصاميم لشاشاتك"), artwork: .morning) }
                     }.buttonStyle(.plain)
@@ -76,6 +76,11 @@ struct SettingsView: View {
                 .padding(.bottom, 36)
             }
             .yqScreen()
+            .navigationDestination(for: AccountHubRoute.self) { AccountHubDestination(route: $0, language: language) }
+            .guidanceDestinations()
+            .navigationDestination(for: DuaPractice.self) { PracticeDestination(practice: $0, language: language) }
+            .navigationDestination(for: GuidanceSupplication.self) { DuaReaderView(dua: $0) }
+            .navigationDestination(for: DhikrItem.self) { DhikrCounterView(item: $0, language: language) }
             .navigationBarTitleDisplayMode(.inline)
             .toolbarBackground(.hidden, for: .navigationBar)
             .toolbar {

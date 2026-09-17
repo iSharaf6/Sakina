@@ -29,7 +29,7 @@ struct QuickGuidanceView: View {
                     RowGroup {
                         ForEach(Array(matches.enumerated()), id: \.element.id) { index, prompt in
                             if let situation = prompt.situation {
-                                NavigationLink { SituationDetailView(situation: situation) } label: {
+                                NavigationLink(value: GuidanceRoute.situation(situation.id)) {
                                     HStack(spacing: 12) {
                                         CompanionIllustration(artwork: GuidanceCatalog.group(containing: situation).artwork, size: 42)
                                         VStack(alignment: .leading, spacing: 3) {
@@ -46,6 +46,7 @@ struct QuickGuidanceView: View {
                                     .contentShape(Rectangle())
                                 }
                                 .buttonStyle(.yqPressSoft)
+                                .accessibilityIdentifier("quick-guidance.\(situation.id)")
                                 if index < matches.count - 1 { RowDivider(inset: 60) }
                             }
                         }

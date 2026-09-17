@@ -1,4 +1,5 @@
 import SwiftUI
+import SwiftData
 import Supabase
 import AuthenticationServices
 import CryptoKit
@@ -9,6 +10,7 @@ import GoogleSignIn
 final class CompanionAccount: ObservableObject {
     static let shared = CompanionAccount(client: configuredClient())
     @Published private(set) var email: String?
+    @Published private(set) var displayName: String?
     @Published private(set) var signedIn = false
     @Published private(set) var busy = false
     @Published var message: String?
@@ -58,6 +60,10 @@ final class CompanionAccount: ObservableObject {
     private func synchronizeSession() {
         let session = client?.auth.currentSession
         email = session?.user.email
+        let metadata = session?.user.userMetadata ?? [:]
+        displayName = ["full_name", "name", "given_name"]
+            .compactMap { metadata[$0]?.stringValue?.trimmingCharacters(in: .whitespacesAndNewlines) }
+            .first { !$0.isEmpty }
         signedIn = session != nil
     }
 
@@ -323,76 +329,236 @@ struct CompanionAccountView: View {
     @AppStorage(SettingsKeys.appLanguage) private var languageRaw = AppLanguage.english.rawValue
     private var language: AppLanguage { AppLanguage(rawValue: languageRaw) ?? .english }
     private var copy: AppCopy { AppCopy(language: language) }
-    @ObservedObject private var account = CompanionAccount.shared
+    @ObservedObject private var account: CompanionAccount
+    @ObservedObject private var library = AyahLibrary.shared
+    @AppStorage(DuaCollection.savedKey) private var savedDuasRaw = ""
+    @AppStorage(GoalLog.key) private var goalLogRaw = ""
+    @AppStorage(GoalPreferences.key) private var enabledGoalsRaw = ""
+    @Query private var bookmarks: [Bookmark]
+    @Query private var reflections: [JournalEntry]
     @Environment(\.colorScheme) private var colorScheme
+    @Environment(\.dynamicTypeSize) private var typeSize
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var email = ""
     @State private var code = ""
     @State private var sent = false
     @State private var showDelete = false
+    @State private var showSignIn = false
+
+    @MainActor init(account: CompanionAccount? = nil) {
+        _account = ObservedObject(wrappedValue: account ?? .shared)
+    }
+
+    private var summary: AccountLibrarySummary {
+        AccountLibrarySummary(marks: Array(library.marks.values), savedDuas: savedDuasRaw,
+                              situationIDs: bookmarks.map(\.situationID), reflectionTexts: reflections.map(\.text))
+    }
+    private var readingAyah: QuranAyah? { AccountLibrarySummary.readingAyah(for: library.lastReadKey) }
+    private var columns: [GridItem] {
+        Array(repeating: GridItem(.flexible(), spacing: 12), count: typeSize.isAccessibilitySize ? 1 : 2)
+    }
+    private func number(_ value: Int) -> String { value.formatted(.number.locale(language.locale)) }
 
     var body: some View {
-        ScrollView {
-            VStack(spacing: 24) {
-                HStack(spacing: 16) {
-                    CompanionIllustration(artwork: .privacy, size: 76)
-                    VStack(alignment: .leading, spacing: 6) {
-                        Text(account.signedIn ? copy("Your account", "حسابك") : copy("Welcome to Haneen", "مرحبًا بك في حنين")).font(.yqTitle2)
-                        Text(account.signedIn ? copy("A little space of your own.", "مساحتك الخاصة في حنين.") : copy("Come back to what matters.", "عُد إلى ما يهمّك."))
-                            .font(.yqSubhead).foregroundStyle(Color.yqSecondary)
+        ScrollView(showsIndicators: false) {
+            VStack(alignment: .leading, spacing: 24) {
+                identity
+                VStack(spacing: 12) {
+                    continueReading
+                    TimelineView(.periodic(from: .now, by: 60)) { context in
+                        dailyGoals(on: context.date)
                     }
-                    Spacer(minLength: 0)
-                }.padding(.top, 12)
-                if account.signedIn { connectedContent } else { signInContent }
-                if account.busy { ProgressView().frame(minHeight: 32) }
-                if let message = account.message {
-                    Text(message).font(.yqSubhead).foregroundStyle(Color.yqSecondary)
-                        .frame(maxWidth: .infinity, alignment: .leading)
                 }
+                personalLibrary
+                accountControls
                 NavigationLink { AboutView() } label: {
-                    HStack {
-                        CompanionIllustration(artwork: .help, size: 32)
-                        Text(copy("Sources & privacy", "المصادر والخصوصية")).font(.yqSubheadBold)
-                        Spacer()
-                        Image(systemName: "chevron.forward").font(.caption)
-                    }.padding(16).yqCard(cornerRadius: 20)
-                }.buttonStyle(.plain)
-            }.padding(20).font(.yqBody).disabled(account.busy)
+                    BadgeRow(symbol: "hand.raised", title: copy("Sources & privacy", "المصادر والخصوصية"), artwork: .privacy)
+                        .yqCard(cornerRadius: 20)
+                }.buttonStyle(.yqPressSoft)
+            }
+            .padding(.horizontal, 20).padding(.top, 12).padding(.bottom, 28).font(.yqBody)
         }
-        .background(Color.yqSurface.ignoresSafeArea())
-        .navigationTitle(copy("Account", "الحساب")).navigationBarTitleDisplayMode(.inline)
+        .yqScreen()
+        .scrollDismissesKeyboard(.interactively)
+        .navigationTitle(copy("Your space", "مساحتك")).navigationBarTitleDisplayMode(.inline)
         .onChange(of: email) { _, _ in sent = false; code = "" }
-        .onChange(of: account.signedIn) { _, _ in sent = false; code = "" }
-        .sheet(isPresented: $showDelete) { AccountDeletionSheet() }
+        .onChange(of: account.signedIn) { _, _ in sent = false; code = ""; showSignIn = false }
+        .sheet(isPresented: $showDelete) { AccountDeletionSheet(account: account) }
+    }
+
+    private var identity: some View {
+        HStack(alignment: .center, spacing: 14) {
+            CompanionIllustration(artwork: .privacy, size: 64)
+            VStack(alignment: .leading, spacing: 4) {
+                Text(account.signedIn ? (account.displayName ?? copy("Your Haneen", "حنين، مساحتك")) : copy("Make yourself at home", "أهلًا بك في مساحتك"))
+                    .font(.yqTitle2).foregroundStyle(Color.yqInk)
+                    .fixedSize(horizontal: false, vertical: true)
+                    .accessibilityIdentifier("account.identity-name")
+                if account.signedIn, let email = account.email {
+                    Text(email).font(.yqCaption).foregroundStyle(Color.yqSecondary)
+                        .textSelection(.enabled).environment(\.layoutDirection, .leftToRight)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .accessibilityIdentifier("account.identity-email")
+                } else {
+                    Text(copy("A little reading. A moment of remembrance.", "قراءة يسيرة ولحظة ذكر."))
+                        .font(.yqSubhead).foregroundStyle(Color.yqSecondary)
+                }
+            }
+            Spacer(minLength: 0)
+        }
+    }
+
+    private var continueReading: some View {
+        NavigationLink {
+            MushafView(language: language, initialKey: readingAyah?.key, showsTabBar: false)
+        } label: {
+            BadgeRow(symbol: "book.closed", title: readingAyah == nil ? copy("Open the Qur’an", "افتح القرآن") : copy("Continue reading", "تابع القراءة"),
+                     subtitle: readingAyah?.reference(language) ?? copy("Begin wherever you feel ready.", "ابدأ من حيث تشاء."), artwork: .quran)
+                .padding(.vertical, 6).yqCard(cornerRadius: 24)
+        }
+        .buttonStyle(.yqPressSoft)
+        .accessibilityIdentifier("account-hub.continue-reading")
+    }
+
+    private func dailyGoals(on date: Date) -> some View {
+        let routine = AccountRoutineSummary(enabledRaw: enabledGoalsRaw, logRaw: goalLogRaw, on: date)
+        let progressText = routine.enabled.isEmpty
+            ? copy("Choose what fits your day", "اختر ما يناسب يومك")
+            : copy("\(number(routine.completed)) of \(number(routine.enabled.count)) complete", "أنجزت \(number(routine.completed)) من \(number(routine.enabled.count))")
+        return NavigationLink(value: AccountHubRoute.dailyGoals) {
+            HStack(spacing: 16) {
+                GoalRing(progress: routine.progress, size: 54, lineWidth: 5, reduceMotion: reduceMotion) {
+                    Text(number(routine.completed)).font(.yqHeadline).foregroundStyle(Color.yqAccentDeep)
+                }
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(copy("Today’s goals", "أهداف اليوم")).font(.yqHeadline).foregroundStyle(Color.yqInk)
+                    Text(progressText).font(.yqSubhead).foregroundStyle(Color.yqSecondary)
+                    if let next = routine.nextGoal {
+                        Text(copy("Up next: \(next.title(language))", "التالي: \(next.title(language))"))
+                            .font(.yqCaption).foregroundStyle(Color.yqAccentDeep)
+                    } else if !routine.enabled.isEmpty {
+                        Text(copy("Alhamdulillah. A little, every day.", "الحمد لله. قليل يدوم كل يوم."))
+                            .font(.yqCaption).foregroundStyle(Color.yqAccentDeep)
+                    }
+                }.fixedSize(horizontal: false, vertical: true)
+                Spacer(minLength: 0)
+                Chevron()
+            }
+            .multilineTextAlignment(.leading).padding(18).frame(maxWidth: .infinity, alignment: .leading).yqCard(cornerRadius: 24)
+        }
+        .buttonStyle(.yqPressSoft)
+        .accessibilityElement(children: .combine)
+        .accessibilityHint(copy("Open your daily goals or customise your routine.", "افتح أهداف اليوم أو خصّص روتينك."))
+        .accessibilityIdentifier("account-hub.goals")
+    }
+
+    private var personalLibrary: some View {
+        let counts = summary
+        return VStack(alignment: .leading, spacing: 12) {
+            Text(copy("Your library", "محفوظاتك")).font(.yqHeadline).foregroundStyle(Color.yqInk)
+                .accessibilityAddTraits(.isHeader)
+            LazyVGrid(columns: columns, spacing: 12) {
+                NavigationLink { AyahLibraryView(language: language) } label: {
+                    libraryTile(title: copy("Qur’an library", "محفوظات القرآن"), count: counts.ayat,
+                                detail: copy("Ayat, highlights & notes", "آيات وتظليل وملاحظات"), artwork: .quran)
+                }.accessibilityIdentifier("account-hub.quran-library")
+                NavigationLink(value: AccountHubRoute.saved(.duas)) {
+                    libraryTile(title: copy("Saved du’as", "أدعية محفوظة"), count: counts.duas,
+                                detail: copy("Words to keep close", "كلمات قريبة من قلبك"), artwork: .saved)
+                }.accessibilityIdentifier("account-hub.saved-duas")
+                NavigationLink(value: AccountHubRoute.saved(.moments)) {
+                    libraryTile(title: copy("Saved moments", "مواقف محفوظة"), count: counts.moments,
+                                detail: copy("Readings to return to", "قراءات تعود إليها"), artwork: .hopeful)
+                }.accessibilityIdentifier("account-hub.saved-moments")
+                NavigationLink(value: AccountHubRoute.saved(.reflections)) {
+                    libraryTile(title: copy("Reflections", "تأملات"), count: counts.reflections,
+                                detail: copy("A space for your words", "مساحة لكلماتك"), artwork: .journal)
+                }.accessibilityIdentifier("account-hub.reflections")
+            }
+            .buttonStyle(.yqPressSoft)
+            if counts.notes > 0 {
+                NavigationLink {
+                    AyahListView(title: copy("Qur’an notes", "ملاحظات القرآن"), keys: library.notedKeys, language: language)
+                } label: {
+                    HStack {
+                        Text(copy("Open your Qur’an notes", "افتح ملاحظاتك على القرآن")).font(.yqSubheadBold)
+                        Spacer(minLength: 8)
+                        Text(number(counts.notes)).font(.yqSubhead)
+                        Chevron()
+                    }.foregroundStyle(Color.yqAccentDeep).padding(.vertical, 12).contentShape(Rectangle())
+                }.buttonStyle(.plain)
+            }
+            Text(copy("Your library and progress stay on this iPhone. Signing in doesn’t sync them to other devices.",
+                      "تبقى محفوظاتك وتقدّمك على هذا الهاتف. تسجيل الدخول لا يزامنها مع أجهزتك الأخرى."))
+                .font(.yqCaption).foregroundStyle(Color.yqSecondary).fixedSize(horizontal: false, vertical: true)
+        }
+    }
+
+    private func libraryTile(title: String, count: Int, detail: String, artwork: CompanionArtwork) -> some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack {
+                CompanionIllustration(artwork: artwork, size: 42)
+                Spacer(minLength: 4)
+                if count > 0 {
+                    Text(number(count)).font(.yqTitle2).foregroundStyle(Color.yqAccentDeep)
+                } else {
+                    Chevron()
+                }
+            }
+            Text(title).font(.yqSubheadBold).foregroundStyle(Color.yqInk)
+                .fixedSize(horizontal: false, vertical: true)
+            Text(detail).font(.yqCaption).foregroundStyle(Color.yqSecondary)
+                .fixedSize(horizontal: false, vertical: true)
+        }
+        .multilineTextAlignment(.leading).padding(16).frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .yqCard(cornerRadius: 20)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(count > 0 ? "\(title), \(number(count)). \(detail)" : "\(title). \(detail)")
+    }
+
+    private var accountControls: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text(copy("Account", "الحساب")).font(.yqHeadline).foregroundStyle(Color.yqInk)
+                .accessibilityAddTraits(.isHeader)
+            if account.signedIn {
+                connectedContent
+            } else {
+                DisclosureGroup(isExpanded: $showSignIn) {
+                    signInContent.padding(.top, 16)
+                } label: {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text(copy("Sign in or create an account", "سجّل الدخول أو أنشئ حسابًا")).font(.yqSubheadBold)
+                        Text(copy("Optional. Everything above is yours to use without an account.", "اختياري. يمكنك استخدام كل ما سبق دون حساب."))
+                            .font(.yqCaption).foregroundStyle(Color.yqSecondary)
+                    }.fixedSize(horizontal: false, vertical: true)
+                }
+                .padding(18).yqCard(cornerRadius: 20).disabled(account.busy)
+                .accessibilityIdentifier("account-hub.optional-signin")
+            }
+            if account.busy { ProgressView().frame(minHeight: 32).frame(maxWidth: .infinity) }
+            if let message = account.message {
+                Text(message).font(.yqSubhead).foregroundStyle(Color.yqSecondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+        }
     }
 
     private var connectedContent: some View {
-        VStack(spacing: 20) {
-            VStack(alignment: .leading, spacing: 14) {
-                Text(copy("SIGNED IN", "تم تسجيل الدخول")).font(.yqCaption).foregroundStyle(Color.yqAccentDeep)
-                Text(account.email ?? copy("Connected", "متصل")).font(.yqHeadline).textSelection(.enabled)
-                    .fixedSize(horizontal: false, vertical: true)
-                Divider()
-                HStack(alignment: .top, spacing: 12) {
-                    CompanionIllustration(artwork: .saved, size: 42)
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(copy("Your library stays with you", "محفوظاتك تبقى معك")).font(.yqSubheadBold)
-                        Text(copy("Notes and bookmarks are stored on this iPhone. Signing out keeps them here.", "تبقى ملاحظاتك وعلاماتك المرجعية محفوظة على هذا الهاتف، حتى بعد تسجيل الخروج."))
-                            .font(.yqSubhead).foregroundStyle(Color.yqSecondary)
-                    }
-                }
-            }.padding(20).frame(maxWidth: .infinity, alignment: .leading).yqCard(cornerRadius: 24)
+        RowGroup {
             Button { Task { await account.signOut() } } label: {
-                HStack(spacing: 12) {
-                    CompanionIllustration(artwork: .signout, size: 36)
-                    Text(copy("Sign out", "تسجيل الخروج")).font(.yqHeadline)
-                    Spacer()
-                    Image(systemName: "chevron.forward").font(.caption)
-                }.padding(16).yqCard(cornerRadius: 20)
-            }.buttonStyle(.plain)
+                BadgeRow(symbol: "rectangle.portrait.and.arrow.right", title: copy("Sign out", "تسجيل الخروج"),
+                         subtitle: copy("Your saved items stay on this iPhone.", "تبقى محفوظاتك على هذا الهاتف."), artwork: .signout)
+            }.buttonStyle(.yqPressSoft).accessibilityIdentifier("account.sign-out")
+            RowDivider()
             Button { account.message = nil; showDelete = true } label: {
-                Text(copy("Delete account", "حذف الحساب")).font(.yqSubhead).foregroundStyle(.red).frame(minHeight: 44)
-            }.frame(maxWidth: .infinity, alignment: .leading)
-        }
+                HStack(spacing: 14) {
+                    CompanionIllustration(artwork: .deleteAccount, size: 44)
+                    Text(copy("Delete account", "حذف الحساب")).font(.yqSubheadBold).foregroundStyle(.red)
+                    Spacer(minLength: 0)
+                    Chevron()
+                }.padding(14).frame(minHeight: 58).contentShape(Rectangle())
+            }.buttonStyle(.yqPressSoft)
+        }.disabled(account.busy)
     }
 
     private var signInContent: some View {
@@ -435,7 +601,7 @@ private struct AccountDeletionSheet: View {
     @AppStorage(SettingsKeys.appLanguage) private var languageRaw = AppLanguage.english.rawValue
     private var language: AppLanguage { AppLanguage(rawValue: languageRaw) ?? .english }
     private var copy: AppCopy { AppCopy(language: language) }
-    @ObservedObject private var account = CompanionAccount.shared
+    @ObservedObject var account: CompanionAccount
     @Environment(\.dismiss) private var dismiss
     @State private var reason = ""
     @State private var feedback = ""

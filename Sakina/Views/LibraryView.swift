@@ -46,7 +46,7 @@ struct LibraryView: View {
                 .padding(.bottom, 28)
             }
             .yqScreen()
-            .navigationDestination(for: Situation.self) { SituationDetailView(situation: $0) }
+            .guidanceDestinations()
             .navigationDestination(for: GuidanceSupplication.self) { DuaReaderView(dua: $0) }
             .toolbar(.hidden, for: .navigationBar)
             .sheet(isPresented: $showSettings) { SettingsView(showsDismissButton: true) }
@@ -141,7 +141,7 @@ struct LibraryView: View {
                                  "احفظ أي موقف أثناء التصفح لتجده هنا عند عودتك."),
                     symbol: "bookmark", artwork: .saved
                 )
-                NavigationLink { QuickGuidanceView() } label: {
+                NavigationLink(value: GuidanceRoute.quickGuidance) {
                     SecondaryButton(title: copy("Find a moment", "اختر موقفًا"), symbol: language == .arabic ? "arrow.left" : "arrow.right")
                 }
                 .buttonStyle(.yqPress)

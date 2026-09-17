@@ -1,0 +1,33 @@
+Haneen 1.0 (4) — App Review information
+
+1. Physical-device demonstration
+VIDEO EVIDENCE PENDING: attach the requested physical-iPhone walkthrough on the latest released OS, showing launch, setup, core use, registration, returning sign-in and account deletion. Recording and physical-device account checks are not yet complete.
+
+2. Purpose and access
+Haneen is a free Arabic/English Islamic companion for Qur'an, sourced duas/hadith and daily prayer/dhikr. Choose "Use Haneen without an account" at launch. Core features need no account or payment. It is not a medical or counselling service.
+
+3. Feature walkthrough
+Qur'an > choose a surah > tap an ayah for Listen, Save and More. More opens translation, tafsir, highlights and notes. Saved > My ayat opens saved ayat/notes.
+Du'as > Morning or Evening offers a full offline Abu Islam recording, play/pause, seeking and 15-second skips. Fifteen matched readings have individual excerpts, including Surah an-Nas. Playback does not advance the repetition counter.
+Audio continues after leaving its reader, with an in-app mini-player and iOS media controls showing Haneen artwork. Settings > About Haneen includes the creator and grandparents' dedication; Settings also offers optional sharing, feedback and rating.
+Home > All feelings opens related readings. Explore contains life situations and nearby mosque/halal-place searches.
+For prayer times, Home > Use my location; Settings contains calculation options. Home > Qibla uses the physical compass. Reading and local saving still work if location is denied. Notifications are optional. Add widgets through the iOS gallery after setting a location.
+
+4. Optional accounts and deletion
+Settings > Your space > Account > Sign in or create an account offers Apple, Google and email. New and returning email users enter their email, tap Continue with email, then open its link on this iPhone or enter its code and tap Verify & continue. No password or separate Sign up selector.
+Your space > Account > Delete account: feedback is optional. Leave Prefer not to say and the feedback blank, tap Delete account, then confirm. Apple-linked deletion may require fresh Apple authorisation. Sign-out/deletion keeps the separate local library; sign-in does not upload or sync notes/bookmarks.
+
+5. Services, data and regions
+Supabase handles identity/session data and optional deletion feedback; Brevo delivers sign-in emails. EveryAyah supplies streamed/cached Quran audio; Quran.com's API supplies online tafsir. Nearby searches send location/category to Apple Maps and OpenStreetMap Overpass (overpass-api.de). Apple location services resolve place names.
+Quran text, dua/hadith content and morning/evening recordings are bundled. Optional SoundCloud source links open externally only when tapped; no SoundCloud SDK, API or embedded player is used.
+Notes, progress, preferences, dhikr counts and review-prompt timing are local. Prayer calculations use Adhan on-device; reminders are local notifications. No payments, subscriptions, ads, public UGC, messaging or runtime AI. Sharing uses the iOS share sheet; ratings use StoreKit without score filtering.
+Mainland China is excluded. In Apple-required regions, a system age-range check may appear after setup. Its response is processed on-device, not stored or uploaded. Core features are otherwise the same across offered regions. Users choose Arabic/English. Prayer times depend on location/time zone/settings; online availability varies.
+
+6. Content and contact
+Sources/font credits: Settings > Sources, privacy & credits.
+Quran Foundation: https://api-docs.quran.com/legal/developer-terms/
+Hadith: https://sunnah.com/about
+The developer reports Abu Islam's permission to include his recordings; the player credits him.
+Privacy: https://isharaf6.github.io/Sakina/privacy.html
+Support: https://isharaf6.github.io/Sakina/app.html
+Contact: haneen.app.contact@gmail.com
