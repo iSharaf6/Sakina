@@ -1,6 +1,6 @@
 # Haneen — App Store listing
 
-English (Australia), planned **1.0 (5)**, updated 17 September 2026. Local draft only; not saved in App Store Connect by this task. Mandatory account access and synced library replace all earlier guest/local-only descriptions. See [ReleaseReadiness-1.0-5.md](ReleaseReadiness-1.0-5.md) for unresolved review access, recording and policy publication.
+English (Australia), uploaded **1.0 (7)**, updated 18 September 2026. Local draft only; not saved in App Store Connect by this task. Mandatory account access and synced library replace all earlier guest/local-only descriptions. See [ReleaseReadiness-1.0-5.md](ReleaseReadiness-1.0-5.md) for unresolved review access, recording and policy publication.
 
 ## Name
 
