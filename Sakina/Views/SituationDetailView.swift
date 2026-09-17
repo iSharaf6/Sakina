@@ -12,7 +12,6 @@ struct SituationDetailView: View {
     @Query private var bookmarks: [Bookmark]
     @Query(sort: \JournalEntry.createdAt, order: .reverse) private var allEntries: [JournalEntry]
     @ObservedObject private var player = RecitationPlayer.shared
-    @ObservedObject private var account = GoogleAccountManager.shared
     @EnvironmentObject private var scholarStore: ScholarContentStore
 
     @AppStorage(SettingsKeys.appLanguage) private var languageRaw = AppLanguage.english.rawValue
@@ -713,10 +712,8 @@ struct SituationDetailView: View {
                 }
 
                 HStack(spacing: 9) {
-                    Image(systemName: account.isSignedIn ? "checkmark.icloud" : "iphone")
-                    Text(account.isSignedIn
-                         ? copy("Backed up after saving", "يُنسخ تأملك احتياطيًا بعد الحفظ")
-                         : copy("Saved on this iPhone", "يُحفظ تأملك على هذا الهاتف"))
+                    Image(systemName: "icloud")
+                    Text(copy("Syncs with your account", "يتزامن مع حسابك"))
                     Spacer()
                     Button {
                         saveEntry()
@@ -816,8 +813,7 @@ struct SituationDetailView: View {
     }
 
     private func backUpIfConnected() {
-        guard account.isSignedIn, let backup = YaqeenBackup.snapshot(from: context) else { return }
-        Task { _ = await account.upload(backup) }
+        Task { await AccountLibrarySync.shared.syncNow() }
     }
 
     private func showToast(_ message: String) {

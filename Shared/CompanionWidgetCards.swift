@@ -29,7 +29,7 @@ enum CompanionWidgetPalette {
     }
 }
 
-/// No square paper backing, extra padding or glow around the character.
+/// Whole artwork with breathing room; no square paper backing or glow.
 struct WidgetCompanionArt: View {
     let artwork: CompanionArtwork
     let size: CGFloat
@@ -44,6 +44,7 @@ struct WidgetCompanionArt: View {
             }
         }
         .scaledToFit()
+        .padding(size * 0.04)
         .frame(width: size, height: size)
         .accessibilityHidden(true)
     }

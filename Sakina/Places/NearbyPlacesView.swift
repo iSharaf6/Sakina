@@ -153,8 +153,8 @@ struct NearbyPlacesView: View {
         VStack(spacing: 4) {
             EmptyGuidanceState(
                 title: copy("Location is off", "الموقع متوقف"),
-                detail: copy("Allow location for Haneen in Settings so we can search around you. Your location stays on this device.",
-                             "اسمح بالوصول إلى الموقع لتطبيق حنين من الإعدادات لنبحث حولك. موقعك يبقى على هذا الجهاز."),
+                detail: copy("Allow location for Haneen in Settings to search nearby. Searches share your location with Apple Maps and OpenStreetMap’s Overpass service.",
+                             "اسمح لحنين بالوصول إلى الموقع من الإعدادات للبحث بالقرب منك. يُشارك البحث موقعك مع خرائط Apple وخدمة Overpass لبيانات OpenStreetMap."),
                 symbol: "location.slash.fill"
             )
             Button {

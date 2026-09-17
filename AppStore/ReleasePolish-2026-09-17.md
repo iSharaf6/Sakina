@@ -1,5 +1,7 @@
 # Haneen release polish — 17 September 2026
 
+> Historical build record. Planned 1.0 (5) requires account-library sync and changes the earlier guest/local-only behaviour. Use [ReleaseReadiness-1.0-5.md](ReleaseReadiness-1.0-5.md) for current release gates; this document’s earlier uploads, test results and publication claims do not certify build 5.
+
 Current preparation record for **Haneen 1.0 (3)**, now processed in TestFlight and selected on the App Store version form. This supersedes the pending-email state in the historical [build-2 record](ReleasePreparation-2026-09-17.md). Build 2's archived test/upload evidence remains valid for that binary; it is not evidence for the new build.
 
 **Verdict: not ready to resubmit yet.** Production email works, final automated tests passed, and the signed build-3 archive passed validation. Apple accepted the upload at 02:22 AEST, processed it successfully and the version form now selects build 3. Apple's specific physical-device recording and physical account checks remain outstanding. No App Review reply or resubmission was sent.

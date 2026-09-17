@@ -5,6 +5,10 @@ import UIKit
 final class WidgetPracticeProgressTests: XCTestCase {
     func testWidgetArtworkIsBoundedTransparentAndStillVisible() throws {
         for artwork in [CompanionArtwork.widgetMorning, .widgetEvening, .widgetReading] {
+            let source = try XCTUnwrap(UIImage(named: artwork.assetName)?.cgImage,
+                                      "Missing widget artwork: \(artwork)")
+            XCTAssertTrue([CGImageAlphaInfo.first, .last, .premultipliedFirst, .premultipliedLast]
+                .contains(source.alphaInfo), "Widget masters need real transparency, not white paper: \(artwork)")
             let image = CompanionImage.image(artwork)
             let cg = try XCTUnwrap(image.cgImage, "Missing decoded widget artwork: \(artwork)")
             XCTAssertGreaterThan(cg.width, 0)
@@ -22,10 +26,13 @@ final class WidgetPracticeProgressTests: XCTestCase {
                 ))
                 context.draw(cg, in: CGRect(x: 0, y: 0, width: cg.width, height: cg.height))
             }
-            let topRightAlpha = ((cg.height - 1) * cg.width + cg.width - 1) * 4 + 3
-            XCTAssertEqual(pixels[topRightAlpha], 0, "White corner paper must be removed: \(artwork)")
+            var borderIndices: [Int] = []
+            for x in 0..<cg.width { borderIndices.append(x); borderIndices.append((cg.height - 1) * cg.width + x) }
+            for y in 0..<cg.height { borderIndices.append(y * cg.width); borderIndices.append(y * cg.width + cg.width - 1) }
+            XCTAssertTrue(borderIndices.allSatisfy { pixels[$0 * 4 + 3] == 0 },
+                          "The full silhouette must fit inside a transparent border: \(artwork)")
             XCTAssertTrue(stride(from: 3, to: pixels.count, by: 4).contains { pixels[$0] > 200 },
-                          "Removing white paper must not erase the illustration: \(artwork)")
+                          "Transparent artwork must still contain visible illustration: \(artwork)")
         }
     }
 

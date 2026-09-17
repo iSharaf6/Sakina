@@ -1,5 +1,7 @@
 # Haneen release preparation — 17 September 2026
 
+> Historical build record. Planned 1.0 (5) requires account-library sync and changes the earlier guest/local-only behaviour. Use [ReleaseReadiness-1.0-5.md](ReleaseReadiness-1.0-5.md) for current release gates; this document’s earlier uploads, test results and publication claims do not certify build 5.
+
 **Historical build-2 preparation record.** The current build-3 preparation and live email/contact results are in [ReleasePolish-2026-09-17.md](ReleasePolish-2026-09-17.md). The earlier blocked-email and pending-state observations below are retained as historical evidence, not current status. No completed physical-device recording, resubmission or approval is implied.
 
 ## Confirmed live configuration

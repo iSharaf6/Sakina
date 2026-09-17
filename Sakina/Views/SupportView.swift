@@ -30,12 +30,8 @@ enum AppLinks {
     }
 
     static func shareText(_ language: AppLanguage) -> String {
-        let line = language.pick(
-            "A little room for Qur’an, du’a and dhikr each day. Haneen is free, in Arabic and English.",
-            "فسحة للقرآن والدعاء والذكر كل يوم. حنين تطبيق مجاني بالعربية والإنجليزية."
-        )
-        if let appStore { return line + "\n" + appStore.absoluteString }
-        return line
+        guard let appStore else { return AppSharePayload.invitation(language) }
+        return AppSharePayload(language: language, url: appStore).text
     }
 }
 
@@ -65,14 +61,14 @@ struct FAQView: View {
              copy("Nearby places come from Apple Maps and OpenStreetMap. Places found in both are marked. Always confirm halal status with the restaurant, and use Report a problem to fix the map data.",
                   "تأتي بيانات الأماكن القريبة من خرائط Apple وOpenStreetMap، وتُميَّز الأماكن المذكورة في المصدرين معًا. تأكد من المطعم أن الطعام حلال، واستخدم خيار الإبلاغ عن مشكلة لتصحيح البيانات.")),
             (copy("Does the app work offline?", "هل يعمل التطبيق دون اتصال؟"),
-             copy("Du’as, Qur’an text, saved prayer times, the dhikr counter and morning/evening recordings work offline. Downloaded Qur’an recitations also play offline. New recitations, tafsir and nearby places need a connection.",
-                  "تعمل الأدعية ونص القرآن ومواقيت الصلاة المحفوظة وعدّاد الذكر وتسجيلات أذكار الصباح والمساء دون اتصال، وكذلك التلاوات التي سبق تنزيلها. وتحتاج التلاوات الجديدة والتفسير والأماكن القريبة إلى اتصال.")),
+             copy("After signing in and opening your library on this iPhone, du’as, Qur’an text, saved prayer times, the dhikr counter and morning/evening recordings work offline. Downloaded Qur’an recitations also play offline. Signing in again, cloud sync, new recitations, tafsir and nearby places need a connection.",
+                  "بعد تسجيل الدخول وفتح محفوظاتك على هذا الهاتف، تعمل الأدعية ونص القرآن ومواقيت الصلاة المحفوظة وعدّاد الذكر وتسجيلات أذكار الصباح والمساء دون اتصال، وكذلك التلاوات التي سبق تنزيلها. ويحتاج تسجيل الدخول مجددًا والمزامنة السحابية والتلاوات الجديدة والتفسير والأماكن القريبة إلى اتصال.")),
             (copy("How do I add the widget?", "كيف أضيف الأداة؟"),
              copy("Set a location in Settings, then long-press your Home or Lock Screen, tap +, and search for Haneen.",
                   "حدد الموقع في الإعدادات، ثم اضغط مطولًا على الشاشة الرئيسية أو شاشة القفل، واضغط + وابحث عن حنين.")),
             (copy("Is my data backed up?", "هل تُنسخ بياناتي احتياطيًا؟"),
-             copy("Saved du’as and reflections stay on this iPhone. Account sign-in does not upload them.",
-                  "تبقى الأدعية المحفوظة والتأملات على هذا الهاتف. ولا تُرفع عند تسجيل الدخول.")),
+             copy("Your saved ayat, du’as, notes, reflections, categories and reading place sync with your Haneen account. Open Settings > Your space to see backup status. Offline changes wait on this iPhone until they can sync. Daily goals, dhikr counts and prayer settings remain on this device. Cloud backups are not end-to-end encrypted.",
+                  "تتزامن الآيات والأدعية والملاحظات والتأملات والتصنيفات المحفوظة وموضع القراءة مع حسابك في حنين. افتح الإعدادات ثم «مساحتك» للاطلاع على حالة النسخ الاحتياطي. تبقى التغييرات التي أجريتها دون اتصال على هذا الهاتف حتى تتم مزامنتها. وتبقى أهداف اليوم وعدّادات الذكر وإعدادات الصلاة على هذا الجهاز. النسخ السحابية ليست مشفّرة من طرف إلى طرف.")),
             (copy("Can I turn off vibrations?", "هل يمكن إيقاف الاهتزاز؟"),
              copy("Yes. Settings → Haptics.", "نعم. الإعدادات ← الاهتزاز.")),
         ]
@@ -381,8 +377,8 @@ struct AboutUsView: View {
                     symbol: "checkmark.shield.fill",
                     title: copy("What we promise", "ما نعد به"),
                     body: copy(
-                        "Qur’an passages and du’as include source references. Your saved notes and reflections stay on your iPhone. Haneen has no ads or behavioural analytics; the privacy policy explains its account and online services.",
-                        "تُرفق الآيات والأدعية بمراجعها، وتبقى ملاحظاتك وتأملاتك المحفوظة على هاتفك. لا يتضمن حنين إعلانات أو أدوات لتحليل سلوكك، وتوضح سياسة الخصوصية خدمات الحساب والخدمات المتصلة بالإنترنت."
+                        "Qur’an passages and du’as include source references. Your saved library, including notes and reflections, syncs with your account. Haneen has no ads or behavioural analytics; the privacy policy explains its account backup and online services.",
+                        "تُرفق الآيات والأدعية بمراجعها، وتتزامن محفوظاتك، بما فيها الملاحظات والتأملات، مع حسابك. لا يتضمن حنين إعلانات أو أدوات لتحليل سلوكك، وتوضح سياسة الخصوصية النسخ الاحتياطي للحساب والخدمات المتصلة بالإنترنت."
                     )
                 )
                 .revealed(4, appeared: appeared, reduceMotion: reduceMotion)

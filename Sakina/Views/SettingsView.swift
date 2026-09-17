@@ -77,6 +77,7 @@ struct SettingsView: View {
             }
             .yqScreen()
             .navigationDestination(for: AccountHubRoute.self) { AccountHubDestination(route: $0, language: language) }
+            .aboutDestinations(language: language)
             .guidanceDestinations()
             .navigationDestination(for: DuaPractice.self) { PracticeDestination(practice: $0, language: language) }
             .navigationDestination(for: GuidanceSupplication.self) { DuaReaderView(dua: $0) }
@@ -102,7 +103,7 @@ struct SettingsView: View {
                     ReminderScheduler.refresh()
                 }
             } message: { Text(copy("Appearance, reading, prayer calculation and reminder preferences return to their defaults. Your notes, saved ayat, progress and account stay.", "ستعود إعدادات المظهر والقراءة وحساب مواقيت الصلاة والتذكيرات إلى قيمها الافتراضية. ستبقى ملاحظاتك وآياتك المحفوظة وتقدّمك وحسابك كما هي.")) }
-            .sheet(isPresented: $showAbout) { AboutView() }
+            .sheet(isPresented: $showAbout) { AboutSheet() }
             .sheet(isPresented: $showReaderAppearance) { MushafDisplaySheet(language: language) }
             .preferredColorScheme(theme.colorScheme)
             .onChange(of: arabicScale) { _, _ in useDigitalReading() }
@@ -354,11 +355,11 @@ struct SettingsView: View {
         if !account.isConfigured {
             SettingsGroup(title: copy("Your data", "بياناتك")) {
                 BadgeRow(
-                    symbol: "iphone.gen3",
-                    title: copy("Stored on this iPhone", "محفوظة على هذا الهاتف"),
+                    symbol: "icloud",
+                    title: copy("Your account library", "محفوظات حسابك"),
                     subtitle: copy(
-                        "Saved moments and reflections never leave the app’s private storage.",
-                        "تبقى المواقف المحفوظة والتأملات في مساحة التطبيق الخاصة ولا تُرفع أبدًا."
+                        "Your saved library syncs with your account. See its sync status in Your space. Prayer location, goals and preferences stay on this iPhone.",
+                        "تتزامن محفوظاتك مع حسابك. يمكنك متابعة حالة المزامنة في مساحتك. يبقى موقع الصلاة والأهداف والتفضيلات على هذا الهاتف."
                     )
                 ) { EmptyView() }
             }

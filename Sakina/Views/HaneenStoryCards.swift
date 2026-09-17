@@ -90,7 +90,7 @@ struct HaneenDedicationCard: View {
                 .foregroundStyle(Color.yqInk)
 
             Text(copy(
-                "I created Haneen in memory of my late grandparents on both my mother’s and father’s sides, hoping it may be a sadaqah jariyah — a continuing charity — on their behalf.",
+                "I created Haneen in memory of my late grandparents on both my mother’s and father’s sides. I hope it may be a sadaqah jariyah, a continuing charity on their behalf.",
                 "أنشأت حنين وفاءً لذكرى أجدادي وجدّاتي المتوفَّين من جهة أمي وأبي، راجيًا من الله أن يجعله صدقة جارية عنهم."
             ))
             .font(.yqSubhead)

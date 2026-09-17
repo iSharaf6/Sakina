@@ -14,11 +14,18 @@ struct SakinaApp: App {
                     .preferredColorScheme(ProcessInfo.processInfo.arguments.contains("-yqDarkPreview") ? .dark : .light)
             } else if ProcessInfo.processInfo.arguments.contains("-yqPrayerCards") {
                 CompanionPrayerCardGallery()
-            } else {
+            } else if ProcessInfo.processInfo.arguments.contains("-yqScreen") || ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] != nil {
                 RootView()
+                    .onOpenURL { url in
+                        if url.scheme == "yaqeen", url.host == "auth-callback" {
+                            Task { await CompanionAccount.shared.handle(url) }
+                        } else { _ = GoogleAccountManager.shared.handle(url) }
+                    }
+            } else {
+                AccountAccessGate()
             }
             #else
-            RootView()
+            AccountAccessGate()
             #endif
         }
         .modelContainer(for: [Bookmark.self, JournalEntry.self])
@@ -48,7 +55,6 @@ struct RootView: View {
     @State private var debugAyah: QuranAyah?
     @State private var exploreQuery = ""
     @State private var showQibla = false
-    @State private var showOnboarding = false
     @State private var initialPresentationReady = false
     @State private var prayerRequest = 0
     @State private var settingsRequest = 0
@@ -109,12 +115,6 @@ struct RootView: View {
         .preferredColorScheme(theme.colorScheme)
         .environmentObject(scholarStore)
         .sensoryFeedback(.selection, trigger: selection)
-        .fullScreenCover(isPresented: $showOnboarding, onDismiss: { initialPresentationReady = true }) {
-            CompanionOnboarding {
-                showOnboarding = false
-                selection = .home
-            }
-        }
         .sheet(item: $debugAyah) { ayah in
             AyahActionSheet(ayah: ayah, language: language)
                 .presentationDetents([.medium, .large])
@@ -131,7 +131,7 @@ struct RootView: View {
             }
         }
         .haneenAgeAssurance(language: language,
-                           canPresent: initialPresentationReady && !showOnboarding && !showQibla && debugAyah == nil && scenePhase == .active)
+                           canPresent: initialPresentationReady && !showQibla && debugAyah == nil && scenePhase == .active)
         .task {
             await Task.detached(priority: .utility) { GuidanceCatalog.prepareSearch() }.value
             await scholarStore.loadProfileAndPublishedInsights()
@@ -150,9 +150,7 @@ struct RootView: View {
             account.restorePreviousSignIn()
             handlePendingIntent()
             applyDebugRoute()
-            let args = ProcessInfo.processInfo.arguments
-            if args.contains("-yqOnboarding") || (!UserDefaults.standard.bool(forKey: CompanionOnboarding.completedKey) && !args.contains("-yqScreen") && ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] == nil) { showOnboarding = true }
-            initialPresentationReady = !showOnboarding
+            initialPresentationReady = true
         }
         .onChange(of: scenePhase) { _, phase in
             if phase == .active {
@@ -171,8 +169,8 @@ struct RootView: View {
             WidgetPracticeSync.refresh()
         }
         .onOpenURL { url in
-            if url.host == "auth-callback" { Task { await CompanionAccount.shared.handle(url) }; return }
-            if account.handle(url) { return }
+            // Authentication callbacks are handled by the outer access gate,
+            // including when RootView has not been created yet.
             if handleCompanionURL(url) { return }
             guard let scheme = url.scheme, ["haneen", "sakina", "yaqeen"].contains(scheme) else { return }
 

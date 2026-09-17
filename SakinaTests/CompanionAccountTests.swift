@@ -64,6 +64,8 @@ final class CompanionAccountTests: XCTestCase {
         await account.verify(email: " reader@example.com ", code: "١٢٣ ٤٥٦")
         XCTAssertTrue(account.signedIn)
         XCTAssertEqual(account.email, "reader@example.com")
+        XCTAssertEqual(account.userID, account.client?.auth.currentUser?.id)
+        XCTAssertNotNil(account.userID, "The access gate needs the authenticated identity, not an email-derived key")
         XCTAssertFalse(account.busy)
         XCTAssertNil(account.message)
     }
@@ -89,6 +91,7 @@ final class CompanionAccountTests: XCTestCase {
         XCTAssertEqual(account.displayName, "ليلى أحمد")
         await account.signOut()
         XCTAssertNil(account.displayName)
+        XCTAssertNil(account.userID)
         XCTAssertFalse(account.signedIn)
     }
 

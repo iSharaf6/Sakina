@@ -1,13 +1,13 @@
 import SwiftUI
 import AuthenticationServices
 
-/// One welcome screen. The preview uses the same views and Quran renderer as the app.
+/// Account access and a public feature preview, with no previous user's library.
 struct CompanionOnboarding: View {
     @AppStorage(SettingsKeys.appLanguage) private var languageRaw = AppLanguage.english.rawValue
     private var language: AppLanguage { AppLanguage(rawValue: languageRaw) ?? .english }
     private var copy: AppCopy { AppCopy(language: language) }
     static let completedKey = "companion.onboarding.complete"
-    @ObservedObject private var account = CompanionAccount.shared
+    @ObservedObject private var account: CompanionAccount
     @Environment(\.colorScheme) private var colorScheme
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @Environment(\.scenePhase) private var scenePhase
@@ -19,6 +19,12 @@ struct CompanionOnboarding: View {
     @State private var finished = false
     var allowsDismiss = false
     let onFinish: () -> Void
+
+    @MainActor init(account: CompanionAccount? = nil, allowsDismiss: Bool = false, onFinish: @escaping () -> Void) {
+        _account = ObservedObject(wrappedValue: account ?? .shared)
+        self.allowsDismiss = allowsDismiss
+        self.onFinish = onFinish
+    }
 
     private var captions: [String] { [copy("Your daily companion.", "رفيقك كل يوم."), copy("Keep the Qur’an close.", "اجعل القرآن قريبًا منك."), copy("A moment to remember.", "لحظة لذكر الله.")] }
     private var details: [String] { [copy("Prayer, Qur’an and du’a. Together.", "الصلاة والقرآن والدعاء، في مكان واحد."), copy("Beautiful pages. A clearer meaning.", "صفحات واضحة، ومعانٍ تتأملها."), copy("Make space for a little dhikr.", "خصّص لحظة من يومك للذكر.")] }
@@ -65,6 +71,15 @@ struct CompanionOnboarding: View {
                     }.multilineTextAlignment(.center).padding(.horizontal, 20)
 
                     VStack(spacing: 12) {
+                        if !account.signedIn {
+                            VStack(spacing: 6) {
+                                Text(copy("Your library, wherever you return", "محفوظاتك معك أينما عدت"))
+                                    .font(.subheadline.weight(.semibold))
+                                Text(copy("Sign in to keep your saved ayat, du’as, notes, reflections and reading place together across your devices. New or returning, choose the same Continue option.",
+                                          "سجّل الدخول لتبقى آياتك وأدعيتك وملاحظاتك وتأملاتك وموضع قراءتك معك عبر أجهزتك. سواء كنت جديدًا أو عائدًا، اختر طريقة المتابعة نفسها."))
+                                    .font(.footnote).foregroundStyle(ink.opacity(0.76))
+                            }.multilineTextAlignment(.center).padding(.bottom, 4)
+                        }
                         if account.signedIn {
                             Button(copy("Continue to Haneen", "المتابعة إلى حنين"), action: finish).font(.headline)
                                 .frame(maxWidth: .infinity).frame(height: 54)
@@ -90,16 +105,13 @@ struct CompanionOnboarding: View {
                                     .overlay(Capsule().strokeBorder(ink.opacity(0.16), lineWidth: 1))
                             }.accessibilityIdentifier("welcome.email").disabled(!account.configured)
                         }
-                        if !account.signedIn {
-                            Button(copy("Use Haneen without an account", "استخدام حنين دون حساب")) { completeWelcome() }
-                                .font(.yqSubheadMedium)
-                                .frame(minHeight: 44)
-                                .accessibilityIdentifier("welcome.guest")
-                        }
                         if account.busy { ProgressView().tint(ink).accessibilityLabel(copy("Signing in", "جارٍ تسجيل الدخول")) }
                         if let message = account.message, !showEmail {
                             Text(message).font(.footnote).multilineTextAlignment(.center).accessibilityAddTraits(.updatesFrequently)
                         }
+                        Text(copy("Your library is stored securely with your account on Haneen’s servers. Cloud backups are not end-to-end encrypted. Daily goals, dhikr counts and prayer settings stay on this iPhone.",
+                                  "تُحفظ محفوظاتك بأمان مع حسابك على خوادم حنين. النسخ السحابية ليست مشفّرة من طرف إلى طرف. وتبقى أهداف اليوم وعدّادات الذكر وإعدادات الصلاة على هذا الهاتف."))
+                            .font(.caption).foregroundStyle(ink.opacity(0.72)).multilineTextAlignment(.center)
                         HStack(spacing: 18) {
                             Link(copy("Privacy", "الخصوصية"), destination: URL(string: "https://isharaf6.github.io/Sakina/privacy.html")!)
                             Button(copy("Sources", "المصادر")) { showPrivacy = true }
@@ -109,10 +121,10 @@ struct CompanionOnboarding: View {
             }.background(paper.ignoresSafeArea()).foregroundStyle(ink)
         }
         .sheet(isPresented: $showEmail, onDismiss: { if account.signedIn { finish() } }) {
-            WelcomeEmailView().presentationDragIndicator(.visible)
+            WelcomeEmailView(account: account).presentationDragIndicator(.visible)
         }
         .sheet(isPresented: $showPrivacy) {
-            NavigationStack { AboutView().toolbar { ToolbarItem(placement: .confirmationAction) { Button(copy("Done", "تم")) { showPrivacy = false } } } }
+            AboutSheet()
         }
         .task { if account.signedIn && !allowsDismiss { finish() } }
         .onChange(of: account.signedIn) { _, signedIn in
@@ -179,14 +191,14 @@ private struct WelcomeAppPreview: View {
                 .font(.system(size: 12, weight: .semibold)).padding(.horizontal, 25).frame(height: 48)
             ZStack {
                 if page == 0 {
-                    HomeView(path: .constant(NavigationPath()), openSearch: { _ in }).transition(.opacity)
+                    publicHomePreview.transition(.opacity)
                 } else if page == 1 {
                     VStack(spacing: 6) {
                         HStack { Text(copy("Al-Fatihah", "الفاتحة")).font(.headline); Image(systemName: "chevron.down"); Spacer(); Text(copy("Qur’an", "القرآن")).font(.subheadline) }.padding(.horizontal, 20).frame(height: 40)
                         PrintedMushafPage(page: 1, language: language, onTap: { _ in }, onPageTap: {})
                     }.background(MushafPaper.background).transition(.opacity)
                 } else {
-                    NavigationStack { DhikrListView(language: language) }.transition(.opacity)
+                    publicDhikrPreview.transition(.opacity)
                 }
             }.frame(maxWidth: .infinity, maxHeight: .infinity).clipped()
             HStack(spacing: 38) {
@@ -197,13 +209,38 @@ private struct WelcomeAppPreview: View {
             Capsule().fill(Color.primary).frame(width: 100, height: 4).padding(.vertical, 8)
         }.environment(\.dynamicTypeSize, .medium)
     }
+
+    private var publicHomePreview: some View {
+        VStack(alignment: .leading, spacing: 22) {
+            Text(copy("A little space for your day", "فسحة في يومك")).font(.yqTitle2)
+            CompanionIllustration(artwork: .morning, size: 116).frame(maxWidth: .infinity)
+            previewRow(copy("Prayer times", "مواقيت الصلاة"), detail: copy("A gentle rhythm for your day", "نظام لطيف ليومك"), artwork: .salah)
+            previewRow(copy("Keep reading", "واصل القراءة"), detail: copy("Your place in the Qur’an", "موضع قراءتك في القرآن"), artwork: .quran)
+            previewRow(copy("Morning adhkar", "أذكار الصباح"), detail: copy("Begin with remembrance", "ابدأ بالذكر"), artwork: .morning)
+        }.padding(22).frame(maxHeight: .infinity, alignment: .top).background(Color.yqCanvas)
+    }
+
+    private var publicDhikrPreview: some View {
+        VStack(spacing: 22) {
+            CompanionIllustration(artwork: .praise, size: 138)
+            Text(copy("A moment to remember", "لحظة لذكر الله")).font(.yqTitle2)
+            Text("سُبْحَانَ اللَّهِ").font(.system(size: 36)).foregroundStyle(Color.yqInk)
+            Text(copy("Glory be to Allah", "تنزيهًا لله عن كل نقص")).font(.yqSubhead).foregroundStyle(Color.yqSecondary)
+            previewRow(copy("Morning adhkar", "أذكار الصباح"), detail: copy("Read or listen", "اقرأ أو استمع"), artwork: .morning)
+            previewRow(copy("Evening adhkar", "أذكار المساء"), detail: copy("A quiet end to the day", "ختام هادئ ليومك"), artwork: .evening)
+        }.padding(22).frame(maxHeight: .infinity, alignment: .top).background(Color.yqCanvas)
+    }
+
+    private func previewRow(_ title: String, detail: String, artwork: CompanionArtwork) -> some View {
+        BadgeRow(symbol: "book", title: title, subtitle: detail, artwork: artwork).yqCard(cornerRadius: 20)
+    }
 }
 
 private struct WelcomeEmailView: View {
     @AppStorage(SettingsKeys.appLanguage) private var languageRaw = AppLanguage.english.rawValue
     private var language: AppLanguage { AppLanguage(rawValue: languageRaw) ?? .english }
     private var copy: AppCopy { AppCopy(language: language) }
-    @ObservedObject private var account = CompanionAccount.shared
+    @ObservedObject var account: CompanionAccount
     @Environment(\.dismiss) private var dismiss
     @State private var email = ""
     @State private var code = ""

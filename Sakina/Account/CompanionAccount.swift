@@ -11,6 +11,7 @@ final class CompanionAccount: ObservableObject {
     static let shared = CompanionAccount(client: configuredClient())
     @Published private(set) var email: String?
     @Published private(set) var displayName: String?
+    @Published private(set) var userID: UUID?
     @Published private(set) var signedIn = false
     @Published private(set) var busy = false
     @Published var message: String?
@@ -64,6 +65,7 @@ final class CompanionAccount: ObservableObject {
         displayName = ["full_name", "name", "given_name"]
             .compactMap { metadata[$0]?.stringValue?.trimmingCharacters(in: .whitespacesAndNewlines) }
             .first { !$0.isEmpty }
+        userID = session?.user.id
         signedIn = session != nil
     }
 
@@ -232,6 +234,15 @@ final class CompanionAccount: ObservableObject {
     func signOut() async {
         guard let client = begin(.signOut) else { return }
         defer { finishOperation() }
+        // Persist this account's latest edits before credentials disappear. A
+        // different account must never inherit the live, device-wide library.
+        if let userID, AccountLibrarySync.shared.currentUserID == userID {
+            do { try AccountLibrarySync.shared.checkpoint() }
+            catch {
+                message = copy("Your latest changes couldn’t be saved, so you’re still signed in. Please try again.", "تعذّر حفظ أحدث تغييراتك، لذلك لم يتم تسجيل الخروج. حاول مرة أخرى.")
+                return
+            }
+        }
         do { try await client.auth.signOut(scope: .local) }
         catch {
             // The SDK clears local credentials before asking the server to revoke the session.
@@ -267,6 +278,7 @@ final class CompanionAccount: ObservableObject {
             guard response.deleted else {
                 message = copy("Account deletion wasn’t confirmed. Please try again.", "لم يُؤكَّد حذف الحساب. حاول مرة أخرى."); return false
             }
+            await AccountLibrarySync.shared.eraseDeletedAccount(user.id)
             clearGoogleSession()
             // The server already removed the account; the logout call is only for the local session.
             try? await client.auth.signOut(scope: .local)
@@ -330,6 +342,7 @@ struct CompanionAccountView: View {
     private var language: AppLanguage { AppLanguage(rawValue: languageRaw) ?? .english }
     private var copy: AppCopy { AppCopy(language: language) }
     @ObservedObject private var account: CompanionAccount
+    @ObservedObject private var sync = AccountLibrarySync.shared
     @ObservedObject private var library = AyahLibrary.shared
     @AppStorage(DuaCollection.savedKey) private var savedDuasRaw = ""
     @AppStorage(GoalLog.key) private var goalLogRaw = ""
@@ -370,11 +383,13 @@ struct CompanionAccountView: View {
                     }
                 }
                 personalLibrary
+                if account.signedIn { syncStatus }
                 accountControls
-                NavigationLink { AboutView() } label: {
+                NavigationLink(value: AccountHubRoute.sources) {
                     BadgeRow(symbol: "hand.raised", title: copy("Sources & privacy", "المصادر والخصوصية"), artwork: .privacy)
                         .yqCard(cornerRadius: 20)
                 }.buttonStyle(.yqPressSoft)
+                    .accessibilityIdentifier("account-hub.sources")
             }
             .padding(.horizontal, 20).padding(.top, 12).padding(.bottom, 28).font(.yqBody)
         }
@@ -488,8 +503,8 @@ struct CompanionAccountView: View {
                     }.foregroundStyle(Color.yqAccentDeep).padding(.vertical, 12).contentShape(Rectangle())
                 }.buttonStyle(.plain)
             }
-            Text(copy("Your library and progress stay on this iPhone. Signing in doesn’t sync them to other devices.",
-                      "تبقى محفوظاتك وتقدّمك على هذا الهاتف. تسجيل الدخول لا يزامنها مع أجهزتك الأخرى."))
+            Text(copy("Your saved library and reading place sync with your account. Daily goals, dhikr counts and prayer settings stay on this iPhone.",
+                      "تتزامن محفوظاتك وموضع قراءتك مع حسابك. وتبقى أهداف اليوم وعدّادات الذكر وإعدادات الصلاة على هذا الهاتف."))
                 .font(.yqCaption).foregroundStyle(Color.yqSecondary).fixedSize(horizontal: false, vertical: true)
         }
     }
@@ -516,6 +531,45 @@ struct CompanionAccountView: View {
         .accessibilityLabel(count > 0 ? "\(title), \(number(count)). \(detail)" : "\(title). \(detail)")
     }
 
+    private var syncStatus: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 12) {
+                CompanionIllustration(artwork: .backup, size: 44)
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(copy("Account backup", "نسخة حسابك الاحتياطية")).font(.yqHeadline).foregroundStyle(Color.yqInk)
+                    Text(sync.isSyncing ? copy("Syncing your library…", "جارٍ مزامنة محفوظاتك…") :
+                         sync.hasPendingChanges ? copy("Changes waiting to sync", "تغييرات في انتظار المزامنة") :
+                         sync.lastSyncedAt == nil ? copy("Ready to sync", "جاهز للمزامنة") : copy("Library synced", "تمت مزامنة المحفوظات"))
+                        .font(.yqSubhead).foregroundStyle(Color.yqSecondary)
+                }
+                Spacer(minLength: 0)
+                if sync.isSyncing { ProgressView() }
+            }
+            if let message = sync.statusMessage {
+                Text(message).font(.yqSubhead).foregroundStyle(Color.yqSecondary)
+            }
+            if sync.hasPendingChanges {
+                Text(copy("Your changes are saved on this iPhone. Keep Haneen open with a connection to finish backing them up.",
+                          "تغييراتك محفوظة على هذا الهاتف. أبقِ حنين مفتوحًا مع اتصال بالإنترنت لإكمال نسخها احتياطيًا."))
+                    .font(.yqCaption).foregroundStyle(Color.yqSecondary)
+            }
+            if let date = sync.lastSyncedAt {
+                Text(copy("Last synced: \(date.formatted(.dateTime.day().month(.abbreviated).hour().minute().locale(language.locale)))",
+                          "آخر مزامنة: \(date.formatted(.dateTime.day().month(.abbreviated).hour().minute().locale(language.locale)))"))
+                    .font(.yqCaption).foregroundStyle(Color.yqSecondary)
+            }
+            Button { Task { await sync.syncNow() } } label: {
+                Text(copy("Sync now", "مزامنة الآن")).font(.yqSubheadBold).frame(minHeight: 44)
+            }
+            .buttonStyle(.plain).foregroundStyle(Color.yqAccentDeep)
+            .disabled(sync.isSyncing || sync.isPreparing || account.busy)
+            .accessibilityIdentifier("account.sync-now")
+        }
+        .fixedSize(horizontal: false, vertical: true)
+        .padding(18).frame(maxWidth: .infinity, alignment: .leading).yqCard(cornerRadius: 20)
+        .accessibilityIdentifier("account.sync-status")
+    }
+
     private var accountControls: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text(copy("Account", "الحساب")).font(.yqHeadline).foregroundStyle(Color.yqInk)
@@ -528,12 +582,12 @@ struct CompanionAccountView: View {
                 } label: {
                     VStack(alignment: .leading, spacing: 4) {
                         Text(copy("Sign in or create an account", "سجّل الدخول أو أنشئ حسابًا")).font(.yqSubheadBold)
-                        Text(copy("Optional. Everything above is yours to use without an account.", "اختياري. يمكنك استخدام كل ما سبق دون حساب."))
+                        Text(copy("Keep your saved library together across your devices.", "احتفظ بمحفوظاتك معًا عبر أجهزتك."))
                             .font(.yqCaption).foregroundStyle(Color.yqSecondary)
                     }.fixedSize(horizontal: false, vertical: true)
                 }
                 .padding(18).yqCard(cornerRadius: 20).disabled(account.busy)
-                .accessibilityIdentifier("account-hub.optional-signin")
+                .accessibilityIdentifier("account-hub.signin")
             }
             if account.busy { ProgressView().frame(minHeight: 32).frame(maxWidth: .infinity) }
             if let message = account.message {
@@ -547,7 +601,7 @@ struct CompanionAccountView: View {
         RowGroup {
             Button { Task { await account.signOut() } } label: {
                 BadgeRow(symbol: "rectangle.portrait.and.arrow.right", title: copy("Sign out", "تسجيل الخروج"),
-                         subtitle: copy("Your saved items stay on this iPhone.", "تبقى محفوظاتك على هذا الهاتف."), artwork: .signout)
+                         subtitle: copy("Sign in to this account again to reopen your library.", "سجّل الدخول إلى هذا الحساب مجددًا لفتح محفوظاتك."), artwork: .signout)
             }.buttonStyle(.yqPressSoft).accessibilityIdentifier("account.sign-out")
             RowDivider()
             Button { account.message = nil; showDelete = true } label: {
@@ -591,7 +645,7 @@ struct CompanionAccountView: View {
                     .frame(maxWidth: .infinity).frame(height: 52)
                     .background(Color.yqAccentDeep, in: RoundedRectangle(cornerRadius: 14)).foregroundStyle(Color.yqOnAccent)
             }.buttonStyle(.plain).disabled(!CompanionAccount.validEmail(email)).opacity(CompanionAccount.validEmail(email) ? 1 : 0.45)
-            Text(copy("Your reading and local library are also available without an account.", "يمكنك أيضًا القراءة والرجوع إلى محفوظاتك على هذا الهاتف دون حساب."))
+            Text(copy("Sign in to back up your saved ayat, du’as, notes and reflections with your account.", "سجّل الدخول لنسخ آياتك وأدعيتك وملاحظاتك وتأملاتك المحفوظة احتياطيًا في حسابك."))
                 .font(.yqCaption).foregroundStyle(Color.yqSecondary).multilineTextAlignment(.center)
         }.disabled(!account.configured)
     }
@@ -610,7 +664,7 @@ private struct AccountDeletionSheet: View {
         NavigationStack {
             Form {
                 Section {
-                    Text(copy("Your sign-in account will be permanently deleted. Your local notes and bookmarks stay on this iPhone.", "سيُحذف حسابك نهائيًا. ستبقى ملاحظاتك وعلاماتك المرجعية المحفوظة محليًا على هذا الهاتف."))
+                    Text(copy("Your account and its cloud library will be permanently deleted, including saved ayat, du’as, notes and reflections. This account’s saved library will also be removed from this iPhone. This cannot be undone.", "سيُحذف حسابك ومحفوظاته السحابية نهائيًا، بما فيها الآيات والأدعية والملاحظات والتأملات المحفوظة. وستُزال أيضًا محفوظات هذا الحساب من هذا الهاتف. لا يمكن التراجع عن الحذف."))
                         .font(.yqSubhead)
                 }
                 Section {

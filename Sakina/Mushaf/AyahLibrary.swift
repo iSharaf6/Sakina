@@ -111,12 +111,12 @@ final class AyahLibrary: ObservableObject {
 
     /// Whether ayah number markers are drawn in the highlight colour.
     @Published var colorReferenceMarks: Bool {
-        didSet { UserDefaults.standard.set(colorReferenceMarks, forKey: Self.colorMarksKey) }
+        didSet { defaults.set(colorReferenceMarks, forKey: Self.colorMarksKey) }
     }
 
     /// Where the reader last was, for "continue reading".
     @Published var lastReadKey: String? {
-        didSet { UserDefaults.standard.set(lastReadKey, forKey: Self.lastReadKey) }
+        didSet { defaults.set(lastReadKey, forKey: Self.lastReadKey) }
     }
 
     private struct File: Codable {
@@ -127,12 +127,14 @@ final class AyahLibrary: ObservableObject {
 
     private var saveTask: Task<Void, Never>?
     private let fileURL: URL
+    private let defaults: UserDefaults
 
-    init(fileURL: URL? = nil) {
+    init(fileURL: URL? = nil, defaults: UserDefaults = .standard) {
         let support = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
         self.fileURL = fileURL ?? support.appendingPathComponent(Self.fileName)
-        colorReferenceMarks = UserDefaults.standard.object(forKey: Self.colorMarksKey) as? Bool ?? true
-        lastReadKey = UserDefaults.standard.string(forKey: Self.lastReadKey)
+        self.defaults = defaults
+        colorReferenceMarks = defaults.object(forKey: Self.colorMarksKey) as? Bool ?? true
+        lastReadKey = defaults.string(forKey: Self.lastReadKey)
         load()
     }
 
@@ -258,6 +260,22 @@ final class AyahLibrary: ObservableObject {
     }
 
     // MARK: Persistence
+
+    /// Replaces the active account's local projection after a validated restore.
+    /// Persist immediately before another account or view can observe it.
+    func replaceAccountContent(categories: [AyahCategory], marks: [AyahMark], lastReadKey: String?) throws {
+        let file = File(version: 1, categories: categories, marks: marks)
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .iso8601
+        encoder.outputFormatting = [.sortedKeys]
+        let data = try encoder.encode(file)
+        try FileManager.default.createDirectory(at: fileURL.deletingLastPathComponent(), withIntermediateDirectories: true)
+        try data.write(to: fileURL, options: [.atomic, .completeFileProtectionUntilFirstUserAuthentication])
+        self.categories = categories
+        self.marks = Dictionary(marks.map { ($0.key, $0) }, uniquingKeysWith: { _, new in new })
+        self.lastReadKey = lastReadKey
+        saveTask?.cancel()
+    }
 
     private func load() {
         guard let data = try? Data(contentsOf: fileURL) else { return }

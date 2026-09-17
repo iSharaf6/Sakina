@@ -1,5 +1,7 @@
 # Haneen release check — updated 13 September 2026
 
+> Historical build record. Planned 1.0 (5) requires account-library sync and changes the earlier guest/local-only behaviour. Use [ReleaseReadiness-1.0-5.md](ReleaseReadiness-1.0-5.md) for current release gates; this document’s earlier uploads, test results and publication claims do not certify build 5.
+
 > Status update, 16 September: the owner submitted version 1.0 (1). Apple returned a Guideline 2.1 information request. See `ReviewStatus-2026-09-16.md` for the current state; the submission status below is historical.
 
 ## Current submission status — 13 September

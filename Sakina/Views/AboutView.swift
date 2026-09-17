@@ -1,39 +1,69 @@
 import SwiftUI
 
-struct AboutView: View {
+enum AboutRoute: Hashable {
+    case privacy, support
+}
+
+extension View {
+    /// Register once on the containing stack, whether Settings or a legal sheet.
+    func aboutDestinations(language: AppLanguage) -> some View {
+        navigationDestination(for: AboutRoute.self) { route in
+            switch route {
+            case .privacy: PrivacyPolicyView()
+            case .support: ContactSupportView(language: language)
+            }
+        }
+    }
+}
+
+/// Sheet presentations own a stack; a pushed AboutView reuses its parent's.
+struct AboutSheet: View {
     @Environment(\.dismiss) private var dismiss
+    @AppStorage(SettingsKeys.appLanguage) private var languageRaw = AppLanguage.english.rawValue
+    private var language: AppLanguage { AppLanguage(rawValue: languageRaw) ?? .english }
+
+    var body: some View {
+        NavigationStack {
+            AboutView()
+                .aboutDestinations(language: language)
+                .toolbar {
+                    ToolbarItem(placement: .confirmationAction) {
+                        Button(language.pick("Done", "تم")) { dismiss() }
+                    }
+                }
+        }
+        .yaqeenLanguage(language)
+    }
+}
+
+struct AboutView: View {
     @AppStorage(SettingsKeys.appLanguage) private var languageRaw = AppLanguage.english.rawValue
 
     private var language: AppLanguage { AppLanguage(rawValue: languageRaw) ?? .english }
     private var copy: AppCopy { AppCopy(language: language) }
 
     var body: some View {
-        NavigationStack {
-            ZStack {
-                AtmosphereBackground()
+        ZStack {
+            AtmosphereBackground()
 
-                ScrollView(showsIndicators: false) {
-                    VStack(alignment: .leading, spacing: 28) {
-                        brand
-                        HaneenCreatorCard(language: language)
-                        HaneenDedicationCard(language: language)
-                        trustCard
-                        privacyCard
-                        fontCredits
-                        links
-                        version
-                    }
-                    .padding(.horizontal, 20)
-                    .padding(.top, 16)
-                    .padding(.bottom, 42)
+            ScrollView(showsIndicators: false) {
+                VStack(alignment: .leading, spacing: 28) {
+                    brand
+                    HaneenCreatorCard(language: language)
+                    HaneenDedicationCard(language: language)
+                    trustCard
+                    privacyCard
+                    fontCredits
+                    links
+                    version
                 }
-            }
-            .toolbar {
-                ToolbarItem(placement: .confirmationAction) {
-                    Button(copy("Done", "تم")) { dismiss() }
-                }
+                .padding(.horizontal, 20)
+                .padding(.top, 16)
+                .padding(.bottom, 42)
             }
         }
+        .navigationTitle(copy("Sources & privacy", "المصادر والخصوصية"))
+        .navigationBarTitleDisplayMode(.inline)
         .yaqeenLanguage(language)
     }
 
@@ -74,8 +104,8 @@ struct AboutView: View {
             symbol: "lock",
             title: copy("Private by default", "الخصوصية أولًا"),
             body: copy(
-                "Bookmarks, reflections and prayer preferences stay on this iPhone. Haneen has no ads or behavioural analytics integration. Sign-in and online services process account, request and technical information as described in our privacy policy.",
-                "تبقى المحفوظات والتأملات وإعدادات الصلاة على هذا الهاتف. ولا يتضمن حنين إعلانات أو أدوات لتحليل سلوكك داخل التطبيق. وتعالج خدمات تسجيل الدخول والخدمات المتصلة بالإنترنت بيانات الحساب والطلبات والمعلومات التقنية وفق ما توضحه سياسة الخصوصية."
+                "Your saved library, including notes and reflections, is backed up with your account and synced between your devices. Daily goals, dhikr counts and prayer settings stay on this iPhone. Cloud backups are not end-to-end encrypted. Haneen has no ads or behavioural analytics; our privacy policy explains account and online services.",
+                "تُنسخ محفوظاتك، بما فيها الملاحظات والتأملات، احتياطيًا مع حسابك وتتزامن بين أجهزتك. وتبقى أهداف اليوم وعدّادات الذكر وإعدادات الصلاة على هذا الهاتف. النسخ السحابية ليست مشفّرة من طرف إلى طرف. لا يتضمن حنين إعلانات أو أدوات لتحليل سلوكك، وتوضح سياسة الخصوصية خدمات الحساب والخدمات المتصلة بالإنترنت."
             )
         )
     }
@@ -117,15 +147,15 @@ struct AboutView: View {
                 sourceRow(copy("Share Haneen", "شارك حنين"), detail: copy("Pass it on", "انشر الخير"))
             }
             Divider().padding(.leading, 46)
-            NavigationLink { ContactSupportView(language: language) } label: {
+            NavigationLink(value: AboutRoute.support) {
                 sourceRow(copy("Feedback & support", "الملاحظات والدعم"), detail: copy("Get in touch", "تواصل معنا"))
             }
+            .accessibilityIdentifier("about.support")
             Divider().padding(.leading, 46)
-            NavigationLink {
-                PrivacyPolicyView()
-            } label: {
+            NavigationLink(value: AboutRoute.privacy) {
                 sourceRow(copy("Privacy policy", "سياسة الخصوصية"), detail: copy("Read in Haneen", "اقرأها في حنين"))
             }
+            .accessibilityIdentifier("about.privacy")
             Divider().padding(.leading, 46)
             Link(destination: URL(string: "https://quran.com")!) {
                 sourceRow(copy("Qur’an text and tafsir", "نص القرآن والتفسير"), detail: "Quran.com")

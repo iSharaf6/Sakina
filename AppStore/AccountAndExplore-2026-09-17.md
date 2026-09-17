@@ -1,5 +1,7 @@
 # Account and Explore follow-up — build 4
 
+> Historical build record. Planned 1.0 (5) requires account-library sync and changes the earlier guest/local-only behaviour. Use [ReleaseReadiness-1.0-5.md](ReleaseReadiness-1.0-5.md) for current release gates; this document’s earlier uploads, test results and publication claims do not certify build 5.
+
 The owner reported that the signed-in Account screen offered no useful actions and that many Explore life-topic links failed on their iPhone. Build 3 is already installed on EZY and remains the selected App Store Connect build; these changes require a new build.
 
 ## Scope

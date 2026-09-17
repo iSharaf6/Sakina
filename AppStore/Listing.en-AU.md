@@ -1,20 +1,25 @@
 # Haneen — App Store listing
 
-English (Australia) copy for Haneen 1.0 (2), updated 17 September 2026. The JSON contains the same customer-facing fields and replacement review instructions. The video-evidence marker must be resolved before the notes are submitted. This file does not assert that the build or metadata is live.
+English (Australia), planned **1.0 (5)**, updated 17 September 2026. Local draft only; not saved in App Store Connect by this task. Mandatory account access and synced library replace all earlier guest/local-only descriptions. See [ReleaseReadiness-1.0-5.md](ReleaseReadiness-1.0-5.md) for unresolved review access, recording and policy publication.
 
 ## Name
+
 Haneen
 
 ## Subtitle
+
 Quran, Dua & Prayer Times
 
 ## Promotional text
+
 Read Qur’an, find a du’a for the moment you’re in, and keep prayer times close with illustrated widgets. In Arabic and English, with no ads or subscriptions.
 
 ## Keywords
+
 dhikr,tasbih,counter,azkar,qibla,compass,widget,muslim,offline,reader,ruqyah,morning,evening,anxiety
 
 ## Description
+
 Read Qur’an, keep up with prayer, and find words for what you’re feeling. Haneen brings your daily worship together in Arabic and English, with warm illustrations and room to make it your own.
 
 Read the full Qur’an in a traditional mushaf or a flexible digital reader. Tap an ayah to listen, save it, add a note or explore its meaning. Choose the text size, translation and transliteration that suit you, and return to your reading place whenever you’re ready.
@@ -28,69 +33,65 @@ Keep the essentials close:
 • Morning and evening adhkar with full offline recordings by Abu Islam and selected individual excerpts
 • A dhikr counter and optional reminders
 • Du’a translation and transliteration controls
-• Saved ayat, private notes and bookmarks
+• An account library for saved ayat, notes, reflections and reading positions
 • Arabic and English layouts, with light, dark and system appearance
 
-No ads, subscriptions or in-app purchases. You can use the core app without an account, or choose Apple, Google or email sign-in. Your notes and bookmarks stay on your device; signing in does not upload or sync them.
+No ads, subscriptions or in-app purchases. Sign in with Apple, Google or email to use Haneen and restore your personal library across devices. Saved readings, notes, reflections, categories and reading positions sync to your account. On upgrading, you choose whether to add an existing local library to that account. Daily goals, dhikr counters and prayer settings remain on each device.
 
-The Qur’an text and morning/evening adhkar recordings are included in the app. An internet connection is needed for streamed recitation, online tafsir, nearby searches and sign-in.
+The Qur’an text and morning/evening adhkar recordings are included in the app. After signing in and preparing your library, a saved session lets you read bundled content offline; edits sync when you reconnect. An internet connection is needed for sign-in, cloud restore/sync, streamed recitation, online tafsir and nearby searches.
 
 ## Review notes
-Haneen 1.0 (2) — App Review information
 
-1. Physical-device demonstration
-VIDEO EVIDENCE PENDING: attach the requested physical-iPhone walkthrough before resubmission, showing launch, setup, core features, registration, returning sign-in and deletion. The recording and device checks are not yet complete.
+Haneen 1.0 (5) — App Review information DRAFT
 
-2. Purpose and access
-Haneen is a free Arabic/English Islamic companion for Qur'an, sourced duas/hadith and prayer/dhikr routines. At launch, select "Use Haneen without an account". All core features are available as a guest, without credentials, membership, invitation or payment. It is not a medical or counselling service.
+1. Evidence and reviewer access
+VIDEO EVIDENCE PENDING: Apple's Guideline 2.1 request asks for a physical-iPhone walkthrough on the latest released OS, including launch, registration, returning sign-in and deletion. No waiver has been received.
+REVIEWER ACCESS PENDING: this build requires an account. Provide verified, repeatable reviewer access in App Review Information before submission; no demo credentials are supplied by this draft. Do not rely on the previous guest-access instructions.
 
-3. Feature walkthrough
-Open Qur'an, choose a surah and tap an ayah for Listen, Save and More. More opens translation, tafsir, highlights and notes. Saved > My ayat opens saved ayat/notes.
-Du'as contains collections, including Morning and Evening. Both have a full offline Abu Islam recording, play/pause, seeking and 15-second skips. Fifteen matched readings also offer an individual excerpt, including Surah an-Nas. Excerpt playback does not advance the repetition counter.
-Home > All feelings opens related readings. Explore contains life situations and nearby mosque/halal-place searches.
-For prayer times, use Home > Use my location and allow location access. Settings contains calculation settings. Home > Qibla uses the physical iPhone compass. Reading, duas and local saving work if location is denied. Notifications are optional. Add widgets through the iOS widget gallery after configuring prayer times.
+2. Purpose and accounts
+Haneen is a free Arabic/English companion for Qur'an, sourced duas/hadith and prayer/dhikr. It is not a medical or counselling service. Apple, Google and email are offered to new and returning users. Email uses a one-time link or code, without a password or separate Sign up selector.
+Accounts provide a restorable library across devices: saved ayat with notes/highlights/favourites, categories and feeling mappings, saved duas/moments, reflections and Quran/dua/collection reading positions. Supabase stores these under the account ID with per-user access rules. Transfers use HTTPS; the library is not end-to-end encrypted. No public user posts or messaging exist.
+After sign-in and library setup, a cached session allows offline reading; edits queue and retry when online. An existing local library is imported only after the user chooses to add it to that account; choosing the cloud library leaves the old unclaimed backup on-device.
 
-4. Optional accounts and deletion
-Settings > Account offers Apple, Google and email. New and returning email users enter an email and tap Continue with email, then open the email link on this iPhone or enter its code and tap Verify & continue. No password or separate Sign up choice is needed. The welcome email sheet uses Continue and Sign in for the same process.
-Account > Delete account offers optional feedback: leave Prefer not to say selected and feedback blank, tap Delete account and confirm. Apple-linked deletion may request fresh Apple authorisation. Signing out/deleting the account leaves the separate local library on the iPhone. Sign-in does not upload or sync notes/bookmarks.
+3. Walkthrough
+Qur'an > choose a surah > tap an ayah for Listen, Save and More (translation, tafsir, highlights and notes). Settings > Your space shows the library, reading place and daily goals. Test a harmless saved note across two signed-in devices, then an offline edit and reconnection.
+Du'as > Morning/Evening offers full offline Abu Islam recordings, seeking and skips. Fifteen readings have individual excerpts; playback does not advance repetition counts. Audio continues in the in-app player and iOS media controls.
+Home > All feelings and Explore > life topics open related readings. Home > prayer times/Qibla uses optional location; nearby searches send coordinates to providers. Reading works if location is denied. Notifications are optional. Widgets are added through iOS.
+Sources/privacy is available before sign-in, and from Settings > Your space > Sources & privacy. Settings also contains About Haneen, sharing, support and optional ratings.
 
-5. Services, data and regions
-Supabase Authentication handles account identity/session data and optional deletion feedback. Brevo delivers sign-in emails. EveryAyah supplies streamed/cached Quran recitation; Quran.com's API supplies online tafsir. Nearby searches send location/category to Apple Maps and OpenStreetMap Overpass (overpass-api.de). Apple location services resolve place names.
-Quran text, the dua/hadith catalog and morning/evening recordings are bundled. Adhkar playback is offline; optional SoundCloud source links open externally only when tapped. No SoundCloud SDK, API or embedded player is used.
-Notes, progress, settings and dhikr counts are local. Prayer calculations use Adhan on-device; reminders are local notifications. There are no payments, subscriptions, ads, public UGC, messaging or runtime AI service. Sharing uses the iOS share sheet; illustrations are static.
-Mainland China is excluded. In Apple-required regions, a system age-range check may appear after setup. Haneen processes the response on-device without storing or uploading age data. Other features are the same in offered regions. Users choose Arabic/English. Prayer times depend on location/time zone/settings; online provider availability varies. There are no regional paid tiers.
+4. Sign-out and deletion
+Settings > Your space > Account > Sign out returns to sign-in and isolates that account's cache. It does not delete cloud data.
+Delete account accepts blank optional feedback and requires confirmation. Apple-linked deletion may request fresh Apple authorisation. Successful deletion removes the account/cloud library and its cache on this device. Other offline devices may retain cached copies until reconnection or local removal. The app returns to sign-in.
 
-6. Content and contact
-Sources and font credits: Settings > Sources, privacy & credits.
-Quran Foundation terms: https://api-docs.quran.com/legal/developer-terms/
-Hadith references: https://sunnah.com/about
-Abu Islam permitted the developer to include his recordings and is credited in the player.
+5. Services and regional behaviour
+Supabase: authentication, library sync and optional deletion feedback. Brevo: sign-in emails. EveryAyah: Quran audio. Quran.com: tafsir. Apple Maps/Overpass: nearby searches. Apple: geocoding, account/age checks. Adhkar recordings are bundled; optional SoundCloud links open externally, with no SDK or embedded player.
+Goals, practice completion, dhikr counters, prayer location/preferences and review timing remain local. No payments, subscriptions, ads or runtime AI. Ratings use StoreKit without score filtering. Mainland China is excluded. Apple-required regional age checks process the response on-device without storing/uploading age data.
+
 Privacy: https://isharaf6.github.io/Sakina/privacy.html
 Support: https://isharaf6.github.io/Sakina/app.html
 Contact: haneen.app.contact@gmail.com
 
 ## Public links and contact
+
 - Support: https://isharaf6.github.io/Sakina/app.html
-- Privacy policy: https://isharaf6.github.io/Sakina/privacy.html
-- Support email: haneen.app.contact@gmail.com
+- Privacy: https://isharaf6.github.io/Sakina/privacy.html
+- Email: haneen.app.contact@gmail.com
 
-## Submission fields still to complete
-Before sending, select the corrected build, verify review contact details, finish any account/program declarations, and attach the requested physical-device recording. Confirm production email delivery and the account lifecycle on that build. The saved description is for build 2; do not pair it with the old build 1. Verify the public policy and support copy after publication. Store status and completed tests must be established separately.
+## Submission accuracy
 
-## Draft accuracy notes
-- Confirmed from the welcome flow and root navigation: core features are available as a guest. No purchase SDK flow or paywall is present; StoreKit is used for the system rating prompt.
-- Optional Drive backup is gated by `HaneenGoogleBackupEnabled`, which is absent from the shipping configuration. Editorial content uses a disabled client. Neither feature is advertised in the customer description.
-- Widget completion reflects recorded morning/evening adhkar activity, not an inferred streak. The listing does not promise every design in every widget size.
-- Qur’an/du’a quotations and third-party translations were not changed for this draft. Source attribution alone does not confirm redistribution rights; content-rights declarations still require the owner’s review.
-- Metadata limits were checked against [Apple’s platform version reference](https://developer.apple.com/help/app-store-connect/reference/app-information/platform-version-information) and [product page guidance](https://developer.apple.com/app-store/product-page/). The keyword field uses ASCII, so its byte and character counts are equal.
-- Search metadata uses the subtitle for Quran, dua and prayer times, reserving keywords for specific features and routines: dhikr/tasbih counter, Qibla compass, widgets, offline reading, ruqyah, morning/evening adhkar and feeling-based readings. The anxiety term describes spiritual readings for that feeling, not a treatment claim. This is a relevance-based launch hypothesis, without measured keyword demand or ranking guarantees. [Apple’s search guidance](https://developer.apple.com/app-store/search/) recommends avoiding subtitle duplicates and measuring search impressions, conversion and downloads after release.
+The sign-in-required field, repeatable reviewer authentication, build selection, updated privacy labels/public pages and requested physical-device recording must be completed before submission. A genuine cloud library does not guarantee acceptance of mandatory login under Apple 5.1.1(v). No new console save, deployment, archive, test result or release is claimed by this draft. Content-rights evidence remains a separate review item.
+
+The draft does not advertise the disabled scholar-content/Google Drive features. Its cloud library is the new Supabase account service. Offline language refers to bundled reading/audio after sign-in and library preparation; cloud authentication/restoration needs a connection. No E2EE, streak or all-widgets-in-all-sizes claim is made.
+
+Search terms reflect real features and routines, not measured ranking performance. Anxiety refers to spiritual reading, not medical treatment. [Apple’s search guidance](https://developer.apple.com/app-store/search/) recommends relevant terms and measurement after launch. Limits are from [Apple’s version-information reference](https://developer.apple.com/help/app-store-connect/reference/app-information/platform-version-information).
 
 ## Field counts
-| Field | Count | Limit |
-| --- | ---: | ---: |
+
+| Field | Characters | Limit |
+|---|---:|---:|
 | name | 6 | 30 |
 | subtitle | 25 | 30 |
 | promotionalText | 157 | 170 |
 | keywords | 100 | 100 |
-| description | 1679 | 4000 |
-| reviewNotes | 3961 | 4000 |
+| description | 2037 | 4000 |
+| reviewNotes | 3781 | 4000 |

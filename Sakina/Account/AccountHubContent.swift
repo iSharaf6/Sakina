@@ -9,6 +9,7 @@ enum AccountHubRoute: Hashable {
     case dailyGoals
     case saved(AccountSavedContentView.Collection)
     case browseDuas
+    case sources
 }
 
 struct AccountHubDestination: View {
@@ -21,6 +22,7 @@ struct AccountHubDestination: View {
         case .dailyGoals: DailyGoalsView(language: language)
         case .saved(let collection): AccountSavedContentView(collection: collection, language: language)
         case .browseDuas: DuasView(showsNavigationBar: true)
+        case .sources: AboutView()
         }
     }
 }
@@ -90,7 +92,7 @@ struct AccountSavedContentView: View {
     var body: some View {
         ScrollView(showsIndicators: false) {
             VStack(alignment: .leading, spacing: 20) {
-                PageHeader(title: title, subtitle: copy("Saved on this iPhone.", "محفوظة على هذا الهاتف."))
+                PageHeader(title: title, subtitle: copy("Part of your account’s saved library.", "من محفوظات حسابك."))
                 switch collection {
                 case .duas: duaContent
                 case .moments: momentContent

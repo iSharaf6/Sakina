@@ -130,7 +130,7 @@ struct LibraryView: View {
                         if index < savedDuas.count - 1 { RowDivider(inset: 54) }
                     }
                 }
-                Text(copy("Saved on this iPhone.", "محفوظة على هذا الهاتف."))
+                Text(copy("Part of your account’s saved library.", "من محفوظات حسابك."))
                     .font(.yqCaption).foregroundStyle(Color.yqTertiary)
             }
         case .saved:
@@ -166,8 +166,8 @@ struct LibraryView: View {
             if entries.isEmpty {
                 EmptyGuidanceState(
                     title: copy("A quiet place for your words", "مكان هادئ لكلماتك"),
-                    detail: copy("Your private reflections stay on this iPhone. If you connect a backup, Haneen explains what is shared first.",
-                                 "تبقى تأملاتك الخاصة على هذا الهاتف. وإذا ربطت نسخة احتياطية، فسيشرح حنين ما تتم مشاركته أولًا."),
+                    detail: copy("Write beneath a reading to keep a reflection in your account’s library. Your words sync between your devices and are not shared with other users.",
+                                 "اكتب أسفل إحدى القراءات للاحتفاظ بتأمّل في محفوظات حسابك. تتزامن كلماتك بين أجهزتك ولا تُشارك مع المستخدمين الآخرين."),
                     symbol: "square.and.pencil", artwork: .journal
                 )
             } else {

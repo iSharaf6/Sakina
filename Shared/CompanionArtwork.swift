@@ -100,13 +100,17 @@ enum CompanionImage {
     static func image(_ artwork: CompanionArtwork) -> UIImage {
         if let cached = cache.object(forKey: artwork.assetName as NSString) { return cached }
         guard let source = UIImage(named: artwork.assetName) else { return UIImage() }
-        // Generated widget masters are larger than their display size. Bound
-        // the pixel work before allocating the flood-fill buffers in WidgetKit.
+        // Widget masters have genuine alpha and complete silhouettes. Keep
+        // their original transparency, bounding decoded memory in WidgetKit.
         let original = artwork.rawValue.hasPrefix("widget")
             ? (source.preparingThumbnail(of: CGSize(width: 420, height: 420)) ?? source)
             : source
         guard let cg = original.cgImage else { return original }
         let width = cg.width, height = cg.height
+        if artwork.rawValue.hasPrefix("widget") {
+            cache.setObject(original, forKey: artwork.assetName as NSString, cost: width * height * 4)
+            return original
+        }
         var pixels = [UInt8](repeating: 0, count: width * height * 4)
         guard let context = CGContext(data: &pixels, width: width, height: height, bitsPerComponent: 8,
                                       bytesPerRow: width * 4, space: CGColorSpaceCreateDeviceRGB(),

@@ -1,65 +1,50 @@
-# Haneen — physical-device App Review walkthrough
+# Haneen physical-device walkthrough — planned 1.0 (5)
 
-Prepared 16 September 2026 for Apple's Guideline 2.1 information request. This is the recording script, not a completed QA report. Apple requested a physical device running the latest released OS; simulator captures and marketing screenshots do not meet that request.
+Updated 17 September 2026 for Apple's existing Guideline 2.1 information request. **This is a recording script, not a completed test or recording.** Use [ReleaseReadiness-1.0-5.md](ReleaseReadiness-1.0-5.md) for current gates. Mandatory sign-in and account-library sync supersede the earlier guest/local-only script.
 
-This script now targets planned **Haneen 1.0 (3)**. See [ReleasePolish-2026-09-17.md](ReleasePolish-2026-09-17.md) for current build, email and review status. Production email delivery and returning OTP/session/sign-out have passed at the backend. Build 3 has not yet been uploaded, and physical-device account verification and recording remain pending. The review response remains unsent.
+Apple specifically requested a physical device running the latest released OS. Marketing screenshots and simulator video do not satisfy that request; no waiver has been received. The previously connected iPhone 15 reported iOS 27.0 (24A437) on 16 September, which establishes only the earlier device state. Verify the exact OS and release build when recording.
 
-## Recording setup
+## Preparation
 
-- On the physical iPhone, check **Settings → General → Software Update** and install the latest public iOS release offered for that device. Do not rely on the cached iOS version from an earlier development session. Install the exact Haneen build selected for review (for example through TestFlight). Record the actual model, iOS version, app version and build below; do not infer them from filenames.
-- Use a fresh installation for onboarding only if local data can be discarded. Uninstalling deletes local notes and bookmarks. A separate test device is preferable to erasing personal app data.
-- Use a disposable, developer-controlled test email/account for the account sequence. Delete that test account only. Do not delete the owner's normal account or record personal mailbox contents, passwords, recovery codes or one-time codes in legible form.
-- Turn on screen recording before launching Haneen from the Home Screen. Enable microphone narration if convenient, increase media volume enough to hear the short recitation example, and use Focus mode to keep unrelated notifications out of the video.
-- Demonstrate real interactions and results without disguising errors. If a required step fails, record the failure for diagnosis and fix it before claiming that sequence works. Do not substitute rendered mock-ups.
-- Aim for a 3–5 minute essentials recording, allowing more time if authentication takes longer. Show launch/guest access, an ayah and save, a dua and feeling/situation, prayer/Qibla, then the test-account creation, returning sign-in and deletion. Nearby search, Arabic and widgets are useful short extras. Keep results legible; there is no need to read an entire surah or finish every adhkar collection.
+- Install the final candidate build and verify its displayed version. Use disposable, developer-controlled accounts A and B and a second signed-in test device for sync checks. Never delete the owner's personal account.
+- Preserve existing personal data. Do not uninstall an old local-only installation to obtain a clean onboarding recording: first verify the offered migration choices and retain its unclaimed backup. A separate clean test device is preferable.
+- Keep passwords, recovery codes, one-time codes, tokens, mailbox contents and unrelated personal information out of the video. Show the successful before/after result without exposing the credential.
+- Start with a real Home Screen launch. Record actual actions and loading/results; do not disguise a failure or substitute a mock-up. Optional narration can explain a brief pause for authentication.
 
-## Shot sequence
+## Recording sequence
 
-| Step | Actual route/action | What the reviewer should see |
+| Step | Action | Evidence to show |
 |---|---|---|
-| 1. Launch and guest access | Start at the iPhone Home Screen, tap Haneen. On the welcome screen tap **Use Haneen without an account**. | Real app launch, onboarding and accessible core app without credentials or payment. |
-| 1a. Regional age check, if required by Apple | Complete the Apple system age-range prompt if it appears after setup. A required declined/failed response must offer a retry; do not simulate a regional account condition in the recording. | The system flow completes before app access continues. Haneen does not save/upload the age response or bar parent-approved children merely because they are under 13. Regional Sandbox scenarios require separate validation. |
-| 2. Prayer setup | On Home tap **Use my location**; allow while-using location. If already set, open the Settings cat/gear button, then **Prayer times → Location → Update**. Briefly show calculation settings. | A real city label, today's prayer times and the upcoming-prayer display. This build does not expose a manual-city picker. |
-| 3. Qur'an reading | Open **Qur'an**. Tap the surah title / **Choose surah**, select Al-Fatihah, swipe a page. Open **More → Reading appearance** if needed to briefly show printed/digital reading options. | Bundled Arabic text and normal navigation/readability. |
-| 4. Ayah actions | Tap an ayah; tap **Listen**, let a short portion play, then **Pause**. Tap **Save**, then **More**. Show translation and **Tafsir** loading actual content. Tap **Note**, enter a harmless note such as "Review demonstration", then **Done**. | Audio, save interaction, source-labelled translation/tafsir, and a private local note. |
-| 5. Saved readings | Open **Saved → My ayat**, then open the saved item/note. | The change persists and there is no public posting, comments or user feed. |
-| 6. Du'as and dhikr | Open **Du'as → Morning**. Show Arabic/meaning, source/context and reported virtue where that item has one. Tap its count control when present. Play a short portion of the full Abu Islam recording, then pause. Briefly show the corresponding Evening recording. Check playback with Wi-Fi and cellular data off, then restore them before the sign-in sequence. An optional SoundCloud source link should open externally only when tapped. Return to Home, scroll to **Tasbih**, choose a dhikr and increment it. | Sourced religious readings, local counters, visible reciter credit and bundled audio that plays offline. No SoundCloud SDK, API or embedded player is used. Show a matched excerpt, such as Surah an-Nas, if useful. Fifteen excerpts are available; do not claim every entry has its own clip or a specific reward. |
-| 7. Feelings and situations | Open **Home → All feelings**, select any feeling and open a suggested dua. Go back normally. Open **Explore**, a group under **Where are you in life?**, then a situation; show its Qur'an, hadith and dua sections. | The requested typical discovery flow and stable back navigation, without a medical-treatment claim. |
-| 8. Qibla and nearby places | On Home open **Qibla**, hold the physical phone flat and turn it slowly; return. Open **Explore → Mosques near me** and show a result/map. Optionally show **Halal food near me**. | Real compass heading and provider-backed place results. Do not label a restaurant certified unless its actual evidence supports that. |
-| 9. Language and widgets | Open Settings, under **Reading** change **App language** to Arabic and briefly show a core screen; return to English if desired. In the iPhone Home Screen widget gallery search **Haneen** and add one prayer widget, then tap it. | Actual Arabic/right-to-left UI, installed widget content and deep link back into Haneen. |
-| 10. Create a test account | **Settings → Account**. Enter a new controlled test email and tap **Continue with email**. Open its sign-in link on this iPhone, or enter the supplied code and tap **Verify & continue**. There is no separate Sign up selector. | A completed real registration, followed by **SIGNED IN** on the account page. A video may avoid exposing the code while still showing the real before/after result. This remains pending until production email delivery and the account flow are verified. |
-| 11. Returning sign-in | Tap **Sign out**. Enter the same email and choose **Continue with email** again. Open a fresh link or verify the latest code, then show the signed-in account page. | The same flow works for returning users; no separate Sign in selector. Show completion, not only the form. Apple/Google buttons can also be shown; demonstrate a complete account lifecycle and follow any additional provider-specific request from Apple. |
-| 12. Delete the test account | **Account → Delete account**. Keep **Prefer not to say**, leave written feedback empty, tap **Delete account**, then confirm **Delete account**. If the demo uses an Apple-linked account instead, complete the fresh Apple authorisation with the same Apple identity. | Deletion completes and the screen returns to the signed-out account UI. Feedback is visibly optional. Core guest access still works; local notes/bookmarks remain separate. |
+| Launch and legal access | Launch Haneen from the Home Screen. Show Apple, Google and email choices and open Sources/privacy before authentication. Return to sign-in. | A working launch and accessible legal information, without a nested-stack pop or inaccessible gate. |
+| New account | Create disposable account A using an offered method. Email uses the same one-time link/code flow for new and returning users. | Authentication completes and the personal library becomes usable. Do not stop at showing a form or successful mail send. |
+| Existing-library choice, if present | On a test upgrade, inspect the old-library import choice. Choose to import into A only if the test data belongs to A. Separately test the cloud-only choice without destroying its retained old backup. | No automatic upload to whichever account happens to sign in first. Record this only when it actually appears; do not describe a replay as a fresh upgrade. |
+| Regional system prompt | If Apple requires an age-range check, complete the actual system flow. | Setup completes without saving/uploading the age response. Do not simulate a region or claim untested child/parent Sandbox coverage. |
+| Qur'an and saving | Open a surah, tap an ayah, briefly listen/pause, save it, add a harmless note such as “Review demonstration”, and open tafsir. | Real Arabic text, source-labelled meaning, audio, a saved note and loaded online tafsir. |
+| Library and restoration | In Your space, show the saved ayah/note, a category, saved du’a, moment and reflection. Sign in as A on the second device and show restoration and reading position. | Real account-backed data rather than only a local count. Do not claim success before sync finishes. |
+| Offline use | With A already signed in and its library prepared, disconnect, edit a harmless note and read bundled content. Reconnect and show that change on the other device. | Cached-session offline use and successful queued-change retry. First-time sign-in/cloud restore are not claimed to work offline. |
+| Du'a and audio | Open Morning and Evening adhkar. Play/pause a full Abu Islam recording and one matched excerpt, such as an-Nas. Leave the reader and show in-app and iOS media controls. | Credits, real playback, persistent controls and no automatic repetition-count increase. Offline playback is bundled, not a SoundCloud download at runtime. |
+| Guidance and navigation | Home → All feelings → a feeling; Explore → a life group → a topic; Your space → Sources & privacy → Privacy, then back. | Each screen remains open and Back returns to the correct parent. |
+| Prayer and permissions | Show prayer times and Qibla on the physical device. Optionally show nearby search and a widget. | No claim that a simulator verifies a magnetometer. Denying location must not block reading or the account library. Notifications remain optional. |
+| Returning sign-in and isolation | Sign out of A, show the sign-in gate, sign into B and confirm A’s library is absent. Sign back into A and show restoration. | A working returning flow and separation between accounts; no misleading blank “success” state. |
+| Delete the test account | In A, Settings → Your space → Account → Delete account. Leave feedback blank/Prefer not to say; confirm. If Apple-linked, complete fresh authorisation for the same Apple account. | Feedback is optional, deletion completes and returns to sign-in. Independently verify the cloud record and active-device account cache are removed. An offline second device is not claimed to be instantly wiped. |
 
-If the app is already installed and onboarding has been completed, **Settings → Welcome tour** can show that UI, but identify it honestly as a replay. The recording must still start with an actual launch; a replay must not be described as a fresh installation.
+The owner may keep a concise recording of the core requested sequence and separate clear evidence for the longer two-device/migration checks. Do not claim any unrecorded or unverified check passed.
 
-The welcome-screen email sheet uses **Continue with email → enter email → Continue**, then opens a link or accepts a code through **Sign in**. The Settings account screen labels its corresponding code action **Verify & continue**. Both create an account on first verified use and sign returning users in.
+## Reviewer authentication
 
-Show the installed version/build through the **Version** row at the bottom of Settings, below **Sources & privacy**. It reads the actual bundle values; the About footer does not include the build number.
+Guest access has been removed. Mark sign-in required in App Review Information and provide a tested, repeatable way for Apple to access the account-based features, using a controlled review account or another arrangement Apple explicitly accepts. A one-time code that expires, the owner's personal credentials, or instructions merely assuming the reviewer will supply their own email are not a verified demo-access plan. **Reviewer access remains pending.**
 
-On 16 September at 09:14 UTC, developer tools verified the connected physical iPhone 15 running **iOS 27.0 (24A437)**. The owner is recording directly on the phone after Mac capture attempts failed. This verifies device readiness, not a completed walkthrough; fill the recording evidence below only after inspecting the real video.
+## Evidence to complete after the actual recording
 
-## Inapplicable flows to explain in the response
-
-- **Public UGC report/block:** not applicable. Notes and reflections are private on-device content; there is no public user-content feed, chat, comments or user-to-user messaging. The iOS share sheet is a user-directed export.
-- **Purchases/subscriptions:** not applicable. No paid tier, external checkout, IAP or subscription exists in this release.
-- **Runtime AI:** not applicable. No AI/chat/generation service is called by the shipped app. Illustration assets are static.
-- **Demo credentials:** core review does not need them. Optional email sign-in accepts the reviewer's own reachable email. If Apple specifically requests a supplied account later, provide a controlled review account and a workable authentication method; never put the owner's account credentials into a recording or public document.
-
-## Recording evidence — complete after recording
-
-| Field | Recorded value |
+| Item | Current status |
 |---|---|
-| Physical iPhone model | PENDING |
-| Installed iOS version | PENDING |
-| Haneen version/build | Target 1.0 (2); installed/recorded build PENDING |
-| Recording date | PENDING |
-| Video filename or accessible review link | PENDING |
-| Launch/setup timestamp | PENDING |
-| Main feature timestamps | PENDING |
-| Registration/sign-in/deletion timestamps | PENDING |
-| Guest access after deletion timestamp | PENDING |
-| Reviewer can open the attachment/link without a new access request | NOT YET VERIFIED |
-| Production email delivery and account lifecycle | PENDING |
+| Recorded device and OS | Pending fresh verification |
+| Installed version/build | Target 1.0 (5); pending |
+| Registration/returning sign-in | Pending physical verification |
+| Two-device restore/offline retry/isolation | Pending |
+| Confirmed cloud/current-device deletion | Pending |
+| Exported video path and reviewed contents | Pending |
+| Attachment or stable review-accessible URL | Pending |
+| App Review notes and response saved with evidence | Pending |
 
-Before sending, watch the exported video once and confirm that the exact release build, physical-device actions, account completion/deletion and any loading results are actually visible. Attach the video or supply a stable accessible link in App Review, then replace the pending reference in `AppStore/ReviewResponse-2026-09-16.md`. No successful device test or attachment upload is asserted by this script.
+Watch the exported footage before submitting. Replace the evidence placeholders in `ReviewNotes-1.0-5.txt` and the response draft only with inspected, accessible evidence. A new build alone does not cancel Apple's case-specific recording request.

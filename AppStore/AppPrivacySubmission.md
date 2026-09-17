@@ -1,6 +1,6 @@
 # Haneen 1.0 — App Store privacy submission
 
-Reviewed 13 September 2026 against the current shipping code, pinned dependencies, bundled privacy manifests, policy and public website. The final 1.0 (1) release archive includes the copy corrections below and was uploaded successfully. **The 11-category answers in this document and the policy URL were entered and published in App Store Connect on 13 September; the page confirmed publication.** This is privacy-label publication, not app review submission or release. Recheck the answers if the dependencies, flags or data practices change.
+Updated 17 September 2026 for planned **Haneen 1.0 (5)** with mandatory accounts and account-library backup/sync. **The revised 13-category declaration is a local worksheet only: App Store Connect publication is PENDING.** The 11-category label previously published on 13 September described the earlier local-library build and is no longer sufficient for this release. Public policy deployment and client/device sync verification remain pending. The coordinator reports that the sync migration was deployed and rollback-isolated RLS checks passed; that does not publish store answers or certify the release binary. Do not pair this metadata with an earlier binary.
 
 ## Recommended submission answers
 
@@ -19,10 +19,12 @@ Use the following supplier-inclusive set for this build. The Google rows follow 
 | Precise Location | App Functionality | Yes — conservative classification | Nearby Overpass requests contain full coordinates and network identifiers without an anonymization stage. Haneen itself does not attach its account ID. Service retention and any narrower classification remain unverified. |
 | Other Usage Data | Analytics | Yes | GoogleSignIn 9.2.0 supplier declaration. |
 | Other Data Types | App Functionality, Analytics | Yes | GoogleSignIn 9.2.0 supplier declaration. |
-| Other User Content | App Functionality, Analytics | Yes — conservative classification | Deletion feedback is sent in an authenticated request before storage without account ID. It is retained to evaluate feedback and improve the app. There is no demonstrated de-identification before transmission or verified separation from service logs. |
+| Other User Content | App Functionality, Analytics | Yes | **App Functionality:** synced notes, reflections, custom categories, highlights and saved-library content are stored under the account ID to restore the library. **Analytics:** existing deletion-feedback use to evaluate suggestions; this purpose does not imply analysis of private library content. Feedback is transmitted in an authenticated request before storage without account ID, with provider-log separation unverified. |
 | Customer Support | App Functionality, Analytics | Yes | User-submitted support/problem/idea messages reach the support mailbox with the sender's email. The app appends the app and iOS versions. Generic device model and app language were removed from the support message on 17 September. Customer support is functional; suggestions used to plan improvements fall within Analytics. |
+| Sensitive Info | App Functionality | Yes | **New for sync.** Saved Islamic readings, feeling mappings and reflections may reveal religious beliefs or other sensitive circumstances. Their transfer/storage is inherent in this personal religious library, even without a separate religion field. Used to back up/restore the library, not for marketing or behavioural profiling. |
+| Product Interaction | App Functionality | Yes | **New for sync.** Qur’an/du’a/collection reading positions and saved-content selections are retained under the account ID so the reader can continue on another device. This is functional state, not an events-analytics stream. |
 
-Do not select Third-Party Advertising, Developer Advertising/Marketing, Product Personalization or Other Purposes on current evidence. Local-only feelings, reflections, reading progress and goals do not require extra collection categories. Streaming Qur'an files is not collection of the user's recorded voice. Generic feedback does not mean selecting every sensitive type someone might voluntarily type.
+Do not select Third-Party Advertising, Developer Advertising/Marketing, Product Personalization or Other Purposes on current evidence. Account-library content and reading positions now leave the device and must be disclosed. Goals, practice completion, dhikr counters, app preferences and saved prayer location remain outside account sync; processing those only on-device does not add collection through the sync feature. Streaming Qur'an files is not collection of the user's recorded voice. The new Sensitive Info row is based on the religious library’s actual purpose and content, not hypothetical text in a generic support form.
 
 The feedback/support purposes follow the current policy's stated use for support and improving Haneen. If the owner later uses those records for a different purpose, update the answers. No blanket optional-feedback exemption is being claimed: the deletion form does not prominently display the account name alongside its submission.
 
@@ -45,7 +47,8 @@ Evidence paths: `Sakina/Account/CompanionAccount.swift`; `build/DerivedData/Sour
 | Feature | Actual shipping behavior and source |
 |---|---|
 | Supabase sign-in | Email and verification code, or provider ID/access tokens, go to Supabase Authentication. Provider passwords are not handled by Haneen. Account/session data is retained for authentication. `Sakina/Account/CompanionAccount.swift`. |
-| Delete account | Authenticated Edge Function deletes the Supabase account; an Apple-linked account supplies a fresh Apple authorization code for verification/revocation. Local notes/bookmarks remain. `supabase/functions/delete-account/handler.ts`, `index.ts`, `apple.ts`. |
+| Account-library sync | Planned build-5 path: saved ayat (notes/favourites/highlights), categories/feeling mappings, saved du’a and moment IDs, reflections, and Qur’an/du’a/collection reading positions are stored in Supabase under the authenticated user. RLS limits account access; HTTPS/provider storage protections are not end-to-end encryption. The initial upgrade asks whether to import an existing local library. Cloud-only selection leaves an unclaimed backup local. Offline changes queue/retry; sign-out isolates each account’s cache. Deploy/test evidence remains a release gate. |
+| Delete account | Authenticated Edge Function deletes the Supabase account; an Apple-linked account supplies a fresh Apple authorization code for verification/revocation. Cloud-library records are linked to the auth user with cascading deletion. Confirmed deletion clears this device’s account cache and associated imported legacy backup. Another offline device can retain its cache until it reconnects or its local data is removed; this is not a global remote wipe. `supabase/functions/delete-account/handler.ts`, `index.ts`, `apple.ts`; verify the new sync migration and service before upload. |
 | Optional feedback | A separate stored row contains random ID, creation time, allowed reason and up to 1,000 characters of text. No user-ID column, no automatic expiry. Function source contains no explicit feedback logging. `supabase/migrations/20260911181455_optional_account_exit_feedback.sql`. |
 | Google Drive backup | **Disabled**: `HaneenGoogleBackupEnabled` is absent from archived Info.plist. Settings shows local storage, restore/sign-in are gated. Dormant implementation would upload saved situations and reflection text/timestamps to private `drive.appdata`; disconnect does not delete that file. Reassess before enabling. `Sakina/Account/GoogleBackupService.swift`, `Sakina/Views/SettingsView.swift`. |
 | Nearby places | Apple `MKLocalSearch` and `https://overpass-api.de/api/interpreter` receive a search center/category. Overpass POST contains full coordinates and a Haneen user agent. The fallback array currently uses only its first endpoint. The actual Overpass operator’s retention policy remains unverified; the generic OSM foundation policy must not be assumed to cover it. `Sakina/Places/NearbyPlacesService.swift`. |
@@ -55,9 +58,9 @@ Evidence paths: `Sakina/Account/CompanionAccount.swift`; `build/DerivedData/Sour
 | Notifications | Local permission and scheduled `UNCalendarNotificationTrigger` reminders; no server push token. `Sakina/App/CompanionReminders.swift`. |
 | Scholar content | **Disabled**: app constructs `ScholarContentStore(client: nil, cache: ... nil)`, and archived scholar Supabase configuration is blank. No scholar-content fetch or previously cached profile load. `Sakina/App/SakinaApp.swift`. |
 
-## Policy and URL corrections completed
+## Historical policy and URL corrections — earlier local-library release
 
-The following are fixed, not remaining pre-submission tasks:
+The following records the earlier release work; the build-5 pages have since changed locally and need fresh deployment verification:
 
 - Canonical Markdown, public HTML and in-app English/Arabic policy distinguish Haneen's lack of advertising/behavioural-event integration from provider account, security and technical processing.
 - Disabled Google Drive/scholarly features, duplicate Location sections and unverified Sydney hosting claim are removed from current-release policy copy.
@@ -97,3 +100,19 @@ The earlier public-page byte counts/hashes describe the 13 September publication
 The app-owned privacy manifest was also aligned on 17 September with the conservative current label choices for precise location, optional feedback and customer support. These entries describe Haneen's own data flows; the Google SDK's manifest remains separate. The support composer includes app/iOS versions only. These code changes do not by themselves publish revised App Store Connect declarations.
 
 The regional Apple age-range check processes its response only on the device, discards age/category values, and keeps only the completion state in process memory. Haneen does not upload or persist these values, so this implementation does not by itself add developer-collected age or date-of-birth data to the label. Apple's account/parental settings remain governed by Apple. Manual device/Sandbox verification remains separate.
+
+
+## Build 5 declaration and release gates
+
+The exact Apple labels are **User Content → Other User Content**, **Sensitive Info → Sensitive Info**, and **Usage Data → Product Interaction**. The cloud data is linked because it is stored under the authenticated account. The collection is ongoing app functionality, so an occasional-feedback disclosure exception does not apply. These classifications follow [Apple’s privacy data types and purposes](https://developer.apple.com/app-store/app-privacy-details/); the mapping from Haneen’s religious library to Sensitive Info is a conservative application of those definitions.
+
+`Sakina/PrivacyInfo.xcprivacy` adds `NSPrivacyCollectedDataTypeSensitiveInfo` and `NSPrivacyCollectedDataTypeProductInteraction`, both linked, not tracking and used for App Functionality. The existing Other User Content row retains App Functionality plus Analytics because feedback still has that stated use. No Analytics use is added for the private synced library. [Apple’s manifest value reference](https://developer.apple.com/documentation/bundleresources/app-privacy-configuration/nsprivacycollecteddatatypes/nsprivacycollecteddatatype) supplies these identifiers. Do not alter Google’s signed manifest.
+
+Before upload/submission:
+- Verify the deployed per-user RLS rules, account-deletion cascade, cross-account cache separation, explicit old-library import choice and lossless sync/retry on the release binary.
+- Verify the actual sync payload contains only the documented fields. Confirm per-item deleted content is removed from the current server document after sync; pending deletion metadata must remain local until acknowledged.
+- Publish the revised 13-type privacy answers in App Store Connect and the matching privacy/support pages, then independently reload both. **Not done by this documentation task.**
+- Keep provider log/retention limitations above; do not imply encrypted transport makes server-readable content uncollected or anonymous.
+- Supply workable reviewer authentication. Guest access has been removed, so the prior “no credentials needed” instructions are obsolete. No demo account or repeatable reviewer authentication has been verified in this task.
+
+Mandatory sign-in is still a review risk under [Apple 5.1.1(v)](https://developer.apple.com/app-store/review/guidelines/#data-collection-and-storage): a genuine restore/sync feature must be significant enough to justify requiring an account for the app. Adding backup does not itself guarantee approval. Apple’s case-specific physical-device video request also remains open; see `ReleaseReadiness-1.0-5.md`.

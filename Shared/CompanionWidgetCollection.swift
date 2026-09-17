@@ -101,7 +101,6 @@ struct CompanionCollectionCard: View {
     var lockScreen = false
     var preview = false
     @Environment(\.locale) private var locale
-    @Environment(\.layoutDirection) private var layoutDirection
     private var language: AppLanguage { locale.language.languageCode?.identifier == "ar" ? .arabic : .english }
     private var next: PrayerEvent? {
         guard let schedule, !schedule.isStale(at: date) else { return nil }
@@ -184,17 +183,10 @@ struct CompanionCollectionCard: View {
                 }
                 Spacer(minLength: 0)
                 HStack(alignment: .bottom, spacing: 0) {
-                    WidgetCompanionArt(artwork: choice.artwork, size: 82)
-                        // This peeking pose ends at its source edges. Let the
-                        // widget corner meet those edges instead of floating
-                        // the cut-out inside the standard 16-point inset.
-                        .scaleEffect(x: choice == .countdown && layoutDirection == .rightToLeft ? -1 : 1, y: 1)
-                        // SwiftUI mirrors this offset for the RTL layout too.
-                        .offset(x: choice == .countdown ? -16 : 0,
-                                y: choice == .countdown ? 16 : 0)
+                    WidgetCompanionArt(artwork: choice.artwork, size: 76)
                     Spacer(minLength: 0)
                     WidgetOpenCue().padding(.bottom, 3)
-                }.frame(height: 69, alignment: .bottom)
+                }.frame(height: 76, alignment: .bottom)
             }
         } else {
             VStack(alignment: .leading, spacing: 6) {
@@ -261,10 +253,10 @@ struct CompanionCollectionCard: View {
                     completionLabel
                     Spacer(minLength: 0)
                     HStack(alignment: .bottom, spacing: 0) {
-                        WidgetCompanionArt(artwork: choice.artwork, size: 92)
+                        WidgetCompanionArt(artwork: choice.artwork, size: 80)
                         Spacer(minLength: 0)
                         WidgetOpenCue().padding(.bottom, 3)
-                    }.frame(height: 76, alignment: .bottom)
+                    }.frame(height: 80, alignment: .bottom)
                 }
             } else {
                 HStack(spacing: 18) {
