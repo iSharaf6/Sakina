@@ -399,7 +399,8 @@ struct SituationDetailView: View {
                 }
             }
 
-            if let url = URL(string: "https://quran.com/\(verse.surah):\(verse.ayah)/tafsirs") {
+            // quran.com needs a named tafsir; the bare /tafsirs path is a 404.
+            if let url = URL(string: "https://quran.com/\(verse.surah):\(verse.ayah)/tafsirs/\(language == .arabic ? "ar-tafsir-muyassar" : "en-tafisr-ibn-kathir")") {
                 Link(destination: url) {
                     HStack {
                         Label(copy("Read tafsir & full context", "اقرأ التفسير والسياق الكامل"), systemImage: "text.book.closed")
